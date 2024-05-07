@@ -28,7 +28,7 @@
 - Oversees inventory and stock levels, ensuring products are available for sale and managing relationships with suppliers.
 
 ### Component: Delivery
-- Handles the logistics of delivering orders to customers, including tracking, route optimization, and delivery status updates.
+- Handles the logistics of delivering orders to customers, including tracking, and delivery status updates.
 
 ### Class: PaymentManager
 - Manages financial transactions, overseeing payment processing, validation, and security of payment data.
@@ -40,7 +40,7 @@
 - Controls access rights within the system, determining who can perform specific actions based on roles and permissions.
 
 ### Strategy: PurchaseStrategy
-- Defines various purchasing tactics and strategies, allowing dynamic changes to how purchases are handled based on business rules or customer behavior.
+- Defines various purchasing tactics and strategies, allowing dynamic changes to how purchases are handled.
 
 ### Component: Order
 - Manages order life cycles from creation through completion, including details such as order contents, status, and customer information.
