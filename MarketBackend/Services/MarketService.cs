@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MarketBackend.Services.Interfaces;
 
 namespace MarketBackend.Services
 {
@@ -28,7 +29,7 @@ namespace MarketBackend.Services
             throw new NotImplementedException();
         }
 
-        void IMarketService.CloseStrore(int storeId)
+        void IMarketService.CloseStore(int storeId)
         {
             throw new NotImplementedException();
         }
