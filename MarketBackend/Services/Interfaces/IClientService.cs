@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MarketBackend.Services
+namespace MarketBackend.Services.Interfaces
 {
     public interface IClientService
     {
