@@ -8,20 +8,20 @@ namespace MarketBackend.Services
 {
     public interface IClientService
     {
-        void register(string username, string password);
-        void enterAsGuest();
-        void purchaseCart(int id);
-        void createStore(int id);
-        void resToStoreManageReq();
-        void resToStoreOwnershipReq();
-        void logoutClient(int id);
-        void removeFromCart(int clientId, int productId);
-        void viewCart(int id);
-        void addToCart(int clientId, int productId);
+        void Register(string username, string password);
+        void EnterAsGuest();
+        void PurchaseCart(int id);
+        void CreateStore(int id);
+        void ResToStoreManageReq();
+        void ResToStoreOwnershipReq(); //respond to store ownership request
+        void LogoutClient(int id);
+        void RemoveFromCart(int clientId, int productId);
+        void ViewCart(int id);
+        void AddToCart(int clientId, int productId);
 
-        void loginClient(string username, string password);
-        void exitGuest();
-        void browseGuest();
-        void getPurchaseHistory(int id);
+        void LoginClient(string username, string password);
+        void ExitGuest();
+        void BrowseGuest();
+        void GetPurchaseHistory(int id);
     }
 }

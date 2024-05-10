@@ -8,72 +8,72 @@ namespace MarketBackend.Services
 {
     public class ClientService : IClientService
     {
-        void IClientService.addToCart(int clientId, int productId)
+        void IClientService.AddToCart(int clientId, int productId)
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.browseGuest()
+        void IClientService.BrowseGuest()
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.createStore(int id)
+        void IClientService.CreateStore(int id)
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.enterAsGuest()
+        void IClientService.EnterAsGuest()
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.exitGuest()
+        void IClientService.ExitGuest()
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.getPurchaseHistory(int id)
+        void IClientService.GetPurchaseHistory(int id)
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.loginClient(string username, string password)
+        void IClientService.LoginClient(string username, string password)
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.logoutClient(int id)
+        void IClientService.LogoutClient(int id)
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.purchaseCart(int id)
+        void IClientService.PurchaseCart(int id)
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.register(string username, string password)
+        void IClientService.Register(string username, string password)
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.removeFromCart(int clientId, int productId)
+        void IClientService.RemoveFromCart(int clientId, int productId)
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.resToStoreManageReq()
+        void IClientService.ResToStoreManageReq()
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.resToStoreOwnershipReq()
+        void IClientService.ResToStoreOwnershipReq()
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.viewCart(int id)
+        void IClientService.ViewCart(int id)
         {
             throw new NotImplementedException();
         }

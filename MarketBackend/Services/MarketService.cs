@@ -8,97 +8,97 @@ namespace MarketBackend.Services
 {
     public class MarketService : IMarketService
     {
-        void IMarketService.addManger(int activeId, int storeId, int toAddId)
+        void IMarketService.AddManger(int activeId, int storeId, int toAddId)
         {
             throw new NotImplementedException();
         }
 
-        void IMarketService.addOwner(int activeId, int storeId, int toAddId)
+        void IMarketService.AddOwner(int activeId, int storeId, int toAddId)
         {
             throw new NotImplementedException();
         }
 
-        void IMarketService.addPermission(int activeId, int storeId, int toAddId)
+        void IMarketService.AddPermission(int activeId, int storeId, int toAddId)
         {
             throw new NotImplementedException();
         }
 
-        void IMarketService.addProduct(int productId, string productName, int storeId, string category, double price, int quantity, double discount)
+        void IMarketService.AddProduct(int productId, string productName, int storeId, string category, double price, int quantity, double discount)
         {
             throw new NotImplementedException();
         }
 
-        void IMarketService.closeStrore(int storeId)
+        void IMarketService.CloseStrore(int storeId)
         {
             throw new NotImplementedException();
         }
 
-        void IMarketService.editPurchasePolicy(int storeId)
+        void IMarketService.EditPurchasePolicy(int storeId)
         {
             throw new NotImplementedException();
         }
 
-        void IMarketService.getFounder()
+        void IMarketService.GetFounder()
         {
             throw new NotImplementedException();
         }
 
-        void IMarketService.getMangers()
+        void IMarketService.GetMangers()
         {
             throw new NotImplementedException();
         }
 
-        void IMarketService.getOwners()
+        void IMarketService.GetOwners()
         {
             throw new NotImplementedException();
         }
 
-        void IMarketService.isAvailable(int productId)
+        void IMarketService.IsAvailable(int productId)
         {
             throw new NotImplementedException();
         }
 
-        void IMarketService.openStore(int storeId)
+        void IMarketService.OpenStore(int storeId)
         {
             throw new NotImplementedException();
         }
 
-        void IMarketService.removeManger(int activeId, int storeId, int toRemoveId)
+        void IMarketService.RemoveManger(int activeId, int storeId, int toRemoveId)
         {
             throw new NotImplementedException();
         }
 
-        void IMarketService.removeOwner(int activeId, int storeId, int toRemoveId)
+        void IMarketService.RemoveOwner(int activeId, int storeId, int toRemoveId)
         {
             throw new NotImplementedException();
         }
 
-        void IMarketService.removePermission(int activeId, int storeId, int toRemoveId)
+        void IMarketService.RemovePermission(int activeId, int storeId, int toRemoveId)
         {
             throw new NotImplementedException();
         }
 
-        void IMarketService.removeProduct(int productId)
+        void IMarketService.RemoveProduct(int productId)
         {
             throw new NotImplementedException();
         }
 
-        void IMarketService.removeStaffMember(int activeId, int storeId, int toRemoveId)
+        void IMarketService.RemoveStaffMember(int activeId, int storeId, int toRemoveId)
         {
             throw new NotImplementedException();
         }
 
-        void IMarketService.updateProduct(int productId)
+        void IMarketService.UpdateProduct(int productId)
         {
             throw new NotImplementedException();
         }
 
-        void IMarketService.updateProductPrice(int productId, int price)
+        void IMarketService.UpdateProductPrice(int productId, int price)
         {
             throw new NotImplementedException();
         }
 
-        void IMarketService.updateProductQuantity(int productId, int quantity)
+        void IMarketService.UpdateProductQuantity(int productId, int quantity)
         {
             throw new NotImplementedException();
         }
