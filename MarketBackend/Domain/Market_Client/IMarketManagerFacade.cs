@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MarketBackend.Domain.Models;
 
-namespace MarketBackend.Domain.Facades.Interfaces
+namespace MarketBackend.Domain.Market_Client
 {
     public interface IMarketManagerFacade
     {

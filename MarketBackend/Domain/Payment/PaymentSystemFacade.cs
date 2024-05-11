@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MarketBackend.Domain.Facades.Interfaces;
 
-namespace MarketBackend.Domain.Facades
+namespace MarketBackend.Domain.Payment
 {
     public class PaymentSystemFacade : IPaymentSystemFacade
     {

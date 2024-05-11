@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MarketBackend.Domain.Facades.Interfaces
+namespace MarketBackend.Domain.Payment
 {
     public interface IPaymentSystemFacade
     {

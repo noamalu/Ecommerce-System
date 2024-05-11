@@ -2,18 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MarketBackend.Domain.Facades.Interfaces;
 
-namespace MarketBackend.Domain.Facades
+namespace MarketBackend.Domain.Security
 {
-    public class ShippingSystemFacade : IShippingSystemFacade
+    public class SecurityManager : ISecurityManager
     {
-        public void CancelShippment()
+        public void EncryptPassword(string password)
         {
             throw new NotImplementedException();
         }
 
-        public void OrderShippment()
+        public void VerifyPassword(string password)
         {
             throw new NotImplementedException();
         }
