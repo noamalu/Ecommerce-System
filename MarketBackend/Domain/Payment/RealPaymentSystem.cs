@@ -15,7 +15,7 @@ namespace MarketBackend.Domain.Payment
         HttpRequestMessage httpRequest;
 
 
-         public RealPaymentSystem()
+        public RealPaymentSystem()
         {
             httpRequest = new HttpRequestMessage(HttpMethod.Post, url);
         }
@@ -109,9 +109,6 @@ namespace MarketBackend.Domain.Payment
                 }
             }
             return false;
-
-
-
         }
 
 
