@@ -8,15 +8,15 @@ namespace MarketBackend.Domain.Payment
     public class PaymentSystemProxy : IPaymentSystemFacade
     {
         //  TODO : when we will connect the system to real payment system
-        private  IPaymentSystemFacade? realPaymentSystem = null;
+        private readonly IPaymentSystemFacade _realPaymentSystem;
         private int receiptID;
 
         public static bool succeedPayment = true; 
         private static int fakeTransactionId = 10000;
 
-
-        public PaymentSystemProxy()
+        public PaymentSystemProxy(IPaymentSystemFacade realPaymentSystem)
         {
+            _realPaymentSystem = realPaymentSystem ?? throw new ArgumentNullException(nameof(realPaymentSystem));
             receiptID = 1;
         }
 

@@ -10,22 +10,22 @@ namespace MarketBackend.Domain.Shipping
 {
     public class RealShippingSystem : IShippingSystemFacade
     {
-        private readonly string? url = null; //TODO: remove ? and change url
-        HttpClient httpClient = new HttpClient();
-        HttpRequestMessage httpRequest;
+        private readonly HttpClient _httpClient;
+        private readonly string _url;
 
-         public RealShippingSystem()
+        public RealShippingSystem(HttpClient httpClient, string url)
         {
-            httpRequest = new HttpRequestMessage(HttpMethod.Post, url);
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _url = url ?? throw new ArgumentNullException(nameof(url));
         }
 
 
        public bool Connect()
         {
-            if (url == null)
+            if (_url == null)
                 throw new NotImplementedException();
 
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = _httpClient)
             {
                 Dictionary<string, string> parameters = new Dictionary<string, string>
                 {
@@ -46,7 +46,7 @@ namespace MarketBackend.Domain.Shipping
           if (url == null)
                 throw new NotImplementedException();
 
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = _httpClient)
             {
 
                 var parameters = new Dictionary<string, string>
@@ -80,7 +80,7 @@ namespace MarketBackend.Domain.Shipping
              if (url == null)
                 throw new NotImplementedException();
 
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = _httpClient)
             {
 
                 var parameters = new Dictionary<string, string>

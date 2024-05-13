@@ -8,15 +8,16 @@ namespace MarketBackend.Domain.Shipping
     public class ShippingSystemProxy : IShippingSystemFacade
     {
          //  TODO : when we will connect the system to real shipping system -> change realShippingtSystem
-        private  IShippingSystemFacade? realShippingtSystem = null;
+        private  IShippingSystemFacade? _realShippingtSystem = null;
         private int orderId;
 
         public static bool succeedShipping = true;
 
         private static int fakeTransactionId = 10000;
 
-        public ShippingSystemProxy()
+        public ShippingSystemProxy(IShippingSystemFacade realShippingtSystem)
         {
+            _realShippingtSystem = realShippingtSystem ?? throw new ArgumentNullException(nameof(realShippingtSystem));
             orderID = 1;
         }
 

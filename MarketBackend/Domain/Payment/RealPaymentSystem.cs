@@ -10,14 +10,17 @@ namespace MarketBackend.Domain.Payment
 
      public class RealPaymentSystem : IPaymentSystemFacade
     {
-        private readonly string? url = null; //TODO: remove ? and change url
-        HttpClient httpClient = new HttpClient();
+        private readonly HttpClient _httpClient;
+        private readonly string _url;
+
         HttpRequestMessage httpRequest;
 
+        
 
-        public RealPaymentSystem()
+        public RealPaymentSystem(HttpClient httpClient, string url)
         {
-            httpRequest = new HttpRequestMessage(HttpMethod.Post, url);
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _url = url ?? throw new ArgumentNullException(nameof(url));
         }
         
 
@@ -26,7 +29,7 @@ namespace MarketBackend.Domain.Payment
             if (url == null)
                 throw new NotImplementedException();
 
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = _httpClient)
             {
 
                 var parameters = new Dictionary<string, string>
@@ -62,7 +65,7 @@ namespace MarketBackend.Domain.Payment
 
             try
             {
-                using (HttpClient client = new HttpClient())
+            using (HttpClient client = _httpClient)
                 {
                     Dictionary<string, string> parameters = new Dictionary<string, string>
                     {
@@ -94,7 +97,7 @@ namespace MarketBackend.Domain.Payment
             if (url == null)
                 throw new NotImplementedException();
 
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = _httpClient)
             {
                 Dictionary<string, string> parameters = new Dictionary<string, string>
                 {
