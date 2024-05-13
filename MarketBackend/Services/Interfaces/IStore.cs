@@ -6,8 +6,9 @@ using MarketBackend.Domain.Models;
 
 namespace MarketBackend.Services.Interfaces
 {
-    public interface IBasketRepository : IRepository<Basket>
+    public interface IStore
     {
-        IEnumerable<Basket> getBasketsByCartId(int cartId);
+        public double getProductPrice(int productId);
+        public bool purchaseCart(Basket basket);
     }
 }
