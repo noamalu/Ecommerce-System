@@ -7,7 +7,9 @@ namespace MarketBackend.Domain.Payment
 {
     public interface IPaymentSystemFacade
     {
-        void Pay();
-        void CancelPayment(int paymentID);
+        int Pay(PaymentDetails cardDetails, double totalAmount);
+        int CancelPayment(int paymentID);
+
+        bool Connect();
     }
 }
