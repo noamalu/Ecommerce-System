@@ -10,13 +10,13 @@ namespace MarketBackend.Domain.Market_Client
     public class Role
     {
         private RoleType role;
-        public Member appointer; //todo: maybe change to ids rather than member?
+        public Member appointer;
         public List<Member> appointees;
 
         public Role(RoleType role, Member appointer) { 
             this.role = role;
             this.appointer = appointer;
-            appointees = new List<Member> { appointer };
+            appointees = new List<Member>();
         }
 
         public RoleType getRole() { return role; }
@@ -29,7 +29,34 @@ namespace MarketBackend.Domain.Market_Client
         public void addAppointee(Member appToAdd) {  appointees.Add(appToAdd);}
         public void removeAppointee(Member appToRem) { appointees.Add(appToRem); }
 
+        public virtual bool canAddProduct() { return role.canAddProduct(); }
+        public virtual bool canRemoveProduct() { return role.canRemoveProduct(); }
+        public virtual bool canOpenStore() { return role.canOpenStore(); }
+        public virtual bool canCloseStore() { return role.canCloseStore(); }
+        public virtual bool canUpdateProductPrice() { return role.canUpdateProductPrice(); }
+        public virtual bool canUpdateProductDiscount() { return role.canUpdateProductDiscount(); }
+        public virtual bool canUpdateProductQuantity() { return role.canUpdateProductQuantity(); }
+        public virtual bool canAddStaffMember() { return role.canAddStaffMember(); }
+        public virtual bool canRemoveStaffMember() { return role.canRemoveStaffMember(); }
 
+        public virtual bool hasPermission(Permission permission)
+        {
+            return role.hasPermission(permission);
+        }
+
+        public virtual void addPermission(Permission permission)
+        {
+            role.addPermission(permission);
+        }
+        public virtual void removePermission(Permission permission)
+        {
+            role.removePermission(permission);
+        }
+
+        public virtual IReadOnlyCollection<Permission> getPermissions()
+        {
+            return role.getPermissions();
+        }
 
     }
 }
