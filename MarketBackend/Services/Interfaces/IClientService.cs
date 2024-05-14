@@ -18,7 +18,7 @@ namespace MarketBackend.Services.Interfaces
         public void RemoveFromCart(int clientId, int productId);
         public void ViewCart(int id);
         public void AddToCart(int clientId, int productId);
-        public void LoginClient(string username, string password);
+        public Response LoginClient(string username, string password);
         public void ExitGuest();
         public void BrowseGuest();
         public void GetPurchaseHistory(int id);
