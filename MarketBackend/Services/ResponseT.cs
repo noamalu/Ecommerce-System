@@ -1,11 +1,11 @@
 
-namespace Market.Services
+namespace MarketBackend.Services
 {
     [Serializable]
     ///<summary>This class extends<c>Response</c> and represents the result of a call to a non-void function.
     ///In addition to the behavior of <c>Response</c>, the class holds the value of the returned value in the variable <c>Value</c>.</summary>
     /// <typeparam name="T"></typeparam>
-    /// <seealso cref="Market.ServiceLayer.Response" />
+    /// <seealso cref="MarketBackend.Services.Response" />
 
     public class Response<T> : Response
     {

@@ -9,72 +9,88 @@ namespace MarketBackend.Services
 {
     public class ClientService : IClientService
     {
-        void IClientService.AddToCart(int clientId, int productId)
+
+        private static ClientService _clientService = null;
+        private ClientService(){
+            
+        }
+
+        public static ClientService GetInstance(){
+            if (_clientService == null){
+                _clientService = new ClientService();
+            }
+            return _clientService;
+        }
+
+        public void Dispose(){
+            _clientService = new ClientService();
+        }
+        public void AddToCart(int clientId, int productId)
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.BrowseGuest()
+        public void BrowseGuest()
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.CreateStore(int id)
+        public void CreateStore(int id)
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.EnterAsGuest()
+        public void EnterAsGuest()
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.ExitGuest()
+        public void ExitGuest()
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.GetPurchaseHistory(int id)
+        public void GetPurchaseHistory(int id)
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.LoginClient(string username, string password)
+        public Response LoginClient(string username, string password)
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.LogoutClient(int id)
+        public void LogoutClient(int id)
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.PurchaseCart(int id)
+        public void PurchaseCart(int id)
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.Register(string username, string password)
+        public void Register(string username, string password)
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.RemoveFromCart(int clientId, int productId)
+        public void RemoveFromCart(int clientId, int productId)
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.ResToStoreManageReq()
+        public void ResToStoreManageReq()
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.ResToStoreOwnershipReq()
+        public void ResToStoreOwnershipReq()
         {
             throw new NotImplementedException();
         }
 
-        void IClientService.ViewCart(int id)
+        public void ViewCart(int id)
         {
             throw new NotImplementedException();
         }
