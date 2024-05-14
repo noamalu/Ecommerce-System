@@ -1,4 +1,4 @@
-namespace Market.Services
+namespace MarketBackend.Services
 {
     [Serializable]
     ///<summary>Class <c>Response</c> represents the result of a call to a void function. 

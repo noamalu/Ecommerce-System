@@ -8,6 +8,6 @@ namespace MarketBackend.Services.Interfaces
 {
     public interface IBasketRepository : IRepository<Basket>
     {
-        IEnumerable<Basket> getBasketsByCartId(int cartId);
+        public IEnumerable<Basket> getBasketsByCartId(int cartId);
     }
 }
