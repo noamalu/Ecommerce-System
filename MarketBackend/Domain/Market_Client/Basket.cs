@@ -8,24 +8,16 @@ namespace MarketBackend.Domain.Models
 {
     public class Basket
     {
-        private readonly int _basketId;
-        private readonly IStore _store;
-        private readonly Dictionary<int, int> products;
-        public Basket(int basketId, IStore store){
+        public int _basketId{get;}
+        public int _storeId{get;}
+        public int _cartId{get;}
+        public Dictionary<int, int> products{get;}
+        public Basket(int basketId, int storeId){
             _basketId = basketId; 
-            _store = store;
+            _storeId = storeId;
             products = new Dictionary<int, int>();
         }
 
-        public double calculateTotalPrice(){
-            return products.Select(pair => _store.getProductPrice(pair.Key) * pair.Value).Sum();
-
-        }
-        public bool purchaseCart(){
-        return _store.purchaseCart(this);
-
-        }   
-    
         public void addToBasket(int productId, int quantity){
             if (products.ContainsKey(productId)){
                 products[productId] += quantity;
@@ -40,7 +32,7 @@ namespace MarketBackend.Domain.Models
                 products[productId] = Math.Max(products[productId]-quantity,0);
             }
             else{
-                throw new ArgumentException($"Product id={productId} not in the basket!");
+                throw new ArgumentException($"Product id={productId} not in the {_basketId}!");
             }
         }
 
