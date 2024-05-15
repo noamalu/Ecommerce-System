@@ -1,0 +1,60 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using MarketBackend.Domain.Models;
+using MarketBackend.Services.Interfaces;
+
+namespace MarketBackend.DAL
+{
+    public class ShipingDetailsRepositoryRAM : IShippingDetailsRepository
+    {
+        private readonly Dictionary<int, ShippingDetails> shippedPurchases;
+
+         public ShipingDetailsRepositoryRAM()
+        {
+            shippedPurchases = new Dictionary<int, ShippingDetails>();
+        }
+
+        public void Add(ShippingDetails entity)
+        {
+            if(shippedPurchases.ContainsKey(entity.address)){
+                throw new ArgumentException($"Shipping Details with the {entity.address} already exists.");
+
+            }
+            shippedPurchases.Add(entity.address, entity);
+        }
+
+        public void Delete(ShippingDetails entity)
+        {
+            if (!ShippingDetailss.ContainsKey(entity.address)){
+                throw new KeyNotFoundException($"ShippingDetails with address {entity.address} does not exist.");
+            }
+
+            ShippingDetailss.Remove(entity.address);
+        }
+
+        public IEnumerable<ShippingDetails> getAll()
+        {
+            return ShippingDetailss.Values.ToList();
+        }
+
+        public string getShippingDetailssByAddress( string address)
+        {
+            return ShippingDetailss.Values.Where(ShippingDetails => ShippingDetails.address == string address).ToString();
+        }
+
+
+        public void Update(ShippingDetails entity)
+        {
+            if (ShippingDetailss.ContainsKey(entity.address))
+            {
+                ShippingDetailss[entity.address] = entity;
+            }
+            else
+            {
+                throw new KeyNotFoundException($"ShippingDetails with address {entity.address} not found.");
+            }
+        }
+    }
+}
+

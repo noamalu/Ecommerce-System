@@ -31,7 +31,7 @@ namespace MarketBackend.Domain.Shipping
                 {
                     {"action_type", "connect"}
                 };
-                HttpResponseMessage response = client.PostAsync(url, new FormUrlEncodedContent(parameters)).Result;
+                HttpResponseMessage response = client.PostAsync(_url, new FormUrlEncodedContent(parameters)).Result;
             
 
                 if (response.IsSuccessStatusCode)
@@ -41,9 +41,9 @@ namespace MarketBackend.Domain.Shipping
             }
             return false;
         }
-        public void OrderShippment(ShippingDeatails details)
+        public int OrderShippment(ShippingDeatails details)
         {
-          if (url == null)
+          if (_url == null)
                 throw new NotImplementedException();
 
             using (HttpClient client = _httpClient)
@@ -77,7 +77,7 @@ namespace MarketBackend.Domain.Shipping
 
         public int CancelShippment(int orderID)
         {
-             if (url == null)
+             if (_url == null)
                 throw new NotImplementedException();
 
             using (HttpClient client = _httpClient)
