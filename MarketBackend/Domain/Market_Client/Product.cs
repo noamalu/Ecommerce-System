@@ -41,26 +41,9 @@ namespace MarketBackend.Domain.Market_Client
             _quantity = quantity;
             _category = category;
             _keywords = new ConcurrentBag<string>();
-            _sellMethod = createSellMethod(sellMethod);
+            _sellMethod = SellMethodFactory.createSellMethod(sellMethod);
         }
 
-
-        public ISellMethod createSellMethod(string sellMethod)
-        {
-            switch (sellMethod)
-            {
-                case "RegularSell":
-                    return new RegularSell();
-                case "BidSell":
-                    return new BidSell();
-                case "AuctionSell":
-                    return new AuctionSell();
-                case "LotterySell":
-                    return new LotterySell();    
-                default:
-                    throw new ArgumentException("Invalid sell method");
-            }
-        }
 
         public bool ContainKeyword(string keyWord)
         {
