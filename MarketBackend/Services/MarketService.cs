@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MarketBackend.Services.Interfaces;
+using MarketBackend.Domain.Market_Client;
 
 namespace MarketBackend.Services
 {
@@ -40,12 +41,12 @@ namespace MarketBackend.Services
             throw new NotImplementedException();
         }
 
-        public void AddProduct(int productId, string productName, int storeId, string category, double price, int quantity, double discount)
+        public Response AddProduct(int productId, string productName, int storeId, string category, double price, int quantity, double discount)
         {
             throw new NotImplementedException();
         }
 
-        public void CloseStore(int storeId)
+        public Response CloseStore(int storeId)
         {
             throw new NotImplementedException();
         }
@@ -75,7 +76,7 @@ namespace MarketBackend.Services
             throw new NotImplementedException();
         }
 
-        public void OpenStore(int storeId)
+        public Response OpenStore(int storeId)
         {
             throw new NotImplementedException();
         }
@@ -95,28 +96,53 @@ namespace MarketBackend.Services
             throw new NotImplementedException();
         }
 
-        public void RemoveProduct(int productId)
+        public Response RemoveProduct(int productId)
         {
             throw new NotImplementedException();
         }
 
-        public void RemoveStaffMember(int activeId, int storeId, int toRemoveId)
+        public Response RemoveStaffMember(int storeId, int activeId, Role role, int toRemoveId)
         {
             throw new NotImplementedException();
         }
 
-        public void UpdateProduct(int productId)
+        public Response AddStaffMember(int storeId, int activeId, Role role, int toAddId)
         {
             throw new NotImplementedException();
         }
 
-        public void UpdateProductPrice(int productId, int price)
+        public Response UpdateProductDiscount(int productId, double discount)
         {
             throw new NotImplementedException();
         }
 
-        public void UpdateProductQuantity(int productId, int quantity)
+        public Response UpdateProductPrice(int productId, double price)
         {
+            throw new NotImplementedException();
+        }
+
+        public Response UpdateProductQuantity(int productId, int quantity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Response<Product> SearchByKeywords(string keywords)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Response<Product> SearchByName(string name)
+        {
+            string lowerName = name.ToLower();
+            throw new NotImplementedException();
+        }
+
+        public Response<Product> SearchByCategory(string category)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Response<string> GetInfo(int storeId){
             throw new NotImplementedException();
         }
     }
