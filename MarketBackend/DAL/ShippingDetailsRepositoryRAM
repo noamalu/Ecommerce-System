@@ -18,7 +18,7 @@ namespace MarketBackend.DAL
         public void Add(ShippingDetails entity)
         {
             if(shippedPurchases.ContainsKey(entity.address)){
-                throw new ArgumentException($"Shipping Details with the {entity.address} already exists.");
+                throw new ArgumentException($"Shipping Details with the address: {entity.address} already exists.");
 
             }
             shippedPurchases.Add(entity.address, entity);
@@ -27,7 +27,7 @@ namespace MarketBackend.DAL
         public void Delete(ShippingDetails entity)
         {
             if (!ShippingDetailss.ContainsKey(entity.address)){
-                throw new KeyNotFoundException($"ShippingDetails with address {entity.address} does not exist.");
+                throw new KeyNotFoundException($"Shipping Details with the address: {entity.address} does not exist.");
             }
 
             ShippingDetailss.Remove(entity.address);
@@ -52,7 +52,7 @@ namespace MarketBackend.DAL
             }
             else
             {
-                throw new KeyNotFoundException($"ShippingDetails with address {entity.address} not found.");
+                throw new KeyNotFoundException($"Shipping Details with the address: {entity.address} not found.");
             }
         }
     }
