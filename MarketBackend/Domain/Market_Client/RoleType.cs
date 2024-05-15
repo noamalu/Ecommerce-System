@@ -30,6 +30,8 @@ namespace MarketBackend.Domain.Market_Client
         public virtual bool canAddStaffMember() { return true; }
         public virtual bool canRemoveStaffMember() { return true; }
 
+        public virtual bool canGetHistory() { return true; }
+
         public virtual bool hasPermission(Permission permission)
         {
             return permissions.Contains(permission);
