@@ -40,7 +40,7 @@ namespace MarketBackend.Services
             throw new NotImplementedException();
         }
 
-        public void EnterAsGuest()
+        public Response EnterAsGuest(int id)
         {
             throw new NotImplementedException();
         }
@@ -55,12 +55,12 @@ namespace MarketBackend.Services
             throw new NotImplementedException();
         }
 
-        public Response LoginClient(string username, string password)
+        public Response LoginClient(int userId, string username, string password)
         {
             throw new NotImplementedException();
         }
 
-        public void LogoutClient(int id)
+        public Response LogoutClient(int id)
         {
             throw new NotImplementedException();
         }
@@ -70,7 +70,7 @@ namespace MarketBackend.Services
             throw new NotImplementedException();
         }
 
-        public void Register(string username, string password)
+        public Response Register(string username, string password)
         {
             throw new NotImplementedException();
         }
