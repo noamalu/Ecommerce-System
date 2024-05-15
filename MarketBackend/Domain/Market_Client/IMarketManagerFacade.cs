@@ -17,7 +17,7 @@ namespace MarketBackend.Domain.Market_Client
         void LogoutClient(int id);
         void RemoveFromCart(int clientId, int productId);
         void ViewCart(int id);
-        void AddToCart(int clientId, int productId);
+        void AddToCart(int clientId, int storeId, int productId, int quantity);
 
         void LoginClient(string username, string password);
         void ExitGuest();
