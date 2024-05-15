@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MarketBackend.Services.Interfaces;
 
 namespace MarketBackend.Domain.Market_Client
 {
     public class MarketManagerFacade : IMarketManagerFacade
     {
+        private readonly IClientRepository _clientRepository;
+        public MarketManagerFacade(IClientRepository clientRepository){
+            _clientRepository = clientRepository;
+        }
         public void AddManger(int activeId, int storeId, int toAddId)
         {
             throw new NotImplementedException();
@@ -28,9 +33,10 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void AddToCart(int clientId, int productId)
+        public void AddToCart(int clientId, int storeId, int productId, int quantity)
         {
-            throw new NotImplementedException();
+            Client client = _clientRepository.GetById(clientId);
+            client.addToCart(storeId ,productId, quantity);
         }
 
         public void BrowseGuest()
