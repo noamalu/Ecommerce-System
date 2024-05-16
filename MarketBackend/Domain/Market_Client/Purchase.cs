@@ -1,5 +1,5 @@
 using System.Text;
-namespace MarketBackend.Domain.Models
+namespace MarketBackend.Domain.Market_Client
 {
     public class Purchase{
         private int _purchaseId;
@@ -13,13 +13,13 @@ namespace MarketBackend.Domain.Models
         public int ClientId { get => _clientId; }
         public double Price { get => _price; }
         public Basket Basket { get => _basket; }
-        public Purchase(int id, int storeId, int clientId, Basket basket)
+        public Purchase(int id, int storeId, int clientId, Basket basket, double basketPrice)
         {
             _purchaseId = id;
             _storeId = storeId;
             _clientId = clientId;
             _basket = basket;
-            _price = basket.calculateTotalPrice();
+            _price = basketPrice;
         }
 
         public string GetInfo()
