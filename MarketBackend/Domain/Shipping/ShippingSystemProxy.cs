@@ -9,7 +9,7 @@ namespace MarketBackend.Domain.Shipping
     {
          //  TODO : when we will connect the system to real shipping system -> change realShippingtSystem
         private  IShippingSystemFacade? _realShippingtSystem = null;
-        private int orderId;
+        private int orderID;
 
         public static bool succeedShipping = true;
 
@@ -21,32 +21,32 @@ namespace MarketBackend.Domain.Shipping
             orderID = 1;
         }
 
-        public bool Conect()
+        public bool Connect()
         {
-             if (realShippingtSystem == null)
+             if (_realShippingtSystem == null)
                 return true;
            else
-                return realShippingtSystem.Connect();
+                return _realShippingtSystem.Connect();
         }
-        }
+        
 
         public int CancelShippment(int orderID)
         {
-            if (realShippingtSystem == null)
+            if (_realShippingtSystem == null)
                 return 1;
             
             else
             {
-                if (realShippingtSystem.Connect())
-                    return realShippingtSystem.CancelShippment(orderID);
+                if (_realShippingtSystem.Connect())
+                    return _realShippingtSystem.CancelShippment(orderID);
             }
             return -1;
 
         }
 
-        public void OrderShippment(ShippingDeatails details)
+        public int OrderShippment(ShippingDetails details)
         {
-           if (realShippingtSystem == null)
+           if (_realShippingtSystem == null)
             {
                 if (succeedShipping)
                     return fakeTransactionId++;
@@ -55,10 +55,11 @@ namespace MarketBackend.Domain.Shipping
             }
             else
             {
-                return realShippingtSystem.OrderShippment(details);
+                return _realShippingtSystem.OrderShippment(details);
             }
 
         }
     }
+}
 
      

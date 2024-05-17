@@ -7,9 +7,9 @@ namespace MarketBackend.Domain.Shipping
 {
     public interface IShippingSystemFacade
     {
-        int OrderShippment(int orderID);
-        int CancelShippment(ShippingDetails details);       
+        int CancelShippment(int orderID);
+        int OrderShippment(ShippingDetails details);       
 
-        bool Conect();     
+        bool Connect();     
     }
 }
