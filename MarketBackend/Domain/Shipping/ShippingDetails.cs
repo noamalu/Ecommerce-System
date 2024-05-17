@@ -19,7 +19,7 @@ namespace MarketBackend.Domain.Shipping
             this.city = city;
             this.address = address;
             this.country = country;
-            string.zipcode = zipcode;
+            this.zipcode = zipcode;
         }
         public String Name {get => name; set => name = value; }
         public String City {get => city; set => city = value; }
