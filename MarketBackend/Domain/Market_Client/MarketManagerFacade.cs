@@ -4,14 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MarketBackend.Services.Interfaces;
+using Microsoft.Extensions.Logging;
+
 
 namespace MarketBackend.Domain.Market_Client
 {
     public class MarketManagerFacade : IMarketManagerFacade
     {
         private readonly IClientRepository _clientRepository;
-        public MarketManagerFacade(IClientRepository clientRepository){
+        private readonly ILogger<MarketManagerFacade> _logger;
+        public MarketManagerFacade(ILogger<MarketManagerFacade> logger, IClientRepository clientRepository){
             _clientRepository = clientRepository;
+            _logger = logger;
         }
         public void AddManger(int activeId, int storeId, int toAddId)
         {
@@ -37,6 +41,7 @@ namespace MarketBackend.Domain.Market_Client
         {
             Client client = _clientRepository.GetById(clientId);
             client.addToCart(storeId ,productId, quantity);
+            _logger.LogInformation($"Product id={productId} were added to client id={clientId} cart, to storeId={storeId} basket.!");
         }
 
         public void BrowseGuest()
