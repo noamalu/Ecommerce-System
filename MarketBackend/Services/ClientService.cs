@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MarketBackend.Domain.Models;
 using MarketBackend.Services.Interfaces;
 
 namespace MarketBackend.Services
@@ -25,7 +26,7 @@ namespace MarketBackend.Services
         public void Dispose(){
             _clientService = new ClientService();
         }
-        public void AddToCart(int clientId, int productId)
+        public Response AddToCart(int clientId, int productId)
         {
             throw new NotImplementedException();
         }
@@ -40,7 +41,7 @@ namespace MarketBackend.Services
             throw new NotImplementedException();
         }
 
-        public void EnterAsGuest()
+        public Response EnterAsGuest(int id)
         {
             throw new NotImplementedException();
         }
@@ -50,32 +51,32 @@ namespace MarketBackend.Services
             throw new NotImplementedException();
         }
 
-        public void GetPurchaseHistory(int id)
+        public Response<Purchase> GetPurchaseHistory(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Response LoginClient(string username, string password)
+        public Response LoginClient(int userId, string username, string password)
         {
             throw new NotImplementedException();
         }
 
-        public void LogoutClient(int id)
+        public Response LogoutClient(int id)
         {
             throw new NotImplementedException();
         }
 
-        public void PurchaseCart(int id)
+        public Response PurchaseCart(int id)
         {
             throw new NotImplementedException();
         }
 
-        public void Register(string username, string password)
+        public Response Register(int id, string username, string password, string email, int age)
         {
             throw new NotImplementedException();
         }
 
-        public void RemoveFromCart(int clientId, int productId)
+        public Response RemoveFromCart(int clientId, int productId)
         {
             throw new NotImplementedException();
         }

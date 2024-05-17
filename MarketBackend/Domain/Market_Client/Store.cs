@@ -1,4 +1,4 @@
-
+using MarketBackend.DAL;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
 using System.Data;
@@ -11,7 +11,7 @@ using System.Collections.Concurrent;
 
 
 
-namespace MarketBackend.Domain.Models
+namespace MarketBackend.Domain.Market_Client
 {
     public class Store
     {
@@ -39,17 +39,24 @@ namespace MarketBackend.Domain.Models
             _storeEmailAdd=email;
             _storePhoneNum=phoneNum;
             _active = true;
-            _products = ProductRepo.GetInstance().GetShopProducts(_storeId);
+            _products = ProductRepositoryRAM.GetInstance().GetShopProducts(_storeId);
             roles = RoleRepo.GetInstance().GetShopRoles(_storeId);
-            _purchases = PurchaseRepo.GetInstance().GetShopPurchaseHistory(_storeId);
+            _purchases = PurchaseRepositoryRAM.GetInstance().GetShopPurchaseHistory(_storeId);
             //_discountPolicyManager = new DiscountPolicyManager(shopId);
             //_purchasePolicyManager = new PurchasePolicyManager(shopId);
 
         }
 
+         public int StoreId { get => _storeId; }
+        public SynchronizedCollection<Product> Products { get => _products; set => _products = value; }
+        public bool Active { get => _active; set => _active = value; }
+        public string Name { get => _storeName; set => _storeName = value; }
+        public SynchronizedCollection<Purchase> Purchases { get => _purchases; set => _purchases = value; }
+    
+
         public Product AddProduct(int userId, string name, string sellMethod, string description, double price, string category, int quantity, Collection<string> keywords)
         {
-                    if(getRole(userId).role.canAddProduct()) {
+                    if(getRole(userId)!=null && getRole(userId).canAddProduct()) {
 
                         int productId = GenerateUniqueProductId();
                         Product newProduct = new Product(productId, this._storeId, name, sellMethod, description, price, category, quantity, keywords);
@@ -63,7 +70,7 @@ namespace MarketBackend.Domain.Models
         private void AddProduct(Product p)
         {
             _products.Add(p);
-            ProductRepo.GetInstance().Add(p);
+            ProductRepositoryRAM.GetInstance().Add(p);
         }
 
         private int GenerateUniqueProductId()
@@ -77,7 +84,7 @@ namespace MarketBackend.Domain.Models
 
         public void RemoveProduct(int userId, int productId)
         {
-                if(getRole(userId)!=null && getRole(userId).role.canRemoveProduct()) {
+                if(getRole(userId)!=null && getRole(userId).canRemoveProduct()) {
                     Product productToRemove = GetProduct(productId);
                     RemoveProduct(productToRemove);  
                 }
@@ -87,7 +94,7 @@ namespace MarketBackend.Domain.Models
         private void RemoveProduct(Product p)
         {
             _products.Remove(p);
-            ProductRepo.GetInstance().Delete(p.productId);
+            ProductRepositoryRAM.GetInstance().Delete(p.productId);
         }
 
         private Product GetProduct(int productId)
@@ -109,7 +116,7 @@ namespace MarketBackend.Domain.Models
 
         public void CloseStore(int userId)
         {
-            if(getRole(userId)!=null && getRole(userId).role.canCloseStore()) {
+            if(getRole(userId)!=null && getRole(userId).canCloseStore()) {
                 if (_active){
                 _active = false;
                 }
@@ -122,7 +129,7 @@ namespace MarketBackend.Domain.Models
 
         public void OpenStore(int userId)
         {
-            if(getRole(userId)!=null && getRole(userId).role.canOpenStore()) {
+            if(getRole(userId)!=null && getRole(userId).canOpenStore()) {
                 if (!_active){
                 _active = true;
                 }
@@ -135,13 +142,13 @@ namespace MarketBackend.Domain.Models
 
          public void UpdateProductPrice(int userId, int productID, double price)
         {
-           if(getRole(userId)!=null && getRole(userId).role.canOpenStore())
+           if(getRole(userId)!=null && getRole(userId).canOpenStore())
             {
                 Product productToUpdate = GetProduct(productID);
-                if (productToUpdate != null && price > 0)
+                if (productToUpdate != null)
                 {
-                    productToUpdate.price = price;
-                    ProductRepo.GetInstance().Update(productToUpdate);
+                    productToUpdate.updatePrice(price);
+                    ProductRepositoryRAM.GetInstance().Update(productToUpdate);
                 }
                 else throw new Exception("Invalid product Id");
             }
@@ -150,33 +157,19 @@ namespace MarketBackend.Domain.Models
 
         public void UpdateProductQuantity(int userId, int productID, int qauntity)
         {
-            if(getRole(userId)!=null && getRole(userId).role.canOpenStore())
+            if(getRole(userId)!=null && getRole(userId).canOpenStore())
             {
                 Product productToUpdate = GetProduct(productID);
-                if (productToUpdate != null && qauntity > 0)
+                if (productToUpdate != null)
                 {
-                    productToUpdate.qauntity=qauntity;
-                    ProductRepo.GetInstance().Update(productToUpdate);
+                    productToUpdate.updateQuantity(qauntity);
+                    ProductRepositoryRAM.GetInstance().Update(productToUpdate);
                 }
                 else throw new Exception("Invalid product Id");
             }
             else throw new Exception(String.Format("Permission exception for userId: %d", userId));
         }
 
-        public void UpdateProductDiscount(int userId, int productID, int discount)
-        {
-            if(getRole(userId)!= null && getRole(userId).role.canOpenStore())
-            {
-                Product productToUpdate = GetProduct(productID);
-                if (productToUpdate != null && discount > 0)
-                {
-                    productToUpdate.discount = discount;
-                    ProductRepo.GetInstance().Update(productToUpdate);
-                }
-                else throw new Exception("Invalid product Id");
-            }
-            else throw new Exception(String.Format("Permission exception for userId: %d", userId));
-        }
 
          public Purchase PurchaseBasket(int userId, Basket basket)
         {
@@ -187,21 +180,33 @@ namespace MarketBackend.Domain.Models
                 {
                     RemoveBasketProductsFromSupply(basket);
                 }
-                Purchase pendingPurchase = new Purchase(GenerateUniquePurchaseId(), _storeId, userId, basket.Clone());
+                double basketPrice = CalculateBasketPrice(basket);
+                Purchase pendingPurchase = new Purchase(GenerateUniquePurchaseId(), _storeId, userId, basket.Clone(), basketPrice);
                 AddPurchase(pendingPurchase);
                 return pendingPurchase;
             
         }
 
+        private double CalculateBasketPrice(Basket basket){
+            double totalPrice =0;
+            foreach (KeyValuePair<int, int> product in basket.products)
+            {
+                Product productToBuy = GetProduct(product.Key);
+                int quantity = product.Value;
+                totalPrice += quantity*productToBuy.Price;
+            }
+            return totalPrice;
+        }
+
          private void AddPurchase(Purchase p)
         {
                 _purchases.Add(p);
-                PurchaseRepo.GetInstance().Add(p);
+                PurchaseRepositoryRAM.GetInstance().Add(p);
         }
 
         private bool checkBasketInSupply(Basket basket)
         {
-            foreach (KeyValuePair<int, int> product in basket.products())
+            foreach (KeyValuePair<int, int> product in basket.products)
             {
                 Product productToBuy = GetProduct(product.Key);
                 int quantity = product.Value;
@@ -216,20 +221,20 @@ namespace MarketBackend.Domain.Models
         private bool ProductInSupply(Product product, int quantity)
         {
             if (_products.Contains(product))
-                return quantity <= product.quantity;
+                return quantity <= product.Quantity;
             throw new Exception($"Product Name: \'{product.Name}\' Id: {product.Id} not exist in shop.");
         }
 
         private void RemoveBasketProductsFromSupply(Basket basket)
         {
-            foreach (KeyValuePair<int, int> product in basket.products())
+            foreach (KeyValuePair<int, int> product in basket.products)
             {
                 Product productToBuy = GetProduct(product.Key);
                 int quantity = product.Value;
                 if (ProductInSupply(productToBuy, quantity))
                 {
-                    productToBuy.quantity -= quantity;
-                    ProductRepo.GetInstance().Update(productToBuy);
+                    productToBuy.updateQuantity(productToBuy.Quantity - quantity);
+                    ProductRepositoryRAM.GetInstance().Update(productToBuy);
                 }
                 else throw new Exception("This should not happened");
             }
@@ -257,7 +262,7 @@ namespace MarketBackend.Domain.Models
 
         public List<Purchase> getHistory(int userId)
         {
-            if(getRole(userId)!=null && getRole(userId).role.canGetHistoey())
+            if(getRole(userId)!=null && getRole(userId).canGetHistory())
             {
                 return _purchases.ToList();
             }
@@ -269,13 +274,13 @@ namespace MarketBackend.Domain.Models
             StringBuilder sb = new StringBuilder();
             foreach (Product product in _products)
             {
-                sb.AppendLine(product.getProductInfo());
+                sb.AppendLine(product.GetInfo());
             }
             return sb.ToString();
         }
 
         public void AddStaffMember(int roleUserId ,Role role, int userId){
-            if(getRole(userId)!=null && getRole(userId).role.canAddStaffMember())
+            if(getRole(userId)!=null && getRole(userId).canAddStaffMember())
             {
                 roles.Add(roleUserId, role);
             }
@@ -284,7 +289,7 @@ namespace MarketBackend.Domain.Models
         }
 
         public void RemoveStaffMember(int roleUserId, int userId){
-            if(getRole(userId)!=null && getRole(userId).role.canAddStaffMember())
+            if(getRole(userId)!=null && getRole(userId).canAddStaffMember())
             {
                  if (roles.ContainsKey(roleUserId))
                     {
