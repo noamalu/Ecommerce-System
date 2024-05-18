@@ -19,13 +19,18 @@ namespace MarketBackend.DAL
         }
         public Role GetById(int storeId)
         {
-            //return founder id. can't be null cuz there has to be a founder.
+            if(!roles.ContainsKey(storeId))
+                throw new KeyNotFoundException($"store with ID {storeId} not found.");
+
             return roles[storeId].Values.First(role => role.getRoleType() == "Founder");
         }
 
-        public Role GetById(params int[] keyValues)
+        public Role GetById(int storeId, int memberId)
         {
-            return roles[keyValues[0]][keyValues[1]];
+            if (!roles.ContainsKey(storeId) && roles[storeId].ContainsKey(memberId))
+                throw new KeyNotFoundException($"member with ID {memberId} at store with ID {storeId} not found.");
+
+            return roles[storeId][memberId];
         }
         public void Add(Role entity)
         {
@@ -43,15 +48,22 @@ namespace MarketBackend.DAL
         }
         public void Update(Role entity)
         {
+            if(!roles.ContainsKey(entity.storeId) && roles[entity.storeId].ContainsKey(entity.memberId))
+                throw new KeyNotFoundException($"member with ID {entity.memberId} at store with ID {entity.storeId} not found.");
+            
             roles[entity.storeId][entity.memberId] = entity;
         }
         public void Delete(Role entity)
         {
+            if (!roles.ContainsKey(entity.storeId) && roles[entity.storeId].ContainsKey(entity.memberId))
+                throw new KeyNotFoundException($"member with ID {entity.memberId} at store with ID {entity.storeId} not found.");
             roles[entity.storeId].Remove(entity.memberId);
         }
 
         public Dictionary<int, Role> getShopRoles(int storeId)
         {
+            if (!roles.ContainsKey(storeId))
+                throw new KeyNotFoundException($"store with ID {storeId} not found.");
             return roles[storeId];
         }
     }
