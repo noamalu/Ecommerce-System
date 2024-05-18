@@ -14,25 +14,26 @@ namespace MarketBackend.Services.Interfaces
         public Response UpdateProductDiscount(int productId, double discount);
         public Response RemoveStaffMember(int storeId, int activeId, Role role, int toRemoveId);
         public Response AddStaffMember(int storeId, int activeId, Role role, int toAddId);
-        public void AddManger(int activeId, int storeId, int toAddId);
-        public void RemoveManger(int activeId, int storeId, int toRemoveId);
-        public void AddOwner(int activeId, int storeId, int toAddId);
-        public void RemoveOwner(int activeId, int storeId, int toRemoveId);
-        public void GetOwners();
-        public void GetMangers();
-        public void GetFounder();
+        public Response AddManger(int activeId, int storeId, int toAddId);
+        public Response RemoveManger(int activeId, int storeId, int toRemoveId);
+        public Response AddOwner(int activeId, int storeId, int toAddId);
+        public Response RemoveOwner(int activeId, int storeId, int toRemoveId);
+        public Response<List<Member>> GetOwners(int storeId);
+        public Response<List<Member>> GetMangers(int storeId);
+        public Response<Member> GetFounder(int storeId);
         public Response UpdateProductQuantity(int productId, int quantity);
         public Response UpdateProductPrice(int productId, double price);
         public Response CloseStore(int storeId);
         public Response OpenStore(int storeId);
-        public void IsAvailable(int productId);
-        public void RemovePermission(int activeId, int storeId, int toRemoveId);
-        public void AddPermission(int activeId, int storeId, int toAddId);
-        public void EditPurchasePolicy(int storeId);
-        public Response<Product> SearchByKeywords(string keywords);
-        public Response<Product> SearchByName(string name);
-        public Response<Product> SearchByCategory(string category);
+        public Response<bool> IsAvailable(int productId);
+        public Response RemovePermission(int activeId, int storeId, int toRemoveId);
+        public Response AddPermission(int activeId, int storeId, int toAddId);
+        public Response EditPurchasePolicy(int storeId);
+        public Response<List<Product>> SearchByKeywords(string keywords);
+        public Response<List<Product>> SearchByName(string name);
+        public Response<List<Product>> SearchByCategory(string category);
         public Response<string> GetInfo(int storeId);
+        public Response<string> GetProductInfo(int productId);
 
     }
 }

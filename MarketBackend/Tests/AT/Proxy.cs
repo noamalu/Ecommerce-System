@@ -85,8 +85,8 @@ namespace MarketBackend.Tests.AT
             return !res.ErrorOccured;
         }
 
-        public bool AddToCart(int clientId, int productId){
-            Response res = clientService.AddToCart(clientId, productId);
+        public bool AddToCart(int clientId, int storeId, int productId, int quantity){
+            Response res = clientService.AddToCart(clientId, storeId, productId, quantity);
             return !res.ErrorOccured;
         }
 

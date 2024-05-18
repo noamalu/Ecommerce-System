@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using MarketBackend.Domain.Models;
@@ -28,27 +29,29 @@ namespace MarketBackend.Domain.Market_Client
         List<Purchase> GetPurchaseHistoryByStore(int id);
         void AddProduct(int productId, string productName, int storeId, string category, double price, int quantity, double discount);
         void RemoveProduct(int productId);
-        void UpdateProduct(int productId);
-        void RemoveStaffMember(int activeId, int storeId, int toRemoveId);
+        void UpdateProductDiscount(int productId, double discount);
+        void RemoveStaffMember(int storeId, int activeId, Role role, int toRemoveId);
         void AddManger(int activeId, int storeId, int toAddId);
         void RemoveManger(int activeId, int storeId, int toRemoveId);
         void AddOwner(int activeId, int storeId, int toAddId);
         void RemoveOwner(int activeId, int storeId, int toRemoveId);
-        void GetOwners();
-        void GetMangers();
-        void GetFounder();
+        List<Member> GetOwners(int storeId);
+        List<Member> GetMangers(int storeId);
+        Member GetFounder(int storeId);
         void UpdateProductQuantity(int productId, int quantity);
-        void UpdateProductPrice(int productId, int price);
+        void UpdateProductPrice(int productId, double price);
         void CloseStore(int storeId);
         void OpenStore(int storeId);
-        void IsAvailable(int productId);
+        bool IsAvailable(int productId);
         void RemovePermission(int activeId, int storeId, int toRemoveId);
         void AddPermission(int activeId, int storeId, int toAddId);
         void EditPurchasePolicy(int storeId);
-        List<Product> SearchByKeyWords();
-        List<Product> SearchByName();
-        List<Product> SearchByCategory();
+        List<Product> SearchByKeyWords(string keywords);
+        List<Product> SearchByName(string name);
+        List<Product> SearchByCategory(string category);
         bool HasPermission();
-        string GetProductInfo();        
+        string GetProductInfo(int productId);
+        public void AddStaffMember(int storeId, int activeId, Role role, int toAddId);   
+        public string GetInfo(int storeId);     
     }
 }

@@ -82,23 +82,27 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void GetFounder()
+        public Member GetFounder(int storeId)
         {
             throw new NotImplementedException();
         }
 
-        public void GetMangers()
+        public List<Member> GetMangers(int storeId)
         {
             throw new NotImplementedException();
         }
 
-        public void GetOwners()
+        public List<Member> GetOwners(int storeId)
         {
             throw new NotImplementedException();
         }
 
-        public string GetProductInfo()
+        public string GetProductInfo(int productId)
         {
+            throw new NotImplementedException();
+        }
+
+        public string GetInfo(int storeId){
             throw new NotImplementedException();
         }
 
@@ -117,7 +121,7 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void IsAvailable(int productId)
+        public bool IsAvailable(int productId)
         {
             throw new NotImplementedException();
         }
@@ -187,7 +191,7 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void RemoveStaffMember(int activeId, int storeId, int toRemoveId)
+        public void RemoveStaffMember(int storeId, int activeId, Role role, int toRemoveId)
         {
             throw new NotImplementedException();
         }
@@ -202,27 +206,27 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public List<Product> SearchByCategory()
+        public List<Product> SearchByCategory(string category)
         {
             throw new NotImplementedException();
         }
 
-        public List<Product> SearchByKeyWords()
+        public List<Product> SearchByKeyWords(string keywords)
         {
             throw new NotImplementedException();
         }
 
-        public List<Product> SearchByName()
+        public List<Product> SearchByName(string name)
         {
             throw new NotImplementedException();
         }
 
-        public void UpdateProduct(int productId)
+        public void UpdateProductDiscount(int productId, double discount)
         {
             throw new NotImplementedException();
         }
 
-        public void UpdateProductPrice(int productId, int price)
+        public void UpdateProductPrice(int productId, double price)
         {
             throw new NotImplementedException();
         }
@@ -234,6 +238,10 @@ namespace MarketBackend.Domain.Market_Client
 
         public ShoppingCart ViewCart(int id)
         {
+            throw new NotImplementedException();
+        }
+
+        public void AddStaffMember(int storeId, int activeId, Role role, int toAddId){
             throw new NotImplementedException();
         }
     }
