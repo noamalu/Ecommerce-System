@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Identity;
 
 namespace MarketBackend.Domain.Security
 {
-    public class SecurityManager : ISecurityManager
+    public class SecurityManager : ISecurityManager, ITokenManager
     {
         PasswordHasher<object> passwordHasher;
+        private ITokenManager tokenManager;
         public SecurityManager() { 
             passwordHasher = new PasswordHasher<object>();
+            tokenManager = new TokenManager();
         }
         public string EncryptPassword(string password)
         {
@@ -22,6 +24,15 @@ namespace MarketBackend.Domain.Security
         {
             var result = passwordHasher.VerifyHashedPassword(null, rawPassword, hashedPassword);
             return result == PasswordVerificationResult.Success;
+        }
+
+        public string GenerateToken(int userId)
+        {
+            return tokenManager.GenerateToken(userId);
+        }
+        public bool ValidateToken(string token)
+        {
+            return tokenManager.ValidateToken(token);
         }
     }
 }
