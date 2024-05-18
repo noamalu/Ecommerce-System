@@ -20,17 +20,19 @@ namespace MarketBackend.Domain.Payment
             receiptID = 1;
         }
 
+        public PaymentSystemProxy(){}
+
         public bool Connect()
         {
-           if (realPaymentSystem == null)
+           if (_realPaymentSystem == null)
                 return true;
            else
-                return realPaymentSystem.Connect();
+                return _realPaymentSystem.Connect();
         }
 
         public int Pay(PaymentDetails cardDetails, double totalAmount)
         {
-            if (realPaymentSystem == null)
+            if (_realPaymentSystem == null)
             {
                 if (succeedPayment)
                     return fakeTransactionId++;
@@ -39,20 +41,20 @@ namespace MarketBackend.Domain.Payment
             }
             else
             {
-                return realPaymentSystem.Pay(cardDetails, totalAmount);
+                return _realPaymentSystem.Pay(cardDetails, totalAmount);
             }
 
         }
 
          public int CancelPayment(int paymentID)
         {
-            if (realPaymentSystem == null)
+            if (_realPaymentSystem == null)
                 return 1;
             
             else
             {
-                if (realPaymentSystem.Connect())
-                    return realPaymentSystem.CancelPayment(paymentID);
+                if (_realPaymentSystem.Connect())
+                    return _realPaymentSystem.CancelPayment(paymentID);
             }
             return -1;
 

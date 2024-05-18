@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using MarketBackend.Domain.Models;
@@ -8,11 +9,20 @@ namespace MarketBackend.DAL
 {
     public class BasketRepositoryRAM : IBasketRepository
     {
-        private readonly Dictionary<int, Basket> baskets;
+        private readonly ConcurrentDictionary<int, Basket> baskets;
 
-        public BasketRepositoryRAM()
+        private static BasketRepositoryRAM _basketRepository = null;
+        private object Lock;
+
+        private BasketRepositoryRAM()
         {
-            baskets = new Dictionary<int, Basket>();
+            baskets = new ConcurrentDictionary<int, Basket>();
+            Lock = new object();
+        }
+        public static BasketRepositoryRAM GetInstance()
+        {
+            _basketRepository ??= new BasketRepositoryRAM();
+            return _basketRepository;
         }
 
         public void Add(Basket entity)
@@ -21,7 +31,7 @@ namespace MarketBackend.DAL
                 throw new ArgumentException($"Basket with ID {entity._basketId} already exists.");
 
             }
-            baskets.Add(entity._basketId, entity);
+            baskets.TryAdd(entity._basketId, entity);
         }
 
         public void Delete(Basket entity)
@@ -30,7 +40,7 @@ namespace MarketBackend.DAL
                 throw new KeyNotFoundException($"Basket with ID {entity._basketId} does not exist.");
             }
 
-            baskets.Remove(entity._basketId);
+            baskets.TryRemove(new KeyValuePair<int, Basket>(entity._basketId, entity));
         }
 
         public IEnumerable<Basket> getAll()
