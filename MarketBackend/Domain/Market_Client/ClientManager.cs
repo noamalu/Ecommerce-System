@@ -18,7 +18,7 @@ namespace MarketBackend.Domain.Market_Client
         private static ClientManager Manager = null;
         private static ConcurrentDictionary<int, Member> MemberxClientId {get; set;}
         private static ConcurrentDictionary<int, Guest> ActiveGuests {get; set;}        
-        private readonly ClientRepositoryRAM _clientRepository;
+        private readonly IClientRepository _clientRepository;
         private readonly SecurityManager _security;
         private int UserCounter {get; set;}
         private object _lock = new object();

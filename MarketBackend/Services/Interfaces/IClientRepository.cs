@@ -8,6 +8,7 @@ namespace MarketBackend.Services.Interfaces
 {
     public interface IClientRepository : IRepository<Member>
     {
-        
+        Member GetByUserName(string userName);
+        bool ContainsUserName(string userName);
     }
 }
