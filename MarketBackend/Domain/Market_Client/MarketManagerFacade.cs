@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MarketBackend.Domain.Models;
 using MarketBackend.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -94,12 +95,12 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void GetPurchaseHistoryByClient(int id)
+        public List<Purchase> GetPurchaseHistoryByClient(int id)
         {
             throw new NotImplementedException();
         }
 
-        public void GetPurchaseHistoryByStore(int id)
+        public List<Purchase> GetPurchaseHistoryByStore(int id)
         {
             throw new NotImplementedException();
         }
@@ -134,7 +135,7 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void Register(string username, string password)
+        public void Register(string username, string password, string email, int age)
         {
             throw new NotImplementedException();
         }
@@ -169,12 +170,12 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void ResToStoreManageReq()
+        public bool ResToStoreManageReq(int id)
         {
             throw new NotImplementedException();
         }
 
-        public void ResToStoreOwnershipReq()
+        public bool ResToStoreOwnershipReq(int id)
         {
             throw new NotImplementedException();
         }
@@ -209,7 +210,7 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void ViewCart(int id)
+        public ShoppingCart ViewCart(int id)
         {
             throw new NotImplementedException();
         }
