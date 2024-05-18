@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Text;
 
@@ -9,8 +5,8 @@ namespace MarketBackend.Domain.Market_Client
 {
     public class Product
     {
-        private int _id;
-        private int _shopId;
+        private int _productid;
+        private int _storeId;
         private string _name;
         private double _price;
         private int _quantity;
@@ -18,10 +14,12 @@ namespace MarketBackend.Domain.Market_Client
         private ConcurrentBag<string> _keywords;
         private string _description;
         private ISellMethod _sellMethod;
+        private double _productRating;
+        private bool _ageLimit;
 
 
-        public int Id { get => _id; }
-        public int ShopId { get => _shopId; }
+        public int ProductId { get => _productid; }
+        public int StoreId { get => _storeId; }
         public string Name { get => _name; set => _name = value; }
         public double Price { get => _price; set => _price = value; }
         public int Quantity { get => _quantity; set => _quantity = value; }
@@ -29,12 +27,14 @@ namespace MarketBackend.Domain.Market_Client
         public string Description { get => _description; set => _description = value; }
         public ConcurrentBag<string> Keywords { get => _keywords; set => _keywords = value; }
         public ISellMethod SellMethod { get => _sellMethod; set => _sellMethod = value; }
+        public double ProductRating { get => _productRating; set => _productRating = value; }
+        public bool AgeLimit { get => _ageLimit; }
 
 
-        public Product(int id, int shopId, string name,string sellMethod, string description, double price, string category, int quantity)
+        public Product(int id, int shopId, string name,string sellMethod, string description, double price, string category, int quantity,bool ageLimit)
         {
-            _id = id;
-            _shopId = shopId;
+            _productid = id;
+            _storeId = shopId;
             _name = name;
             _description = description;
             _price = price;
@@ -42,6 +42,8 @@ namespace MarketBackend.Domain.Market_Client
             _category = category;
             _keywords = new ConcurrentBag<string>();
             _sellMethod = SellMethodFactory.createSellMethod(sellMethod);
+            _productRating = 0;
+            _ageLimit = ageLimit;
         }
 
 
@@ -67,8 +69,8 @@ namespace MarketBackend.Domain.Market_Client
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("---------------------------");
-            sb.AppendLine(string.Format("Product ID: %d", _id));
-            sb.AppendLine(string.Format("Shop ID: %d", _shopId));
+            sb.AppendLine(string.Format("Product ID: %d", _productid));
+            sb.AppendLine(string.Format("Shop ID: %d", _storeId));
             sb.AppendLine(string.Format("Product Description: %s", _description));
             sb.AppendLine(string.Format("Quantity in stock: %d", _quantity));
             sb.AppendLine(string.Format("Catagroy: %s", _category.ToString()));
@@ -103,6 +105,7 @@ namespace MarketBackend.Domain.Market_Client
             }
             _quantity = newQuantity;
         }
+
     }
     
 }
