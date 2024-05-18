@@ -135,21 +135,6 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response PurchaseCart(int id, PaymentDetails paymentDetails)
-        {
-             try
-            {
-                marketManagerFacade.PurchaseCart(id, paymentDetails);
-                //log
-                return new Response();
-            }
-            catch (Exception e)
-            {
-                //log
-                return new Response(e.Message);
-            }
-        }
-
         public Response Register(int id, string username, string password, string email, int age)
         {
              try
@@ -165,11 +150,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response RemoveFromCart(int clientId, int productId)
+        public Response RemoveFromCart(int clientId, int productId, int basketId, int quantity)
         {
             try
             {
-                marketManagerFacade.RemoveFromCart(clientId, productId);
+                marketManagerFacade.RemoveFromCart(clientId, productId, basketId, quantity);
                 //log
                 return new Response();
             }

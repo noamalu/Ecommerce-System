@@ -8,86 +8,75 @@ using MarketBackend.Domain.Models;
 
 namespace MarketBackend.Domain.Market_Client
 {
-    public class Client
+    public abstract class Client
     {
-        private int _clientID;
-        private string _userName;
-        private string _password;
-        private MailAddress _email;
-        public bool loggedIn;
-        private ShoppingCart shoppingCart;
+        public int Id  {get; set;}
+        public bool LoggedIn {get; set;} 
+        public ShoppingCart Cart {get; set;}
+        public bool IsAbove18 {get; set;}
 
         public Client(int clientId){
-            _clientID = clientId;
+            Id = clientId;
+            Cart = new ShoppingCart(Id);
+            IsAbove18 = false;
         }
 
-        public void Register(string userName, string password, string email){
-            try{
-                ValidateEmail(email);
-                _userName = userName;
-                // hash the password in Security
-                _password = password;
-            }
-            catch (ArgumentException){
-                throw;
-            }
-        }
+        // public void Register(string userName, string password, string email){
+        //     try{
+        //         ValidateEmail(email);
+        //         UserName = userName;
+        //         // hash the password in Security
+        //         Password = password;
+        //     }
+        //     catch (ArgumentException){
+        //         throw;
+        //     }
+        // }
 
-        public void LogIn(string userName, string password){
-            if (loggedIn){
-                throw new AggregateException("User is already logged in");
-            }
-            // hash the password
-            if (_userName.Equals(userName) && _password.Equals(password)){
-                loggedIn = true;
-            }
-        }
+        // public void LogIn(string userName, string password){
+        //     if (LoggedIn){
+        //         throw new AggregateException("User is already logged in");
+        //     }
+        //     // hash the password
+        //     if (UserName.Equals(userName) && Password.Equals(password)){
+        //         LoggedIn = true;
+        //     }
+        // }
 
-        public void LogOut(){
-            if (!loggedIn){
-                throw new AggregateException("User is already logged out");
-            }
-            loggedIn = false;
-        }
+        // public void LogOut(){
+        //     if (!LoggedIn){
+        //         throw new AggregateException("User is already logged out");
+        //     }
+        //     LoggedIn = false;
+        // }
 
         // public ? ViewCart(){
 
         // }
 
-        public void addToCart(int basket, int productId, int quantity){
-            shoppingCart.addToCart(basket, productId, quantity);
+        public virtual void AddToCart(int basket, int productId, int quantity){
+            Cart.addToCart(basket, productId, quantity);
             throw new NotImplementedException();
         }
 
-        public void RemoveFromCart(int basket, int productId, int quantity){
-            shoppingCart.removeFromCart(basket, productId, quantity);
+        public virtual void RemoveFromCart(int basket, int productId, int quantity){
+            Cart.removeFromCart(basket, productId, quantity);
         }
 
         public void PurchaseCart(){
             throw new NotImplementedException();
         }
 
-        public List<string> GetHistory(){
+        public virtual List<string> GetHistory(){
             throw new NotImplementedException();
         }
 
-        public bool ResToStoreManagerReq(){
+        public virtual bool ResToStoreManagerReq(){
             return true;
         }
 
-        public bool ResToStoreOwnershipReq(){
+        public virtual bool ResToStoreOwnershipReq(){
             return true;
-        }
-
-        public void ValidateEmail(string email){
-            try{
-                MailAddress mailAddress = new MailAddress(email);
-                _email = mailAddress;
-            }
-            catch (FormatException){
-                throw new ArgumentException("Email address is not valid.");
-            }
-            
         }
 
     }

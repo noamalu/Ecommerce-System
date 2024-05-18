@@ -13,12 +13,11 @@ namespace MarketBackend.Services.Interfaces
     {
         public Response Register(int id, string username, string password, string email, int age);
         public Response EnterAsGuest(int id);
-        public Response PurchaseCart(int id, PaymentDetails paymentDetails);
         public Response CreateStore(int id);
         public Response<bool> ResToStoreManageReq(int id);
         public Response<bool> ResToStoreOwnershipReq(int id); //respond to store ownership request
         public Response LogoutClient(int id);
-        public Response RemoveFromCart(int clientId, int productId);
+        public Response RemoveFromCart(int clientId, int productId, int basketId, int quantity);
         public Response<ShoppingCart> ViewCart(int id);
         public Response AddToCart(int clientId, int storeId, int productId, int quantity);
         public Response LoginClient(int clientId, string username, string password);
