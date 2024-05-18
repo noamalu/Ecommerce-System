@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MarketBackend.Domain.Models;
+using MarketBackend.Domain.Payment;
 
 namespace MarketBackend.Domain.Market_Client
 {
@@ -11,7 +12,7 @@ namespace MarketBackend.Domain.Market_Client
     {
         void Register(string username, string password, string email, int age);
         void EnterAsGuest();
-        void PurchaseCart(int id);
+        void PurchaseCart(int id, PaymentDetails paymentDetails);
         void CreateStore(int id);
         bool ResToStoreManageReq(int id);
         bool ResToStoreOwnershipReq(int id); //respond to store ownership request

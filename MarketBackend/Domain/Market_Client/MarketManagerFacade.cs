@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MarketBackend.Domain.Models;
+using MarketBackend.DAL;
+using MarketBackend.Domain.Payment;
 using MarketBackend.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -13,9 +15,14 @@ namespace MarketBackend.Domain.Market_Client
     public class MarketManagerFacade : IMarketManagerFacade
     {
         private readonly IClientRepository _clientRepository;
+        private readonly IStoreRepository _storeRepository;
+        private readonly IPaymentSystemFacade _paymentSystem;
+
         private readonly ILogger<MarketManagerFacade> _logger;
-        public MarketManagerFacade(ILogger<MarketManagerFacade> logger, IClientRepository clientRepository){
-            _clientRepository = clientRepository;
+        public MarketManagerFacade(ILogger<MarketManagerFacade> logger){
+            _storeRepository = StoreRepositoryRAM.GetInstance();
+            _clientRepository = ClientRepositoryRAM.GetInstance();
+            _paymentSystem = new PaymentSystemProxy();
             _logger = logger;
         }
         public void AddManger(int activeId, int storeId, int toAddId)
@@ -130,9 +137,24 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void PurchaseCart(int id)
+        public void PurchaseCart(int id, PaymentDetails paymentDetails) //userId
         {
-            throw new NotImplementedException();
+            Member client = _clientRepository.GetById(id);
+            var baskets = client.Cart.GetBaskets();
+            var stores = new List<Store>();
+            foreach(var basket in baskets){
+                var store = _storeRepository.GetById(basket.Key);
+                stores.Add(store);
+                if(!store.checkBasketInSupply(basket.Value)) throw new Exception("unavailable.");                
+            }
+            foreach(var store in stores){
+                var totalPrice = store.CalculateBasketPrice(baskets[store.StoreId]);
+                if(_paymentSystem.Pay(paymentDetails, totalPrice) > 0) 
+                    store.PurchaseBasket(id, baskets[store.StoreId]);
+                else 
+                    throw new Exception("payment failed.");
+            }
+
         }
 
         public void Register(string username, string password, string email, int age)
