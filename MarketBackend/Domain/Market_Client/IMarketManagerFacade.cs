@@ -3,27 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MarketBackend.Domain.Models;
 
 namespace MarketBackend.Domain.Market_Client
 {
     public interface IMarketManagerFacade
     {
-        void Register(string username, string password);
+        void Register(string username, string password, string email, int age);
         void EnterAsGuest();
         void PurchaseCart(int id);
         void CreateStore(int id);
-        void ResToStoreManageReq();
-        void ResToStoreOwnershipReq(); //respond to store ownership request
+        bool ResToStoreManageReq(int id);
+        bool ResToStoreOwnershipReq(int id); //respond to store ownership request
         void LogoutClient(int id);
         void RemoveFromCart(int clientId, int productId);
-        void ViewCart(int id);
+        ShoppingCart ViewCart(int id);
         void AddToCart(int clientId, int storeId, int productId, int quantity);
 
         void LoginClient(string username, string password);
         void ExitGuest();
         void BrowseGuest();
-        void GetPurchaseHistoryByClient(int id);
-        void GetPurchaseHistoryByStore(int id);
+        List<Purchase> GetPurchaseHistoryByClient(int id);
+        List<Purchase> GetPurchaseHistoryByStore(int id);
         void AddProduct(int productId, string productName, int storeId, string category, double price, int quantity, double discount);
         void RemoveProduct(int productId);
         void UpdateProduct(int productId);
