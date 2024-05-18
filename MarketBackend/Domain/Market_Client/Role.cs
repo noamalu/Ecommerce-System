@@ -9,18 +9,19 @@ namespace MarketBackend.Domain.Market_Client
 {
     public class Role
     {
-        private RoleType role;
+        public RoleType role { get; }
+        public int storeId { get; }
+        public int memberId { get; }
         public Member appointer;
         public List<Member> appointees;
 
-        public Role(RoleType role, Member appointer) { 
+        public Role(RoleType role, Member appointer, int storeId, int memberId) { 
             this.role = role;
             this.appointer = appointer;
+            this.storeId = storeId;
+            this.memberId = memberId;
             appointees = new List<Member>();
         }
-
-        public RoleType getRole() { return role; }
-        public void setRole(RoleType newRole) { role = newRole; }
 
         public Member getAppointer() { return appointer; }
 
@@ -59,5 +60,9 @@ namespace MarketBackend.Domain.Market_Client
             return role.getPermissions();
         }
 
+        public string getRoleType()
+        {
+            return role.roleName;
+        }
     }
 }
