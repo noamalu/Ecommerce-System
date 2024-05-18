@@ -170,7 +170,8 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge));
            Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
            Assert.IsTrue(proxy.AddToCart(userId2, shopID, productID1, quantity1));
-           Assert.IsTrue(proxy.PurchaseCart(userId2));
+           PaymentDetails paymentDetails = new PaymentDetails("5326888878675678", "2027", "10", "101", "3190876789", "Hadas");
+           Assert.IsTrue(proxy.PurchaseCart(userId2, paymentDetails));
            Assert.IsTrue(proxy.GetPurchaseHistory(userId));
         }
 

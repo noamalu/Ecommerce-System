@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Models;
+using MarketBackend.Domain.Payment;
 using MarketBackend.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -134,11 +135,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response PurchaseCart(int id)
+        public Response PurchaseCart(int id, PaymentDetails paymentDetails)
         {
              try
             {
-                marketManagerFacade.PurchaseCart(id);
+                marketManagerFacade.PurchaseCart(id, paymentDetails);
                 //log
                 return new Response();
             }
