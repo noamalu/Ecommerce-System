@@ -41,7 +41,7 @@ namespace MarketBackend.Domain.Shipping
             }
             return false;
         }
-        public int OrderShippment(ShippingDeatails details)
+        public int OrderShippment(ShippingDetails details)
         {
           if (_url == null)
                 throw new NotImplementedException();
@@ -60,7 +60,7 @@ namespace MarketBackend.Domain.Shipping
         
                 };
 
-                HttpResponseMessage response = client.PostAsync(url, new FormUrlEncodedContent(parameters)).Result;
+                HttpResponseMessage response = client.PostAsync(_url, new FormUrlEncodedContent(parameters)).Result;
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -89,7 +89,7 @@ namespace MarketBackend.Domain.Shipping
                     {"transaction_ID", orderID.ToString()}
                 };
 
-                HttpResponseMessage response = client.PostAsync(url, new FormUrlEncodedContent(parameters)).Result;
+                HttpResponseMessage response = client.PostAsync(_url, new FormUrlEncodedContent(parameters)).Result;
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -105,8 +105,11 @@ namespace MarketBackend.Domain.Shipping
 
         }
 
-
+        public void Disconnect()
+        {
+            throw new NotImplementedException();
         }
+    }
     }
 
      

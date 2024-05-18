@@ -23,13 +23,9 @@ namespace UnitTests
             var mockShippingSystemFacade = new Mock<IShippingSystemFacade>();
             shippingSystem = new ShippingSystemProxy(mockShippingSystemFacade.Object);
             shippingDetails = new ShippingDetails(name, city, address, country, zipcode);
+            shippingSystem.Connect();
         }
 
-        [TestCleanup]
-        public void CleanUp()
-        {
-            //TODO
-        }
         [TestMethod]
         public void TestRequestShipmentSuccess()
         {
@@ -38,31 +34,20 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestCancelSupplySuccess()
+        public void TestCancelShipmentSuccess()
         {
             int transactionId = shippingSystem.OrderShippment(shippingDetails);
             Assert.AreEqual(1, shippingSystem.CancelShippment(transactionId));
         }
 
-        // [TestMethod]
-        // public void TestShippingContactFailureNoContact()
-        // {
-        //     ShippingSystem.LoseContact = true;
-        //     Assert.IsFalse(ShippingSystem.Handshake());
-        //     Assert.AreEqual(-1, ShippingSystem.Pay("12345678", "04", "2021", "me", "777", "123123123"));
-        //     Assert.AreEqual(-1, ShippingSystem.CancelPay(123));
-        //     ShippingSystem.LoseContact = false;
-        // }
-
-        // [TestMethod]
-        // public void TestSupplyContactFailureNoContact()
-        // {
-        //     SupplySystem.LoseContact = true;
-        //     Assert.IsFalse(supplySystem.Handshake());
-        //     Assert.AreEqual(-1, supplySystem.Supply("Michael", "1725 Slough Avenue", "Scranton", "PA, United States", "12345"));
-        //     Assert.AreEqual(-1, supplySystem.CancelSupply(123));
-        //     SupplySystem.LoseContact = false;
-        // }
+        [TestMethod]
+        public void TestShippingWithoutConnection()
+        {
+            shippingSystem.Disconnect();
+            Assert.AreEqual(-1, shippingSystem.OrderShippment(shippingDetails));
+            Assert.AreEqual(-1, shippingSystem.CancelShippment(123));
+            
+        }
     
     }
 

@@ -24,25 +24,13 @@ namespace UnitTests
         public void SetUp()
         {
             var mockPaymentSystemFacade = new Mock<IPaymentSystemFacade>();
-            mockPaymentSystemFacade.Setup(x => x.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(12345);
             paymentSystem = new PaymentSystemProxy(mockPaymentSystemFacade.Object);
             paymentDetails = new PaymentDetails(cardNumber, exprYear, exprMonth, cvv, cardID, name);
-        }
-
-        [TestCleanup]
-        public void CleanUp()
-        {
-            //TODO
+            paymentSystem.Connect();
         }
 
         [TestMethod]
-        public void Connect()
-        {
-            Assert.IsTrue(paymentSystem.Connect());
-        }
-
-        [TestMethod]
-        public void TestAttemptPurchaseSuccess()
+        public void TestAttemptPaymentSuccess()
         {
             int transactionId = paymentSystem.Pay(paymentDetails, totalAmount);
             Assert.IsTrue(transactionId > 0);
@@ -55,6 +43,13 @@ namespace UnitTests
             Assert.AreEqual(1, paymentSystem.CancelPayment(transactionId));
         }
 
-        
+        [TestMethod]
+        public void TestPaymentWithoutConnection()
+        {
+            paymentSystem.Disconnect();
+            Assert.AreEqual(-1, paymentSystem.Pay(paymentDetails, totalAmount));
+            Assert.AreEqual(-1, paymentSystem.CancelPayment(123));
+            
+        }
     }
 }

@@ -11,52 +11,68 @@ namespace MarketBackend.Domain.Payment
         private readonly IPaymentSystemFacade _realPaymentSystem;
         private int receiptID;
 
-        public static bool succeedPayment = true; 
+        public static bool connected;
         private static int fakeTransactionId = 10000;
 
         public PaymentSystemProxy(IPaymentSystemFacade realPaymentSystem)
         {
             _realPaymentSystem = realPaymentSystem ?? throw new ArgumentNullException(nameof(realPaymentSystem));
             receiptID = 1;
+            connected = false;
         }
 
         public bool Connect()
         {
            if (_realPaymentSystem == null)
+            {
+                connected = true;
                 return true;
+
+            }   
            else
-                return _realPaymentSystem.Connect();
+                if (_realPaymentSystem.Connect())
+                {
+                    connected = true;
+                    return true;
+                }
+                else
+                {
+                    connected = false;
+                    return false;
+                }
         }
 
         public int Pay(PaymentDetails cardDetails, double totalAmount)
         {
-            if (_realPaymentSystem == null)
+            if (connected)
             {
-                if (succeedPayment)
+                if (_realPaymentSystem == null)
                     return fakeTransactionId++;
-                
+                else
+                    return _realPaymentSystem.Pay(cardDetails, totalAmount);
+            }
+            else 
                 return -1;
-            }
-            else
-            {
-                return _realPaymentSystem.Pay(cardDetails, totalAmount);
-            }
 
         }
 
          public int CancelPayment(int paymentID)
         {
-            if (_realPaymentSystem == null)
-                return 1;
-            
-            else
+            if (connected)
             {
-                if (_realPaymentSystem.Connect())
+                if (_realPaymentSystem == null)
+                    return 1;
+                else
                     return _realPaymentSystem.CancelPayment(paymentID);
             }
-            return -1;
-
+            else
+                return -1;
         }
 
+        public void Disconnect() //for testing
+        {
+            connected = false;
+            
+        }
     }
 }
