@@ -1,5 +1,6 @@
 using MarketBackend.Services;
 using MarketBackend.Domain.Market_Client;
+using MarketBackend.Domain.Payment;
 
 namespace MarketBackend.Tests.AT
 {
@@ -95,8 +96,8 @@ namespace MarketBackend.Tests.AT
             return !res.ErrorOccured;
         }
 
-        public bool PurchaseCart(int clientId){
-            Response res = clientService.PurchaseCart(clientId);
+        public bool PurchaseCart(int clientId, PaymentDetails paymentDetails){
+            Response res = clientService.PurchaseCart(clientId, paymentDetails);
             return !res.ErrorOccured;
         }
 

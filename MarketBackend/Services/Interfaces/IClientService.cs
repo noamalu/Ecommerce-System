@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Models;
+using MarketBackend.Domain.Payment;
 
 namespace MarketBackend.Services.Interfaces
 {
@@ -12,7 +13,7 @@ namespace MarketBackend.Services.Interfaces
     {
         public Response Register(int id, string username, string password, string email, int age);
         public Response EnterAsGuest(int id);
-        public Response PurchaseCart(int id);
+        public Response PurchaseCart(int id, PaymentDetails paymentDetails);
         public Response CreateStore(int id);
         public Response<bool> ResToStoreManageReq(int id);
         public Response<bool> ResToStoreOwnershipReq(int id); //respond to store ownership request
