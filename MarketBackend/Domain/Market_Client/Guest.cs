@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MarketBackend.Domain.Market_Client
 {
-    public class Guest : User
+    public class Guest : Client
     {
         public Guest(int id) : base(id)
         {

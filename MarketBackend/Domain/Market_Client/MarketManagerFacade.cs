@@ -14,14 +14,14 @@ namespace MarketBackend.Domain.Market_Client
 {
     public class MarketManagerFacade : IMarketManagerFacade
     {
-        private readonly IClientRepository _clientRepository;
         private readonly IStoreRepository _storeRepository;
+        private readonly ClientManager _clientManager;
         private readonly IPaymentSystemFacade _paymentSystem;
 
         private readonly ILogger<MarketManagerFacade> _logger;
         public MarketManagerFacade(ILogger<MarketManagerFacade> logger){
             _storeRepository = StoreRepositoryRAM.GetInstance();
-            _clientRepository = ClientRepositoryRAM.GetInstance();
+            _clientManager = ClientManager.GetInstance();
             _paymentSystem = new PaymentSystemProxy();
             _logger = logger;
         }
@@ -47,8 +47,8 @@ namespace MarketBackend.Domain.Market_Client
 
         public void AddToCart(int clientId, int storeId, int productId, int quantity)
         {
-            Client client = _clientRepository.GetById(clientId);
-            client.addToCart(storeId ,productId, quantity);
+            ClientManager.CheckClientId(clientId);
+            _clientManager.AddToCart(clientId, storeId, productId, quantity);
             _logger.LogInformation($"Product id={productId} were added to client id={clientId} cart, to storeId={storeId} basket.!");
         }
 
@@ -141,9 +141,10 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void PurchaseCart(int id, PaymentDetails paymentDetails) //userId
+        public void PurchaseCart(int id, PaymentDetails paymentDetails) //clientId
         {
-            Member client = _clientRepository.GetById(id);
+            ClientManager.CheckClientId(id);
+            var client = _clientManager.GetClientById(id);
             var baskets = client.Cart.GetBaskets();
             var stores = new List<Store>();
             foreach(var basket in baskets){
@@ -163,12 +164,12 @@ namespace MarketBackend.Domain.Market_Client
 
         public void Register(string username, string password, string email, int age)
         {
-            throw new NotImplementedException();
+            _clientManager.Register(username, password, email, age);
         }
 
-        public void RemoveFromCart(int clientId, int productId)
+        public void RemoveFromCart(int clientId, int productId, int basketId, int quantity)
         {
-            throw new NotImplementedException();
+            _clientManager.RemoveFromCart(clientId, productId, basketId, quantity);
         }
 
         public void RemoveManger(int activeId, int storeId, int toRemoveId)
@@ -238,7 +239,8 @@ namespace MarketBackend.Domain.Market_Client
 
         public ShoppingCart ViewCart(int id)
         {
-            throw new NotImplementedException();
+            ClientManager.CheckClientId(id);
+            return _clientManager.ViewCart(id);
         }
 
         public void AddStaffMember(int storeId, int activeId, Role role, int toAddId){

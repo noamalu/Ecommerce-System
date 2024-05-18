@@ -18,7 +18,7 @@ namespace MarketBackend.Domain.Market_Client
         bool ResToStoreManageReq(int id);
         bool ResToStoreOwnershipReq(int id); //respond to store ownership request
         void LogoutClient(int id);
-        void RemoveFromCart(int clientId, int productId);
+        void RemoveFromCart(int clientId, int productId, int basketId, int quantity);
         ShoppingCart ViewCart(int id);
         void AddToCart(int clientId, int storeId, int productId, int quantity);
 
