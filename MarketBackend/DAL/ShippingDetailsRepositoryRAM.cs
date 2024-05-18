@@ -8,29 +8,32 @@ namespace MarketBackend.DAL
 {
     public class ShipingDetailsRepositoryRAM //: IShippingDetailsRepository TODO: need to think about because IShippingDetailsRepository.getByID(..) needts to be implmemted but cant 
     {
-        private readonly Dictionary<string, ShippingDetails> shippedPurchases;
+        // Using a Tuple<string, string> as the composite key (Address, Name)
+        private readonly Dictionary<(string Address, string Name), ShippingDetails> shippedPurchases;
 
-         public ShipingDetailsRepositoryRAM()
+        public ShipingDetailsRepositoryRAM()
         {
-            shippedPurchases = new Dictionary<string, ShippingDetails>();
+            shippedPurchases = new Dictionary<(string, string), ShippingDetails>();
         }
 
         public void Add(ShippingDetails entity)
         {
-            if(shippedPurchases.ContainsKey(entity.Address)){
-                throw new ArgumentException($"Shipping Details with the address: {entity.Address} already exists.");
-
+            var key = (entity.Address, entity.Name);
+            if (shippedPurchases.ContainsKey(key))
+            {
+                throw new ArgumentException($"Shipping Details with the address: {entity.Address} and name: {entity.Name} already exists.");
             }
-            shippedPurchases.Add(entity.Address, entity);
+            shippedPurchases.Add(key, entity);
         }
 
         public void Delete(ShippingDetails entity)
         {
-            if (!shippedPurchases.ContainsKey(entity.Address)){
-                throw new KeyNotFoundException($"Shipping Details with the address: {entity.Address} does not exist.");
+            var key = (entity.Address, entity.Name);
+            if (!shippedPurchases.ContainsKey(key))
+            {
+                throw new KeyNotFoundException($"Shipping Details with the address: {entity.Address} and name: {entity.Name} does not exist.");
             }
-
-            shippedPurchases.Remove(entity.Address);
+            shippedPurchases.Remove(key);
         }
 
         public IEnumerable<ShippingDetails> getAll()
@@ -38,29 +41,27 @@ namespace MarketBackend.DAL
             return shippedPurchases.Values.ToList();
         }
 
-        public ShippingDetails GetById(string address)
+        public ShippingDetails GetById(string address, string name)
         {
-            bool exist = shippedPurchases.ContainsKey(address);
-            if (exist)
+            var key = (address, name);
+            if (shippedPurchases.TryGetValue(key, out var shippingDetails))
             {
-                return shippedPurchases[address];
+                return shippingDetails;
             }
             return null;
-
         }
-
 
         public void Update(ShippingDetails entity)
         {
-            if (shippedPurchases.ContainsKey(entity.Address))
+            var key = (entity.Address, entity.Name);
+            if (shippedPurchases.ContainsKey(key))
             {
-                shippedPurchases[entity.Address] = entity;
+                shippedPurchases[key] = entity;
             }
             else
             {
-                throw new KeyNotFoundException($"Shipping Details with the address: {entity.Address} not found.");
+                throw new KeyNotFoundException($"Shipping Details with the address: {entity.Address} and name: {entity.Name} not found.");
             }
         }
     }
 }
-
