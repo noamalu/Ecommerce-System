@@ -5,17 +5,17 @@ namespace MarketBackend.Domain.Market_Client
 {
     public class Product
     {
-        private int _productid;
-        private int _storeId;
-        private string _name;
-        private double _price;
-        private int _quantity;
-        private string _category;
-        private ConcurrentBag<string> _keywords;
-        private string _description;
-        private ISellMethod _sellMethod;
-        private double _productRating;
-        private bool _ageLimit;
+        public int _productid {get; set;}
+        public int _storeId {get; set;}
+        public string _name {get; set;}
+        public double _price {get; set;}
+        public int _quantity {get; set;}
+        public string _category {get; set;}
+        public ConcurrentBag<string> _keywords {get; set;}
+        public string _description {get; set;}
+        public ISellMethod _sellMethod {get; set;}
+        public double _productRating {get; set;}
+        public bool _ageLimit {get; set;}
 
 
         public int ProductId { get => _productid; }

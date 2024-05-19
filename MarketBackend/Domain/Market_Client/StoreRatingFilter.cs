@@ -26,7 +26,7 @@ namespace MarketBackend.Domain.Market_Client
         private List<Store> FindRelevantstores()
         {
             List<Store> stores = StoreRepositoryRAM.GetInstance().getAll().ToList();
-            return stores.FindAll((store) => store.Rating >= _lowRate && store.Rating <= _highRate);
+            return stores.FindAll((store) => store._raiting >= _lowRate && store._raiting <= _highRate);
         }
 
     }
