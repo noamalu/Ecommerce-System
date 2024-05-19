@@ -12,7 +12,7 @@ builder.Services.AddTransient<IPasswordHasher<object>, PasswordHasher<object>>()
 
 // Configure logging
 builder.Logging.ClearProviders(); // Clear all default logging providers
-builder.Logging.AddFile("logs/app.log"); // Specify the log file path
+// builder.Logging.AddFile("logs/app.log"); // Specify the log file path
 
 var app = builder.Build();
 
