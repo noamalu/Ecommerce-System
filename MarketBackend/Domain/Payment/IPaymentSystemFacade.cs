@@ -11,5 +11,7 @@ namespace MarketBackend.Domain.Payment
         int CancelPayment(int paymentID);
 
         bool Connect();
+
+        void Disconnect();
     }
 }

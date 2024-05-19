@@ -7,12 +7,12 @@ namespace MarketBackend.Domain.Payment
 {
     public class PaymentDetails
     {
-        String cardNumber;
-        String exprYear;
-        String exprMonth;
-        String cvv;
-        String holderID; 
-        String holderName; 
+        private String cardNumber;
+        private String exprYear;
+        private String exprMonth;
+        private String cvv;
+        private String holderID; 
+        private String holderName; 
 
 
         public PaymentDetails (String cardNumber, String exprYear, String exprMonth, String cvv, String cardId, String name)

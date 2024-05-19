@@ -9,9 +9,10 @@ namespace MarketBackend.Domain.Shipping
     {
          //  TODO : when we will connect the system to real shipping system -> change realShippingtSystem
         private  IShippingSystemFacade? _realShippingtSystem = null;
-        private int orderId;
+        private int orderID;
 
-        public static bool succeedShipping = true;
+        public static bool connected;
+        private static bool succeedShipping = true;
 
         private static int fakeTransactionId = 10000;
 
@@ -19,46 +20,60 @@ namespace MarketBackend.Domain.Shipping
         {
             _realShippingtSystem = realShippingtSystem ?? throw new ArgumentNullException(nameof(realShippingtSystem));
             orderID = 1;
+            connected = false;
         }
 
-        public bool Conect()
+        public bool Connect()
         {
-             if (realShippingtSystem == null)
+            if (_realShippingtSystem == null)
+            {
+                connected = true;
                 return true;
+            }
            else
-                return realShippingtSystem.Connect();
+                if (_realShippingtSystem.Connect())
+                {
+                    connected = true;
+                    return true;
+                }
+                else
+                {
+                    connected = false;
+                    return false;
+                }  
+                
         }
-        }
+        
 
         public int CancelShippment(int orderID)
         {
-            if (realShippingtSystem == null)
-                return 1;
-            
-            else
+            if (connected)
             {
-                if (realShippingtSystem.Connect())
-                    return realShippingtSystem.CancelShippment(orderID);
+                if (_realShippingtSystem == null)
+                    return 1;
+                else
+                    return _realShippingtSystem.CancelShippment(orderID);
             }
             return -1;
-
         }
 
-        public void OrderShippment(ShippingDeatails details)
+        public int OrderShippment(ShippingDetails details)
         {
-           if (realShippingtSystem == null)
-            {
-                if (succeedShipping)
+           if (connected)
+           {
+                if (_realShippingtSystem == null)
                     return fakeTransactionId++;
-                
-                return -1;
+                else
+                    return _realShippingtSystem.OrderShippment(details);
             }
-            else
-            {
-                return realShippingtSystem.OrderShippment(details);
-            }
+            return -1;
+        }
 
+        public void Disconnect () //For testing
+        {
+            connected = false;
         }
     }
+}
 
      

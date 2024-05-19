@@ -26,7 +26,7 @@ namespace MarketBackend.Domain.Payment
 
         public int Pay(PaymentDetails cardDetails, double totalAmount)
         {
-            if (url == null)
+            if (_url == null)
                 throw new NotImplementedException();
 
             using (HttpClient client = _httpClient)
@@ -43,7 +43,7 @@ namespace MarketBackend.Domain.Payment
                     { "id", cardDetails.HolderID }
                 };
 
-                HttpResponseMessage response = client.PostAsync(url, new FormUrlEncodedContent(parameters)).Result;
+                HttpResponseMessage response = client.PostAsync(_url, new FormUrlEncodedContent(parameters)).Result;
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -60,7 +60,7 @@ namespace MarketBackend.Domain.Payment
 
         public int CancelPayment(int paymentID)
         {
-             if (url == null)
+             if (_url == null)
                 throw new NotImplementedException();
 
             try
@@ -72,7 +72,7 @@ namespace MarketBackend.Domain.Payment
                         {"action_type", "cancel_payment"},
                         {"transaction_ID", paymentID.ToString()}
                     };
-                    HttpResponseMessage response = client.PostAsync(url, new FormUrlEncodedContent(parameters)).Result;
+                    HttpResponseMessage response = client.PostAsync(_url, new FormUrlEncodedContent(parameters)).Result;
                     if (response.IsSuccessStatusCode)
                     {
                         string responseBody = response.Content.ReadAsStringAsync().Result;
@@ -94,7 +94,7 @@ namespace MarketBackend.Domain.Payment
 
         public bool Connect()
         {
-            if (url == null)
+            if (_url == null)
                 throw new NotImplementedException();
 
             using (HttpClient client = _httpClient)
@@ -103,7 +103,7 @@ namespace MarketBackend.Domain.Payment
                 {
                     {"action_type", "connect"}
                 };
-                HttpResponseMessage response = client.PostAsync(url, new FormUrlEncodedContent(parameters)).Result;
+                HttpResponseMessage response = client.PostAsync(_url, new FormUrlEncodedContent(parameters)).Result;
             
 
                 if (response.IsSuccessStatusCode)
@@ -114,7 +114,10 @@ namespace MarketBackend.Domain.Payment
             return false;
         }
 
-
+        public void Disconnect()
+        {
+            throw new NotImplementedException();
+        }
     }
 
 
