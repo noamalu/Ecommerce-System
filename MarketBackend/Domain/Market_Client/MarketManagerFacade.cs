@@ -14,17 +14,26 @@ namespace MarketBackend.Domain.Market_Client
 {
     public class MarketManagerFacade : IMarketManagerFacade
     {
+        private static MarketManagerFacade marketManagerFacade = null;
         private readonly IStoreRepository _storeRepository;
         private readonly ClientManager _clientManager;
         private readonly IPaymentSystemFacade _paymentSystem;
 
         private readonly ILogger<MarketManagerFacade> _logger;
-        public MarketManagerFacade(ILogger<MarketManagerFacade> logger){
+        private MarketManagerFacade(){
             _storeRepository = StoreRepositoryRAM.GetInstance();
             _clientManager = ClientManager.GetInstance();
             _paymentSystem = new PaymentSystemProxy();
-            _logger = logger;
+            // _logger = logger;
         }
+
+        public static MarketManagerFacade GetInstance(){
+            if (marketManagerFacade == null){
+                marketManagerFacade = new MarketManagerFacade();
+            }
+            return marketManagerFacade;
+        }
+        
         public void AddManger(int activeId, int storeId, int toAddId)
         {
             throw new NotImplementedException();
@@ -49,7 +58,7 @@ namespace MarketBackend.Domain.Market_Client
         {
             ClientManager.CheckClientId(clientId);
             _clientManager.AddToCart(clientId, storeId, productId, quantity);
-            _logger.LogInformation($"Product id={productId} were added to client id={clientId} cart, to storeId={storeId} basket.!");
+            // _logger.LogInformation($"Product id={productId} were added to client id={clientId} cart, to storeId={storeId} basket.!");
         }
 
         public void BrowseGuest()

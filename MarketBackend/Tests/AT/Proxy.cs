@@ -91,13 +91,13 @@ namespace MarketBackend.Tests.AT
             return !res.ErrorOccured;
         }
 
-        public bool RemoveFromCart(int clientId, int productId){
-            Response res = clientService.RemoveFromCart(clientId, productId);
+        public bool RemoveFromCart(int clientId, int productId, int basketId, int quantity){
+            Response res = clientService.RemoveFromCart(clientId, productId, basketId, quantity);
             return !res.ErrorOccured;
         }
 
         public bool PurchaseCart(int clientId, PaymentDetails paymentDetails){
-            Response res = clientService.PurchaseCart(clientId, paymentDetails);
+            Response res = marketService.PurchaseCart(clientId, paymentDetails);
             return !res.ErrorOccured;
         }
 
