@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Text;
+using MarketBackend.DAL;
 using MarketBackend.Domain.Models;
 
 namespace MarketBackend.Domain.Market_Client
@@ -24,7 +25,7 @@ namespace MarketBackend.Domain.Market_Client
 
         private List<Store> FindRelevantstores()
         {
-            List<Store> stores = StoreRepo.GetInstance().GetAll();
+            List<Store> stores = StoreRepositoryRAM.GetInstance().getAll().ToList();
             return stores.FindAll((store) => store.Rating >= _lowRate && store.Rating <= _highRate);
         }
 
