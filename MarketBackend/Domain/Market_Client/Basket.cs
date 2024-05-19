@@ -8,10 +8,10 @@ namespace MarketBackend.Domain.Models
 {
     public class Basket
     {
-        public int _basketId{get;}
-        public int _storeId{get;}
-        public int _cartId{get;}
-        public Dictionary<int, int> products{get;}
+        public int _basketId{get; set;}
+        public int _storeId{get; set;}
+        public int _cartId{get; set;}
+        public Dictionary<int, int> products{get;} //product id to quantity
         public Basket(int basketId, int storeId){
             _basketId = basketId; 
             _storeId = storeId;
@@ -36,5 +36,19 @@ namespace MarketBackend.Domain.Models
             }
         }
 
+        public static Basket Clone(Basket basketToClone)
+        {
+            var newBasket = new Basket(basketToClone._basketId, basketToClone._storeId)
+            {
+                _cartId = basketToClone._cartId
+            };            
+
+            foreach (var product in basketToClone.products)
+            {
+                newBasket.products[product.Key] = product.Value;
+            }
+
+            return newBasket;
+        }
     }
 }

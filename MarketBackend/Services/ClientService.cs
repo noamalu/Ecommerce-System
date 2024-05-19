@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Models;
+using MarketBackend.Domain.Payment;
 using MarketBackend.Services.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace MarketBackend.Services
 {
@@ -12,8 +15,9 @@ namespace MarketBackend.Services
     {
 
         private static ClientService _clientService = null;
+        private MarketManagerFacade marketManagerFacade;
         private ClientService(){
-            
+            marketManagerFacade = MarketManagerFacade.GetInstance();
         }
 
         public static ClientService GetInstance(){
@@ -26,74 +30,198 @@ namespace MarketBackend.Services
         public void Dispose(){
             _clientService = new ClientService();
         }
-        public Response AddToCart(int clientId, int productId)
+        public Response AddToCart(int clientId, int storeId, int productId, int quantity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                marketManagerFacade.AddToCart(clientId, storeId, productId, quantity);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
-        public void BrowseGuest()
+        public Response CreateStore(int id)
         {
-            throw new NotImplementedException();
-        }
-
-        public void CreateStore(int id)
-        {
-            throw new NotImplementedException();
+            try
+            {
+                marketManagerFacade.CreateStore(id);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
         public Response EnterAsGuest(int id)
         {
-            throw new NotImplementedException();
+             try
+            {
+                marketManagerFacade.EnterAsGuest();
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
-        public void ExitGuest()
+        public Response ExitGuest()
         {
-            throw new NotImplementedException();
+             try
+            {
+                marketManagerFacade.ExitGuest();
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
-        public Response<Purchase> GetPurchaseHistory(int id)
+        public Response<List<Purchase>> GetPurchaseHistory(int id)
         {
-            throw new NotImplementedException();
+             try
+            {
+                List<Purchase> purchases = marketManagerFacade.GetPurchaseHistoryByClient(id);
+                //log
+                return Response<List<Purchase>>.FromValue(purchases);
+            }
+            catch (Exception e)
+            {
+                //log
+                return Response<List<Purchase>>.FromError(e.Message);
+            }
         }
 
         public Response LoginClient(int userId, string username, string password)
         {
-            throw new NotImplementedException();
+             try
+            {
+                marketManagerFacade.LoginClient(username, password);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
         public Response LogoutClient(int id)
         {
-            throw new NotImplementedException();
-        }
-
-        public Response PurchaseCart(int id)
-        {
-            throw new NotImplementedException();
+             try
+            {
+                marketManagerFacade.LogoutClient(id);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
         public Response Register(int id, string username, string password, string email, int age)
         {
-            throw new NotImplementedException();
+             try
+            {
+                marketManagerFacade.Register(username, password, email, age);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
-        public Response RemoveFromCart(int clientId, int productId)
+        public Response RemoveFromCart(int clientId, int productId, int basketId, int quantity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                marketManagerFacade.RemoveFromCart(clientId, productId, basketId, quantity);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
-        public void ResToStoreManageReq()
+        public Response<bool> ResToStoreManageReq(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                bool ans = marketManagerFacade.ResToStoreManageReq(id);
+                //log
+                return Response<bool>.FromValue(ans);
+            }
+            catch (Exception e)
+            {
+                //log
+                return Response<bool>.FromError(e.Message);
+            }
         }
 
-        public void ResToStoreOwnershipReq()
+        public Response<bool> ResToStoreOwnershipReq(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                bool ans = marketManagerFacade.ResToStoreOwnershipReq(id);
+                //log
+                return Response<bool>.FromValue(ans);
+            }
+            catch (Exception e)
+            {
+                //log
+                return Response<bool>.FromError(e.Message);
+            }
         }
 
-        public void ViewCart(int id)
+        public Response<ShoppingCart> ViewCart(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                ShoppingCart cart = marketManagerFacade.ViewCart(id);
+                //log
+                return Response<ShoppingCart>.FromValue(cart);
+            }
+            catch (Exception e)
+            {
+                //log
+                return Response<ShoppingCart>.FromError(e.Message);
+            }
+        }
+
+        public Response EditPurchasePolicy(int storeId){
+            try
+            {
+                marketManagerFacade.EditPurchasePolicy(storeId);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
     }
 }

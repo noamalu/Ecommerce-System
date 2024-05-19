@@ -27,6 +27,8 @@ namespace MarketBackend.Tests.AT
         double discount1 = 0.5; 
         int userAge = 20;
         int userAge2 = 16;
+        int basketId = 1;
+        PaymentDetails paymentDetails = new PaymentDetails("5326888878675678", "2027", "10", "101", "3190876789", "Hadas");
 
 
         [TestInitialize()]
@@ -174,7 +176,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.EnterAsGuest(userId2));
            Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge));
            Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
-           Assert.IsTrue(proxy.AddToCart(userId2, productID1));
+           Assert.IsTrue(proxy.AddToCart(userId2, shopID, productID1, quantity1));
         }
 
         [TestMethod]
@@ -189,7 +191,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.EnterAsGuest(userId2));
            Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge));
            Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
-           Assert.IsFalse(proxy.AddToCart(userId2, productID1));
+           Assert.IsFalse(proxy.AddToCart(userId2, shopID, productID1, quantity1));
         }
 
         [TestMethod]
@@ -205,8 +207,8 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.EnterAsGuest(userId2));
            Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge));
            Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
-           Assert.IsTrue(proxy.AddToCart(userId2, productID1));
-           Assert.IsTrue(proxy.RemoveFromCart(userId2, productID1));
+           Assert.IsTrue(proxy.AddToCart(userId2, shopID, productID1, 1));
+           Assert.IsTrue(proxy.RemoveFromCart(userId2, productID1, basketId, 1));
         }
 
         [TestMethod]
@@ -222,7 +224,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.EnterAsGuest(userId2));
            Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge));
            Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
-           Assert.IsFalse(proxy.RemoveFromCart(userId2, productID1));
+           Assert.IsFalse(proxy.RemoveFromCart(userId2, productID1, basketId, 1));
         }
 
         [TestMethod]
@@ -238,8 +240,8 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.EnterAsGuest(userId2));
            Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge));
            Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
-           Assert.IsTrue(proxy.AddToCart(userId2, productID1));
-           Assert.IsTrue(proxy.PurchaseCart(userId2));
+           Assert.IsTrue(proxy.AddToCart(userId2, shopID, productID1, quantity1));
+           Assert.IsTrue(proxy.PurchaseCart(userId2, paymentDetails));
         }
 
         [TestMethod]
@@ -255,7 +257,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.EnterAsGuest(userId2));
            Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge));
            Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
-           Assert.IsFalse(proxy.PurchaseCart(userId2));
+           Assert.IsFalse(proxy.PurchaseCart(userId2, paymentDetails));
         }
 
         [TestMethod]
@@ -272,7 +274,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.EnterAsGuest(userId2));
            Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge2));
            Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
-           Assert.IsFalse(proxy.PurchaseCart(userId2));
+           Assert.IsFalse(proxy.PurchaseCart(userId2, paymentDetails));
         }
 
         [TestMethod]
@@ -288,8 +290,8 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.EnterAsGuest(userId2));
            Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge));
            Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
-           Assert.IsTrue(proxy.AddToCart(userId2, productID1));
-           Assert.IsTrue(proxy.PurchaseCart(userId2));
+           Assert.IsTrue(proxy.AddToCart(userId2, shopID, productID1, quantity1));
+           Assert.IsTrue(proxy.PurchaseCart(userId2, paymentDetails));
            Assert.IsFalse(proxy.GetPurchaseHistory(userId2));
         }
 

@@ -1,4 +1,5 @@
 using System.Text;
+using MarketBackend.Domain.Models;
 namespace MarketBackend.Domain.Market_Client
 {
     public class Purchase{

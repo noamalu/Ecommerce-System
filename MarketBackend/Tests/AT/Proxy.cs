@@ -1,5 +1,6 @@
 using MarketBackend.Services;
 using MarketBackend.Domain.Market_Client;
+using MarketBackend.Domain.Payment;
 
 namespace MarketBackend.Tests.AT
 {
@@ -85,18 +86,18 @@ namespace MarketBackend.Tests.AT
             return !res.ErrorOccured;
         }
 
-        public bool AddToCart(int clientId, int productId){
-            Response res = clientService.AddToCart(clientId, productId);
+        public bool AddToCart(int clientId, int storeId, int productId, int quantity){
+            Response res = clientService.AddToCart(clientId, storeId, productId, quantity);
             return !res.ErrorOccured;
         }
 
-        public bool RemoveFromCart(int clientId, int productId){
-            Response res = clientService.RemoveFromCart(clientId, productId);
+        public bool RemoveFromCart(int clientId, int productId, int basketId, int quantity){
+            Response res = clientService.RemoveFromCart(clientId, productId, basketId, quantity);
             return !res.ErrorOccured;
         }
 
-        public bool PurchaseCart(int clientId){
-            Response res = clientService.PurchaseCart(clientId);
+        public bool PurchaseCart(int clientId, PaymentDetails paymentDetails){
+            Response res = marketService.PurchaseCart(clientId, paymentDetails);
             return !res.ErrorOccured;
         }
 

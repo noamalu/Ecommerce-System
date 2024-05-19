@@ -5,14 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 using MarketBackend.Services.Interfaces;
 using MarketBackend.Domain.Market_Client;
+using MarketBackend.Domain.Payment;
 
 namespace MarketBackend.Services
 {
     public class MarketService : IMarketService
     {
         private static MarketService _marketService = null;
+        private MarketManagerFacade marketManagerFacade;
         private MarketService(){
-            
+            marketManagerFacade = MarketManagerFacade.GetInstance();
         }
 
         public static MarketService GetInstance(){
@@ -26,124 +28,393 @@ namespace MarketBackend.Services
             _marketService = new MarketService();
         }
         
-        public void AddManger(int activeId, int storeId, int toAddId)
+        public Response AddManger(int activeId, int storeId, int toAddId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                marketManagerFacade.AddManger(activeId, storeId, toAddId);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
-        public void AddOwner(int activeId, int storeId, int toAddId)
+        public Response AddOwner(int activeId, int storeId, int toAddId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                marketManagerFacade.AddOwner(activeId, storeId, toAddId);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
-        public void AddPermission(int activeId, int storeId, int toAddId)
+        public Response AddPermission(int activeId, int storeId, int toAddId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                marketManagerFacade.AddPermission(activeId, storeId, toAddId);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
         public Response AddProduct(int productId, string productName, int storeId, string category, double price, int quantity, double discount)
         {
-            throw new NotImplementedException();
+            try
+            {
+                marketManagerFacade.AddProduct(productId, productName, storeId, category, price, quantity, discount);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
         public Response CloseStore(int storeId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                marketManagerFacade.CloseStore(storeId);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
-        public void EditPurchasePolicy(int storeId)
+        public Response EditPurchasePolicy(int storeId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                marketManagerFacade.EditPurchasePolicy(storeId);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
-        public void GetFounder()
+        public Response<Member> GetFounder(int storeId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Member founder = marketManagerFacade.GetFounder(storeId);
+                //log
+                return Response<Member>.FromValue(founder);
+            }
+            catch (Exception e)
+            {
+                //log
+                return Response<Member>.FromError(e.Message);
+            }
         }
 
-        public void GetMangers()
+        public Response<List<Member>> GetMangers(int storeId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                List<Member> managers = marketManagerFacade.GetMangers(storeId);
+                //log
+                return Response<List<Member>>.FromValue(managers);
+            }
+            catch (Exception e)
+            {
+                //log
+                return Response<List<Member>>.FromError(e.Message);
+            }
         }
 
-        public void GetOwners()
+        public Response<List<Member>> GetOwners(int storeId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                List<Member> owners = marketManagerFacade.GetOwners(storeId);
+                //log
+                return Response<List<Member>>.FromValue(owners);
+            }
+            catch (Exception e)
+            {
+                //log
+                return Response<List<Member>>.FromError(e.Message);
+            }
         }
 
-        public void IsAvailable(int productId)
+        public Response<bool> IsAvailable(int productId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                bool ans = marketManagerFacade.IsAvailable(productId);
+                //log
+                return Response<bool>.FromValue(ans);
+            }
+            catch (Exception e)
+            {
+                //log
+                return Response<bool>.FromError(e.Message);
+            }
         }
 
         public Response OpenStore(int storeId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                marketManagerFacade.OpenStore(storeId);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
-        public void RemoveManger(int activeId, int storeId, int toRemoveId)
+        public Response RemoveManger(int activeId, int storeId, int toRemoveId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                marketManagerFacade.RemoveManger(activeId, storeId, toRemoveId);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
-        public void RemoveOwner(int activeId, int storeId, int toRemoveId)
+        public Response RemoveOwner(int activeId, int storeId, int toRemoveId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                marketManagerFacade.RemoveOwner(activeId, storeId, toRemoveId);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
-        public void RemovePermission(int activeId, int storeId, int toRemoveId)
+        public Response RemovePermission(int activeId, int storeId, int toRemoveId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                marketManagerFacade.RemovePermission(activeId, storeId, toRemoveId);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
         public Response RemoveProduct(int productId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                marketManagerFacade.RemoveProduct(productId);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
         public Response RemoveStaffMember(int storeId, int activeId, Role role, int toRemoveId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                marketManagerFacade.RemoveStaffMember(storeId, activeId, role, toRemoveId);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
         public Response AddStaffMember(int storeId, int activeId, Role role, int toAddId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                marketManagerFacade.AddStaffMember(storeId, activeId, role, toAddId);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
         public Response UpdateProductDiscount(int productId, double discount)
         {
-            throw new NotImplementedException();
+            try
+            {
+                marketManagerFacade.UpdateProductDiscount(productId, discount);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
         public Response UpdateProductPrice(int productId, double price)
         {
-            throw new NotImplementedException();
+            try
+            {
+                marketManagerFacade.UpdateProductPrice(productId, price);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
         public Response UpdateProductQuantity(int productId, int quantity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                marketManagerFacade.UpdateProductQuantity(productId, quantity);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
 
-        public Response<Product> SearchByKeywords(string keywords)
+        public Response<List<Product>> SearchByKeywords(string keywords)
         {
-            throw new NotImplementedException();
+            try
+            {
+                List<Product> products = marketManagerFacade.SearchByKeyWords(keywords);
+                //log
+                return Response<List<Product>>.FromValue(products);
+            }
+            catch (Exception e)
+            {
+                //log
+                return Response<List<Product>>.FromError(e.Message);
+            }
         }
 
-        public Response<Product> SearchByName(string name)
+        public Response<List<Product>> SearchByName(string name)
         {
             string lowerName = name.ToLower();
-            throw new NotImplementedException();
+            try
+            {
+                List<Product> products = marketManagerFacade.SearchByName(name);
+                //log
+                return Response<List<Product>>.FromValue(products);
+            }
+            catch (Exception e)
+            {
+                //log
+                return Response<List<Product>>.FromError(e.Message);
+            }
         }
 
-        public Response<Product> SearchByCategory(string category)
+        public Response<List<Product>> SearchByCategory(string category)
         {
-            throw new NotImplementedException();
+            try
+            {
+                List<Product> products = marketManagerFacade.SearchByCategory(category);
+                //log
+                return Response<List<Product>>.FromValue(products);
+            }
+            catch (Exception e)
+            {
+                //log
+                return Response<List<Product>>.FromError(e.Message);
+            }
         }
 
         public Response<string> GetInfo(int storeId){
-            throw new NotImplementedException();
+            try
+            {
+                string info = marketManagerFacade.GetInfo(storeId);
+                //log
+                return Response<string>.FromValue(info);
+            }
+            catch (Exception e)
+            {
+                //log
+                return Response<string>.FromError(e.Message);
+            }
+        }
+
+        public Response<string> GetProductInfo(int productId){
+            try
+            {
+                string info = marketManagerFacade.GetProductInfo(productId);
+                //log
+                return Response<string>.FromValue(info);
+            }
+            catch (Exception e)
+            {
+                //log
+                return Response<string>.FromError(e.Message);
+            }
+        }
+
+        public Response PurchaseCart(int id, PaymentDetails paymentDetails)
+        {
+             try
+            {
+                marketManagerFacade.PurchaseCart(id, paymentDetails);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
+            }
         }
     }
 }

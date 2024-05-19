@@ -3,16 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MarketBackend.Domain.Models;
+using MarketBackend.DAL;
+using MarketBackend.Domain.Payment;
 using MarketBackend.Services.Interfaces;
+using Microsoft.Extensions.Logging;
+
 
 namespace MarketBackend.Domain.Market_Client
 {
     public class MarketManagerFacade : IMarketManagerFacade
     {
-        private readonly IClientRepository _clientRepository;
-        public MarketManagerFacade(IClientRepository clientRepository){
-            _clientRepository = clientRepository;
+        private static MarketManagerFacade marketManagerFacade = null;
+        private readonly IStoreRepository _storeRepository;
+        private readonly ClientManager _clientManager;
+        private readonly IPaymentSystemFacade _paymentSystem;
+
+        private readonly ILogger<MarketManagerFacade> _logger;
+        private MarketManagerFacade(){
+            _storeRepository = StoreRepositoryRAM.GetInstance();
+            _clientManager = ClientManager.GetInstance();
+            _paymentSystem = new PaymentSystemProxy();
+            // TODO: initializie system admin
+            // _logger = logger;
         }
+
+        public static MarketManagerFacade GetInstance(){
+            if (marketManagerFacade == null){
+                marketManagerFacade = new MarketManagerFacade();
+            }
+            return marketManagerFacade;
+        }
+        
         public void AddManger(int activeId, int storeId, int toAddId)
         {
             throw new NotImplementedException();
@@ -35,8 +57,9 @@ namespace MarketBackend.Domain.Market_Client
 
         public void AddToCart(int clientId, int storeId, int productId, int quantity)
         {
-            Client client = _clientRepository.GetById(clientId);
-            client.addToCart(storeId ,productId, quantity);
+            ClientManager.CheckClientId(clientId);
+            _clientManager.AddToCart(clientId, storeId, productId, quantity);
+            // _logger.LogInformation($"Product id={productId} were added to client id={clientId} cart, to storeId={storeId} basket.!");
         }
 
         public void BrowseGuest()
@@ -69,32 +92,36 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void GetFounder()
+        public Member GetFounder(int storeId)
         {
             throw new NotImplementedException();
         }
 
-        public void GetMangers()
+        public List<Member> GetMangers(int storeId)
         {
             throw new NotImplementedException();
         }
 
-        public void GetOwners()
+        public List<Member> GetOwners(int storeId)
         {
             throw new NotImplementedException();
         }
 
-        public string GetProductInfo()
+        public string GetProductInfo(int productId)
         {
             throw new NotImplementedException();
         }
 
-        public void GetPurchaseHistoryByClient(int id)
+        public string GetInfo(int storeId){
+            throw new NotImplementedException();
+        }
+
+        public List<Purchase> GetPurchaseHistoryByClient(int id)
         {
             throw new NotImplementedException();
         }
 
-        public void GetPurchaseHistoryByStore(int id)
+        public List<Purchase> GetPurchaseHistoryByStore(int id)
         {
             throw new NotImplementedException();
         }
@@ -104,7 +131,7 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void IsAvailable(int productId)
+        public bool IsAvailable(int productId)
         {
             throw new NotImplementedException();
         }
@@ -124,19 +151,35 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void PurchaseCart(int id)
+        public void PurchaseCart(int id, PaymentDetails paymentDetails) //clientId
         {
-            throw new NotImplementedException();
+            ClientManager.CheckClientId(id);
+            var client = _clientManager.GetClientById(id);
+            var baskets = client.Cart.GetBaskets();
+            var stores = new List<Store>();
+            foreach(var basket in baskets){
+                var store = _storeRepository.GetById(basket.Key);
+                stores.Add(store);
+                if(!store.checkBasketInSupply(basket.Value)) throw new Exception("unavailable.");                
+            }
+            foreach(var store in stores){
+                var totalPrice = store.CalculateBasketPrice(baskets[store.StoreId]);
+                if(_paymentSystem.Pay(paymentDetails, totalPrice) > 0) 
+                    store.PurchaseBasket(id, baskets[store.StoreId]);
+                else 
+                    throw new Exception("payment failed.");
+            }
+
         }
 
-        public void Register(string username, string password)
+        public void Register(string username, string password, string email, int age)
         {
-            throw new NotImplementedException();
+            _clientManager.Register(username, password, email, age);
         }
 
-        public void RemoveFromCart(int clientId, int productId)
+        public void RemoveFromCart(int clientId, int productId, int basketId, int quantity)
         {
-            throw new NotImplementedException();
+            _clientManager.RemoveFromCart(clientId, productId, basketId, quantity);
         }
 
         public void RemoveManger(int activeId, int storeId, int toRemoveId)
@@ -159,42 +202,42 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void RemoveStaffMember(int activeId, int storeId, int toRemoveId)
+        public void RemoveStaffMember(int storeId, int activeId, Role role, int toRemoveId)
         {
             throw new NotImplementedException();
         }
 
-        public void ResToStoreManageReq()
+        public bool ResToStoreManageReq(int id)
         {
             throw new NotImplementedException();
         }
 
-        public void ResToStoreOwnershipReq()
+        public bool ResToStoreOwnershipReq(int id)
         {
             throw new NotImplementedException();
         }
 
-        public List<Product> SearchByCategory()
+        public List<Product> SearchByCategory(string category)
         {
             throw new NotImplementedException();
         }
 
-        public List<Product> SearchByKeyWords()
+        public List<Product> SearchByKeyWords(string keywords)
         {
             throw new NotImplementedException();
         }
 
-        public List<Product> SearchByName()
+        public List<Product> SearchByName(string name)
         {
             throw new NotImplementedException();
         }
 
-        public void UpdateProduct(int productId)
+        public void UpdateProductDiscount(int productId, double discount)
         {
             throw new NotImplementedException();
         }
 
-        public void UpdateProductPrice(int productId, int price)
+        public void UpdateProductPrice(int productId, double price)
         {
             throw new NotImplementedException();
         }
@@ -204,8 +247,13 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void ViewCart(int id)
+        public ShoppingCart ViewCart(int id)
         {
+            ClientManager.CheckClientId(id);
+            return _clientManager.ViewCart(id);
+        }
+
+        public void AddStaffMember(int storeId, int activeId, Role role, int toAddId){
             throw new NotImplementedException();
         }
     }

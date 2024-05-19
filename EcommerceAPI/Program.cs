@@ -1,11 +1,18 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddTransient<IPasswordHasher<object>, PasswordHasher<object>>();
+
+
+// Configure logging
+builder.Logging.ClearProviders(); // Clear all default logging providers
+builder.Logging.AddFile("logs/app.log"); // Specify the log file path
 
 var app = builder.Build();
 

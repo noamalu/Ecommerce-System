@@ -21,6 +21,8 @@ namespace MarketBackend.Domain.Payment
             connected = false;
         }
 
+        public PaymentSystemProxy(){}
+
         public bool Connect()
         {
            if (_realPaymentSystem == null)

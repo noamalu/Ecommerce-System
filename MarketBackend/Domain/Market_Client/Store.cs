@@ -8,6 +8,7 @@ using System.Text;
 using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using MarketBackend.Domain.Models;
 
 
 
@@ -174,20 +175,16 @@ namespace MarketBackend.Domain.Market_Client
          public Purchase PurchaseBasket(int userId, Basket basket)
         {
             if (!_active)
-                throw new Exception($"Shop: {_storeName} is not active anymore");
-            
-                if (checkBasketInSupply(basket))
-                {
-                    RemoveBasketProductsFromSupply(basket);
-                }
+                throw new Exception($"Shop: {_storeName} is not active anymore");        
+                RemoveBasketProductsFromSupply(basket);                
                 double basketPrice = CalculateBasketPrice(basket);
-                Purchase pendingPurchase = new Purchase(GenerateUniquePurchaseId(), _storeId, userId, basket.Clone(), basketPrice);
+                Purchase pendingPurchase = new Purchase(GenerateUniquePurchaseId(), _storeId, userId, Basket.Clone(basket), basketPrice);
                 AddPurchase(pendingPurchase);
                 return pendingPurchase;
             
         }
 
-        private double CalculateBasketPrice(Basket basket){
+        public double CalculateBasketPrice(Basket basket){
             double totalPrice =0;
             foreach (KeyValuePair<int, int> product in basket.products)
             {
@@ -204,7 +201,7 @@ namespace MarketBackend.Domain.Market_Client
                 PurchaseRepositoryRAM.GetInstance().Add(p);
         }
 
-        private bool checkBasketInSupply(Basket basket)
+        public bool checkBasketInSupply(Basket basket)
         {
             foreach (KeyValuePair<int, int> product in basket.products)
             {
