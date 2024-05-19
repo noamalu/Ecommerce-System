@@ -18,6 +18,7 @@ namespace MarketBackend.Domain.Market_Client
         private readonly IStoreRepository _storeRepository;
         private readonly ClientManager _clientManager;
         private readonly IPaymentSystemFacade _paymentSystem;
+        private int _storeCounter = 0;
 
         private readonly ILogger<MarketManagerFacade> _logger;
         private MarketManagerFacade(){
@@ -67,14 +68,37 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void CloseStore(int storeId)
+        public void CloseStore(int userId, int storeId)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+                store.CloseStore(userId);
+            }
+            else{
+                throw new Exception("Store doesn't exists");
+            }
         }
 
-        public void CreateStore(int id)
+        public void CreateStore(int id, string storeName, string email, string phoneNum)
         {
-            throw new NotImplementedException();
+            Client store_founder = _clientManager.GetClientById(id);
+            if(store_founder != null)
+            {
+                int storeId = _storeCounter++;
+                if (_storeRepository.GetById(storeId) != null){
+                    throw new Exception("Store exists");
+                }
+                Store store = new Store(storeId, storeName, email, phoneNum)
+                {
+                    _active = true
+                };
+                _storeRepository.Add(store);
+                // make as a founder/ owner
+            }
+            else
+            {
+                throw new Exception("Store founder must be a Member.");
+            }
         }
 
         public void EditPurchasePolicy(int storeId)
@@ -146,9 +170,15 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void OpenStore(int storeId)
+        public void OpenStore(int clientId, int storeId)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+                store.OpenStore(clientId);
+            }
+            else{
+                throw new Exception("Store doesn't exists");
+            }
         }
 
         public void PurchaseCart(int id, PaymentDetails paymentDetails) //clientId
