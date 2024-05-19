@@ -2,19 +2,38 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+
 
 namespace MarketBackend.Domain.Security
 {
-    public class SecurityManager : ISecurityManager
+    //change both managers to singletons
+    public class SecurityManager : ISecurityManager, ITokenManager
     {
-        public void EncryptPassword(string password)
+        PasswordHasher<object> passwordHasher;
+        private ITokenManager tokenManager;
+        public SecurityManager() { 
+            passwordHasher = new PasswordHasher<object>();
+            tokenManager = new TokenManager();
+        }
+        public string EncryptPassword(string password)
         {
-            throw new NotImplementedException();
+            return passwordHasher.HashPassword(null, password);
         }
 
-        public void VerifyPassword(string password)
+        public bool VerifyPassword(string rawPassword, string hashedPassword)
         {
-            throw new NotImplementedException();
+            var result = passwordHasher.VerifyHashedPassword(null, rawPassword, hashedPassword);
+            return result == PasswordVerificationResult.Success;
+        }
+
+        public string GenerateToken(int userId)
+        {
+            return tokenManager.GenerateToken(userId);
+        }
+        public bool ValidateToken(string token)
+        {
+            return tokenManager.ValidateToken(token);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace MarketBackend.Domain.Security
 {
     public interface ISecurityManager
     {
-        void EncryptPassword(string password);
-        void VerifyPassword(string password);
+        string EncryptPassword(string password);
+        bool VerifyPassword(string rawPassword, string hashedPassword);
     }
 }
