@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace MarketBackend.Domain.Security
 {
+    //change both managers to singletons
     public class SecurityManager : ISecurityManager, ITokenManager
     {
         PasswordHasher<object> passwordHasher;
