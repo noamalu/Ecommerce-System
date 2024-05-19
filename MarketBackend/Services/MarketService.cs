@@ -14,7 +14,7 @@ namespace MarketBackend.Services
         private static MarketService _marketService = null;
         private MarketManagerFacade marketManagerFacade;
         private MarketService(){
-            //marketManagerFacade = MarketManagerFacade.GetInstance();
+            marketManagerFacade = MarketManagerFacade.GetInstance();
         }
 
         public static MarketService GetInstance(){
