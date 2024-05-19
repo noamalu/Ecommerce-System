@@ -24,6 +24,7 @@ namespace MarketBackend.Domain.Market_Client
             _storeRepository = StoreRepositoryRAM.GetInstance();
             _clientManager = ClientManager.GetInstance();
             _paymentSystem = new PaymentSystemProxy();
+            // TODO: initializie system admin
             // _logger = logger;
         }
 
