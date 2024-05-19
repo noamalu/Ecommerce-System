@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MarketBackend.Domain.Market_Client;
+using MarketBackend.Domain.Payment;
 
 namespace MarketBackend.Services.Interfaces
 {
@@ -34,6 +35,7 @@ namespace MarketBackend.Services.Interfaces
         public Response<List<Product>> SearchByCategory(string category);
         public Response<string> GetInfo(int storeId);
         public Response<string> GetProductInfo(int productId);
+        public Response PurchaseCart(int id, PaymentDetails paymentDetails);
 
     }
 }

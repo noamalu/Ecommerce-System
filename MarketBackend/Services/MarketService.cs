@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MarketBackend.Services.Interfaces;
 using MarketBackend.Domain.Market_Client;
+using MarketBackend.Domain.Payment;
 
 namespace MarketBackend.Services
 {
@@ -398,6 +399,21 @@ namespace MarketBackend.Services
             {
                 //log
                 return Response<string>.FromError(e.Message);
+            }
+        }
+
+        public Response PurchaseCart(int id, PaymentDetails paymentDetails)
+        {
+             try
+            {
+                marketManagerFacade.PurchaseCart(id, paymentDetails);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
             }
         }
     }
