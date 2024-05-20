@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using MarketBackend.Domain.Payment;
@@ -6,31 +7,43 @@ using MarketBackend.Services.Interfaces;
 
 namespace MarketBackend.DAL
 {
-    public class PaymentDetailsRepositoryRAM //: IPaymentDetailsRepository TODO: need to think about because IPaymentDetailsRepository.getByID(***int***) needts to be implmemted but cant 
+    public class PaymentDetailsRepositoryRAM : IPaymentDetailsRepository
     {
-        private readonly Dictionary<string, PaymentDetails> payments;
+        // Using a Tuple<int, string, string> as the composite key (paymentID, cardNumber, holderID)
+        private readonly ConcurrentDictionary<(int paymentID, string cardNumber, string holderID), PaymentDetails> payments;
+
+        private static PaymentDetailsRepositoryRAM _paymentRepository = null;
 
         public PaymentDetailsRepositoryRAM()
         {
-            payments = new Dictionary<string, PaymentDetails>();
+            payments = new ConcurrentDictionary<(int, string, string), PaymentDetails>();
+        }
+
+        public static PaymentDetailsRepositoryRAM GetInstance()
+        {
+            _paymentRepository ??= new PaymentDetailsRepositoryRAM();
+            return _paymentRepository;
         }
 
         public void Add(PaymentDetails entity)
         {
-            if(payments.ContainsKey(entity.CardNumber)){
-                throw new ArgumentException($"Payment Details with the card number: {entity.CardNumber} already exists.");
-
+            var key = (entity.PaymentID, entity.CardNumber, entity.HolderID);
+            if (payments.ContainsKey(key))
+            {
+                throw new ArgumentException($"Payment Details with the payment ID: {entity.PaymentID}, card number: {entity.CardNumber} and holder ID: {entity.HolderID} already exists.");
             }
-            payments.Add(entity.CardNumber, entity);
+            payments.TryAdd(key, entity);
         }
 
         public void Delete(PaymentDetails entity)
         {
-            if (!payments.ContainsKey(entity.CardNumber)){
-                throw new KeyNotFoundException($"Payment Details with the card number: {entity.CardNumber} does not exist.");
+            var key = (entity.PaymentID, entity.CardNumber, entity.HolderID);
+            if (!payments.ContainsKey(key))
+            {
+                throw new KeyNotFoundException($"Payment Details with the payment ID: {entity.PaymentID}, card number: {entity.CardNumber} and holder ID: {entity.HolderID} does not exist.");
             }
 
-            payments.Remove(entity.CardNumber);
+            payments.TryRemove(key, out _);
         }
 
         public IEnumerable<PaymentDetails> getAll()
@@ -38,28 +51,45 @@ namespace MarketBackend.DAL
             return payments.Values.ToList();
         }
 
-        public PaymentDetails getByID(string card)
+        public PaymentDetails GetById(int paymentID, string cardNumber, string holderID)
         {
-            bool exist = payments.ContainsKey(card);
-            if (exist)
+            var key = (paymentID, cardNumber, holderID);
+            if (payments.TryGetValue(key, out var paymentDetails))
             {
-                return payments[card];
+                return paymentDetails;
             }
             return null;
         }
 
-
         public void Update(PaymentDetails entity)
         {
-            if (payments.ContainsKey(entity.CardNumber))
+            var key = (entity.PaymentID, entity.CardNumber, entity.HolderID);
+            if (payments.ContainsKey(key))
             {
-                payments[entity.CardNumber] = entity;
+                payments[key] = entity;
             }
             else
             {
-                throw new KeyNotFoundException($"Payment Details with the card number: {entity.CardNumber} not found.");
+                throw new KeyNotFoundException($"Payment Details with the payment ID: {entity.PaymentID}, card number: {entity.CardNumber} and holder ID: {entity.HolderID} not found.");
             }
+        }
+
+        // public List<PaymentDetails> GetById(int paymentID)
+        // {
+        //     List<PaymentDetails> result = new List<PaymentDetails>();
+        //     foreach (var payment in payments.Values)
+        //     {
+        //         if (payment.PaymentID == paymentID)
+        //         {
+        //             result.Add(payment);
+        //         }
+        //     }   
+        //     return result;
+        // }
+
+        public PaymentDetails GetById(int paymentID)
+        {
+            throw new NotImplementedException();
         }
     }
 }
-
