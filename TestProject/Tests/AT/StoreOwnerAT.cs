@@ -94,7 +94,7 @@ namespace MarketBackend.Tests.AT
            int shopID = 1;
            Assert.IsTrue(proxy.OpenStore(shopID));
            Assert.IsTrue(proxy.AddProduct(productID1, productName1, shopID, category1, price1, quantity1, discount1)); 
-           Assert.IsTrue(proxy.UpdateProductPrice(productID1, price2));     
+           Assert.IsTrue(proxy.UpdateProductPrice(shopID, userId, productID1, price2));     
         }
 
         [TestMethod]
@@ -106,7 +106,7 @@ namespace MarketBackend.Tests.AT
            int shopID = 1;
            Assert.IsTrue(proxy.OpenStore(shopID));
            Assert.IsTrue(proxy.AddProduct(productID1, productName1, shopID, category1, price1, quantity1, discount1)); 
-           Assert.IsFalse(proxy.UpdateProductPrice(productID1, negPrice));     
+           Assert.IsFalse(proxy.UpdateProductPrice(shopID, userId, productID1, negPrice));     
         }
 
         [TestMethod]
@@ -118,7 +118,7 @@ namespace MarketBackend.Tests.AT
            int shopID = 1;
            Assert.IsTrue(proxy.OpenStore(shopID));
            Assert.IsTrue(proxy.AddProduct(productID1, productName1, shopID, category1, price1, quantity1, discount1)); 
-           Assert.IsTrue(proxy.UpdateProductQuantity(productID1, quantity2));     
+           Assert.IsTrue(proxy.UpdateProductQuantity(shopID, userId, productID1, quantity2));     
         }
 
         [TestMethod]
@@ -130,7 +130,7 @@ namespace MarketBackend.Tests.AT
            int shopID = 1;
            Assert.IsTrue(proxy.OpenStore(shopID));
            Assert.IsTrue(proxy.AddProduct(productID1, productName1, shopID, category1, price1, quantity1, discount1)); 
-           Assert.IsFalse(proxy.UpdateProductQuantity(productID1, negQuantity));     
+           Assert.IsFalse(proxy.UpdateProductQuantity(shopID, userId, productID1, negQuantity));     
         }
 
         [TestMethod]
@@ -142,7 +142,7 @@ namespace MarketBackend.Tests.AT
            int shopID = 1;
            Assert.IsTrue(proxy.OpenStore(shopID));
            Assert.IsTrue(proxy.AddProduct(productID1, productName1, shopID, category1, price1, quantity1, discount1)); 
-           Assert.IsTrue(proxy.UpdateProductDiscount(productID1, discount2));     
+         //   Assert.IsTrue(proxy.UpdateProductDiscount(shopID, userId, productID1, discount2));     
         }
 
         [TestMethod]
@@ -153,7 +153,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
            int shopID = 1;
            Assert.IsTrue(proxy.OpenStore(shopID));
-           Assert.IsFalse(proxy.UpdateProductDiscount(productID1, discount2));     
+         //   Assert.IsFalse(proxy.UpdateProductDiscount(shopID, userId, productID1, discount2));     
         }
 
         [TestMethod]

@@ -232,6 +232,21 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
+        // public void UpdateProductDiscount(int storeId, int userId, int productId, double discount)
+        // {
+        
+
+        //     if (_storeRepository.GetById(storeId) != null)
+        //     {
+        //         _storeRepository.GetById(storeId).UpdateProductDiscount(userId, productId, discount);
+        //     }
+        //     else
+        //     {
+        //         throw new Exception("Store not found");
+        //     }
+
+        // }
+
         public void UpdateProductPrice(int storeId, int userId,  int productId, double price)
         {
             if (_storeRepository.GetById(storeId) != null)

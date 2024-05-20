@@ -12,7 +12,6 @@ namespace MarketBackend.Services.Interfaces
     {
         public Response AddProduct(int productId, string productName, int storeId, string category, double price, int quantity, double discount);
         public Response RemoveProduct(int productId);
-        public Response UpdateProductDiscount(int productId, double discount);
         public Response RemoveStaffMember(int storeId, int activeId, Role role, int toRemoveId);
         public Response AddStaffMember(int storeId, int activeId, Role role, int toAddId);
         public Response AddManger(int activeId, int storeId, int toAddId);
@@ -22,8 +21,9 @@ namespace MarketBackend.Services.Interfaces
         public Response<List<Member>> GetOwners(int storeId);
         public Response<List<Member>> GetMangers(int storeId);
         public Response<Member> GetFounder(int storeId);
-        public Response UpdateProductQuantity(int productId, int quantity);
-        public Response UpdateProductPrice(int productId, double price);
+        public Response UpdateProductDiscount(int productId, double discount);
+        public Response UpdateProductQuantity(int storeId, int userId, int productId, int quantity);
+        public Response UpdateProductPrice(int storeId, int userId,  int productId, double price);
         public Response CloseStore(int storeId);
         public Response OpenStore(int storeId);
         public Response<bool> IsAvailable(int productId);

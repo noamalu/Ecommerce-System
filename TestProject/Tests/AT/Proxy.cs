@@ -101,21 +101,21 @@ namespace MarketBackend.Tests.AT
             return !res.ErrorOccured;
         }
 
-        public bool UpdateProductDiscount(int productId, double discount)
-        {
-            Response res = marketService.UpdateProductDiscount(productId, discount);
-            return !res.ErrorOccured;
-        }
+        // public bool UpdateProductDiscount(int productId, double discount) 
+        // {
+        //     Response res = marketService.UpdateProductDiscount(productId, discount);
+        //     return !res.ErrorOccured;
+        // }
 
-        public bool UpdateProductPrice(int productId, double price)
+        public bool UpdateProductPrice(int storeId, int userId, int productId, double price)
         {
-            Response res = marketService.UpdateProductPrice(productId, price);
+            Response res = marketService.UpdateProductPrice(storeId, userId, productId, price);
             return !res.ErrorOccured;        
         }
 
-        public bool UpdateProductQuantity(int productId, int quantity)
+        public bool UpdateProductQuantity(int storeId, int userId, int productId, int quantity)
         {
-            Response res = marketService.UpdateProductQuantity(productId, quantity);
+            Response res = marketService.UpdateProductQuantity(storeId, userId, productId, quantity);
             return !res.ErrorOccured;
         }
 

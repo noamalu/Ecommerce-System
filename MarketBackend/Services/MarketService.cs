@@ -285,9 +285,25 @@ namespace MarketBackend.Services
 
         public Response UpdateProductDiscount(int productId, double discount)
         {
+            throw new NotImplementedException();
+            // try
+            // {
+            //     marketManagerFacade.UpdateProductDiscount(storeId, userId, productId, discount);
+            //     //log
+            //     return new Response();
+            // }
+            // catch (Exception e)
+            // {
+            //     //log
+            //     return new Response(e.Message);
+            // }
+        }
+
+        public Response UpdateProductPrice(int storeId, int userId, int productId, double price)
+        {
             try
             {
-                marketManagerFacade.UpdateProductDiscount(productId, discount);
+                marketManagerFacade.UpdateProductPrice(storeId, userId, productId, price);
                 //log
                 return new Response();
             }
@@ -298,26 +314,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response UpdateProductPrice(int productId, double price)
+        public Response UpdateProductQuantity(int storeId, int userId, int productId, int quantity)
         {
             try
             {
-                marketManagerFacade.UpdateProductPrice(productId, price);
-                //log
-                return new Response();
-            }
-            catch (Exception e)
-            {
-                //log
-                return new Response(e.Message);
-            }
-        }
-
-        public Response UpdateProductQuantity(int productId, int quantity)
-        {
-            try
-            {
-                marketManagerFacade.UpdateProductQuantity(productId, quantity);
+                marketManagerFacade.UpdateProductQuantity(storeId, userId,productId, quantity);
                 //log
                 return new Response();
             }
