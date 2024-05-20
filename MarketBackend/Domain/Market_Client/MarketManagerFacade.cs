@@ -8,6 +8,7 @@ using MarketBackend.DAL;
 using MarketBackend.Domain.Payment;
 using MarketBackend.Services.Interfaces;
 using Microsoft.Extensions.Logging;
+using System.Security.Policy;
 
 
 namespace MarketBackend.Domain.Market_Client
@@ -247,19 +248,39 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public List<Product> SearchByCategory(string category)
+        public HashSet<Product> SearchByCategory(string category)
         {
-            throw new NotImplementedException();
+            return SearchingManager.searchByCategory(category);
         }
 
-        public List<Product> SearchByKeyWords(string keywords)
+        public HashSet<Product> SearchByKeyWords(string keywords)
         {
-            throw new NotImplementedException();
+            return SearchingManager.searchByKeyword(keywords);
         }
 
-        public List<Product> SearchByName(string name)
+        public HashSet<Product> SearchByName(string name)
         {
-            throw new NotImplementedException();
+            return SearchingManager.serachByName(name);
+        }
+        public HashSet<Product> SearchByCategoryWithStore(int storeId, string category)
+        {
+            return SearchingManager.searchByCategoryWithStore(storeId, category);
+        }
+
+        public HashSet<Product> SearchByKeyWordsWithStore(int storeId, string keywords)
+        {
+            return SearchingManager.searchByKeywordWithStore(storeId, keywords);
+        }
+
+        public HashSet<Product> SearchByNameWithStore(int storeId, string name)
+        {
+            return SearchingManager.serachByNameWithStore(storeId, name);
+        }
+
+        public void Filter(HashSet<Product> products, string category, double lowPrice, double highPrice, double lowProductRate, double highProductRate, double lowStoreRate, double highStoreRate)
+        {
+            FilterParameterManager filter = new FilterParameterManager(category, lowPrice, highPrice, lowProductRate, highProductRate, lowStoreRate, highStoreRate);
+            filter.Filter(products);
         }
 
         public void UpdateProductDiscount(int productId, double discount)
