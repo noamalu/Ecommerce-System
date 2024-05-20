@@ -12,7 +12,7 @@ namespace MarketBackend.Domain.Shipping
         public static bool connected;
         private static int fakeTransactionId = 10000;
 
-        private ShippingSystemProxy(IShippingSystemFacade? realShippingSystem = null)
+        public ShippingSystemProxy(IShippingSystemFacade? realShippingSystem = null)
         {
             _realShippingSystem = realShippingSystem;
             connected = false;

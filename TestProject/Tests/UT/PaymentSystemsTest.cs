@@ -1,5 +1,4 @@
 using MarketBackend.Domain.Payment;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
 namespace UnitTests
@@ -23,16 +22,24 @@ namespace UnitTests
         [TestInitialize]
         public void SetUp()
         {
-            var mockPaymentSystemFacade = new Mock<IPaymentSystemFacade>();
-            paymentSystem = new PaymentSystemProxy(mockPaymentSystemFacade.Object);
+            paymentSystem = new PaymentSystemProxy();
             paymentDetails = new PaymentDetails(cardNumber, exprYear, exprMonth, cvv, cardID, name);
             paymentSystem.Connect();
+            
+        }
+
+        [TestMethod]
+        public void TestAttemptToConnect()
+        {
+            Assert.IsTrue(paymentSystem.Connect());
         }
 
         [TestMethod]
         public void TestAttemptPaymentSuccess()
         {
+            paymentSystem.Connect();
             int transactionId = paymentSystem.Pay(paymentDetails, totalAmount);
+            Console.WriteLine($"Transaction ID: {transactionId}");  
             Assert.IsTrue(transactionId > 0);
         }
 

@@ -17,10 +17,9 @@ namespace MarketBackend.Domain.Shipping
         string country;
         string zipcode;
 
-        public ShippingDetails(int id, string name, string city, string address, string country, string zipcode)
+        public ShippingDetails(string name, string city, string address, string country, string zipcode)
         {
             this._shippingID = GenerateShippingID();
-            this._shippingID = id;
             this.name = name;
             this.city = city;
             this.address = address;
