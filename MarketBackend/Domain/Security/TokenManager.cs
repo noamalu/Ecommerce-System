@@ -11,11 +11,13 @@ using System.Security.Cryptography;
 
 namespace MarketBackend.Domain.Security
 {
-    //needs to be a singleton!
     public class TokenManager : ITokenManager
     {
+        private static TokenManager tokenManagerInstance;
         private string _secretKey;
-        public TokenManager()
+        private JwtSecurityTokenHandler tokenHandler;
+        public int ExpirationTime {  get; set; }
+        private TokenManager()
         {
             byte[] key = new byte[32]; // 256 bits
             using (var rng = RandomNumberGenerator.Create())
@@ -23,7 +25,16 @@ namespace MarketBackend.Domain.Security
                 rng.GetBytes(key);
             }
             _secretKey = Convert.ToBase64String(key);
+            ExpirationTime = 24 * 60;
+        }
 
+        public static TokenManager GetInstance()
+        {
+            if (tokenManagerInstance == null)
+            {
+                tokenManagerInstance = new TokenManager();
+            }
+            return tokenManagerInstance;
         }
         public string GenerateToken(int userId)
         {
@@ -31,17 +42,17 @@ namespace MarketBackend.Domain.Security
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                claims: new[] { new Claim("userId", userId.ToString()) },
-                expires: DateTime.Now.AddMinutes(60*24),
+                claims: new[] { new Claim("userId", userId.ToString()),
+                               new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString(), ClaimValueTypes.Integer64) },
+                expires: DateTime.Now.AddMinutes(ExpirationTime),
                 signingCredentials: credentials
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return tokenHandler.WriteToken(token);
         }
 
         public bool ValidateToken(string token)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
             var validationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = false,
@@ -61,6 +72,46 @@ namespace MarketBackend.Domain.Security
                 //log
                 return false;
             }
+        }
+
+        public int extractUserId(string token)
+        {
+           
+            var jsonToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
+            var userIdClaim = jsonToken?.Claims.FirstOrDefault(claim => claim.Type == "userId");
+
+            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return userId;
+            }
+
+            throw new SecurityTokenException("Invalid token or userId claim not found");
+
+        }
+
+        public DateTime extractIssuedAt(string token)
+        {
+            var jsonToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
+            var issuedAtClaim = jsonToken?.Claims.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Iat);
+
+            if (issuedAtClaim != null && long.TryParse(issuedAtClaim.Value, out long issuedAtUnix))
+            {
+                return DateTimeOffset.FromUnixTimeSeconds(issuedAtUnix).DateTime;
+            }
+
+            throw new SecurityTokenException("Invalid token or issued at claim not found");
+        }
+
+        public DateTime extractExpiration(string token)
+        {
+            var jsonToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
+
+            if (jsonToken != null && jsonToken.ValidTo != DateTime.MinValue)
+            {
+                return jsonToken.ValidTo;
+            }
+
+            throw new SecurityTokenException("Invalid token or expiration claim not found");
         }
     }
 }

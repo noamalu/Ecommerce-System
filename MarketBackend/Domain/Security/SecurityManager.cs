@@ -2,20 +2,31 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MarketBackend.Services;
 using Microsoft.AspNetCore.Identity;
 
 
 namespace MarketBackend.Domain.Security
 {
-    //change both managers to singletons
     public class SecurityManager : ISecurityManager, ITokenManager
     {
         PasswordHasher<object> passwordHasher;
         private ITokenManager tokenManager;
-        public SecurityManager() { 
+        private static SecurityManager securityManagerInstance;
+        private SecurityManager() { 
             passwordHasher = new PasswordHasher<object>();
-            tokenManager = new TokenManager();
+            tokenManager = TokenManager.GetInstance();
         }
+
+        public static SecurityManager GetInstance()
+        {
+            if (securityManagerInstance == null)
+            {
+                securityManagerInstance = new SecurityManager();
+            }
+            return securityManagerInstance;
+        }
+
         public string EncryptPassword(string password)
         {
             return passwordHasher.HashPassword(null, password);
