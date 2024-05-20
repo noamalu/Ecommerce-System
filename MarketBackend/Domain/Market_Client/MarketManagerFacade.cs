@@ -154,14 +154,20 @@ namespace MarketBackend.Domain.Market_Client
             return store.getInfo();
         }
 
-        public List<Purchase> GetPurchaseHistoryByClient(int id)
+        public List<ShoppingCart> GetPurchaseHistoryByClient(int id)
         {
             throw new NotImplementedException();
         }
 
-        public List<Purchase> GetPurchaseHistoryByStore(int id)
+        public List<Purchase> GetPurchaseHistoryByStore(int storeId, int userId)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+                return store.getHistory(userId);
+            }
+            else{
+                throw new Exception("Store doesn't exists");
+            }
         }
 
         public bool HasPermission()
