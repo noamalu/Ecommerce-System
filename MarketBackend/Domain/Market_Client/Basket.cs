@@ -50,5 +50,11 @@ namespace MarketBackend.Domain.Models
 
             return newBasket;
         }
+
+        //TODO:
+        public string GetInfo()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

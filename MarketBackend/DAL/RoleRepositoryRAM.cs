@@ -2,6 +2,7 @@
 using MarketBackend.Domain.Models;
 using MarketBackend.Services.Interfaces;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,11 +12,20 @@ namespace MarketBackend.DAL
 {
     public class RoleRepositoryRAM : IRoleRepository
     {
-        Dictionary<int, Dictionary<int, Role>> roles; //<storeId, <memberId, Role>>
+        public ConcurrentDictionary<int, Dictionary<int, Role>> roles; //<storeId, <memberId, Role>>
+        private static RoleRepositoryRAM roleRepositoryRAM = null;
+        
 
-        public RoleRepositoryRAM()
+        private RoleRepositoryRAM()
         {
-            roles = new Dictionary<int, Dictionary<int, Role>>();
+            roles = new ConcurrentDictionary<int, Dictionary<int, Role>>();
+        }
+
+        public static RoleRepositoryRAM GetInstance()
+        {
+            if (roleRepositoryRAM == null)
+                roleRepositoryRAM = new RoleRepositoryRAM();
+            return roleRepositoryRAM;
         }
         public Role GetById(int storeId)
         {

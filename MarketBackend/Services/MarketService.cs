@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MarketBackend.Services.Interfaces;
+﻿using MarketBackend.Services.Interfaces;
 using MarketBackend.Domain.Market_Client;
+using MarketBackend.Domain.Payment;
+using NLog;
 
 namespace MarketBackend.Services
 {
@@ -13,7 +10,8 @@ namespace MarketBackend.Services
         private static MarketService _marketService = null;
         private MarketManagerFacade marketManagerFacade;
         private MarketService(){
-            //marketManagerFacade = MarketManagerFacade.GetInstance();
+            marketManagerFacade = MarketManagerFacade.GetInstance();
+            Logger logger = MyLogger.GetLogger();
         }
 
         public static MarketService GetInstance(){
@@ -87,11 +85,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response CloseStore(int storeId)
+        public Response CloseStore(int clientId, int storeId)
         {
             try
             {
-                marketManagerFacade.CloseStore(storeId);
+                marketManagerFacade.CloseStore(clientId, storeId);
                 //log
                 return new Response();
             }
@@ -177,11 +175,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response OpenStore(int storeId)
+        public Response OpenStore(int clientId, int storeId)
         {
             try
             {
-                marketManagerFacade.OpenStore(storeId);
+                marketManagerFacade.OpenStore(clientId, storeId);
                 //log
                 return new Response();
             }
@@ -284,9 +282,25 @@ namespace MarketBackend.Services
 
         public Response UpdateProductDiscount(int productId, double discount)
         {
+            throw new NotImplementedException();
+            // try
+            // {
+            //     marketManagerFacade.UpdateProductDiscount(storeId, userId, productId, discount);
+            //     //log
+            //     return new Response();
+            // }
+            // catch (Exception e)
+            // {
+            //     //log
+            //     return new Response(e.Message);
+            // }
+        }
+
+        public Response UpdateProductPrice(int storeId, int userId, int productId, double price)
+        {
             try
             {
-                marketManagerFacade.UpdateProductDiscount(productId, discount);
+                marketManagerFacade.UpdateProductPrice(storeId, userId, productId, price);
                 //log
                 return new Response();
             }
@@ -297,26 +311,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response UpdateProductPrice(int productId, double price)
+        public Response UpdateProductQuantity(int storeId, int userId, int productId, int quantity)
         {
             try
             {
-                marketManagerFacade.UpdateProductPrice(productId, price);
-                //log
-                return new Response();
-            }
-            catch (Exception e)
-            {
-                //log
-                return new Response(e.Message);
-            }
-        }
-
-        public Response UpdateProductQuantity(int productId, int quantity)
-        {
-            try
-            {
-                marketManagerFacade.UpdateProductQuantity(productId, quantity);
+                marketManagerFacade.UpdateProductQuantity(storeId, userId,productId, quantity);
                 //log
                 return new Response();
             }
@@ -398,6 +397,21 @@ namespace MarketBackend.Services
             {
                 //log
                 return Response<string>.FromError(e.Message);
+            }
+        }
+
+        public Response PurchaseCart(int id, PaymentDetails paymentDetails)
+        {
+             try
+            {
+                marketManagerFacade.PurchaseCart(id, paymentDetails);
+                //log
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                //log
+                return new Response(e.Message);
             }
         }
     }

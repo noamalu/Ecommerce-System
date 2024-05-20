@@ -29,7 +29,7 @@ namespace MarketBackend.DAL
 
         public void Add(Product item)
         {
-            _productById.TryAdd(item.Id, item);
+            _productById.TryAdd(item._productid, item);
             
         }
 
@@ -44,7 +44,7 @@ namespace MarketBackend.DAL
 
         public bool ContainsValue(Product item)
         {
-            if (_productById.ContainsKey(item.Id))
+            if (_productById.ContainsKey(item._productid))
             {
                 return true;
             }
@@ -53,7 +53,7 @@ namespace MarketBackend.DAL
 
         public void Delete(Product product)
         {
-            if (!_productById.TryRemove(product.productId, out Product product))
+            if (!_productById.TryRemove(new KeyValuePair<int, Product>(product._productid, product)))
             {
                
             }
@@ -91,7 +91,7 @@ namespace MarketBackend.DAL
             SynchronizedCollection<Product> products = new SynchronizedCollection<Product>();
             foreach(Product p in _productById.Values)
             {
-                if (p.ShopId == shopId) products.Add(p);
+                if (p._storeId == shopId) products.Add(p);
             }
             return products;
         }

@@ -127,6 +127,10 @@ namespace MarketBackend.Domain.Market_Client
             var client = GetClientById(clientId);
             return client.Cart;
         }
+
+        public bool IsMember(int clientId){
+            return MemberxClientId.ContainsKey(clientId);
+        }
     }
    
 }

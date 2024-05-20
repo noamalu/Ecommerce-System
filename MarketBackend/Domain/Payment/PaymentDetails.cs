@@ -7,30 +7,44 @@ namespace MarketBackend.Domain.Payment
 {
     public class PaymentDetails
     {
-        String cardNumber;
-        String exprYear;
-        String exprMonth;
-        String cvv;
-        String holderID; 
-        String holderName; 
+        private static int counterIDs = 0;
+        private static readonly object _lock = new object();
+
+        private int _paymentID;
+        private String _cardNumber;
+        private String _exprYear;
+        private String _exprMonth;
+        private String _cvv;
+        private String _holderID; 
+        private String _holderName; 
 
 
         public PaymentDetails (String cardNumber, String exprYear, String exprMonth, String cvv, String cardId, String name)
         {
-            this.cardNumber = cardNumber;
-            this.exprMonth =  exprMonth;
-            this.exprYear = exprYear;
-            this. cvv = cvv;
-            this.holderID = cardId;
-            this.holderName = name;
+            this._paymentID = GeneratePaymentID();
+            this._cardNumber = cardNumber;
+            this._exprMonth =  exprMonth;
+            this._exprYear = exprYear;
+            this._cvv = cvv;
+            this._holderID = cardId;
+            this._holderName = name;
         }
 
-        public String CardNumber {get => cardNumber; set => cardNumber = value; }
-        public String ExprMonth {get => exprMonth; set => exprMonth = value; }
-        public String ExprYear {get => exprYear; set => exprYear = value; }
-        public String Cvv {get => cvv; set => cvv = value; }
-        public String HolderID {get => holderID; set => holderID = value; }
-        public String HolderName {get => holderName; set => holderName = value; }
+        private static int GeneratePaymentID()
+        {
+            lock (_lock)
+            {
+                return ++counterIDs;
+            }
+        }
+
+        public int PaymentID {get => _paymentID; }
+        public String CardNumber {get => _cardNumber; set => _cardNumber = value; }
+        public String ExprMonth {get => _exprMonth; set => _exprMonth = value; }
+        public String ExprYear {get => _exprYear; set => _exprYear = value; }
+        public String Cvv {get => _cvv; set => _cvv = value; }
+        public String HolderID {get => _holderID; set => _holderID = value; }
+        public String HolderName {get => _holderName; set => _holderName = value; }
 
 
     }

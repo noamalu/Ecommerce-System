@@ -8,6 +8,7 @@ using MarketBackend.Domain.Models;
 using MarketBackend.Domain.Payment;
 using MarketBackend.Services.Interfaces;
 using Microsoft.Extensions.Logging;
+using NLog;
 
 namespace MarketBackend.Services
 {
@@ -17,7 +18,8 @@ namespace MarketBackend.Services
         private static ClientService _clientService = null;
         private MarketManagerFacade marketManagerFacade;
         private ClientService(){
-            //marketManagerFacade = MarketManagerFacade.GetInstance();
+            marketManagerFacade = MarketManagerFacade.GetInstance();
+            Logger logger = MyLogger.GetLogger();
         }
 
         public static ClientService GetInstance(){
@@ -45,11 +47,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response CreateStore(int id)
+        public Response CreateStore(int id, string storeName, string email, string phoneNum)
         {
             try
             {
-                marketManagerFacade.CreateStore(id);
+                marketManagerFacade.CreateStore(id, storeName, email, phoneNum);
                 //log
                 return new Response();
             }

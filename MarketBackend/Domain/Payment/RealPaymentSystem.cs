@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -7,52 +6,51 @@ using System.Threading.Tasks;
 
 namespace MarketBackend.Domain.Payment
 {
-
-     public class RealPaymentSystem : IPaymentSystemFacade
+    public class RealPaymentSystem : IPaymentSystemFacade
     {
         private readonly HttpClient _httpClient;
         private readonly string _url;
-
-        HttpRequestMessage httpRequest;
-
-        
 
         public RealPaymentSystem(HttpClient httpClient, string url)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _url = url ?? throw new ArgumentNullException(nameof(url));
         }
-        
 
         public int Pay(PaymentDetails cardDetails, double totalAmount)
         {
-            if (url == null)
+            if (_url == null)
                 throw new NotImplementedException();
 
-            using (HttpClient client = _httpClient)
+            var parameters = new Dictionary<string, string>
             {
+                { "action_type", "pay" },
+                {"payment_id", cardDetails.PaymentID.ToString()},
+                { "card_number", cardDetails.CardNumber },
+                { "month", cardDetails.ExprMonth },
+                { "year", cardDetails.ExprYear },
+                { "holder", cardDetails.HolderName },
+                { "ccv", cardDetails.Cvv },
+                { "id", cardDetails.HolderID },
+                {"amount", totalAmount.ToString()}
+            };
 
-                var parameters = new Dictionary<string, string>
-                {
-                    { "action_type", "pay" },
-                    { "card_number", cardDetails.CardNumber },
-                    { "month", cardDetails.ExprMonth },
-                    { "year", cardDetails.ExprYear },
-                    { "holder", cardDetails.HolderName },
-                    { "ccv", cardDetails.Cvv },
-                    { "id", cardDetails.HolderID }
-                };
-
-                HttpResponseMessage response = client.PostAsync(url, new FormUrlEncodedContent(parameters)).Result;
-
+            using (var httpRequest = new HttpRequestMessage(HttpMethod.Post, _url)
+            {
+                Content = new FormUrlEncodedContent(parameters)
+            })
+            {
+                HttpResponseMessage response = _httpClient.SendAsync(httpRequest).Result;
                 if (response.IsSuccessStatusCode)
                 {
                     string responseBody = response.Content.ReadAsStringAsync().Result;
                     if (responseBody.Equals("OK"))
-                    {    
-                        return Convert.ToInt32(response.Headers.GetValues("TransactionId").FirstOrDefault());
+                    {
+                        if (response.Headers.TryGetValues("TransactionId", out var transactionIdValues))
+                        {
+                            return Convert.ToInt32(transactionIdValues.FirstOrDefault());
+                        }
                     }
-                    
                 }
             }
             return -1;
@@ -60,63 +58,56 @@ namespace MarketBackend.Domain.Payment
 
         public int CancelPayment(int paymentID)
         {
-             if (url == null)
+            if (_url == null)
                 throw new NotImplementedException();
 
-            try
+            var parameters = new Dictionary<string, string>
             {
-            using (HttpClient client = _httpClient)
+                { "action_type", "cancel_payment" },
+                { "transaction_ID", paymentID.ToString() }
+            };
+
+            using (var httpRequest = new HttpRequestMessage(HttpMethod.Post, _url)
+            {
+                Content = new FormUrlEncodedContent(parameters)
+            })
+            {
+                HttpResponseMessage response = _httpClient.SendAsync(httpRequest).Result;
+                if (response.IsSuccessStatusCode)
                 {
-                    Dictionary<string, string> parameters = new Dictionary<string, string>
+                    string responseBody = response.Content.ReadAsStringAsync().Result;
+                    if (responseBody.Equals("OK"))
                     {
-                        {"action_type", "cancel_payment"},
-                        {"transaction_ID", paymentID.ToString()}
-                    };
-                    HttpResponseMessage response = client.PostAsync(url, new FormUrlEncodedContent(parameters)).Result;
-                    if (response.IsSuccessStatusCode)
-                    {
-                        string responseBody = response.Content.ReadAsStringAsync().Result;
-                        if (responseBody.Equals("OK"))
-                        {
-                            return 1;
-                        }
+                        return 1;
                     }
                 }
-                return -1;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An error occurred: {ex.Message}");
-                throw;
-            }
-
+            return -1;
         }
 
         public bool Connect()
         {
-            if (url == null)
+            if (_url == null)
                 throw new NotImplementedException();
 
-            using (HttpClient client = _httpClient)
+            var parameters = new Dictionary<string, string>
             {
-                Dictionary<string, string> parameters = new Dictionary<string, string>
-                {
-                    {"action_type", "connect"}
-                };
-                HttpResponseMessage response = client.PostAsync(url, new FormUrlEncodedContent(parameters)).Result;
-            
+                { "action_type", "connect" }
+            };
 
-                if (response.IsSuccessStatusCode)
-                {
-                    return true;
-                }
+            using (var httpRequest = new HttpRequestMessage(HttpMethod.Post, _url)
+            {
+                Content = new FormUrlEncodedContent(parameters)
+            })
+            {
+                HttpResponseMessage response = _httpClient.SendAsync(httpRequest).Result;
+                return response.IsSuccessStatusCode;
             }
-            return false;
         }
 
-
+        public void Disconnect()
+        {
+            throw new NotImplementedException();
+        }
     }
-
-
-
 }

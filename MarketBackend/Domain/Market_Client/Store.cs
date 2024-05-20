@@ -17,23 +17,25 @@ namespace MarketBackend.Domain.Market_Client
     public class Store
     {
 
-         private readonly int _storeId;
-         private string _storeName;
-         private bool _active;
+         public int _storeId {get; set;}
+         public string _storeName {get; set;}
+         public bool _active {get; set;}
 
-         private int _storePhoneNum;
+         public string _storePhoneNum {get; set;}
 
-         private string _storeEmailAdd;
+         public string _storeEmailAdd {get; set;}
 
-         private SynchronizedCollection<Product> _products;
-         private SynchronizedCollection<Purchase> _purchases;
-        // private DiscountPolicyManager _discountPolicyManager;
-        // private PurchasePolicyManager _purchasePolicyManager;
-        private Dictionary<int, Role> roles;
-         private long _productIdCounter;
-        private int _purchaseIdCounter;
+         public SynchronizedCollection<Product> _products {get; set;}
+         public SynchronizedCollection<Purchase> _purchases {get; set;}
+        // public DiscountPolicyManager _discountPolicyManager {get; set;}
+        // public PurchasePolicyManager _purchasePolicyManager {get; set;}
+        public Dictionary<int, Role> roles {get; set;}
+         public long _productIdCounter {get; set;}
+        public int _purchaseIdCounter {get; set;}
 
-        public Store(int Id, string name, string email, int phoneNum)
+        public double _raiting {get; set;}
+
+        public Store(int Id, string name, string email, string phoneNum)
         {
             _storeId = Id;
             _storeName = name;
@@ -41,11 +43,11 @@ namespace MarketBackend.Domain.Market_Client
             _storePhoneNum=phoneNum;
             _active = true;
             _products = ProductRepositoryRAM.GetInstance().GetShopProducts(_storeId);
-            roles = RoleRepo.GetInstance().GetShopRoles(_storeId);
+            roles = RoleRepositoryRAM.GetInstance().getShopRoles(_storeId);
             _purchases = PurchaseRepositoryRAM.GetInstance().GetShopPurchaseHistory(_storeId);
             //_discountPolicyManager = new DiscountPolicyManager(shopId);
             //_purchasePolicyManager = new PurchasePolicyManager(shopId);
-
+            _raiting = 0;
         }
 
          public int StoreId { get => _storeId; }
@@ -55,12 +57,12 @@ namespace MarketBackend.Domain.Market_Client
         public SynchronizedCollection<Purchase> Purchases { get => _purchases; set => _purchases = value; }
     
 
-        public Product AddProduct(int userId, string name, string sellMethod, string description, double price, string category, int quantity, Collection<string> keywords)
+        public Product AddProduct(int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
         {
                     if(getRole(userId)!=null && getRole(userId).canAddProduct()) {
 
                         int productId = GenerateUniqueProductId();
-                        Product newProduct = new Product(productId, this._storeId, name, sellMethod, description, price, category, quantity, keywords);
+                        Product newProduct = new Product(productId, this._storeId, name, sellMethod, description, price, category, quantity, ageLimit);
                         AddProduct(newProduct);
                         return newProduct;
                     }
@@ -68,7 +70,7 @@ namespace MarketBackend.Domain.Market_Client
             
         }
 
-        private void AddProduct(Product p)
+        public void AddProduct(Product p)
         {
             _products.Add(p);
             ProductRepositoryRAM.GetInstance().Add(p);
@@ -95,12 +97,12 @@ namespace MarketBackend.Domain.Market_Client
         private void RemoveProduct(Product p)
         {
             _products.Remove(p);
-            ProductRepositoryRAM.GetInstance().Delete(p.productId);
+            ProductRepositoryRAM.GetInstance().Delete(p);
         }
 
         private Product GetProduct(int productId)
         {
-            return _products.ToList().Find((p) => p.productId == productId);
+            return _products.ToList().Find((p) => p._productid == productId);
         }
 
         private Role getRole(int userId){
@@ -219,7 +221,7 @@ namespace MarketBackend.Domain.Market_Client
         {
             if (_products.Contains(product))
                 return quantity <= product.Quantity;
-            throw new Exception($"Product Name: \'{product.Name}\' Id: {product.Id} not exist in shop.");
+            throw new Exception($"Product Name: \'{product.Name}\' Id: {product._productid} not exist in shop.");
         }
 
         private void RemoveBasketProductsFromSupply(Basket basket)
@@ -241,20 +243,20 @@ namespace MarketBackend.Domain.Market_Client
 
         }
 
-        public List<Product> SearchByKeywords(string keywords)
+        public HashSet<Product> SearchByKeywords(string keywords)
         {
-            return _products.ToList().FindAll((p) => p.ContainKeyword(keywords));
+            return _products.ToList().FindAll((p) => p.ContainKeyword(keywords)).ToHashSet();
         }
 
-        public List<Product> SearchByName(string name)
+        public HashSet<Product> SearchByName(string name)
         {
             string lowerName = name.ToLower();
-            return _products.ToList().FindAll((p) => p.Name.ToLower().Contains(lowerName) || lowerName.Contains(p.Name.ToLower()));
+            return _products.ToList().FindAll((p) => p.Name.ToLower().Contains(lowerName) || lowerName.Contains(p.Name.ToLower())).ToHashSet();
         }
 
-        public List<Product> SearchByCategory(string category)
+        public HashSet<Product> SearchByCategory(string category)
         {
-            return _products.ToList().FindAll((p) => ((category & p.Category) == category));
+            return _products.ToList().FindAll((p) =>  p.Category == category).ToHashSet();
         }
 
         public List<Purchase> getHistory(int userId)
@@ -266,7 +268,7 @@ namespace MarketBackend.Domain.Market_Client
             else throw new Exception($"Permission exception for userId: {userId}");
         }
 
-        public string GetInfo()
+        public string getInfo()
         {
             StringBuilder sb = new StringBuilder();
             foreach (Product product in _products)
@@ -274,6 +276,19 @@ namespace MarketBackend.Domain.Market_Client
                 sb.AppendLine(product.GetInfo());
             }
             return sb.ToString();
+        }
+
+        public string getProductInfo(int productId)
+        {
+            Product product = GetProduct(productId);
+            if (product != null)
+            {
+                return product.GetInfo();
+            }
+            else
+            {
+                throw new Exception("Product not found");
+            }
         }
 
         public void AddStaffMember(int roleUserId ,Role role, int userId){
@@ -295,6 +310,14 @@ namespace MarketBackend.Domain.Market_Client
             }
             else throw new Exception($"Permission exception for userId: {userId}");
 
+        }
+
+        public void AddKeyword(int productId, string keyWord){
+            GetProduct(productId).AddKeyword(keyWord);
+        }
+
+        public void Remove(int productId, string keyWord){
+            GetProduct(productId).RemoveKeyword(keyWord);
         }
     
     }

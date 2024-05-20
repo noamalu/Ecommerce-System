@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,58 +8,76 @@ namespace MarketBackend.Domain.Shipping
 {
     public class ShippingSystemProxy : IShippingSystemFacade
     {
-         //  TODO : when we will connect the system to real shipping system -> change realShippingtSystem
-        private  IShippingSystemFacade? _realShippingtSystem = null;
-        private int orderId;
-
-        public static bool succeedShipping = true;
-
+        private IShippingSystemFacade? _realShippingSystem;
+        public static bool connected;
         private static int fakeTransactionId = 10000;
 
-        public ShippingSystemProxy(IShippingSystemFacade realShippingtSystem)
+        public ShippingSystemProxy(IShippingSystemFacade? realShippingSystem = null)
         {
-            _realShippingtSystem = realShippingtSystem ?? throw new ArgumentNullException(nameof(realShippingtSystem));
-            orderID = 1;
+            _realShippingSystem = realShippingSystem;
+            connected = false;
         }
 
-        public bool Conect()
+        public ShippingSystemProxy()
         {
-             if (realShippingtSystem == null)
-                return true;
-           else
-                return realShippingtSystem.Connect();
+            _realShippingSystem = null;
+            connected = false;
         }
+
+        public bool Connect()
+        {
+            if (_realShippingSystem == null)
+            {
+                connected = true;
+                return true;
+            }
+            else if (_realShippingSystem.Connect())
+            {
+                connected = true;
+                return true;
+            }
+            else
+            {
+                connected = false;
+                return false;
+            }
         }
 
         public int CancelShippment(int orderID)
         {
-            if (realShippingtSystem == null)
-                return 1;
-            
-            else
+            if (connected)
             {
-                if (realShippingtSystem.Connect())
-                    return realShippingtSystem.CancelShippment(orderID);
+                if (_realShippingSystem == null)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return _realShippingSystem.CancelShippment(orderID);
+                }
             }
             return -1;
-
         }
 
-        public void OrderShippment(ShippingDeatails details)
+        public int OrderShippment(ShippingDetails details)
         {
-           if (realShippingtSystem == null)
+            if (connected)
             {
-                if (succeedShipping)
+                if (_realShippingSystem == null)
+                {
                     return fakeTransactionId++;
-                
-                return -1;
+                }
+                else
+                {
+                    return _realShippingSystem.OrderShippment(details);
+                }
             }
-            else
-            {
-                return realShippingtSystem.OrderShippment(details);
-            }
+            return -1;
+        }
 
+        public void Disconnect() //for testing
+        {
+            connected = false;
         }
     }
-
-     
+}

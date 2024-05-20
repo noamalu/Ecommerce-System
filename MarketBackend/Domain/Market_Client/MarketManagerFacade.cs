@@ -8,23 +8,35 @@ using MarketBackend.DAL;
 using MarketBackend.Domain.Payment;
 using MarketBackend.Services.Interfaces;
 using Microsoft.Extensions.Logging;
+using System.Security.Policy;
 
 
 namespace MarketBackend.Domain.Market_Client
 {
     public class MarketManagerFacade : IMarketManagerFacade
     {
+        private static MarketManagerFacade marketManagerFacade = null;
         private readonly IStoreRepository _storeRepository;
         private readonly ClientManager _clientManager;
         private readonly IPaymentSystemFacade _paymentSystem;
+        private int _storeCounter = 0;
 
         private readonly ILogger<MarketManagerFacade> _logger;
-        public MarketManagerFacade(ILogger<MarketManagerFacade> logger){
+        private MarketManagerFacade(){
             _storeRepository = StoreRepositoryRAM.GetInstance();
             _clientManager = ClientManager.GetInstance();
             _paymentSystem = new PaymentSystemProxy();
-            _logger = logger;
+            // TODO: initializie system admin
+            // _logger = logger;
         }
+
+        public static MarketManagerFacade GetInstance(){
+            if (marketManagerFacade == null){
+                marketManagerFacade = new MarketManagerFacade();
+            }
+            return marketManagerFacade;
+        }
+        
         public void AddManger(int activeId, int storeId, int toAddId)
         {
             throw new NotImplementedException();
@@ -40,16 +52,21 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void AddProduct(int productId, string productName, int storeId, string category, double price, int quantity, double discount)
+        public void AddProduct(int storeId, int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store == null){
+                throw new Exception("Store doesn't exists");
+            }
+            store.AddProduct(userId, name, sellMethod, description, price, category, quantity, ageLimit);
+
         }
 
         public void AddToCart(int clientId, int storeId, int productId, int quantity)
         {
             ClientManager.CheckClientId(clientId);
             _clientManager.AddToCart(clientId, storeId, productId, quantity);
-            _logger.LogInformation($"Product id={productId} were added to client id={clientId} cart, to storeId={storeId} basket.!");
+            // _logger.LogInformation($"Product id={productId} were added to client id={clientId} cart, to storeId={storeId} basket.!");
         }
 
         public void BrowseGuest()
@@ -57,14 +74,37 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void CloseStore(int storeId)
+        public void CloseStore(int userId, int storeId)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+                store.CloseStore(userId);
+            }
+            else{
+                throw new Exception("Store doesn't exists");
+            }
         }
 
-        public void CreateStore(int id)
+        public void CreateStore(int id, string storeName, string email, string phoneNum)
         {
-            throw new NotImplementedException();
+            Client store_founder = _clientManager.GetClientById(id);
+            if(store_founder != null)
+            {
+                int storeId = _storeCounter++;
+                if (_storeRepository.GetById(storeId) != null){
+                    throw new Exception("Store exists");
+                }
+                Store store = new Store(storeId, storeName, email, phoneNum)
+                {
+                    _active = true
+                };
+                _storeRepository.Add(store);
+                // make as a founder/ owner
+            }
+            else
+            {
+                throw new Exception("Store founder must be a Member.");
+            }
         }
 
         public void EditPurchasePolicy(int storeId)
@@ -97,23 +137,37 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public string GetProductInfo(int productId)
+        public string GetProductInfo(int storeId, int productId)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store == null){
+                throw new Exception("Store doesn't exists");
+            }
+            return store.getProductInfo(productId);
         }
 
         public string GetInfo(int storeId){
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store == null){
+                throw new Exception("Store doesn't exists");
+            }
+            return store.getInfo();
         }
 
-        public List<Purchase> GetPurchaseHistoryByClient(int id)
+        public List<ShoppingCart> GetPurchaseHistoryByClient(int id)
         {
             throw new NotImplementedException();
         }
 
-        public List<Purchase> GetPurchaseHistoryByStore(int id)
+        public List<Purchase> GetPurchaseHistoryByStore(int storeId, int userId)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+                return store.getHistory(userId);
+            }
+            else{
+                throw new Exception("Store doesn't exists");
+            }
         }
 
         public bool HasPermission()
@@ -121,9 +175,15 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public bool IsAvailable(int productId)
+        public bool IsAvailable(int storeId)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+                return store._active;
+            }
+            else{
+                throw new Exception("Store doesn't exists");
+            }
         }
 
         public void LoginClient(string username, string password)
@@ -136,9 +196,15 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void OpenStore(int storeId)
+        public void OpenStore(int clientId, int storeId)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+                store.OpenStore(clientId);
+            }
+            else{
+                throw new Exception("Store doesn't exists");
+            }
         }
 
         public void PurchaseCart(int id, PaymentDetails paymentDetails) //clientId
@@ -187,9 +253,13 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void RemoveProduct(int productId)
+        public void RemoveProduct(int storeId,int userId, int productId)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store == null){
+                throw new Exception("Store doesn't exists");
+            }
+            store.RemoveProduct(userId, productId);
         }
 
         public void RemoveStaffMember(int storeId, int activeId, Role role, int toRemoveId)
@@ -207,34 +277,79 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public List<Product> SearchByCategory(string category)
+        public HashSet<Product> SearchByCategory(string category)
         {
-            throw new NotImplementedException();
+            return SearchingManager.searchByCategory(category);
         }
 
-        public List<Product> SearchByKeyWords(string keywords)
+        public HashSet<Product> SearchByKeyWords(string keywords)
         {
-            throw new NotImplementedException();
+            return SearchingManager.searchByKeyword(keywords);
         }
 
-        public List<Product> SearchByName(string name)
+        public HashSet<Product> SearchByName(string name)
         {
-            throw new NotImplementedException();
+            return SearchingManager.serachByName(name);
+        }
+        public HashSet<Product> SearchByCategoryWithStore(int storeId, string category)
+        {
+            return SearchingManager.searchByCategoryWithStore(storeId, category);
         }
 
-        public void UpdateProductDiscount(int productId, double discount)
+        public HashSet<Product> SearchByKeyWordsWithStore(int storeId, string keywords)
         {
-            throw new NotImplementedException();
+            return SearchingManager.searchByKeywordWithStore(storeId, keywords);
         }
 
-        public void UpdateProductPrice(int productId, double price)
+        public HashSet<Product> SearchByNameWithStore(int storeId, string name)
         {
-            throw new NotImplementedException();
+            return SearchingManager.serachByNameWithStore(storeId, name);
         }
 
-        public void UpdateProductQuantity(int productId, int quantity)
+        public void Filter(HashSet<Product> products, string category, double lowPrice, double highPrice, double lowProductRate, double highProductRate, double lowStoreRate, double highStoreRate)
         {
-            throw new NotImplementedException();
+            FilterParameterManager filter = new FilterParameterManager(category, lowPrice, highPrice, lowProductRate, highProductRate, lowStoreRate, highStoreRate);
+            filter.Filter(products);
+        }
+
+        // public void UpdateProductDiscount(int storeId, int userId, int productId, double discount)
+        // {
+        
+
+        //     if (_storeRepository.GetById(storeId) != null)
+        //     {
+        //         _storeRepository.GetById(storeId).UpdateProductDiscount(userId, productId, discount);
+        //     }
+        //     else
+        //     {
+        //         throw new Exception("Store not found");
+        //     }
+
+        // }
+
+        public void UpdateProductPrice(int storeId, int userId,  int productId, double price)
+        {
+            if (_storeRepository.GetById(storeId) != null)
+            {
+                _storeRepository.GetById(storeId).UpdateProductPrice(userId, productId, price);
+            }
+            else
+            {
+                throw new Exception("Store not found");
+            }
+
+        }
+
+        public void UpdateProductQuantity(int storeId, int userId, int productId, int quantity)
+        {
+            if (_storeRepository.GetById(storeId) != null)
+            {
+                _storeRepository.GetById(storeId).UpdateProductPrice(userId, productId, quantity);
+            }
+            else
+            {
+                throw new Exception("Store not found");
+            }
         }
 
         public ShoppingCart ViewCart(int id)

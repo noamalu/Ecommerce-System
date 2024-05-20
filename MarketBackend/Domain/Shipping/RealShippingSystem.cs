@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -31,7 +32,7 @@ namespace MarketBackend.Domain.Shipping
                 {
                     {"action_type", "connect"}
                 };
-                HttpResponseMessage response = client.PostAsync(url, new FormUrlEncodedContent(parameters)).Result;
+                HttpResponseMessage response = client.PostAsync(_url, new FormUrlEncodedContent(parameters)).Result;
             
 
                 if (response.IsSuccessStatusCode)
@@ -41,17 +42,17 @@ namespace MarketBackend.Domain.Shipping
             }
             return false;
         }
-        public void OrderShippment(ShippingDeatails details)
+        public int OrderShippment(ShippingDetails details)
         {
-          if (url == null)
+          if (_url == null)
                 throw new NotImplementedException();
 
-            using (HttpClient client = _httpClient)
-            {
+            
 
                 var parameters = new Dictionary<string, string>
                 {
                     { "action_type", "shipping" },
+                    {"shippind_id", details.ShippingID.ToString()},
                     { "name", details.Name },
                     { "address", details.Address },
                     { "city", details.City },
@@ -59,29 +60,32 @@ namespace MarketBackend.Domain.Shipping
                     { "zipcode", details.Zipcode }
         
                 };
-
-                HttpResponseMessage response = client.PostAsync(url, new FormUrlEncodedContent(parameters)).Result;
-
-                if (response.IsSuccessStatusCode)
+                 using (var httpRequest = new HttpRequestMessage(HttpMethod.Post, _url)
                 {
-                    string responseBody = response.Content.ReadAsStringAsync().Result;
-                    if (responseBody.Equals("OK"))
-                    {    
-                        return Convert.ToInt32(response.Headers.GetValues("TransactionId").FirstOrDefault());
+                    Content = new FormUrlEncodedContent(parameters)
+                })
+                {
+                    HttpResponseMessage response = _httpClient.SendAsync(httpRequest).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseBody = response.Content.ReadAsStringAsync().Result;
+                        if (responseBody.Equals("OK"))
+                        {
+                            if (response.Headers.TryGetValues("TransactionId", out var transactionIdValues))
+                            {
+                                return Convert.ToInt32(transactionIdValues.FirstOrDefault());
+                            }
+                        }
                     }
-                    
                 }
-            }
             return -1;
         }
+        
 
         public int CancelShippment(int orderID)
         {
-             if (url == null)
+             if (_url == null)
                 throw new NotImplementedException();
-
-            using (HttpClient client = _httpClient)
-            {
 
                 var parameters = new Dictionary<string, string>
                 {
@@ -89,24 +93,30 @@ namespace MarketBackend.Domain.Shipping
                     {"transaction_ID", orderID.ToString()}
                 };
 
-                HttpResponseMessage response = client.PostAsync(url, new FormUrlEncodedContent(parameters)).Result;
-
-                if (response.IsSuccessStatusCode)
+                using (var httpRequest = new HttpRequestMessage(HttpMethod.Post, _url)
                 {
-                    string responseBody = response.Content.ReadAsStringAsync().Result;
-                    if (responseBody.Equals("OK"))
-                    {    
-                        return Convert.ToInt32(response.Headers.GetValues("TransactionId").FirstOrDefault());
+                    Content = new FormUrlEncodedContent(parameters)
+                })
+                {
+                    HttpResponseMessage response = _httpClient.SendAsync(httpRequest).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseBody = response.Content.ReadAsStringAsync().Result;
+                        if (responseBody.Equals("OK"))
+                        {
+                            return 1;
+                        }
                     }
-                    
                 }
-            }
             return -1;
 
         }
 
-
+        public void Disconnect()
+        {
+            throw new NotImplementedException();
         }
+    }
     }
 
      

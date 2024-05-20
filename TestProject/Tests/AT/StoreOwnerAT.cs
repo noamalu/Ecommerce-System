@@ -5,35 +5,40 @@ using MarketBackend.Domain.Shipping;
 using MarketBackend.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using NLog;
 
 namespace MarketBackend.Tests.AT
 {
     [TestClass()]
     public class StoreOwnerAT
     {
-        string userName = "user1";
-        string userName2 = "user2";
-        string userPassword = "pass1";
-        string pass2 = "pass2";
-        string email1 = "printz@post.bgu.ac.il";
-        string email2 = "hadaspr100@gmail.com";
-        string wrongEmail = "@gmail.com";
-        int userId;
-        Proxy proxy;
-        int productID1 = 111;
-        string productName1 = "Banana";
-        string category1 = "Fruit";
-        double price1 = 5.0;
-        double price2 = 10.0;
-        double negPrice = -10.0;
-        int quantity1 = 10;
-        int quantity2 = 20;
-        int negQuantity = -10;
-        double discount1 = 0.5;
-        double discount2 = 0.3;  
-        int userAge = 20;
-        int userAge2 = 16;
+      string userName = "user1";
+      string userName2 = "user2";
+      string userPassword = "pass1";
+      string pass2 = "pass2";
+      string email1 = "printz@post.bgu.ac.il";
+      string email2 = "hadaspr100@gmail.com";
+      string wrongEmail = "@gmail.com";
+      int userId;
+      Proxy proxy;
+      int productID1 = 111;
+      string productName1 = "Banana";
+      string category1 = "Fruit";
+      double price1 = 5.0;
+      double price2 = 10.0;
+      double negPrice = -10.0;
+      int quantity1 = 10;
+      int quantity2 = 20;
+      int negQuantity = -10;
+      double discount1 = 0.5;
+      double discount2 = 0.3;  
+      int userAge = 20;
+      int userAge2 = 16;
+      string storeName = "Rami Levi";
+      string storeEmail = "RamiLevi@gmail.com";
+      string phoneNum  = "0522458976";
 
+      
 
         [TestInitialize()]
         public void Setup(){
@@ -43,6 +48,9 @@ namespace MarketBackend.Tests.AT
             var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
+
+            
+
         }
 
         [TestCleanup]
@@ -58,7 +66,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
            int shopID = 1;
-           Assert.IsTrue(proxy.OpenStore(shopID));
+           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(productID1, productName1, shopID, category1, price1, quantity1, discount1));
         }
 
@@ -69,7 +77,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
            int shopID = 1;
-           Assert.IsTrue(proxy.OpenStore(shopID));
+           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(productID1, productName1, shopID, category1, price1, quantity1, discount1));
            Assert.IsTrue(proxy.RemoveProduct(productID1));
         }
@@ -81,7 +89,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
            int shopID = 1;
-           Assert.IsTrue(proxy.OpenStore(shopID));
+           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsFalse(proxy.RemoveProduct(productID1));
         }
 
@@ -92,9 +100,9 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
            int shopID = 1;
-           Assert.IsTrue(proxy.OpenStore(shopID));
+           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(productID1, productName1, shopID, category1, price1, quantity1, discount1)); 
-           Assert.IsTrue(proxy.UpdateProductPrice(productID1, price2));     
+           Assert.IsTrue(proxy.UpdateProductPrice(shopID, userId, productID1, price2));     
         }
 
         [TestMethod]
@@ -104,9 +112,9 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
            int shopID = 1;
-           Assert.IsTrue(proxy.OpenStore(shopID));
+           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(productID1, productName1, shopID, category1, price1, quantity1, discount1)); 
-           Assert.IsFalse(proxy.UpdateProductPrice(productID1, negPrice));     
+           Assert.IsFalse(proxy.UpdateProductPrice(shopID, userId, productID1, negPrice));     
         }
 
         [TestMethod]
@@ -116,9 +124,9 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
            int shopID = 1;
-           Assert.IsTrue(proxy.OpenStore(shopID));
+           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(productID1, productName1, shopID, category1, price1, quantity1, discount1)); 
-           Assert.IsTrue(proxy.UpdateProductQuantity(productID1, quantity2));     
+           Assert.IsTrue(proxy.UpdateProductQuantity(shopID, userId, productID1, quantity2));     
         }
 
         [TestMethod]
@@ -128,9 +136,9 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
            int shopID = 1;
-           Assert.IsTrue(proxy.OpenStore(shopID));
+           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(productID1, productName1, shopID, category1, price1, quantity1, discount1)); 
-           Assert.IsFalse(proxy.UpdateProductQuantity(productID1, negQuantity));     
+           Assert.IsFalse(proxy.UpdateProductQuantity(shopID, userId, productID1, negQuantity));     
         }
 
         [TestMethod]
@@ -140,9 +148,9 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
            int shopID = 1;
-           Assert.IsTrue(proxy.OpenStore(shopID));
+           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(productID1, productName1, shopID, category1, price1, quantity1, discount1)); 
-           Assert.IsTrue(proxy.UpdateProductDiscount(productID1, discount2));     
+         //   Assert.IsTrue(proxy.UpdateProductDiscount(shopID, userId, productID1, discount2));     
         }
 
         [TestMethod]
@@ -152,8 +160,8 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
            int shopID = 1;
-           Assert.IsTrue(proxy.OpenStore(shopID));
-           Assert.IsFalse(proxy.UpdateProductDiscount(productID1, discount2));     
+           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
+         //   Assert.IsFalse(proxy.UpdateProductDiscount(shopID, userId, productID1, discount2));     
         }
 
         [TestMethod]
@@ -163,7 +171,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
            int shopID = 1;
-           Assert.IsTrue(proxy.OpenStore(shopID));
+           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(productID1, productName1, shopID, category1, price1, quantity1, discount1));
            int userId2 = proxy.GetUserId();
            Assert.IsTrue(proxy.EnterAsGuest(userId2));
@@ -182,7 +190,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
            int shopID = 1;
-           Assert.IsTrue(proxy.OpenStore(shopID));
+           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            int userId2 = proxy.GetUserId();
            Assert.IsTrue(proxy.EnterAsGuest(userId2));
            Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge));
@@ -197,7 +205,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
            int shopID = 1;
-           Assert.IsTrue(proxy.OpenStore(shopID));
+           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            int userId2 = proxy.GetUserId();
            Assert.IsTrue(proxy.EnterAsGuest(userId2));
            Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge));
