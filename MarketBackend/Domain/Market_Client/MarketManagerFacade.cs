@@ -51,9 +51,14 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void AddProduct(int productId, string productName, int storeId, string category, double price, int quantity, double discount)
+        public void AddProduct(int storeId, int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store == null){
+                throw new Exception("Store doesn't exists");
+            }
+            store.AddProduct(userId, name, sellMethod, description, price, category, quantity, ageLimit);
+
         }
 
         public void AddToCart(int clientId, int storeId, int productId, int quantity)
@@ -131,13 +136,21 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public string GetProductInfo(int productId)
+        public string GetProductInfo(int storeId, int productId)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store == null){
+                throw new Exception("Store doesn't exists");
+            }
+            return store.getProductInfo(productId);
         }
 
         public string GetInfo(int storeId){
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store == null){
+                throw new Exception("Store doesn't exists");
+            }
+            return store.getInfo();
         }
 
         public List<Purchase> GetPurchaseHistoryByClient(int id)
@@ -227,9 +240,13 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void RemoveProduct(int productId)
+        public void RemoveProduct(int storeId,int userId, int productId)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store == null){
+                throw new Exception("Store doesn't exists");
+            }
+            store.RemoveProduct(userId, productId);
         }
 
         public void RemoveStaffMember(int storeId, int activeId, Role role, int toRemoveId)

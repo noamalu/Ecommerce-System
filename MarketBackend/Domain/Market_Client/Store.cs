@@ -268,7 +268,7 @@ namespace MarketBackend.Domain.Market_Client
             else throw new Exception($"Permission exception for userId: {userId}");
         }
 
-        public string GetInfo()
+        public string getInfo()
         {
             StringBuilder sb = new StringBuilder();
             foreach (Product product in _products)
@@ -276,6 +276,19 @@ namespace MarketBackend.Domain.Market_Client
                 sb.AppendLine(product.GetInfo());
             }
             return sb.ToString();
+        }
+
+        public string getProductInfo(int productId)
+        {
+            Product product = GetProduct(productId);
+            if (product != null)
+            {
+                return product.GetInfo();
+            }
+            else
+            {
+                throw new Exception("Product not found");
+            }
         }
 
         public void AddStaffMember(int roleUserId ,Role role, int userId){

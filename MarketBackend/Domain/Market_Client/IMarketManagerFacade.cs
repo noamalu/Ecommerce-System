@@ -27,8 +27,8 @@ namespace MarketBackend.Domain.Market_Client
         void BrowseGuest();
         List<Purchase> GetPurchaseHistoryByClient(int id);
         List<Purchase> GetPurchaseHistoryByStore(int id);
-        void AddProduct(int productId, string productName, int storeId, string category, double price, int quantity, double discount);
-        void RemoveProduct(int productId);
+        void AddProduct(int storeId, int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit);
+        void RemoveProduct(int storeId,int userId, int productId);
         void UpdateProductDiscount(int productId, double discount);
         void RemoveStaffMember(int storeId, int activeId, Role role, int toRemoveId);
         void AddManger(int activeId, int storeId, int toAddId);
@@ -50,7 +50,7 @@ namespace MarketBackend.Domain.Market_Client
         List<Product> SearchByName(string name);
         List<Product> SearchByCategory(string category);
         bool HasPermission();
-        string GetProductInfo(int productId);
+        string GetProductInfo(int storId, int productId);
         public void AddStaffMember(int storeId, int activeId, Role role, int toAddId);   
         public string GetInfo(int storeId);     
     }
