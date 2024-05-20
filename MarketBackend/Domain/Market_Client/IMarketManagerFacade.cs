@@ -25,11 +25,11 @@ namespace MarketBackend.Domain.Market_Client
         void LoginClient(string username, string password);
         void ExitGuest();
         void BrowseGuest();
+        // void UpdateProductDiscount(int productId, double discount);
         List<ShoppingCart> GetPurchaseHistoryByClient(int id);
         List<Purchase> GetPurchaseHistoryByStore(int storeId, int userId);
         void AddProduct(int storeId, int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit);
         void RemoveProduct(int storeId,int userId, int productId);
-        void UpdateProductDiscount(int productId, double discount);
         void RemoveStaffMember(int storeId, int activeId, Role role, int toRemoveId);
         void AddManger(int activeId, int storeId, int toAddId);
         void RemoveManger(int activeId, int storeId, int toRemoveId);
@@ -38,8 +38,9 @@ namespace MarketBackend.Domain.Market_Client
         List<Member> GetOwners(int storeId);
         List<Member> GetMangers(int storeId);
         Member GetFounder(int storeId);
-        void UpdateProductQuantity(int productId, int quantity);
-        void UpdateProductPrice(int productId, double price);
+
+        void UpdateProductQuantity(int storeId, int userId, int productId, int quantity); 
+        void UpdateProductPrice(int storeId, int userId,  int productId, double price);
         void CloseStore(int userId, int storeId);
         void OpenStore(int clientId, int storeId);
         bool IsAvailable(int storeId);

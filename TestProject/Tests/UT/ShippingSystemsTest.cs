@@ -20,10 +20,15 @@ namespace UnitTests
         [TestInitialize]
         public void SetUp()
         {
-            var mockShippingSystemFacade = new Mock<IShippingSystemFacade>();
-            shippingSystem = new ShippingSystemProxy(mockShippingSystemFacade.Object);
+            shippingSystem = new ShippingSystemProxy();
             shippingDetails = new ShippingDetails(name, city, address, country, zipcode);
             shippingSystem.Connect();
+        }
+
+        [TestMethod]
+        public void TestAttemptToConnect()
+        {
+            Assert.IsTrue(shippingSystem.Connect());
         }
 
         [TestMethod]

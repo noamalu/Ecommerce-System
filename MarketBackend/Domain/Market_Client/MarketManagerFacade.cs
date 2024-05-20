@@ -312,19 +312,44 @@ namespace MarketBackend.Domain.Market_Client
             filter.Filter(products);
         }
 
-        public void UpdateProductDiscount(int productId, double discount)
+        // public void UpdateProductDiscount(int storeId, int userId, int productId, double discount)
+        // {
+        
+
+        //     if (_storeRepository.GetById(storeId) != null)
+        //     {
+        //         _storeRepository.GetById(storeId).UpdateProductDiscount(userId, productId, discount);
+        //     }
+        //     else
+        //     {
+        //         throw new Exception("Store not found");
+        //     }
+
+        // }
+
+        public void UpdateProductPrice(int storeId, int userId,  int productId, double price)
         {
-            throw new NotImplementedException();
+            if (_storeRepository.GetById(storeId) != null)
+            {
+                _storeRepository.GetById(storeId).UpdateProductPrice(userId, productId, price);
+            }
+            else
+            {
+                throw new Exception("Store not found");
+            }
+
         }
 
-        public void UpdateProductPrice(int productId, double price)
+        public void UpdateProductQuantity(int storeId, int userId, int productId, int quantity)
         {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateProductQuantity(int productId, int quantity)
-        {
-            throw new NotImplementedException();
+            if (_storeRepository.GetById(storeId) != null)
+            {
+                _storeRepository.GetById(storeId).UpdateProductPrice(userId, productId, quantity);
+            }
+            else
+            {
+                throw new Exception("Store not found");
+            }
         }
 
         public ShoppingCart ViewCart(int id)

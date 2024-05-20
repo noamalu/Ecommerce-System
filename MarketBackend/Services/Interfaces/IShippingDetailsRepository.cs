@@ -8,6 +8,6 @@ namespace MarketBackend.Services.Interfaces
 {
     public interface IShippingDetailsRepository : IRepository<ShippingDetails>
     {
-         public ShippingDetails GetById(string address, string name);
+         public ShippingDetails GetById(int shippingID, string address, string name);
     }
 }

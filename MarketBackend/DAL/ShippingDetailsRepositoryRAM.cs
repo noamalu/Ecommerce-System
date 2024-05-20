@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using MarketBackend.Domain.Shipping;
@@ -6,62 +7,88 @@ using MarketBackend.Services.Interfaces;
 
 namespace MarketBackend.DAL
 {
-    public class ShipingDetailsRepositoryRAM //: IShippingDetailsRepository TODO: need to think about because IShippingDetailsRepository.getByID(..) needts to be implmemted but cant 
+    public class ShippingDetailsRepositoryRAM : IShippingDetailsRepository
     {
-        // Using a Tuple<string, string> as the composite key (Address, Name)
-        private readonly Dictionary<(string Address, string Name), ShippingDetails> shippedPurchases;
+        // Using a Tuple<int, string, string> as the composite key (ShippingID, Address, Name)
+        private readonly ConcurrentDictionary<Tuple<int, string, string>, ShippingDetails> _shipments;
 
-        public ShipingDetailsRepositoryRAM()
+        private static ShippingDetailsRepositoryRAM _shippingRepository = null;
+
+        public ShippingDetailsRepositoryRAM()
         {
-            shippedPurchases = new Dictionary<(string, string), ShippingDetails>();
+            _shipments = new ConcurrentDictionary<Tuple<int, string, string>, ShippingDetails>();
+        }
+
+        public static ShippingDetailsRepositoryRAM GetInstance()
+        {
+            _shippingRepository ??= new ShippingDetailsRepositoryRAM();
+            return _shippingRepository;
         }
 
         public void Add(ShippingDetails entity)
         {
-            var key = (entity.Address, entity.Name);
-            if (shippedPurchases.ContainsKey(key))
+            var key = Tuple.Create(entity.ShippingID, entity.Address, entity.Name);
+            if (_shipments.ContainsKey(key))
             {
-                throw new ArgumentException($"Shipping Details with the address: {entity.Address} and name: {entity.Name} already exists.");
+                throw new ArgumentException($"Shipping Details with the ID: {entity.ShippingID}, address: {entity.Address}, and name: {entity.Name} already exists.");
             }
-            shippedPurchases.Add(key, entity);
+            _shipments.TryAdd(key, entity);
         }
 
         public void Delete(ShippingDetails entity)
         {
-            var key = (entity.Address, entity.Name);
-            if (!shippedPurchases.ContainsKey(key))
+            var key = Tuple.Create(entity.ShippingID, entity.Address, entity.Name);
+            if (!_shipments.ContainsKey(key))
             {
-                throw new KeyNotFoundException($"Shipping Details with the address: {entity.Address} and name: {entity.Name} does not exist.");
+                throw new KeyNotFoundException($"Shipping Details with the ID: {entity.ShippingID}, address: {entity.Address}, and name: {entity.Name} does not exist.");
             }
-            shippedPurchases.Remove(key);
+            _shipments.TryRemove(key, out _);
         }
 
         public IEnumerable<ShippingDetails> getAll()
         {
-            return shippedPurchases.Values.ToList();
+            return _shipments.Values.ToList();
         }
 
-        public ShippingDetails GetById(string address, string name)
+        public void Update(ShippingDetails entity)
         {
-            var key = (address, name);
-            if (shippedPurchases.TryGetValue(key, out var shippingDetails))
+            var key = Tuple.Create(entity.ShippingID, entity.Address, entity.Name);
+            if (_shipments.ContainsKey(key))
+            {
+                _shipments[key] = entity;
+            }
+            else
+            {
+                throw new KeyNotFoundException($"Shipping Details with the ID: {entity.ShippingID}, address: {entity.Address}, and name: {entity.Name} not found.");
+            }
+        }
+
+        public ShippingDetails GetById(int shippingID, string address, string name)
+        {
+            var key = Tuple.Create(shippingID, address, name);
+            if (_shipments.TryGetValue(key, out var shippingDetails))
             {
                 return shippingDetails;
             }
             return null;
         }
 
-        public void Update(ShippingDetails entity)
+        // public List<ShippingDetails> GetById(int id)
+        // {
+        //     List<ShippingDetails> result = _shipments.Values.ToList();
+        //     foreach (var shipping in result)
+        //     {
+        //         if (shipping.ShippingID == id)
+        //         {
+        //             result.Add(shipping);
+        //         }
+        //     }
+        //     return result;
+        // }
+
+        public ShippingDetails GetById(int id)
         {
-            var key = (entity.Address, entity.Name);
-            if (shippedPurchases.ContainsKey(key))
-            {
-                shippedPurchases[key] = entity;
-            }
-            else
-            {
-                throw new KeyNotFoundException($"Shipping Details with the address: {entity.Address} and name: {entity.Name} not found.");
-            }
+            throw new NotImplementedException();
         }
     }
 }
