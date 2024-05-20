@@ -8,6 +8,7 @@ using MarketBackend.Domain.Models;
 using MarketBackend.Domain.Payment;
 using MarketBackend.Services.Interfaces;
 using Microsoft.Extensions.Logging;
+using NLog;
 
 namespace MarketBackend.Services
 {
@@ -18,6 +19,7 @@ namespace MarketBackend.Services
         private MarketManagerFacade marketManagerFacade;
         private ClientService(){
             marketManagerFacade = MarketManagerFacade.GetInstance();
+            Logger logger = MyLogger.GetLogger();
         }
 
         public static ClientService GetInstance(){
