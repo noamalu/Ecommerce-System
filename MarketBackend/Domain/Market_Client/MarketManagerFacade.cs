@@ -8,6 +8,7 @@ using MarketBackend.DAL;
 using MarketBackend.Domain.Payment;
 using MarketBackend.Services.Interfaces;
 using Microsoft.Extensions.Logging;
+using System.Security.Policy;
 
 
 namespace MarketBackend.Domain.Market_Client
@@ -51,9 +52,14 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void AddProduct(int productId, string productName, int storeId, string category, double price, int quantity, double discount)
+        public void AddProduct(int storeId, int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store == null){
+                throw new Exception("Store doesn't exists");
+            }
+            store.AddProduct(userId, name, sellMethod, description, price, category, quantity, ageLimit);
+
         }
 
         public void AddToCart(int clientId, int storeId, int productId, int quantity)
@@ -131,13 +137,21 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public string GetProductInfo(int productId)
+        public string GetProductInfo(int storeId, int productId)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store == null){
+                throw new Exception("Store doesn't exists");
+            }
+            return store.getProductInfo(productId);
         }
 
         public string GetInfo(int storeId){
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store == null){
+                throw new Exception("Store doesn't exists");
+            }
+            return store.getInfo();
         }
 
         public List<ShoppingCart> GetPurchaseHistoryByClient(int id)
@@ -161,9 +175,15 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public bool IsAvailable(int productId)
+        public bool IsAvailable(int storeId)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+                return store._active;
+            }
+            else{
+                throw new Exception("Store doesn't exists");
+            }
         }
 
         public void LoginClient(string username, string password)
@@ -233,9 +253,13 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void RemoveProduct(int productId)
+        public void RemoveProduct(int storeId,int userId, int productId)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store == null){
+                throw new Exception("Store doesn't exists");
+            }
+            store.RemoveProduct(userId, productId);
         }
 
         public void RemoveStaffMember(int storeId, int activeId, Role role, int toRemoveId)
@@ -253,19 +277,39 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public List<Product> SearchByCategory(string category)
+        public HashSet<Product> SearchByCategory(string category)
         {
-            throw new NotImplementedException();
+            return SearchingManager.searchByCategory(category);
         }
 
-        public List<Product> SearchByKeyWords(string keywords)
+        public HashSet<Product> SearchByKeyWords(string keywords)
         {
-            throw new NotImplementedException();
+            return SearchingManager.searchByKeyword(keywords);
         }
 
-        public List<Product> SearchByName(string name)
+        public HashSet<Product> SearchByName(string name)
         {
-            throw new NotImplementedException();
+            return SearchingManager.serachByName(name);
+        }
+        public HashSet<Product> SearchByCategoryWithStore(int storeId, string category)
+        {
+            return SearchingManager.searchByCategoryWithStore(storeId, category);
+        }
+
+        public HashSet<Product> SearchByKeyWordsWithStore(int storeId, string keywords)
+        {
+            return SearchingManager.searchByKeywordWithStore(storeId, keywords);
+        }
+
+        public HashSet<Product> SearchByNameWithStore(int storeId, string name)
+        {
+            return SearchingManager.serachByNameWithStore(storeId, name);
+        }
+
+        public void Filter(HashSet<Product> products, string category, double lowPrice, double highPrice, double lowProductRate, double highProductRate, double lowStoreRate, double highStoreRate)
+        {
+            FilterParameterManager filter = new FilterParameterManager(category, lowPrice, highPrice, lowProductRate, highProductRate, lowStoreRate, highStoreRate);
+            filter.Filter(products);
         }
 
         public void UpdateProductDiscount(int productId, double discount)
