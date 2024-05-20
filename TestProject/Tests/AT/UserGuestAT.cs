@@ -2,6 +2,7 @@ using MarketBackend.Domain.Payment;
 using MarketBackend.Domain.Shipping;
 using MarketBackend.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NLog;
 
 namespace MarketBackend.Tests.AT
 {
@@ -24,6 +25,7 @@ namespace MarketBackend.Tests.AT
         public void Setup(){
             proxy = new Proxy();
             userId = proxy.GetUserId();
+            
         }
 
         [TestCleanup]

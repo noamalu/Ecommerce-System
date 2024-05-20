@@ -5,6 +5,7 @@ using MarketBackend.Domain.Shipping;
 using MarketBackend.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using NLog;
 
 namespace MarketBackend.Tests.AT
 {
@@ -35,6 +36,7 @@ namespace MarketBackend.Tests.AT
         int userAge2 = 16;
 
 
+
         [TestInitialize()]
         public void Setup(){
             proxy = new Proxy();
@@ -49,7 +51,7 @@ namespace MarketBackend.Tests.AT
         public void CleanUp(){
             proxy.Dispose();
         }
-
+ 
         [TestMethod]
         public void UniqueUsername_GoodCase()
         {

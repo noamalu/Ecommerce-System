@@ -1,6 +1,7 @@
 using MarketBackend.Services;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Payment;
+using NLog;
 
 namespace MarketBackend.Tests.AT
 {
@@ -10,10 +11,13 @@ namespace MarketBackend.Tests.AT
         ClientService clientService;
 
         int userId = 1;
+        
 
         public Proxy(){
+            
             marketService = MarketService.GetInstance();
             clientService = ClientService.GetInstance();
+            
         }
 
         public void Dispose(){
