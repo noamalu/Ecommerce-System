@@ -13,7 +13,7 @@ namespace MarketBackend.Services.Interfaces
     {
         public Response Register(int id, string username, string password, string email, int age);
         public Response EnterAsGuest(int id);
-        public Response CreateStore(int id);
+        public Response CreateStore(int id, string storeName, string email, string phoneNum);
         public Response<bool> ResToStoreManageReq(int id);
         public Response<bool> ResToStoreOwnershipReq(int id); //respond to store ownership request
         public Response LogoutClient(int id);

@@ -59,13 +59,13 @@ namespace MarketBackend.Tests.AT
             Response res = marketService.SearchByCategory(category);
             return !res.ErrorOccured;
         }
-        public bool OpenStore(int storeId){
-            Response res = marketService.OpenStore(storeId);
+        public bool OpenStore(int clientId, int storeId){
+            Response res = marketService.OpenStore(clientId, storeId);
             return !res.ErrorOccured;
         }
 
-        public bool CloseStore(int storeId){
-            Response res = marketService.CloseStore(storeId);
+        public bool CloseStore(int clientId, int storeId){
+            Response res = marketService.CloseStore(clientId, storeId);
             return !res.ErrorOccured;
         }
 
@@ -134,6 +134,11 @@ namespace MarketBackend.Tests.AT
         public bool AddStaffMember(int storeId, int activeId, Role role, int toAddId)
         {
             Response res = marketService.AddStaffMember(storeId, activeId, role, toAddId);
+            return !res.ErrorOccured;
+        }
+
+        public bool CreateStore(int id, string storeName, string email, string phoneNum){
+            Response res = clientService.CreateStore(id, storeName, email, phoneNum);
             return !res.ErrorOccured;
         }
 

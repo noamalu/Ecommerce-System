@@ -21,7 +21,7 @@ namespace MarketBackend.Domain.Market_Client
          public string _storeName {get; set;}
          public bool _active {get; set;}
 
-         public int _storePhoneNum {get; set;}
+         public string _storePhoneNum {get; set;}
 
          public string _storeEmailAdd {get; set;}
 
@@ -35,7 +35,7 @@ namespace MarketBackend.Domain.Market_Client
 
         public double _raiting {get; set;}
 
-        public Store(int Id, string name, string email, int phoneNum)
+        public Store(int Id, string name, string email, string phoneNum)
         {
             _storeId = Id;
             _storeName = name;

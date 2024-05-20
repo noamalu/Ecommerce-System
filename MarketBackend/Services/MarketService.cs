@@ -88,11 +88,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response CloseStore(int storeId)
+        public Response CloseStore(int clientId, int storeId)
         {
             try
             {
-                marketManagerFacade.CloseStore(storeId);
+                marketManagerFacade.CloseStore(clientId, storeId);
                 //log
                 return new Response();
             }
@@ -178,11 +178,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response OpenStore(int storeId)
+        public Response OpenStore(int clientId, int storeId)
         {
             try
             {
-                marketManagerFacade.OpenStore(storeId);
+                marketManagerFacade.OpenStore(clientId, storeId);
                 //log
                 return new Response();
             }
