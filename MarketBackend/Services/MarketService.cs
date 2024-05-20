@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MarketBackend.Services.Interfaces;
+﻿using MarketBackend.Services.Interfaces;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Payment;
+using NLog;
 
 namespace MarketBackend.Services
 {
@@ -15,6 +11,7 @@ namespace MarketBackend.Services
         private MarketManagerFacade marketManagerFacade;
         private MarketService(){
             marketManagerFacade = MarketManagerFacade.GetInstance();
+            Logger logger = MyLogger.GetLogger();
         }
 
         public static MarketService GetInstance(){
