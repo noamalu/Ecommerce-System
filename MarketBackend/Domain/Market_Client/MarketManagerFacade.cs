@@ -155,9 +155,15 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public bool IsAvailable(int productId)
+        public bool IsAvailable(int storeId)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+                return store._active;
+            }
+            else{
+                throw new Exception("Store doesn't exists");
+            }
         }
 
         public void LoginClient(string username, string password)

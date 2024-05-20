@@ -42,7 +42,7 @@ namespace MarketBackend.Domain.Market_Client
         void UpdateProductPrice(int productId, double price);
         void CloseStore(int userId, int storeId);
         void OpenStore(int clientId, int storeId);
-        bool IsAvailable(int productId);
+        bool IsAvailable(int storeId);
         void RemovePermission(int activeId, int storeId, int toRemoveId);
         void AddPermission(int activeId, int storeId, int toAddId);
         void EditPurchasePolicy(int storeId);
