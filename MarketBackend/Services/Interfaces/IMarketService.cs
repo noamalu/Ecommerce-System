@@ -24,8 +24,8 @@ namespace MarketBackend.Services.Interfaces
         public Response UpdateProductDiscount(int productId, double discount);
         public Response UpdateProductQuantity(int storeId, int userId, int productId, int quantity);
         public Response UpdateProductPrice(int storeId, int userId,  int productId, double price);
-        public Response CloseStore(int storeId);
-        public Response OpenStore(int storeId);
+        public Response CloseStore(int clientId, int storeId);
+        public Response OpenStore(int clientId, int storeId);
         public Response<bool> IsAvailable(int productId);
         public Response RemovePermission(int activeId, int storeId, int toRemoveId);
         public Response AddPermission(int activeId, int storeId, int toAddId);

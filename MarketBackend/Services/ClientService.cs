@@ -45,11 +45,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response CreateStore(int id)
+        public Response CreateStore(int id, string storeName, string email, string phoneNum)
         {
             try
             {
-                marketManagerFacade.CreateStore(id);
+                marketManagerFacade.CreateStore(id, storeName, email, phoneNum);
                 //log
                 return new Response();
             }

@@ -14,7 +14,7 @@ namespace MarketBackend.Domain.Market_Client
         void Register(string username, string password, string email, int age);
         void EnterAsGuest();
         void PurchaseCart(int id, PaymentDetails paymentDetails);
-        void CreateStore(int id);
+        void CreateStore(int id, string storeName, string email, string phoneNum);
         bool ResToStoreManageReq(int id);
         bool ResToStoreOwnershipReq(int id); //respond to store ownership request
         void LogoutClient(int id);
@@ -39,10 +39,11 @@ namespace MarketBackend.Domain.Market_Client
         List<Member> GetOwners(int storeId);
         List<Member> GetMangers(int storeId);
         Member GetFounder(int storeId);
+
         void UpdateProductQuantity(int storeId, int userId, int productId, int quantity); 
         void UpdateProductPrice(int storeId, int userId,  int productId, double price);
-        void CloseStore(int storeId);
-        void OpenStore(int storeId);
+        void CloseStore(int userId, int storeId);
+        void OpenStore(int clientId, int storeId);
         bool IsAvailable(int productId);
         void RemovePermission(int activeId, int storeId, int toRemoveId);
         void AddPermission(int activeId, int storeId, int toAddId);
