@@ -25,8 +25,8 @@ namespace MarketBackend.Domain.Market_Client
         void LoginClient(string username, string password);
         void ExitGuest();
         void BrowseGuest();
-        List<Purchase> GetPurchaseHistoryByClient(int id);
-        List<Purchase> GetPurchaseHistoryByStore(int id);
+        List<ShoppingCart> GetPurchaseHistoryByClient(int id);
+        List<Purchase> GetPurchaseHistoryByStore(int storeId, int userId);
         void AddProduct(int productId, string productName, int storeId, string category, double price, int quantity, double discount);
         void RemoveProduct(int productId);
         void UpdateProductDiscount(int productId, double discount);
