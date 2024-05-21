@@ -66,6 +66,24 @@ namespace MarketBackend.Domain.Market_Client
 
             return null;
         }
+        public Guest GetGuestById(int clientId)
+        {
+            if (ActiveGuests.TryGetValue(clientId, out var guest))
+            {
+                return guest;
+            }
+
+            return null;
+        }
+
+        public Member GetMemberById(int clientId)
+        {
+            if (MemberxClientId.TryGetValue(clientId, out var member))
+            {
+                return member;
+            }            
+            throw new KeyNotFoundException($"Client ID {clientId} not found in members");
+        }
 
         public bool AddToCart(int clientId, int storeId, int productId, int quantity)
         {
@@ -74,16 +92,20 @@ namespace MarketBackend.Domain.Market_Client
             return client is not null;
         }
 
-        public void Register(string username, string password, string email, int age)
+        public Client Register(string username, string password, string email, int age)
         {
             try{
                 var emailParsed = ValidateEmail(email);
                 ValidateUserName(username);
                 ValidatePassword(password);
-
-                //hash password first
-                _clientRepository.Add(new Member(UserCounter, username, emailParsed, password));
+                
+                var newClient = new Member(UserCounter, username, emailParsed, _security.EncryptPassword(password))
+                {
+                    IsAbove18 = age >= 18
+                };
+                _clientRepository.Add(newClient);
                 UserCounter++;
+                return newClient;
             }
             catch (ArgumentException){
                 throw;
@@ -130,6 +152,59 @@ namespace MarketBackend.Domain.Market_Client
 
         public bool IsMember(int clientId){
             return MemberxClientId.ContainsKey(clientId);
+        }
+
+        public Client GetSystemAdmin()
+        {
+            var allMembers = _clientRepository.getAll();
+            return allMembers.Where(member => member.IsSystemAdmin).FirstOrDefault();
+        }
+
+        public Client RegisterAsSystemAdmin(string username, string password, string email, int age)
+        {
+            var registerAdmin = GetSystemAdmin() ?? Register(username, password, email, age);
+            _clientRepository.GetById(registerAdmin.Id).IsSystemAdmin = true;
+            return registerAdmin;
+        }
+
+        public void LoginClient(string username, string password)
+        {
+            try{
+                var client = _clientRepository.GetByUserName(username);
+                if(_security.VerifyPassword(password, client.Password) && !client.IsLoggedIn)
+                    client.IsLoggedIn = true;
+                else
+                    throw new Exception(@$"{client.UserName} already logged in.");
+                    
+            }catch(Exception){
+                throw;
+            }
+        }
+
+        public void LogoutClient(int id)
+        {
+            try{
+                var client = GetMemberById(id);
+                
+                if(client.IsLoggedIn)
+                    client.IsLoggedIn = false;
+                    
+            }catch(Exception){
+                throw;
+            }
+        }
+
+        public void BrowseAsGuest(int id)
+        {
+            var guest = new Guest(UserCounter);
+            ActiveGuests.TryAdd(id, guest);
+            UserCounter++;
+        }
+
+        public void DeactivateGuest(int id)
+        {
+            var client = GetGuestById(id);
+            ActiveGuests.TryRemove(id, out client);
         }
     }
    

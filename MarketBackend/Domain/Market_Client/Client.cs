@@ -11,7 +11,6 @@ namespace MarketBackend.Domain.Market_Client
     public abstract class Client
     {
         public int Id  {get; set;}
-        public bool LoggedIn {get; set;} 
         public ShoppingCart Cart {get; set;}
         public bool IsAbove18 {get; set;}
 

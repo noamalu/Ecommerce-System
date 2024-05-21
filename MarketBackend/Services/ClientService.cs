@@ -67,7 +67,7 @@ namespace MarketBackend.Services
         {
              try
             {
-                marketManagerFacade.EnterAsGuest();
+                marketManagerFacade.EnterAsGuest(id);
                 logger.Info($"Client {id} entered as guest.");
                 return new Response();
             }
@@ -78,11 +78,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response ExitGuest()
+        public Response ExitGuest(int id)
         {
              try
             {
-                marketManagerFacade.ExitGuest();
+                marketManagerFacade.ExitGuest(id);
                 logger.Info($"Client exited.");
                 return new Response();
             }
@@ -97,9 +97,9 @@ namespace MarketBackend.Services
         {
              try
             {
-                List<ShoppingCart> purchases = marketManagerFacade.GetPurchaseHistoryByClient(id);
-                logger.Info($"Got purchase history for client {id}.");
-                return Response<List<ShoppingCart>>.FromValue(purchases);
+                List<ShoppingCart> shoppingCarts = marketManagerFacade.GetPurchaseHistoryByClient(id);
+                //log
+                return Response<List<ShoppingCart>>.FromValue(shoppingCarts);
             }
             catch (Exception e)
             {
