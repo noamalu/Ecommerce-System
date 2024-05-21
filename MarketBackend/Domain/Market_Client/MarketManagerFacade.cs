@@ -37,6 +37,10 @@ namespace MarketBackend.Domain.Market_Client
             }
             return marketManagerFacade;
         }
+
+        public static void Dispose(){
+            marketManagerFacade = MarketManagerFacade.GetInstance();
+        }
         
         public void AddManger(int activeId, int storeId, int toAddId)
         {
@@ -436,6 +440,10 @@ namespace MarketBackend.Domain.Market_Client
             }
             else
                 throw new Exception("Store doesn't exist!");
+        }
+
+        public Store GetStore(int storeId){
+            return _storeRepository.GetById(storeId);
         }
     }
 }

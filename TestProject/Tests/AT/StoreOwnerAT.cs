@@ -81,7 +81,7 @@ namespace MarketBackend.Tests.AT
            int shopID = 1;
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
-           Assert.IsTrue(proxy.RemoveProduct(shopID, userId, productID1));
+           Assert.IsTrue(proxy.RemoveProduct(shopID, userId, 11));
         }
 
         [TestMethod]
@@ -92,7 +92,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
            int shopID = 1;
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
-           Assert.IsFalse(proxy.RemoveProduct(shopID, userId, productID1));
+           Assert.IsFalse(proxy.RemoveProduct(shopID, userId, 11));
         }
 
         [TestMethod]

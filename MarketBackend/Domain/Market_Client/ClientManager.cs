@@ -29,7 +29,7 @@ namespace MarketBackend.Domain.Market_Client
             ActiveGuests = new ConcurrentDictionary<int, Guest>();
             MemberxClientId = new ConcurrentDictionary<int, Member>();
             _clientRepository = ClientRepositoryRAM.GetInstance();
-            _security = new SecurityManager();
+            _security = SecurityManager.GetInstance();
         }
 
         public static ClientManager GetInstance()
