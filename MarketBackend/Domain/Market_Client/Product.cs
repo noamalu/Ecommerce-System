@@ -106,6 +106,12 @@ namespace MarketBackend.Domain.Market_Client
             _quantity = newQuantity;
         }
 
+        public Product Clone()
+        {
+            return new(this.ProductId, this._storeId, this._name, null, 
+                this.Description, this.Price, this._category, 
+                this.Quantity, this.AgeLimit){SellMethod = this.SellMethod};
+        }
     }
     
 }

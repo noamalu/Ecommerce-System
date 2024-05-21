@@ -53,9 +53,16 @@ namespace MarketBackend.Domain.Models
     {
         public int _shoppingCartId{get; set;}
         private ConcurrentDictionary<int, Basket> _baskets = new();
+        private ConcurrentDictionary<int, Product> _products = new();        
         public void AddBasket(Basket basket)
         {
             _baskets.TryAdd(basket._basketId, Basket.Clone(basket));
+            foreach(var product in basket.products)
+            {
+                var storeProducts = ProductRepositoryRAM.GetInstance().GetShopProducts(basket._storeId);
+                var productDetailsFromStore = storeProducts.Where(p => p.ProductId == product.Key).FirstOrDefault().Clone();
+                if(productDetailsFromStore is not null) _products.TryAdd(product.Key, productDetailsFromStore);
+            }
         }
     }
 }
