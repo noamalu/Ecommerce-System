@@ -296,11 +296,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response UpdateProductPrice(int productId, double price)
+        public Response UpdateProductPrice(int storeId, int userId, int productId, double price)
         {
             try
             {
-                marketManagerFacade.UpdateProductPrice(productId, price);
+                marketManagerFacade.UpdateProductPrice(storeId, userId, productId, price);
                 logger.Info($"Product {productId} price was updated to {price}.");
                 return new Response();
             }
@@ -311,11 +311,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response UpdateProductQuantity(int productId, int quantity)
+        public Response UpdateProductQuantity(int storeId, int userId, int productId, int quantity)
         {
             try
             {
-                marketManagerFacade.UpdateProductQuantity(productId, quantity);
+                marketManagerFacade.UpdateProductQuantity(storeId, userId,productId, quantity);
                 logger.Info($"Product {productId} quantity was updated to {quantity}.");
                 return new Response();
             }

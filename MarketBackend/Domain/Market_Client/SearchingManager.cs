@@ -12,42 +12,33 @@ namespace MarketBackend.Domain.Market_Client{
         {
             HashSet<Product> resultProducts = new HashSet<Product>();
             Store store = StoreRepositoryRAM.GetInstance().GetById(storeId);
-            foreach (Product product in store.Products)
+            if (store == null)
             {
-                if  (product.Name==productName)
-                {
-                    resultProducts.Add(product);
-                }
+                return resultProducts;
             }
-            return resultProducts;
+            return store.SearchByName(productName);
         }
 
         public static HashSet<Product> searchByCategoryWithStore(int storeId, string category)
         {
             HashSet<Product> resultProducts = new HashSet<Product>();
             Store store = StoreRepositoryRAM.GetInstance().GetById(storeId);
-            foreach (Product product in store.Products)
+            if (store == null)
             {
-                if  (product.Category==category)
-                {
-                    resultProducts.Add(product);
-                }
+                return resultProducts;
             }
-            return resultProducts;
+            return store.SearchByCategory(category);
         }
 
         public static HashSet<Product> searchByKeywordWithStore(int storeId, string keyword)
         {
             HashSet<Product> resultProducts = new HashSet<Product>();
             Store store = StoreRepositoryRAM.GetInstance().GetById(storeId);
-            foreach (Product product in store.Products)
+            if (store == null)
             {
-                if  (product.Keywords.Contains(keyword))
-                {
-                    resultProducts.Add(product);
-                }
+                return resultProducts;
             }
-            return resultProducts;
+            return store.SearchByKeywords(keyword);
         }     
 
         public static HashSet<Product> serachByName(string productName){

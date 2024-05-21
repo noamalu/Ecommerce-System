@@ -243,20 +243,20 @@ namespace MarketBackend.Domain.Market_Client
 
         }
 
-        public List<Product> SearchByKeywords(string keywords)
+        public HashSet<Product> SearchByKeywords(string keywords)
         {
-            return _products.ToList().FindAll((p) => p.ContainKeyword(keywords));
+            return _products.ToList().FindAll((p) => p.ContainKeyword(keywords)).ToHashSet();
         }
 
-        public List<Product> SearchByName(string name)
+        public HashSet<Product> SearchByName(string name)
         {
             string lowerName = name.ToLower();
-            return _products.ToList().FindAll((p) => p.Name.ToLower().Contains(lowerName) || lowerName.Contains(p.Name.ToLower()));
+            return _products.ToList().FindAll((p) => p.Name.ToLower().Contains(lowerName) || lowerName.Contains(p.Name.ToLower())).ToHashSet();
         }
 
-        public List<Product> SearchByCategory(string category)
+        public HashSet<Product> SearchByCategory(string category)
         {
-            return _products.ToList().FindAll((p) =>  p.Category == category);
+            return _products.ToList().FindAll((p) =>  p.Category == category).ToHashSet();
         }
 
         public List<Purchase> getHistory(int userId)
@@ -268,7 +268,7 @@ namespace MarketBackend.Domain.Market_Client
             else throw new Exception($"Permission exception for userId: {userId}");
         }
 
-        public string GetInfo()
+        public string getInfo()
         {
             StringBuilder sb = new StringBuilder();
             foreach (Product product in _products)
@@ -276,6 +276,19 @@ namespace MarketBackend.Domain.Market_Client
                 sb.AppendLine(product.GetInfo());
             }
             return sb.ToString();
+        }
+
+        public string getProductInfo(int productId)
+        {
+            Product product = GetProduct(productId);
+            if (product != null)
+            {
+                return product.GetInfo();
+            }
+            else
+            {
+                throw new Exception("Product not found");
+            }
         }
 
         public void AddStaffMember(int roleUserId ,Role role, int userId){

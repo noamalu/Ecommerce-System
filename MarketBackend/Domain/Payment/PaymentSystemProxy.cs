@@ -7,41 +7,40 @@ namespace MarketBackend.Domain.Payment
 {
     public class PaymentSystemProxy : IPaymentSystemFacade
     {
-        //  TODO : when we will connect the system to real payment system
-        private readonly IPaymentSystemFacade _realPaymentSystem;
-        private int receiptID;
-
+        private readonly IPaymentSystemFacade? _realPaymentSystem;
         public static bool connected;
         private static int fakeTransactionId = 10000;
 
         public PaymentSystemProxy(IPaymentSystemFacade realPaymentSystem)
         {
             _realPaymentSystem = realPaymentSystem ?? throw new ArgumentNullException(nameof(realPaymentSystem));
-            receiptID = 1;
             connected = false;
         }
 
-        public PaymentSystemProxy(){}
+        public PaymentSystemProxy()
+        {
+            _realPaymentSystem = null;
+            connected = false;
+        }
+
 
         public bool Connect()
         {
-           if (_realPaymentSystem == null)
+            if (_realPaymentSystem == null)
             {
                 connected = true;
                 return true;
-
-            }   
-           else
-                if (_realPaymentSystem.Connect())
-                {
-                    connected = true;
-                    return true;
-                }
-                else
-                {
-                    connected = false;
-                    return false;
-                }
+            }
+            else if (_realPaymentSystem.Connect())
+            {
+                connected = true;
+                return true;
+            }
+            else
+            {
+                connected = false;
+                return false;
+            }
         }
 
         public int Pay(PaymentDetails cardDetails, double totalAmount)
@@ -53,12 +52,11 @@ namespace MarketBackend.Domain.Payment
                 else
                     return _realPaymentSystem.Pay(cardDetails, totalAmount);
             }
-            else 
+            else
                 return -1;
-
         }
 
-         public int CancelPayment(int paymentID)
+        public int CancelPayment(int paymentID)
         {
             if (connected)
             {
@@ -74,7 +72,6 @@ namespace MarketBackend.Domain.Payment
         public void Disconnect() //for testing
         {
             connected = false;
-            
         }
     }
 }

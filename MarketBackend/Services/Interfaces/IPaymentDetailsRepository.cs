@@ -9,5 +9,6 @@ namespace MarketBackend.Services.Interfaces
 {
     public interface IPaymentDetailsRepository : IRepository<PaymentDetails>
     {
+         public PaymentDetails GetById(int paymentID, string cardNumber, string holderID);
     }
 }
