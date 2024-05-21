@@ -38,7 +38,7 @@ namespace MarketBackend.Domain.Market_Client
 
         public virtual void PurchaseBasket(int id, Basket basket)
         {            
-            Cart.PurchaseBasket(id);
+            Cart.PurchaseBasket(basket._basketId);
         }
     }
 }

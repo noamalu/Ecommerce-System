@@ -52,7 +52,7 @@ namespace MarketBackend.Domain.Models
     public class ShoppingCartHistory
     {
         public int _shoppingCartId{get; set;}
-        private ConcurrentDictionary<int, Basket> _baskets{get; set;}
+        private ConcurrentDictionary<int, Basket> _baskets = new();
         public void AddBasket(Basket basket)
         {
             _baskets.TryAdd(basket._basketId, Basket.Clone(basket));
