@@ -232,5 +232,12 @@ namespace MarketBackend.Services
             marketManagerFacade.InitiateSystemAdmin();
             logger.Info("initial");
         }
+
+        public int GetMemberIDByUserName(string username)
+        {
+            return marketManagerFacade.GetMemberIDrByUserName(username);
+        }
     }
+
+
 }

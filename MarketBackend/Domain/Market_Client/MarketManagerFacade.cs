@@ -155,6 +155,10 @@ namespace MarketBackend.Domain.Market_Client
                     _active = true
                 };
                 _storeRepository.Add(store);
+                Member activeMember = (Member)_clientManager.GetClientById(id);
+                Role role = new Role(new Founder(RoleName.Founder), activeMember, storeId, id);
+
+                store.AddStaffMember(id, role, id); 
             }
             else
             {
@@ -461,6 +465,11 @@ namespace MarketBackend.Domain.Market_Client
 
         public Store GetStore(int storeId){
             return _storeRepository.GetById(storeId);
+        }
+
+        public int GetMemberIDrByUserName(string userName)
+        {
+            return _clientManager.GetMemberIDrByUserName(userName); 
         }
     }
 }

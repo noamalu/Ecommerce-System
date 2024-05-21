@@ -161,6 +161,12 @@ namespace MarketBackend.Tests.AT
             return !res.ErrorOccured;
         }
 
+        public int GetMembeIDrByUserName(string userName){
+            // Response res = 
+            return clientService.GetMemberIDByUserName(userName);
+            // return res.ErrorOccured ? -1 : int.Parse(res.ErrorMessage);
+        }
+
 
     }
 }
