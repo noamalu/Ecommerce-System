@@ -27,8 +27,26 @@ namespace MarketBackend.Domain.Market_Client
         public virtual bool canUpdateProductPrice() { return true; }
         public virtual bool canUpdateProductDiscount() { return true; }
         public virtual bool canUpdateProductQuantity() { return true; }
-        public virtual bool canAddStaffMember() { return true; }
-        public virtual bool canRemoveStaffMember() { return true; }
+        public virtual bool canAddStaffMember(RoleName roleName)
+        {
+            switch (roleName)
+            {
+                case RoleName.Founder: return false;
+                case RoleName.Owner: return true;
+                case RoleName.Manager: return true;
+                default: return false;
+            }
+        }
+        public virtual bool canRemoveStaffMember(RoleName roleName)
+        {
+            switch (roleName)
+            {
+                case RoleName.Founder: return false;
+                case RoleName.Owner: return true;
+                case RoleName.Manager: return true;
+                default: return false;
+            }
+        }
         public virtual bool canEditPermissionsToOthers() { return true; }
         public virtual bool canGetHistory() { return true; }
         public virtual bool canEditPermissions() { return true; }
