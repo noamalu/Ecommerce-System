@@ -58,7 +58,7 @@ namespace MarketBackend.Domain.Market_Client
         public void AddManger(int activeId, int storeId, int toAddId)
         {
             Store store = _storeRepository.GetById(storeId);
-            if (store != null)
+            if (store != null && _clientManager.CheckMemberIsLoggedIn(activeId))
             {
                 Member activeMember = (Member)_clientManager.GetClientById(activeId);
                 Role role = new Role(new StoreManagerRole(RoleName.Manager), activeMember, storeId, toAddId);
@@ -72,7 +72,7 @@ namespace MarketBackend.Domain.Market_Client
         public void AddOwner(int activeId, int storeId, int toAddId)
         {
             Store store = _storeRepository.GetById(storeId);
-            if (store != null)
+            if (store != null && _clientManager.CheckMemberIsLoggedIn(activeId))
             {
                 Member activeMember = (Member)_clientManager.GetClientById(activeId);
                 Role role = new Role(new Owner(RoleName.Owner), activeMember, storeId, toAddId);
@@ -86,7 +86,7 @@ namespace MarketBackend.Domain.Market_Client
         public void AddPermission(int activeId, int storeId, int toAddId, Permission permission)
         {
             Store store = _storeRepository.GetById(storeId);
-            if (store != null)
+            if (store != null && _clientManager.CheckMemberIsLoggedIn(activeId))
             {
                 store.AddPermission(activeId, toAddId, permission);
             }
@@ -97,7 +97,7 @@ namespace MarketBackend.Domain.Market_Client
         public void RemovePermission(int activeId, int storeId, int toRemoveId, Permission permission)
         {
             Store store = _storeRepository.GetById(storeId);
-            if (store != null)
+            if (store != null && _clientManager.CheckMemberIsLoggedIn(activeId))
             {
                 store.RemovePermission(activeId, toRemoveId, permission);
             }
@@ -110,7 +110,7 @@ namespace MarketBackend.Domain.Market_Client
         public void AddProduct(int storeId, int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
         {
             Store store = _storeRepository.GetById(storeId);
-            if (store == null){
+            if (store == null && _clientManager.CheckMemberIsLoggedIn(userId)){
                 throw new Exception("Store doesn't exists");
             }
             store.AddProduct(userId, name, sellMethod, description, price, category, quantity, ageLimit);
@@ -127,7 +127,7 @@ namespace MarketBackend.Domain.Market_Client
         public void CloseStore(int userId, int storeId)
         {
             Store store = _storeRepository.GetById(storeId);
-            if (store != null){
+            if (store != null && _clientManager.CheckMemberIsLoggedIn(userId)){
                 store.CloseStore(userId);
             }
             else{
@@ -135,10 +135,11 @@ namespace MarketBackend.Domain.Market_Client
             }
         }
 
+    
         public void CreateStore(int id, string storeName, string email, string phoneNum)
         {
             Client store_founder = _clientManager.GetClientById(id);
-            if(store_founder != null)
+            if(store_founder != null && _clientManager.CheckMemberIsLoggedIn(id))
             {
                 int storeId = _storeCounter++;
                 if (_storeRepository.GetById(storeId) != null){
@@ -149,7 +150,6 @@ namespace MarketBackend.Domain.Market_Client
                     _active = true
                 };
                 _storeRepository.Add(store);
-                // make as a founder/ owner
             }
             else
             {
@@ -243,7 +243,7 @@ namespace MarketBackend.Domain.Market_Client
         public List<Purchase> GetPurchaseHistoryByStore(int storeId, int userId)
         {
             Store store = _storeRepository.GetById(storeId);
-            if (store != null){
+            if (store != null && _clientManager.CheckMemberIsLoggedIn(userId)){
                 return store.getHistory(userId);
             }
             else{
@@ -275,7 +275,7 @@ namespace MarketBackend.Domain.Market_Client
         public void OpenStore(int clientId, int storeId)
         {
             Store store = _storeRepository.GetById(storeId);
-            if (store != null){
+            if (store != null && _clientManager.CheckMemberIsLoggedIn(clientId)){
                 store.OpenStore(clientId);
             }
             else{
@@ -411,7 +411,7 @@ namespace MarketBackend.Domain.Market_Client
 
         public void UpdateProductPrice(int storeId, int userId,  int productId, double price)
         {
-            if (_storeRepository.GetById(storeId) != null)
+            if (_storeRepository.GetById(storeId) != null && _clientManager.CheckMemberIsLoggedIn(userId))
             {
                 _storeRepository.GetById(storeId).UpdateProductPrice(userId, productId, price);
             }
@@ -424,7 +424,7 @@ namespace MarketBackend.Domain.Market_Client
 
         public void UpdateProductQuantity(int storeId, int userId, int productId, int quantity)
         {
-            if (_storeRepository.GetById(storeId) != null)
+            if (_storeRepository.GetById(storeId) != null && _clientManager.CheckMemberIsLoggedIn(userId)) 
             {
                 _storeRepository.GetById(storeId).UpdateProductPrice(userId, productId, quantity);
             }
@@ -442,7 +442,7 @@ namespace MarketBackend.Domain.Market_Client
 
         public void AddStaffMember(int storeId, int activeId, Role role, int toAddId){
             Store store = _storeRepository.GetById(storeId);
-            if (store != null)
+            if (store != null && _clientManager.CheckMemberIsLoggedIn(activeId))
             {
                 store.AddStaffMember(toAddId, role, activeId);
             }
