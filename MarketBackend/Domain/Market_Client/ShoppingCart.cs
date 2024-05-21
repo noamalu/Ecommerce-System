@@ -17,7 +17,7 @@ namespace MarketBackend.Domain.Models
         }
 
         public void addToCart(int basketId, int productId, int quantity){
-            Basket basket = _basketRepository.GetById(basketId);
+            Basket? basket = _basketRepository.TryGetById(basketId) ?? _basketRepository.CreateBasket(basketId, _shoppingCartId);
             basket.addToBasket(productId, quantity);
         }
 
