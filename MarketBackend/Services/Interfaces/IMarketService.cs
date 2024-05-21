@@ -36,6 +36,7 @@ namespace MarketBackend.Services.Interfaces
         public Response<string> GetInfo(int storeId);
         public Response<string> GetProductInfo(int storeId, int productId);
         public Response PurchaseCart(int id, PaymentDetails paymentDetails, ShippingDetails shippingDetails);
+        public Response<List<Purchase>> GetPurchaseHistory(int storeId, int clientId);
 
     }
 }

@@ -432,6 +432,21 @@ namespace MarketBackend.Services
             }
         }
 
+        public Response<List<Purchase>> GetPurchaseHistory(int storeId, int clientId)
+        {
+             try
+            {
+                List<Purchase> purchases = marketManagerFacade.GetPurchaseHistoryByStore(storeId, clientId);
+                //log
+                return Response<List<Purchase>>.FromValue(purchases);
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in getting purchase history for store {storeId}, client {clientId}, Error message: {e.Message}");
+                return Response<List<Purchase>>.FromError(e.Message);
+            }
+        }
+
 
     }
 }
