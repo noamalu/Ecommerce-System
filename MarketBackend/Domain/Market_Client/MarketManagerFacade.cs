@@ -126,8 +126,23 @@ namespace MarketBackend.Domain.Market_Client
         public void AddToCart(int clientId, int storeId, int productId, int quantity)
         {
             ClientManager.CheckClientId(clientId);
-            _clientManager.AddToCart(clientId, storeId, productId, quantity);
-            // _logger.LogInformation($"Product id={productId} were added to client id={clientId} cart, to storeId={storeId} basket.!");
+            Store store = _storeRepository.GetById(storeId);
+            bool found = false;
+            if (store != null){
+                foreach (var product in store._products){
+                    if (product._productid == productId){
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) 
+                    _clientManager.AddToCart(clientId, storeId, productId, quantity);
+                else
+                    throw new Exception($"No productid {productId}");
+            }
+            else
+                throw new Exception($"Store {store} doesn't exists.");
+            
         }
 
         public void CloseStore(int userId, int storeId)
