@@ -67,10 +67,10 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.EnterAsGuest(userId));
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
-           int shopID = 0;
+           int shopID = 1;
            int userID = proxy.GetMembeIDrByUserName(userName);
            Assert.IsTrue(proxy.CreateStore(userID, storeName, storeEmail, phoneNum));
-           Assert.IsTrue(proxy.AddProduct(1, userID, productName1, sellmethod, desc, price1, category1, quantity1, false));
+           Assert.IsTrue(proxy.AddProduct(shopID, userID, productName1, sellmethod, desc, price1, category1, quantity1, false));
         }
 
         [TestMethod]
@@ -79,11 +79,11 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.EnterAsGuest(userId));
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
-           int shopID = 0;
+           int shopID = 1;
            userId = proxy.GetMembeIDrByUserName(userName);
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
-           Assert.IsTrue(proxy.RemoveProduct(shopID, userId, 01));
+           Assert.IsTrue(proxy.RemoveProduct(shopID, userId, 11));
         }
 
         [TestMethod]
@@ -93,8 +93,9 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
            int shopID = 1;
+           proxy.GetMembeIDrByUserName(userName);
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
-           Assert.IsFalse(proxy.RemoveProduct(shopID, userId, 01));
+           Assert.IsFalse(proxy.RemoveProduct(shopID, userId, 11));
         }
 
         [TestMethod]
@@ -103,7 +104,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.EnterAsGuest(userId));
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
-           int shopID = 0;
+           int shopID = 1;
            userId = proxy.GetMembeIDrByUserName(userName);
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false)); 
@@ -116,7 +117,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.EnterAsGuest(userId));
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
-           int shopID = 0;
+           int shopID = 1;
            userId = proxy.GetMembeIDrByUserName(userName);
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false)); 
@@ -129,7 +130,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.EnterAsGuest(userId));
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
-           int shopID = 0;
+           int shopID = 1;
            userId = proxy.GetMembeIDrByUserName(userName);
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false)); 
@@ -142,7 +143,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.EnterAsGuest(userId));
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
-           int shopID = 0;
+           int shopID = 1;
            userId = proxy.GetMembeIDrByUserName(userName);
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false)); 
@@ -178,7 +179,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.EnterAsGuest(userId));
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
-           int shopID = 0;
+           int shopID = 1;
            userId = proxy.GetMembeIDrByUserName(userName);
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
@@ -200,7 +201,7 @@ namespace MarketBackend.Tests.AT
             Assert.IsTrue(proxy.EnterAsGuest(userId));
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
-           int shopID = 0;
+           int shopID = 1;
            userId = proxy.GetMembeIDrByUserName(userName);
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            int userId2 = proxy.GetUserId();
@@ -217,7 +218,7 @@ namespace MarketBackend.Tests.AT
             Assert.IsTrue(proxy.EnterAsGuest(userId));
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
-           int shopID = 0;
+           int shopID = 1;
            userId = proxy.GetMembeIDrByUserName(userName);
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            int userId2 = proxy.GetUserId();

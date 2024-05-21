@@ -22,7 +22,7 @@ namespace MarketBackend.Domain.Market_Client
         private readonly ClientManager _clientManager;
         private readonly IPaymentSystemFacade _paymentSystem;
         private readonly IShippingSystemFacade _shippingSystemFacade;
-        private int _storeCounter = 0;
+        private int _storeCounter = 1;
 
         
         private MarketManagerFacade(){

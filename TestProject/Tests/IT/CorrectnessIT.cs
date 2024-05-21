@@ -65,6 +65,7 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.EnterAsGuest(userId);
             marketManagerFacade.Register(userId, userName, userPassword, email1, userAge);
             marketManagerFacade.LoginClient(userId, userName, userPassword);
+            userId = marketManagerFacade.GetMemberIDrByUserName(userName);
             Client mem = clientManager.GetClientById(userId);
             marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
             int storeId = 1;

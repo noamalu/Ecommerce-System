@@ -91,6 +91,7 @@ namespace MarketBackend.Tests.AT
             Assert.IsTrue(proxy.EnterAsGuest(userId));
             Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
             Assert.IsTrue(proxy.Login(userId, userName, userPassword));
+            proxy.GetMembeIDrByUserName(userName);
             Assert.IsTrue(proxy.LogOut(userId));
         }
 
