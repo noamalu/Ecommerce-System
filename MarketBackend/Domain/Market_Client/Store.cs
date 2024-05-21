@@ -16,7 +16,7 @@ namespace MarketBackend.Domain.Market_Client
 {
     public class Store
     {
-
+        private readonly object _lock = new object();
          public int _storeId {get; set;}
          public string _storeName {get; set;}
          public bool _active {get; set;}
@@ -33,6 +33,7 @@ namespace MarketBackend.Domain.Market_Client
          public long _productIdCounter {get; set;}
         public int _purchaseIdCounter {get; set;}
 
+
         public double _raiting {get; set;}
 
         public Store(int Id, string name, string email, string phoneNum)
@@ -48,7 +49,6 @@ namespace MarketBackend.Domain.Market_Client
             //_discountPolicyManager = new DiscountPolicyManager(shopId);
             //_purchasePolicyManager = new PurchasePolicyManager(shopId);
             _raiting = 0;
-            _productIdCounter = 1;
         }
 
          public int StoreId { get => _storeId; }
@@ -73,8 +73,11 @@ namespace MarketBackend.Domain.Market_Client
 
         public void AddProduct(Product p)
         {
+            lock (_lock)
+            {
             _products.Add(p);
             ProductRepositoryRAM.GetInstance().Add(p);
+            }
         }
 
         private int GenerateUniqueProductId()
@@ -97,13 +100,20 @@ namespace MarketBackend.Domain.Market_Client
         }
         private void RemoveProduct(Product p)
         {
+            lock (_lock)
+            {
+
             _products.Remove(p);
             ProductRepositoryRAM.GetInstance().Delete(p);
+            }
         }
 
         private Product GetProduct(int productId)
         {
+        lock (_lock)
+            {
             return _products.ToList().Find((p) => p._productid == productId);
+            }
         }
 
         private Role getRole(int userId){
@@ -353,14 +363,6 @@ namespace MarketBackend.Domain.Market_Client
                 }
             }
             return false;
-        }
-
-        public void AddKeyWord(string keyWord, int productId){
-            if (_products[productId] != null){
-                _products[productId].AddKeyword(keyWord);
-            }
-            else
-                throw new Exception("Product doesn't exists.");
         }
     }
 }
