@@ -356,7 +356,7 @@ namespace MarketBackend.Domain.Market_Client
             Store store = _storeRepository.GetById(storeId);
             if (store != null)
             {
-                store.RemoveStaffMember(toRemoveId, activeId, role);
+                store.RemoveStaffMember(toRemoveId, activeId);
             }
             else
                 throw new Exception("Store doesn't exist!");
