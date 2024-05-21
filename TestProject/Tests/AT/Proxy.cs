@@ -2,6 +2,7 @@ using MarketBackend.Services;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Payment;
 using NLog;
+using MarketBackend.Domain.Shipping;
 
 namespace MarketBackend.Tests.AT
 {
@@ -100,8 +101,8 @@ namespace MarketBackend.Tests.AT
             return !res.ErrorOccured;
         }
 
-        public bool PurchaseCart(int clientId, PaymentDetails paymentDetails){
-            Response res = marketService.PurchaseCart(clientId, paymentDetails);
+        public bool PurchaseCart(int clientId, PaymentDetails paymentDetails, ShippingDetails shippingDetails){
+            Response res = marketService.PurchaseCart(clientId, paymentDetails, shippingDetails);
             return !res.ErrorOccured;
         }
 
