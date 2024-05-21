@@ -10,10 +10,10 @@ namespace MarketBackend.Domain.Market_Client
 {
     public abstract class RoleType
     {
-        public string roleName { get; private set; }
+        public RoleName roleName { get; private set; }
         protected HashSet<Permission> permissions;
 
-        public RoleType(string roleName)
+        public RoleType(RoleName roleName)
         {
             this.roleName = roleName;
             permissions = new HashSet<Permission>();
@@ -29,9 +29,10 @@ namespace MarketBackend.Domain.Market_Client
         public virtual bool canUpdateProductQuantity() { return true; }
         public virtual bool canAddStaffMember() { return true; }
         public virtual bool canRemoveStaffMember() { return true; }
-
+        public virtual bool canEditPermissionsToOthers() { return true; }
         public virtual bool canGetHistory() { return true; }
-
+        public virtual bool canEditPermissions() { return true; }
+   
         public virtual bool hasPermission(Permission permission)
         {
             return permissions.Contains(permission);
@@ -49,5 +50,7 @@ namespace MarketBackend.Domain.Market_Client
         public virtual IReadOnlyCollection<Permission> getPermissions() {
             return permissions;
         }
+
+        
     }
 }

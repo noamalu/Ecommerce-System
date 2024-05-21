@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace MarketBackend.Domain.Market_Client
 {
-    public class StoreManager : RoleType
+    public class StoreManagerRole : RoleType
     {
-        public StoreManager(string roleName) : base(roleName) { }
+        public StoreManagerRole(RoleName roleName) : base(roleName) { }
 
         public override bool canOpenStore() { return false; }
 
@@ -39,9 +39,15 @@ namespace MarketBackend.Domain.Market_Client
             return hasPermission(Permission.updateProductDiscount);
         }
 
+        public override bool canEditPermissions() 
+        { 
+            return hasPermission(Permission.editPermissions); 
+        }
+
         public override bool canAddStaffMember() { return false; }
 
         public override bool canRemoveStaffMember() { return false; }
+        public override bool canEditPermissionsToOthers() { return false; }
 
     }
 }
