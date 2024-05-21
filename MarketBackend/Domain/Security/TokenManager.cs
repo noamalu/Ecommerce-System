@@ -26,6 +26,7 @@ namespace MarketBackend.Domain.Security
             }
             _secretKey = Convert.ToBase64String(key);
             ExpirationTime = 24 * 60;
+            tokenHandler = new JwtSecurityTokenHandler();
         }
 
         public static TokenManager GetInstance()
@@ -38,12 +39,14 @@ namespace MarketBackend.Domain.Security
         }
         public string GenerateToken(int userId)
         {
+
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var currentTimeUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds(); // Get current time as Unix timestamp
 
             var token = new JwtSecurityToken(
                 claims: new[] { new Claim("userId", userId.ToString()),
-                               new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString(), ClaimValueTypes.Integer64) },
+                               new Claim(JwtRegisteredClaimNames.Iat, currentTimeUnix.ToString(), ClaimValueTypes.Integer64) },
                 expires: DateTime.Now.AddMinutes(ExpirationTime),
                 signingCredentials: credentials
             );
@@ -74,7 +77,7 @@ namespace MarketBackend.Domain.Security
             }
         }
 
-        public int extractUserId(string token)
+        public int ExtractUserId(string token)
         {
            
             var jsonToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
@@ -89,7 +92,7 @@ namespace MarketBackend.Domain.Security
 
         }
 
-        public DateTime extractIssuedAt(string token)
+        public DateTime ExtractIssuedAt(string token)
         {
             var jsonToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
             var issuedAtClaim = jsonToken?.Claims.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Iat);
@@ -102,7 +105,7 @@ namespace MarketBackend.Domain.Security
             throw new SecurityTokenException("Invalid token or issued at claim not found");
         }
 
-        public DateTime extractExpiration(string token)
+        public DateTime ExtractExpiration(string token)
         {
             var jsonToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
 

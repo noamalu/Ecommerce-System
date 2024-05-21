@@ -34,7 +34,7 @@ namespace MarketBackend.Domain.Security
 
         public bool VerifyPassword(string rawPassword, string hashedPassword)
         {
-            var result = passwordHasher.VerifyHashedPassword(null, rawPassword, hashedPassword);
+            var result = passwordHasher.VerifyHashedPassword(null, hashedPassword, rawPassword);
             return result == PasswordVerificationResult.Success;
         }
 
@@ -45,6 +45,20 @@ namespace MarketBackend.Domain.Security
         public bool ValidateToken(string token)
         {
             return tokenManager.ValidateToken(token);
+        }
+
+        public int ExtractUserId(string token)
+        {
+            return tokenManager.ExtractUserId(token);
+        }
+
+        public DateTime ExtractIssuedAt(string token)
+        {
+            return tokenManager.ExtractIssuedAt(token);
+        }
+        public DateTime ExtractExpiration(string token)
+        {
+            return tokenManager.ExtractExpiration(token);
         }
     }
 }
