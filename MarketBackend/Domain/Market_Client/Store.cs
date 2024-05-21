@@ -292,7 +292,7 @@ namespace MarketBackend.Domain.Market_Client
         }
 
         public void AddStaffMember(int roleUserId ,Role role, int userId){
-            if ((getRole(userId)!=null && getRole(userId).canAddStaffMember(role.getRoleName())) || role.getRoleName() == RoleName.Founder)
+            if ((getRole(userId)!=null && getRole(userId).canAddStaffMember(role.getRoleName())) || (role.getRoleName() == RoleName.Founder && !checkForFounders() ))
             {
                 roles.Add(roleUserId, role);
                 //add to active user appointees list the newly appointed staff member
@@ -342,11 +342,11 @@ namespace MarketBackend.Domain.Market_Client
 
         }
 
-        public bool checkForMangers ()
+        public bool checkForFounders ()
         {
             foreach (Role role in roles.Values)
             {
-                if (Equals(role.getRoleName().ToString(), "Manager"))
+                if (role.getRoleName() == RoleName.Founder)
                 {
                     return true;
                 }
