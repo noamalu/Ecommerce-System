@@ -53,6 +53,7 @@ namespace MarketBackend.Domain.Market_Client
             ShippingDetailsRepositoryRAM.Dispose();
             StoreRepositoryRAM.Dispose();
             ClientManager.Dispose();
+            PurchaseRepositoryRAM.Dispose();
             marketManagerFacade = new MarketManagerFacade();            
         }
         

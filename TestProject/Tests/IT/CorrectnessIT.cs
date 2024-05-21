@@ -14,6 +14,8 @@ namespace MarketBackend.Tests.IT
     {
         string userName = "user1";
         string userName2 = "user2";
+        string userName3 = "user3";
+
         string userPassword = "pass1";
         string pass2 = "pass2";
         string email1 = "printz@post.bgu.ac.il";
@@ -105,23 +107,28 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
             Product product = marketManagerFacade.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, 1, false);
             int storeId = 1;
-            int userId2 = userId++;
+            int userId2 = mem1.Id + 1;
             marketManagerFacade.EnterAsGuest(userId2);
-            marketManagerFacade.Register(userId2, userName, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userId2, userName, userPassword);
-            userId2 = marketManagerFacade.GetMemberIDrByUserName(userName);
-            Client mem2 = clientManager.GetClientById(userId);
+            marketManagerFacade.Register(userId2, userName2, userPassword, email2, userAge);
+            marketManagerFacade.LoginClient(userId2, userName2, userPassword);
+            userId2 = marketManagerFacade.GetMemberIDrByUserName(userName2);
+            Client mem2 = clientManager.GetClientById(userId2);
             // Create multiple threads that add and remove products from the shop
             var threads = new List<Thread>();
-            for (int i = 0; i < 2; i++)
+            foreach (int userId in new int[]{userId, userId2})
             {
-                string pName = $"{productname1}-{i}-";
+                string pName = $"{productname1}-{userId}-";
                 threads.Add(new Thread(() =>
                 {
-                    for (int j = 0; j < NumIterations; j++)
-                    {
-                        marketManagerFacade.AddToCart(i, storeId, product._productid, 1);
-                        marketManagerFacade.PurchaseCart(i, paymentDetails, shippingDetails);
+                    try
+            {
+                marketManagerFacade.AddToCart(userId, storeId, product._productid, 1);
+                marketManagerFacade.PurchaseCart(userId, paymentDetails, shippingDetails);
+            }
+            catch (Exception ex)
+            {
+                // Handle exception here (e.g., log error)
+                Console.WriteLine($"Purchase failed for user {userId}: {ex.Message}");
                     }
                 }));
             }
@@ -130,8 +137,10 @@ namespace MarketBackend.Tests.IT
             threads.ForEach(t => t.Start());
             threads.ForEach(t => t.Join());
 
-            // Assert that the shop has the correct number of products
-            //need to check if only one succeed.
+            // Check that only one product remains in the shop
+            int expectedInventory = 0;
+            Assert.AreEqual(expectedInventory, product._quantity, "Shop should have only 0 products remaining");
+
         }
 
         [TestMethod]
@@ -145,32 +154,38 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
             Product product = marketManagerFacade.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, 1, false);
             int storeId = 1;
-            int userId2 = userId++;
+            int userId2 = mem1.Id + 1;
             marketManagerFacade.EnterAsGuest(userId2);
-            marketManagerFacade.Register(userId2, userName, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userId2, userName, userPassword);
-            userId2 = marketManagerFacade.GetMemberIDrByUserName(userName);
+            marketManagerFacade.Register(userId2, userName2, userPassword, email1, userAge);
+            marketManagerFacade.LoginClient(userId2, userName2, userPassword);
+            userId2 = marketManagerFacade.GetMemberIDrByUserName(userName2);
             Client mem2 = clientManager.GetClientById(userId);
             // Create multiple threads that add and remove products from the shop
+            Boolean thorwnExeption  = false;
             var threads = new List<Thread>
             {
                 new Thread(() =>
                 {
-                    marketManagerFacade.RemoveProduct(storeId, 0, productID1);
+                    marketManagerFacade.RemoveProduct(storeId, mem1.Id, productID1);
                         
                 }),
                 new Thread(() =>
                 {
-                    marketManagerFacade.PurchaseCart(1, paymentDetails, shippingDetails);
-                }),
+                    try{
+                        marketManagerFacade.AddToCart(userId, storeId, productID1, 1);
+                        Thread.Sleep(500);
+                        marketManagerFacade.PurchaseCart(mem2.Id, paymentDetails, shippingDetails);
+
+                    }catch{
+                        thorwnExeption = true;
+                    }
+                    }),
             };
 
-            // Start the threads and wait for them to finish
             threads.ForEach(t => t.Start());
             threads.ForEach(t => t.Join());
 
-            // Assert that the shop has the correct number of products
-            //need to check if only one succeed.
+            Assert.AreEqual(true, thorwnExeption);
         }
 
         [TestMethod]
@@ -183,45 +198,35 @@ namespace MarketBackend.Tests.IT
             Client mem1 = clientManager.GetClientById(userId);
             marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
             int storeId = 1;
-            int userId2 = userId++;
+            int userId2 = mem1.Id +1;
             marketManagerFacade.EnterAsGuest(userId2);
-            marketManagerFacade.Register(userId2, userName, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userId2, userName, userPassword);
-            userId2 = marketManagerFacade.GetMemberIDrByUserName(userName);
+            marketManagerFacade.Register(userId2, userName2, userPassword, email1, userAge);
+            marketManagerFacade.LoginClient(userId2, userName2, userPassword);
+            userId2 = marketManagerFacade.GetMemberIDrByUserName(userName2);
             Client mem2 = clientManager.GetClientById(userId);
             marketManagerFacade.AddManger(userId, storeId, userId2);
             Permission permission = Permission.all;
             marketManagerFacade.AddPermission(userId, storeId, userId2, permission);
-            int userId3 = userId++;
+            int userId3 = mem2.Id + 1;
             marketManagerFacade.EnterAsGuest(userId3);
-            marketManagerFacade.Register(userId3, userName, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userId3, userName, userPassword);
+            marketManagerFacade.Register(userId3, userName3, userPassword, email1, userAge);
+            marketManagerFacade.LoginClient(userId3, userName3, userPassword);
             userId3 = marketManagerFacade.GetMemberIDrByUserName(userName);
-
-            // Create multiple threads that add and remove products from the shop
+            Boolean thorwnExeption  = false;
             var threads = new List<Thread>();
-            for (int i = 0; i < 2; i++)
+            foreach (int userId in new int[]{mem1.Id, mem2.Id})
             {
-                string pName = $"{productname1}-{i}-";
-                threads.Add(new Thread(() =>
-                {
-                    for (int j = 0; j < NumIterations; j++)
-                    {
-                        marketManagerFacade.AddManger(i, storeId, userId3);
-                    }
-                }));
+                try{
+                    marketManagerFacade.AddManger(userId, storeId, userId3);
+                }catch{
+                    thorwnExeption  = true;
+                }
+                
             }
-
-            // Start the threads and wait for them to finish
             threads.ForEach(t => t.Start());
             threads.ForEach(t => t.Join());
-
-            // Assert that the shop has the correct number of products
-            //need to check if only one succeed.
+            Assert.AreEqual(true, thorwnExeption);
+            
         }
-
-
-
-        
     }
 }

@@ -43,6 +43,8 @@ namespace MarketBackend.Tests.AT
             userId = proxy.GetUserId();
             var mockShippingSystem = new Mock<IShippingSystemFacade>();
             var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
+            mockPaymentSystem.Setup(pay =>pay.Connect()).Returns(true);
+            mockShippingSystem.Setup(ship => ship.Connect()).Returns(true);
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
             proxy.InitiateSystemAdmin();
@@ -242,16 +244,18 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.EnterAsGuest(userId));
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
-           userId = proxy.GetMembeIDrByUserName(userName);
            int shopID = 1;
+           userId = proxy.GetMembeIDrByUserName(userName);
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
            int userId2 = proxy.GetUserId();
            Assert.IsTrue(proxy.EnterAsGuest(userId2));
            Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge));
+           userId2 = proxy.GetMembeIDrByUserName(userName2);
            Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
-           userId2 = proxy.GetMembeIDrByUserName(userName);
            Assert.IsTrue(proxy.AddToCart(userId2, shopID, productID1, quantity1));
+           PaymentDetails paymentDetails = new PaymentDetails("5326888878675678", "2027", "10", "101", "3190876789", "Hadas");
+           ShippingDetails shippingDetails = new ShippingDetails("name",  "city",  "address",  "country",  "zipcode");
            Assert.IsTrue(proxy.PurchaseCart(userId2, paymentDetails, shippingDetails));
         }
 
