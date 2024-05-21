@@ -194,7 +194,7 @@ namespace MarketBackend.Tests.AT
            PaymentDetails paymentDetails = new PaymentDetails("5326888878675678", "2027", "10", "101", "3190876789", "Hadas");
            ShippingDetails shippingDetails = new ShippingDetails("name",  "city",  "address",  "country",  "zipcode");
            Assert.IsTrue(proxy.PurchaseCart(userId2, paymentDetails, shippingDetails));
-           Assert.IsTrue(proxy.GetPurchaseHistory(userId));
+           Assert.IsTrue(proxy.GetPurchaseHistory(shopID, userId));
         }
 
         [TestMethod]

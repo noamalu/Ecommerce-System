@@ -310,7 +310,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.AddToCart(userId2, shopID, productID1, quantity1));
            Assert.IsTrue(proxy.PurchaseCart(userId2, paymentDetails, shippingDetails));
            Assert.IsTrue(proxy.AddOwner(userId, 1, userId2));
-           Assert.IsFalse(proxy.GetPurchaseHistory(userId2));
+           Assert.IsFalse(proxy.GetPurchaseHistory(shopID, userId2));
         }
 
         [TestMethod]
@@ -330,7 +330,7 @@ namespace MarketBackend.Tests.AT
            userId2 = proxy.GetMembeIDrByUserName(userName);
            Assert.IsTrue(proxy.AddToCart(userId2, shopID, productID1, quantity1));
            Assert.IsTrue(proxy.PurchaseCart(userId2, paymentDetails, shippingDetails));
-           Assert.IsFalse(proxy.GetPurchaseHistory(userId2));
+           Assert.IsFalse(proxy.GetPurchaseHistory(shopID, userId2));
         }
 
         //view cart

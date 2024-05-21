@@ -124,9 +124,9 @@ namespace MarketBackend.Tests.AT
             return !res.ErrorOccured;
         }
 
-        public bool GetPurchaseHistory(int id)
+        public bool GetPurchaseHistory(int storeId, int clientId)
         {
-            Response res = clientService.GetPurchaseHistory(id);
+            Response res = marketService.GetPurchaseHistory(storeId, clientId);
             return !res.ErrorOccured;
         }
 
