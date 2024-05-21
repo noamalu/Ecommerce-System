@@ -19,7 +19,7 @@ namespace MarketBackend.Tests.AT
         string wrongEmail = "@gmail.com";
         int userId;
         Proxy proxy;
-        int productID1 = 111;
+        int productID1 = 11;
         string productName1 = "Banana";
         string category1 = "Fruit";
         double price1 = 5.0;
