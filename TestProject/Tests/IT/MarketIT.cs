@@ -22,7 +22,7 @@ namespace MarketBackend.Tests.IT
         string email2 = "hadaspr100@gmail.com";
         string wrongEmail = "@gmail.com";
         int userId;
-        int productID1 = 111;
+        int productID1 = 11;
         string productName1 = "Banana";
         string category1 = "Fruit";
         string storeName = "Remi levi";
@@ -109,7 +109,7 @@ namespace MarketBackend.Tests.IT
             Client client = clientManager.GetClientById(userId);
             Dictionary<int, Basket> baskets = client.Cart.GetBaskets();
             Basket relevantBasket = baskets[1];
-            Assert.IsTrue(relevantBasket.products[1] == 1);
+            Assert.IsTrue(relevantBasket.products[productID1] == 1);
         }
 
         [TestMethod]
@@ -128,7 +128,7 @@ namespace MarketBackend.Tests.IT
             Client client = clientManager.GetClientById(userId);
             Dictionary<int, Basket> baskets = client.Cart.GetBaskets();
             Basket relevantBasket = baskets[1];
-            Assert.IsFalse(relevantBasket.products[1] == 1);
+            Assert.IsFalse(relevantBasket.products[productID1] == 1);
         }
 
         [TestMethod]
@@ -146,13 +146,13 @@ namespace MarketBackend.Tests.IT
             Client client = clientManager.GetClientById(userId);
             Dictionary<int, Basket> baskets = client.Cart.GetBaskets();
             Basket relevantBasket = baskets[1];
-            Assert.IsTrue(relevantBasket.products[1] == 1);
+            Assert.IsTrue(relevantBasket.products[productID1] == 1);
             marketManagerFacade.LogoutClient(userId);
             marketManagerFacade.LoginClient(userId, userName, userPassword);
             client = clientManager.GetClientById(userId);
             baskets = client.Cart.GetBaskets();
             relevantBasket = baskets[1];
-            Assert.IsTrue(relevantBasket.products[1] == 1);
+            Assert.IsTrue(relevantBasket.products[productID1] == 1);
         }
     }
 }
