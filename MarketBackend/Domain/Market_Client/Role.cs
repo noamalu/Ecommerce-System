@@ -37,8 +37,8 @@ namespace MarketBackend.Domain.Market_Client
         public bool canUpdateProductPrice() { return role.canUpdateProductPrice(); }
         public bool canUpdateProductDiscount() { return role.canUpdateProductDiscount(); }
         public bool canUpdateProductQuantity() { return role.canUpdateProductQuantity(); }
-        public bool canAddStaffMember() { return role.canAddStaffMember(); }
-        public bool canRemoveStaffMember() { return role.canRemoveStaffMember(); }
+        public bool canAddStaffMember(RoleName roleName) { return role.canAddStaffMember(roleName); }
+        public bool canRemoveStaffMember(RoleName roleName) { return role.canRemoveStaffMember(roleName); }
         public bool canEditPermissions() { return role.canEditPermissions(); }
 
         public bool canGetHistory() { return role.canGetHistory(); }

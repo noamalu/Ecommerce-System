@@ -44,9 +44,9 @@ namespace MarketBackend.Domain.Market_Client
             return hasPermission(Permission.editPermissions); 
         }
 
-        public override bool canAddStaffMember() { return false; }
+        public override bool canAddStaffMember(RoleName roleName) { return false; }
 
-        public override bool canRemoveStaffMember() { return false; }
+        public override bool canRemoveStaffMember(RoleName roleName) { return false; }
         public override bool canEditPermissionsToOthers() { return false; }
 
     }

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace MarketBackend.Domain.Market_Client
 {
-    //founder has all permissions
     public class Founder : RoleType
     {
         public Founder(RoleName roleName) : base(roleName) {
@@ -22,5 +21,6 @@ namespace MarketBackend.Domain.Market_Client
         {
             throw new Exception("can't change founder's permissions");
         }
+
     }
 }
