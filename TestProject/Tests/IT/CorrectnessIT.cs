@@ -173,7 +173,7 @@ namespace MarketBackend.Tests.IT
                 {
                     try{
                         marketManagerFacade.AddToCart(userId, storeId, productID1, 1);
-                        Thread.Sleep(500);
+                        Thread.Sleep(1000);
                         marketManagerFacade.PurchaseCart(mem2.Id, paymentDetails, shippingDetails);
 
                     }catch{
