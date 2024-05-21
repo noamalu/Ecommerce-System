@@ -26,7 +26,7 @@ namespace MarketBackend.Domain.Market_Client
             _storeRepository = StoreRepositoryRAM.GetInstance();
             _clientManager = ClientManager.GetInstance();
             _paymentSystem = new PaymentSystemProxy();
-            // TODO: initializie system admin
+            InitiateSystemAdmin();
             // _logger = logger;
         }
 
@@ -35,6 +35,11 @@ namespace MarketBackend.Domain.Market_Client
                 marketManagerFacade = new MarketManagerFacade();
             }
             return marketManagerFacade;
+        }
+        
+        public void InitiateSystemAdmin()
+        {
+            _clientManager.RegisterAsSystemAdmin("system_admin", "system_admin", "system.admin@mail.com", 30);            
         }
         
         public void AddManger(int activeId, int storeId, int toAddId)
@@ -67,11 +72,6 @@ namespace MarketBackend.Domain.Market_Client
             ClientManager.CheckClientId(clientId);
             _clientManager.AddToCart(clientId, storeId, productId, quantity);
             // _logger.LogInformation($"Product id={productId} were added to client id={clientId} cart, to storeId={storeId} basket.!");
-        }
-
-        public void BrowseGuest()
-        {
-            throw new NotImplementedException();
         }
 
         public void CloseStore(int userId, int storeId)
@@ -112,14 +112,14 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void EnterAsGuest()
+        public void EnterAsGuest(int id)
         {
-            throw new NotImplementedException();
+            _clientManager.BrowseAsGuest(id);
         }
 
-        public void ExitGuest()
+        public void ExitGuest(int id)
         {
-            throw new NotImplementedException();
+            _clientManager.DeactivateGuest(id);
         }
 
         public Member GetFounder(int storeId)
@@ -188,12 +188,12 @@ namespace MarketBackend.Domain.Market_Client
 
         public void LoginClient(string username, string password)
         {
-            throw new NotImplementedException();
+            _clientManager.LoginClient(username, password);
         }
 
         public void LogoutClient(int id)
         {
-            throw new NotImplementedException();
+            _clientManager.LogoutClient(id);
         }
 
         public void OpenStore(int clientId, int storeId)

@@ -12,7 +12,7 @@ namespace MarketBackend.Domain.Market_Client
     public interface IMarketManagerFacade
     {
         void Register(string username, string password, string email, int age);
-        void EnterAsGuest();
+        void EnterAsGuest(int id);
         void PurchaseCart(int id, PaymentDetails paymentDetails);
         void CreateStore(int id, string storeName, string email, string phoneNum);
         bool ResToStoreManageReq(int id);
@@ -23,8 +23,7 @@ namespace MarketBackend.Domain.Market_Client
         void AddToCart(int clientId, int storeId, int productId, int quantity);
 
         void LoginClient(string username, string password);
-        void ExitGuest();
-        void BrowseGuest();
+        void ExitGuest(int id);
         // void UpdateProductDiscount(int productId, double discount);
         List<ShoppingCart> GetPurchaseHistoryByClient(int id);
         List<Purchase> GetPurchaseHistoryByStore(int storeId, int userId);
