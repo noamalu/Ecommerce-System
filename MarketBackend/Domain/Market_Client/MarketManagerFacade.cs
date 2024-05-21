@@ -127,16 +127,21 @@ namespace MarketBackend.Domain.Market_Client
         {
             ClientManager.CheckClientId(clientId);
             Store store = _storeRepository.GetById(storeId);
+            bool found = false;
             if (store != null){
                 foreach (var product in store._products){
                     if (product._productid == productId){
-                        _clientManager.AddToCart(clientId, storeId, productId, quantity);
+                        found = true;
                         break;
                     }
                 }
-                throw new Exception($"No productid {productId}");
+                if (found) 
+                    _clientManager.AddToCart(clientId, storeId, productId, quantity);
+                else
+                    throw new Exception($"No productid {productId}");
             }
-            throw new Exception($"Store {store} doesn't exists.");
+            else
+                throw new Exception($"Store {store} doesn't exists.");
             
         }
 
