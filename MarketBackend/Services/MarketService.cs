@@ -56,32 +56,32 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response AddPermission(int activeId, int storeId, int toAddId)
+        public Response AddPermission(int activeId, int storeId, int toAddId, Permission permission)
         {
             try
             {
-                marketManagerFacade.AddPermission(activeId, storeId, toAddId);
-                //log
+                marketManagerFacade.AddPermission(activeId, storeId, toAddId, permission);
+                logger.Info($"Client {activeId} added permission {permission} to client {toAddId} in store {storeId}.");
                 return new Response();
             }
             catch (Exception e)
             {
-                //log
+                logger.Error($"Error in adding permission {permission} by client {activeId} to client {toAddId} in store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
 
-        public Response AddProduct(int productId, string productName, int storeId, string category, double price, int quantity, double discount)
+        public Response AddProduct(int storeId, int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
         {
             try
             {
-                marketManagerFacade.AddProduct(productId, productName, storeId, category, price, quantity, discount);
-                logger.Info($"Product {productId} was added to store {storeId} with productName {productName}, category {category}, price {price}, quantity {quantity}");
+                marketManagerFacade.AddProduct(storeId, userId, name, sellMethod, description, price, category, quantity, ageLimit);
+                logger.Info($"Client {userId} added product {name} store {storeId} with sellmethod {sellMethod}, description {description}, category {category}, price {price}, quantity {quantity}, ageLimit {ageLimit}.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in adding product {productId} to store {storeId} with productName {productName}, category {category}, price {price}, quantity {quantity}. Error message: {e.Message}");
+                logger.Error($"Error in adding product {name} to store {storeId} by client {userId}, with  sellmethod {sellMethod}, description {description}, category {category}, price {price}, quantity {quantity}, ageLimit {ageLimit}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -236,17 +236,17 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response RemoveProduct(int productId)
+        public Response RemoveProduct(int storeId,int userId, int productId)
         {
             try
             {
-                marketManagerFacade.RemoveProduct(productId);
-                logger.Info($"Product {productId} was removed.");
+                marketManagerFacade.RemoveProduct(storeId, userId, productId);
+                logger.Info($"Client {userId} removed product {productId} from store {storeId}.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in removing product {productId}. Error message: {e.Message}");
+                logger.Error($"Error in removing product {productId} from store {storeId} by client {userId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -281,20 +281,20 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response UpdateProductDiscount(int productId, double discount)
-        {
-            try
-            {
-                marketManagerFacade.UpdateProductDiscount(productId, discount);
-                logger.Info($"Product {productId} discount was updated to {discount}.");
-                return new Response();
-            }
-            catch (Exception e)
-            {
-                logger.Error($"Error in updating product {productId} discount to {discount}. Error message: {e.Message}");
-                return new Response(e.Message);
-            }
-        }
+        // public Response UpdateProductDiscount(int productId, double discount)
+        // {
+        //     try
+        //     {
+        //         marketManagerFacade.UpdateProductDiscount(productId, discount);
+        //         logger.Info($"Product {productId} discount was updated to {discount}.");
+        //         return new Response();
+        //     }
+        //     catch (Exception e)
+        //     {
+        //         logger.Error($"Error in updating product {productId} discount to {discount}. Error message: {e.Message}");
+        //         return new Response(e.Message);
+        //     }
+        // }
 
         public Response UpdateProductPrice(int storeId, int userId, int productId, double price)
         {
@@ -326,49 +326,49 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response<List<Product>> SearchByKeywords(string keywords)
+        public Response<HashSet<Product>> SearchByKeywords(string keywords)
         {
             try
             {
-                List<Product> products = marketManagerFacade.SearchByKeyWords(keywords);
+                HashSet<Product> products = marketManagerFacade.SearchByKeyWords(keywords);
                 logger.Info($"Search by keyWords {keywords} succeed.");
-                return Response<List<Product>>.FromValue(products);
+                return Response<HashSet<Product>>.FromValue(products);
             }
             catch (Exception e)
             {
                 logger.Error($"Error in search by keyword {keywords}. Error message: {e.Message}");
-                return Response<List<Product>>.FromError(e.Message);
+                return Response<HashSet<Product>>.FromError(e.Message);
             }
         }
 
-        public Response<List<Product>> SearchByName(string name)
+        public Response<HashSet<Product>> SearchByName(string name)
         {
             string lowerName = name.ToLower();
             try
             {
-                List<Product> products = marketManagerFacade.SearchByName(name);
+                HashSet<Product> products = marketManagerFacade.SearchByName(name);
                 logger.Info($"Search by name {name} succeed.");
-                return Response<List<Product>>.FromValue(products);
+                return Response<HashSet<Product>>.FromValue(products);
             }
             catch (Exception e)
             {
                 logger.Error($"Error in search by name {name}. Error message: {e.Message}");
-                return Response<List<Product>>.FromError(e.Message);
+                return Response<HashSet<Product>>.FromError(e.Message);
             }
         }
 
-        public Response<List<Product>> SearchByCategory(string category)
+        public Response<HashSet<Product>> SearchByCategory(string category)
         {
             try
             {
-                List<Product> products = marketManagerFacade.SearchByCategory(category);
+                HashSet<Product> products = marketManagerFacade.SearchByCategory(category);
                 logger.Info($"Search by category {category} succeed.");
-                return Response<List<Product>>.FromValue(products);
+                return Response<HashSet<Product>>.FromValue(products);
             }
             catch (Exception e)
             {
                 logger.Error($"Error in search by category {category}. Error message: {e.Message}");
-                return Response<List<Product>>.FromError(e.Message);
+                return Response<HashSet<Product>>.FromError(e.Message);
             }
         }
 
@@ -386,16 +386,16 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response<string> GetProductInfo(int productId){
+        public Response<string> GetProductInfo(int storeId, int productId){
             try
             {
-                string info = marketManagerFacade.GetProductInfo(productId);
-                logger.Info($"Info got for product {productId}");
+                string info = marketManagerFacade.GetProductInfo(storeId, productId);
+                logger.Info($"Info got for product {productId} in store {storeId}");
                 return Response<string>.FromValue(info);
             }
             catch (Exception e)
             {
-                logger.Error($"Error in getting info for product {productId}. Error message: {e.Message}");
+                logger.Error($"Error in getting info for product {productId} in store {storeId}. Error message: {e.Message}");
                 return Response<string>.FromError(e.Message);
             }
         }

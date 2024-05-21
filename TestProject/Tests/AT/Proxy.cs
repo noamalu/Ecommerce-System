@@ -78,15 +78,15 @@ namespace MarketBackend.Tests.AT
             return !res.ErrorOccured;
         }
 
-        public bool AddProduct(int productId, string productName, int storeId, string category, double price, int quantity, double discount)
+        public bool AddProduct(int storeId, int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
         {
-            Response res = marketService.AddProduct(productId, productName, storeId, category, price, quantity, discount);
+            Response res = marketService.AddProduct(storeId, userId, name, sellMethod, description, price, category, quantity, ageLimit);
             return !res.ErrorOccured;
         }
 
-        public bool RemoveProduct(int productId)
+        public bool RemoveProduct(int storeId,int userId, int productId)
         {
-            Response res = marketService.RemoveProduct(productId);
+            Response res = marketService.RemoveProduct(storeId, userId, productId);
             return !res.ErrorOccured;
         }
 

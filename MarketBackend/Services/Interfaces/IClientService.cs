@@ -22,7 +22,7 @@ namespace MarketBackend.Services.Interfaces
         public Response AddToCart(int clientId, int storeId, int productId, int quantity);
         public Response LoginClient(int clientId, string username, string password);
         public Response ExitGuest();
-        public Response<List<Purchase>> GetPurchaseHistory(int id);
+        public Response<List<ShoppingCart>> GetPurchaseHistory(int id);
         public Response EditPurchasePolicy(int storeId);
     }
 }
