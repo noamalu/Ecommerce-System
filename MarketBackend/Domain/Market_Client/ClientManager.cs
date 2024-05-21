@@ -235,6 +235,15 @@ namespace MarketBackend.Domain.Market_Client
             var client = GetGuestById(id);
             ActiveGuests.TryRemove(id, out client);
         }
+
+        public bool CheckMemberIsLoggedIn(int clientId)
+        {
+            if (MemberxClientId.TryGetValue(clientId, out var member))
+            {
+                return member.IsLoggedIn;
+            }            
+            throw new KeyNotFoundException($"Client ID {clientId} not found in members");
+        }
     }
    
 }
