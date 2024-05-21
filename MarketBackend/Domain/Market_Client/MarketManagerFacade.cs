@@ -10,6 +10,7 @@ using MarketBackend.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Security.Policy;
 using System.Data;
+using MarketBackend.Domain.Shipping;
 
 
 namespace MarketBackend.Domain.Market_Client
@@ -20,15 +21,18 @@ namespace MarketBackend.Domain.Market_Client
         private readonly IStoreRepository _storeRepository;
         private readonly ClientManager _clientManager;
         private readonly IPaymentSystemFacade _paymentSystem;
+        private readonly IShippingSystemFacade _shippingSystemFacade;
         private int _storeCounter = 0;
 
-        private readonly ILogger<MarketManagerFacade> _logger;
+        
         private MarketManagerFacade(){
             _storeRepository = StoreRepositoryRAM.GetInstance();
             _clientManager = ClientManager.GetInstance();
             _paymentSystem = new PaymentSystemProxy();
+            _shippingSystemFacade = new ShippingSystemProxy();
+            _shippingSystemFacade.Connect();
             InitiateSystemAdmin();
-            // _logger = logger;
+            
         }
 
         public static MarketManagerFacade GetInstance(){
@@ -288,7 +292,7 @@ namespace MarketBackend.Domain.Market_Client
             }
         }
 
-        public void PurchaseCart(int id, PaymentDetails paymentDetails) //clientId
+        public void PurchaseCart(int id, PaymentDetails paymentDetails, ShippingDetails shippingDetails) //clientId
         {
             ClientManager.CheckClientId(id);
             var client = _clientManager.GetClientById(id);
@@ -306,6 +310,10 @@ namespace MarketBackend.Domain.Market_Client
                 else 
                     throw new Exception("payment failed.");
             }
+
+            _shippingSystemFacade.OrderShippment(shippingDetails);
+
+            
 
         }
 

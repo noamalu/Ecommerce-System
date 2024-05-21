@@ -292,7 +292,7 @@ namespace MarketBackend.Domain.Market_Client
         }
 
         public void AddStaffMember(int roleUserId ,Role role, int userId){
-            if ((getRole(userId)!=null && getRole(userId).canAddStaffMember(role.getRoleName())) || Equals(role.getRoleName().ToString(), "Founder"))//TODO: add getRole(userId)!=null && getRole(userId).canAddStaffMember(role.getRoleName()
+            if ((getRole(userId)!=null && getRole(userId).canAddStaffMember(role.getRoleName())) || Equals(role.getRoleName().ToString(), "Founder"))
             {
                 roles.Add(roleUserId, role);
                 //add to active user appointees list the newly appointed staff member
@@ -301,8 +301,8 @@ namespace MarketBackend.Domain.Market_Client
 
         }
 
-        public void RemoveStaffMember(int roleUserId, int userId , Role role){
-            if(getRole(userId)!=null && getRole(userId).canRemoveStaffMember(role.getRoleName()))
+        public void RemoveStaffMember(int roleUserId, int userId){
+            if(getRole(userId)!=null && getRole(userId).canRemoveStaffMember(getRole(roleUserId).getRoleName()))
             {
                 if (roles.ContainsKey(roleUserId))
                 {

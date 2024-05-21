@@ -2,6 +2,7 @@
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Payment;
 using NLog;
+using MarketBackend.Domain.Shipping;
 
 namespace MarketBackend.Services
 {
@@ -401,11 +402,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response PurchaseCart(int id, PaymentDetails paymentDetails)
+        public Response PurchaseCart(int id, PaymentDetails paymentDetails, ShippingDetails shippingDetails)
         {
              try
             {
-                marketManagerFacade.PurchaseCart(id, paymentDetails);
+                marketManagerFacade.PurchaseCart(id, paymentDetails, shippingDetails);
                 logger.Info($"Purchase cart for client {id} succeed.");
                 return new Response();
             }
