@@ -245,6 +245,14 @@ namespace MarketBackend.Domain.Market_Client
             }
             return -1;       
         }
+        public bool CheckMemberIsLoggedIn(int clientId)
+        {
+            if (MemberxClientId.TryGetValue(clientId, out var member))
+            {
+                return member.IsLoggedIn;
+            }            
+            throw new KeyNotFoundException($"Client ID {clientId} not found in members");
+        }
     }
    
 }
