@@ -286,8 +286,7 @@ namespace MarketBackend.Tests.AT
            userId = proxy.GetMembeIDrByUserName(userName);
            int shopID = 1;
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
-           //add product as ilegal
-           Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
+           Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, true));
            int userId2 = proxy.GetUserId();
            Assert.IsTrue(proxy.EnterAsGuest(userId2));
            Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge2));
@@ -310,11 +309,11 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.EnterAsGuest(userId2));
            Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge));
            Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
-           userId2 = proxy.GetMembeIDrByUserName(userName);
+           userId2 = proxy.GetMembeIDrByUserName(userName2);
            Assert.IsTrue(proxy.AddToCart(userId2, shopID, productID1, quantity1));
            Assert.IsTrue(proxy.PurchaseCart(userId2, paymentDetails, shippingDetails));
            Assert.IsTrue(proxy.AddOwner(userId, 1, userId2));
-           Assert.IsFalse(proxy.GetPurchaseHistory(shopID, userId2));
+           Assert.IsTrue(proxy.GetPurchaseHistory(shopID, userId2));
         }
 
         [TestMethod]
@@ -331,13 +330,11 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.EnterAsGuest(userId2));
            Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge));
            Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
-           userId2 = proxy.GetMembeIDrByUserName(userName);
+           userId2 = proxy.GetMembeIDrByUserName(userName2);
            Assert.IsTrue(proxy.AddToCart(userId2, shopID, productID1, quantity1));
            Assert.IsTrue(proxy.PurchaseCart(userId2, paymentDetails, shippingDetails));
            Assert.IsFalse(proxy.GetPurchaseHistory(shopID, userId2));
         }
-
-        //view cart
 
 
 

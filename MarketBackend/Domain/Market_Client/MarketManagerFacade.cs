@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using System.Security.Policy;
 using System.Data;
 using MarketBackend.Domain.Shipping;
+using Microsoft.IdentityModel.Tokens;
 
 
 namespace MarketBackend.Domain.Market_Client
@@ -314,11 +315,15 @@ namespace MarketBackend.Domain.Market_Client
             ClientManager.CheckClientId(id);
             var client = _clientManager.GetClientById(id);
             var baskets = client.Cart.GetBaskets();
+            if (baskets.IsNullOrEmpty()){
+                throw new Exception("Empty cart.");
+            }
             var stores = new List<Store>();
             foreach(var basket in baskets){
                 var store = _storeRepository.GetById(basket.Key);
                 stores.Add(store);
-                if(!store.checkBasketInSupply(basket.Value)) throw new Exception("unavailable.");                
+                if(!store.checkBasketInSupply(basket.Value)) throw new Exception("unavailable."); 
+                if(!store.checklegalBasket(basket.Value, client.IsAbove18)) throw new Exception("unavailable.");               
             }
             foreach(var store in stores){
                 var totalPrice = store.CalculateBasketPrice(baskets[store.StoreId]);

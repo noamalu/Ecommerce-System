@@ -365,5 +365,16 @@ namespace MarketBackend.Domain.Market_Client
             }
             return false;
         }
+
+        public bool checklegalBasket(Basket basket, bool IsAbove18){
+            foreach (KeyValuePair<int, int> product in basket.products)
+            {
+                Product productToBuy = GetProduct(product.Key);
+                if (productToBuy._ageLimit && !IsAbove18){
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }
