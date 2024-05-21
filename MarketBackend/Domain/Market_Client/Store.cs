@@ -48,6 +48,7 @@ namespace MarketBackend.Domain.Market_Client
             //_discountPolicyManager = new DiscountPolicyManager(shopId);
             //_purchasePolicyManager = new PurchasePolicyManager(shopId);
             _raiting = 0;
+            _productIdCounter = 1;
         }
 
          public int StoreId { get => _storeId; }
@@ -352,6 +353,14 @@ namespace MarketBackend.Domain.Market_Client
                 }
             }
             return false;
+        }
+
+        public void AddKeyWord(string keyWord, int productId){
+            if (_products[productId] != null){
+                _products[productId].AddKeyword(keyWord);
+            }
+            else
+                throw new Exception("Product doesn't exists.");
         }
     }
 }

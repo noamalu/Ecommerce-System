@@ -112,13 +112,13 @@ namespace MarketBackend.Domain.Market_Client
         }
 
 
-        public void AddProduct(int storeId, int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
+        public Product AddProduct(int storeId, int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
         {
             Store store = _storeRepository.GetById(storeId);
             if (store == null && _clientManager.CheckMemberIsLoggedIn(userId)){
                 throw new Exception("Store doesn't exists");
             }
-            store.AddProduct(userId, name, sellMethod, description, price, category, quantity, ageLimit);
+            return store.AddProduct(userId, name, sellMethod, description, price, category, quantity, ageLimit);
 
         }
 
@@ -470,6 +470,16 @@ namespace MarketBackend.Domain.Market_Client
         public int GetMemberIDrByUserName(string userName)
         {
             return _clientManager.GetMemberIDrByUserName(userName); 
+        }
+
+        public void AddKeyWord(string keyWord, int storeId, int productId)
+        {
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+
+            }
+            else
+                throw new Exception("Store doesn't exist!");
         }
     }
 }

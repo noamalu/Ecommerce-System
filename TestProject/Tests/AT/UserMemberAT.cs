@@ -156,6 +156,13 @@ namespace MarketBackend.Tests.AT
         public void SearchByKeyWords(){
             Assert.IsTrue(proxy.EnterAsGuest(userId));
             Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
+            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
+           userId = proxy.GetMembeIDrByUserName(userName);
+           int shopID = 1;
+           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
+           Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
+           Assert.IsTrue(proxy.AddKeyWord(userId, "nice", shopID, 11));
+           Assert.IsTrue(proxy.SearchByKeywords("nice"));
         }
 
         [TestMethod]

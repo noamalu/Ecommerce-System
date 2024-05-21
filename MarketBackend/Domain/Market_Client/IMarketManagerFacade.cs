@@ -28,7 +28,7 @@ namespace MarketBackend.Domain.Market_Client
         // void UpdateProductDiscount(int productId, double discount);
         List<ShoppingCart> GetPurchaseHistoryByClient(int id);
         List<Purchase> GetPurchaseHistoryByStore(int storeId, int userId);
-        void AddProduct(int storeId, int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit);
+        Product AddProduct(int storeId, int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit);
         void RemoveProduct(int storeId,int userId, int productId);
         void RemoveStaffMember(int storeId, int activeId, Role role, int toRemoveId);
         void AddManger(int activeId, int storeId, int toAddId);

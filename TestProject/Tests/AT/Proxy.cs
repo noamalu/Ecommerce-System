@@ -167,6 +167,11 @@ namespace MarketBackend.Tests.AT
             // return res.ErrorOccured ? -1 : int.Parse(res.ErrorMessage);
         }
 
+        public bool AddKeyWord(int id, string keyWord, int storeId, int productId){
+            Response res = marketService.AddKeyWord(id, keyWord, storeId, productId);
+            return !res.ErrorOccured;
+        }
+
 
     }
 }

@@ -416,5 +416,22 @@ namespace MarketBackend.Services
                 return new Response(e.Message);
             }
         }
+
+        public Response AddKeyWord(int id, string keyWord, int storeId, int productId)
+        {
+             try
+            {
+                marketManagerFacade.AddKeyWord(keyWord, storeId, productId);
+                logger.Info($"Add keyWord for product {productId} in store {storeId} succeed.");
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in Adding keyWord for product {productId} in store {storeId}. Error message: {e.Message}");
+                return new Response(e.Message);
+            }
+        }
+
+
     }
 }

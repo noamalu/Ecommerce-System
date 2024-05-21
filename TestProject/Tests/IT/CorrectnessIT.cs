@@ -20,7 +20,7 @@ namespace MarketBackend.Tests.IT
         string email2 = "hadaspr100@gmail.com";
         string wrongEmail = "@gmail.com";
         int userId;
-        int productID1 = 111;
+        int productID1 = 11;
         string productName1 = "Banana";
         string category1 = "Fruit";
         string storeName = "Remi levi";
@@ -39,6 +39,7 @@ namespace MarketBackend.Tests.IT
         private ClientManager clientManager;
         string sellmethod = "RegularSell";
         string desc = "nice";
+        int productCounter = 0;
 
         [TestInitialize]
         public void Setup()
@@ -78,8 +79,8 @@ namespace MarketBackend.Tests.IT
                 {
                     for (int j = 0; j < NumIterations; j++)
                     {
-                        marketManagerFacade.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, quantity1, false);
-                        marketManagerFacade.RemoveProduct(1, userId, productID1);
+                        Product product = marketManagerFacade.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, quantity1, false);
+                        marketManagerFacade.RemoveProduct(1, userId, product._productid);
                     }
                 }));
             }
