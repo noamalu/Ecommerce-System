@@ -8,7 +8,7 @@ namespace MarketBackend.Domain.Market_Client
 {
     public class Owner : RoleType
     {
-        public Owner(string roleName) : base(roleName) { }
+        public Owner(RoleName roleName) : base(roleName) { }
 
         public override bool canCloseStore() { return false; }
 

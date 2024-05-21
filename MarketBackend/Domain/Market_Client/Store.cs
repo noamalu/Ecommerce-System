@@ -295,6 +295,7 @@ namespace MarketBackend.Domain.Market_Client
             if(getRole(userId)!=null && getRole(userId).canAddStaffMember())
             {
                 roles.Add(roleUserId, role);
+                //add to active user appointees list the newly appointed staff member
             }
             else throw new Exception($"Permission exception for userId: {userId}");
 
@@ -303,10 +304,11 @@ namespace MarketBackend.Domain.Market_Client
         public void RemoveStaffMember(int roleUserId, int userId){
             if(getRole(userId)!=null && getRole(userId).canAddStaffMember())
             {
-                 if (roles.ContainsKey(roleUserId))
-                    {
-                        roles.Remove(roleUserId);
-                    }  
+                if (roles.ContainsKey(roleUserId))
+                {
+                    roles.Remove(roleUserId);
+                    //remove from active user appointees list the removed staff member
+                }
             }
             else throw new Exception($"Permission exception for userId: {userId}");
 
@@ -319,6 +321,25 @@ namespace MarketBackend.Domain.Market_Client
         public void Remove(int productId, string keyWord){
             GetProduct(productId).RemoveKeyword(keyWord);
         }
-    
+
+        public void AddPermission(int userId, int toAddId, Permission permission)
+        {
+            if (getRole(userId) != null && getRole(userId).canEditPermissions())
+            {
+                getRole(toAddId).addPermission(permission);
+            }
+            else throw new Exception($"Permission exception for userId: {userId}");
+
+        }
+
+        public void RemovePermission(int userId, int toRemoveId, Permission permission)
+        {
+            if (getRole(userId) != null && getRole(userId).canEditPermissions())
+            {
+                getRole(toRemoveId).addPermission(permission);
+            }
+            else throw new Exception($"Permission exception for userId: {userId}");
+
+        }
     }
 }
