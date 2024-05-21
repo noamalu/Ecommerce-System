@@ -32,7 +32,7 @@ namespace MarketBackend.DAL
             if(!roles.ContainsKey(storeId))
                 throw new KeyNotFoundException($"store with ID {storeId} not found.");
 
-            return roles[storeId].Values.First(role => role.getRoleType() == "Founder");
+            return roles[storeId].Values.First(role => role.getRoleName() == RoleName.Founder);
         }
 
         public Role GetById(int storeId, int memberId)

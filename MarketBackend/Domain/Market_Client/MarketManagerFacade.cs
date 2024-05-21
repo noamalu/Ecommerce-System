@@ -9,6 +9,7 @@ using MarketBackend.Domain.Payment;
 using MarketBackend.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Security.Policy;
+using System.Data;
 
 
 namespace MarketBackend.Domain.Market_Client
@@ -44,18 +45,55 @@ namespace MarketBackend.Domain.Market_Client
         
         public void AddManger(int activeId, int storeId, int toAddId)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null)
+            {
+                Member activeMember = (Member)_clientManager.GetClientById(activeId);
+                Role role = new Role(new StoreManagerRole(RoleName.Manager), activeMember, storeId, toAddId);
+                store.AddStaffMember(toAddId, role, activeId);
+            }
+            else
+                throw new Exception("Store doesn't exist!");
+
         }
 
         public void AddOwner(int activeId, int storeId, int toAddId)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null)
+            {
+                Member activeMember = (Member)_clientManager.GetClientById(activeId);
+                Role role = new Role(new Owner(RoleName.Owner), activeMember, storeId, toAddId);
+                store.AddStaffMember(toAddId, role, activeId);
+            }
+            else
+                throw new Exception("Store doesn't exist!");
+
         }
 
-        public void AddPermission(int activeId, int storeId, int toAddId)
+        public void AddPermission(int activeId, int storeId, int toAddId, Permission permission)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null)
+            {
+                store.AddPermission(activeId, toAddId, permission);
+            }
+            else
+                throw new Exception("Store doesn't exist!");
         }
+
+        public void RemovePermission(int activeId, int storeId, int toRemoveId, Permission permission)
+        {
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null)
+            {
+                store.RemovePermission(activeId, toRemoveId, permission);
+            }
+            else
+                throw new Exception("Store doesn't exist!");
+
+        }
+
 
         public void AddProduct(int storeId, int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
         {
@@ -124,17 +162,48 @@ namespace MarketBackend.Domain.Market_Client
 
         public Member GetFounder(int storeId)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null)
+            {
+                int founderId = store.roles.FirstOrDefault(pair => pair.Value.getRoleName() == RoleName.Founder).Key;
+                if (_clientManager.IsMember(founderId))
+                    return (Member)_clientManager.GetClientById(founderId);
+                else
+                    throw new Exception("should not happen! founder is not a member");
+            }
+            else
+                throw new Exception("Store doesn't exist!");
         }
 
         public List<Member> GetMangers(int storeId)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null)
+            {
+
+                List<int> managerIds = store.roles.Where(pair => pair.Value.getRoleName() == RoleName.Manager).Select(pair => pair.Key).ToList();
+                List<Member> managers = new List<Member>();
+                managerIds.ForEach(id => managers.Add((Member)_clientManager.GetClientById(id)));
+                return managers;
+            }
+            else
+                throw new Exception("Store doesn't exist!");
+
         }
 
         public List<Member> GetOwners(int storeId)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null)
+            {
+
+                List<int> managerIds = store.roles.Where(pair => pair.Value.getRoleName() == RoleName.Owner).Select(pair => pair.Key).ToList();
+                List<Member> managers = new List<Member>();
+                managerIds.ForEach(id => managers.Add((Member)_clientManager.GetClientById(id)));
+                return managers;
+            }
+            else
+                throw new Exception("Store doesn't exist!");
         }
 
         public string GetProductInfo(int storeId, int productId)
@@ -168,11 +237,6 @@ namespace MarketBackend.Domain.Market_Client
             else{
                 throw new Exception("Store doesn't exists");
             }
-        }
-
-        public bool HasPermission()
-        {
-            throw new NotImplementedException();
         }
 
         public bool IsAvailable(int storeId)
@@ -240,12 +304,12 @@ namespace MarketBackend.Domain.Market_Client
 
         public void RemoveManger(int activeId, int storeId, int toRemoveId)
         {
-            throw new NotImplementedException();
+            RemoveStaffMember(storeId, activeId, null, toRemoveId);
         }
 
         public void RemoveOwner(int activeId, int storeId, int toRemoveId)
         {
-            throw new NotImplementedException();
+            RemoveStaffMember(storeId, activeId, null ,toRemoveId);
         }
 
         public void RemovePermission(int activeId, int storeId, int toRemoveId)
@@ -264,7 +328,13 @@ namespace MarketBackend.Domain.Market_Client
 
         public void RemoveStaffMember(int storeId, int activeId, Role role, int toRemoveId)
         {
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null)
+            {
+                store.RemoveStaffMember(toRemoveId, activeId);
+            }
+            else
+                throw new Exception("Store doesn't exist!");
         }
 
         public bool ResToStoreManageReq(int id)
@@ -359,7 +429,13 @@ namespace MarketBackend.Domain.Market_Client
         }
 
         public void AddStaffMember(int storeId, int activeId, Role role, int toAddId){
-            throw new NotImplementedException();
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null)
+            {
+                store.AddStaffMember(toAddId, role, activeId);
+            }
+            else
+                throw new Exception("Store doesn't exist!");
         }
     }
 }

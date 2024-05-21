@@ -43,8 +43,8 @@ namespace MarketBackend.Domain.Market_Client
         void CloseStore(int userId, int storeId);
         void OpenStore(int clientId, int storeId);
         bool IsAvailable(int storeId);
-        void RemovePermission(int activeId, int storeId, int toRemoveId);
-        void AddPermission(int activeId, int storeId, int toAddId);
+        void RemovePermission(int activeId, int storeId, int toRemoveId, Permission permission);
+        void AddPermission(int activeId, int storeId, int toAddId, Permission permission);
         void EditPurchasePolicy(int storeId);
         HashSet<Product> SearchByKeyWords(string keywords);
         HashSet<Product> SearchByName(string name);
@@ -53,7 +53,6 @@ namespace MarketBackend.Domain.Market_Client
         HashSet<Product> SearchByKeyWordsWithStore(int storeId, string keywords);
         HashSet<Product> SearchByNameWithStore(int storeId, string name);
         void Filter (HashSet<Product> products, string category, double lowPrice, double highPrice, double lowProductRate, double highProductRate, double lowStoreRate, double highStoreRate);
-        bool HasPermission();
         string GetProductInfo(int storId, int productId);
         public void AddStaffMember(int storeId, int activeId, Role role, int toAddId);   
         public string GetInfo(int storeId);     

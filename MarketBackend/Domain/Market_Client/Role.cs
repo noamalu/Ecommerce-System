@@ -39,6 +39,7 @@ namespace MarketBackend.Domain.Market_Client
         public bool canUpdateProductQuantity() { return role.canUpdateProductQuantity(); }
         public bool canAddStaffMember() { return role.canAddStaffMember(); }
         public bool canRemoveStaffMember() { return role.canRemoveStaffMember(); }
+        public bool canEditPermissions() { return role.canEditPermissions(); }
 
         public bool canGetHistory() { return role.canGetHistory(); }
         public bool hasPermission(Permission permission)
@@ -60,7 +61,7 @@ namespace MarketBackend.Domain.Market_Client
             return role.getPermissions();
         }
 
-        public string getRoleType()
+        public RoleName getRoleName()
         {
             return role.roleName;
         }

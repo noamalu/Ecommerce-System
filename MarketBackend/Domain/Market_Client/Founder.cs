@@ -9,7 +9,7 @@ namespace MarketBackend.Domain.Market_Client
     //founder has all permissions
     public class Founder : RoleType
     {
-        public Founder(string roleName) : base(roleName) {
+        public Founder(RoleName roleName) : base(roleName) {
             permissions.Add(Permission.all);
         }
 

@@ -13,6 +13,7 @@ namespace MarketBackend.Domain.Market_Client
         updateProductPrice,
         updateProductDiscount,
         updateProductQuantity,
-        all = addProduct | removeProduct | updateProductPrice | updateProductDiscount | updateProductQuantity
+        editPermissions,
+        all = addProduct | removeProduct | updateProductPrice | updateProductDiscount | updateProductQuantity | editPermissions
     }
 }
