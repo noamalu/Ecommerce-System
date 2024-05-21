@@ -37,6 +37,18 @@ namespace MarketBackend.Domain.Market_Client
             }
             return marketManagerFacade;
         }
+
+        public static void Dispose(){
+            StoreRepositoryRAM.Dispose();
+            BasketRepositoryRAM.Dispose();
+            ClientRepositoryRAM.Dispose();
+            PaymentDetailsRepositoryRAM.Dispose();
+            ProductRepositoryRAM.Dispose();
+            RoleRepositoryRAM.Dispose();
+            ShippingDetailsRepositoryRAM.Dispose();
+            StoreRepositoryRAM.Dispose();
+            marketManagerFacade = new MarketManagerFacade();
+        }
         
         public void InitiateSystemAdmin()
         {
@@ -436,6 +448,10 @@ namespace MarketBackend.Domain.Market_Client
             }
             else
                 throw new Exception("Store doesn't exist!");
+        }
+
+        public Store GetStore(int storeId){
+            return _storeRepository.GetById(storeId);
         }
     }
 }

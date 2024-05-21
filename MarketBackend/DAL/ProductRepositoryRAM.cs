@@ -27,6 +27,10 @@ namespace MarketBackend.DAL
             return _productRepo;
         }
 
+        public static void Dispose(){
+            _productRepo = new ProductRepositoryRAM();
+        }
+
         public void Add(Product item)
         {
             _productById.TryAdd(item._productid, item);

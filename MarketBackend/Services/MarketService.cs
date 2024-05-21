@@ -23,7 +23,8 @@ namespace MarketBackend.Services
         }
 
         public void Dispose(){
-            _marketService = new MarketService();
+            MarketManagerFacade.Dispose();
+            _marketService = MarketService.GetInstance();
         }
         
         public Response AddManger(int activeId, int storeId, int toAddId)

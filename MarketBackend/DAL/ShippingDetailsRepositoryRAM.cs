@@ -25,6 +25,10 @@ namespace MarketBackend.DAL
             return _shippingRepository;
         }
 
+        public static void Dispose(){
+            _shippingRepository = new ShippingDetailsRepositoryRAM();
+        }
+
         public void Add(ShippingDetails entity)
         {
             var key = Tuple.Create(entity.ShippingID, entity.Address, entity.Name);

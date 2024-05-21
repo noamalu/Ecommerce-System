@@ -31,6 +31,7 @@ namespace MarketBackend.Services
         }
 
         public void Dispose(){
+            MarketManagerFacade.Dispose();
             _clientService = new ClientService();
         }
         public Response AddToCart(int clientId, int storeId, int productId, int quantity)
@@ -225,6 +226,11 @@ namespace MarketBackend.Services
                 logger.Error($"Error in editing purchase policy in store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
+        }
+
+        public void InitiateSystemAdmin(){
+            marketManagerFacade.InitiateSystemAdmin();
+            logger.Info("initial");
         }
     }
 }

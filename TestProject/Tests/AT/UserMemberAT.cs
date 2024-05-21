@@ -33,7 +33,7 @@ namespace MarketBackend.Tests.AT
         string storeEmail = "RamiLevi@gmail.com";
         string phoneNum  = "0522458976";
         string sellmethod = "RegularSell";
-      string desc = "nice";
+        string desc = "nice";
 
         [TestInitialize()]
         public void Setup(){
@@ -43,6 +43,7 @@ namespace MarketBackend.Tests.AT
             var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
+            proxy.InitiateSystemAdmin();
         }
 
         [TestCleanup]
@@ -99,7 +100,7 @@ namespace MarketBackend.Tests.AT
         public void LogOutSuccess(){
             Assert.IsTrue(proxy.EnterAsGuest(userId));
             Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-            Assert.IsFalse(proxy.Login(userId, userName, userPassword));
+            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
             Assert.IsTrue(proxy.LogOut(userId));
         }
 
