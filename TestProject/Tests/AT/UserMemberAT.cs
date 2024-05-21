@@ -336,8 +336,6 @@ namespace MarketBackend.Tests.AT
            Assert.IsFalse(proxy.GetPurchaseHistory(shopID, userId2));
         }
 
-        //view cart
-
 
 
 
