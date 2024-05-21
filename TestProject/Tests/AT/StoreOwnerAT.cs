@@ -21,7 +21,7 @@ namespace MarketBackend.Tests.AT
       string wrongEmail = "@gmail.com";
       int userId;
       Proxy proxy;
-      int productID1 = 111;
+      int productID1 = 11;
       string productName1 = "Banana";
       string category1 = "Fruit";
       double price1 = 5.0;
@@ -48,6 +48,8 @@ namespace MarketBackend.Tests.AT
             userId = proxy.GetUserId();
             var mockShippingSystem = new Mock<IShippingSystemFacade>();
             var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
+            mockPaymentSystem.Setup(pay =>pay.Connect()).Returns(true);
+            mockShippingSystem.Setup(ship => ship.Connect()).Returns(true);
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
             proxy.InitiateSystemAdmin();
