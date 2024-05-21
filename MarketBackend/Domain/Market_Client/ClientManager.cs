@@ -98,7 +98,7 @@ namespace MarketBackend.Domain.Market_Client
             {
                 var newClient = CreateMember(username, password, email, age);
                 _clientRepository.Add(newClient);
-                MemberxClientId.TryAdd(id, newClient);
+                MemberxClientId.TryAdd(newClient.Id, newClient);
                 return newClient;
             }
             catch (ArgumentException)
@@ -234,6 +234,16 @@ namespace MarketBackend.Domain.Market_Client
         {
             var client = GetGuestById(id);
             ActiveGuests.TryRemove(id, out client);
+        }
+
+
+         public int GetMemberIDrByUserName(string userName)
+        {
+            if(_clientRepository.ContainsUserName(userName))
+            {
+                return _clientRepository.GetByUserName(userName).Id;
+            }
+            return -1;       
         }
     }
    

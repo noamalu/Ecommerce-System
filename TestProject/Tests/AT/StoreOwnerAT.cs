@@ -68,8 +68,9 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
            int shopID = 1;
-           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
-           Assert.IsTrue(proxy.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
+           int userID = proxy.GetMembeIDrByUserName(userName);
+           Assert.IsTrue(proxy.CreateStore(userID, storeName, storeEmail, phoneNum));
+           Assert.IsTrue(proxy.AddProduct(1, userID, productName1, sellmethod, desc, price1, category1, quantity1, false));
         }
 
         [TestMethod]
