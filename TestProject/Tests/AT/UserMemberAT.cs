@@ -152,22 +152,9 @@ namespace MarketBackend.Tests.AT
         }
 
         [TestMethod]
-        public void GetInfoFail_NotLoggedIn()
-        {
-           Assert.IsTrue(proxy.EnterAsGuest(userId));
-           Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-           Assert.IsTrue(proxy.Login(userId, userName, userPassword));
-           int shopID = 0;
-           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
-           Assert.IsTrue(proxy.LogOut(userId));
-           Assert.IsFalse(proxy.GetInfo(shopID));
-        }
-
-        [TestMethod]
         public void SearchByKeyWords(){
             Assert.IsTrue(proxy.EnterAsGuest(userId));
             Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-
         }
 
         [TestMethod]

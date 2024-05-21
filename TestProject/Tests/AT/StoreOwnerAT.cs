@@ -214,7 +214,8 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.EnterAsGuest(userId2));
            Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge));
            Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
-           //add role and remove staff member
+           Assert.IsTrue(proxy.AddOwner(userId, shopID, userId2));
+         //   Assert.IsTrue(proxy.Remov(userId, shopID, userId2));
         }
 
         
