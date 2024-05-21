@@ -94,18 +94,18 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response<List<ShoppingCart>> GetPurchaseHistory(int id)
+        public Response<List<ShoppingCartHistory>> GetPurchaseHistory(int id)
         {
              try
             {
-                List<ShoppingCart> shoppingCarts = marketManagerFacade.GetPurchaseHistoryByClient(id);
+                List<ShoppingCartHistory> shoppingCarts = marketManagerFacade.GetPurchaseHistoryByClient(id);
                 //log
-                return Response<List<ShoppingCart>>.FromValue(shoppingCarts);
+                return Response<List<ShoppingCartHistory>>.FromValue(shoppingCarts);
             }
             catch (Exception e)
             {
                 logger.Error($"Error in getting purchase history for client {id}, Error message: {e.Message}");
-                return Response<List<ShoppingCart>>.FromError(e.Message);
+                return Response<List<ShoppingCartHistory>>.FromError(e.Message);
             }
         }
 

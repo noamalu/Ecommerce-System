@@ -245,7 +245,7 @@ namespace MarketBackend.Domain.Market_Client
             return store.getInfo();
         }
 
-        public List<ShoppingCart> GetPurchaseHistoryByClient(int id)
+        public List<ShoppingCartHistory> GetPurchaseHistoryByClient(int id)
         {
             return _clientManager.GetPurchaseHistoryByClient(id);
         }

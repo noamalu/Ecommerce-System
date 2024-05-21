@@ -14,7 +14,7 @@ namespace MarketBackend.Domain.Market_Client
         public string Password {get; set;}
         public MailAddress Email {get; set;}
         public ConcurrentDictionary<int, Role> Roles {get; set;}
-        public ConcurrentDictionary<int,ShoppingCart> OrderHistory {get; set;}
+        public ConcurrentDictionary<int,ShoppingCartHistory> OrderHistory {get; set;}
         public bool IsSystemAdmin {get; set;}
         public bool IsLoggedIn {get; set;}
         public Member(int id, string userName, MailAddress mailAddress, string password) : base(id)
@@ -31,9 +31,14 @@ namespace MarketBackend.Domain.Market_Client
         public override void PurchaseBasket(int id, Basket basket)
         {
             OrderHistory.TryGetValue(basket._cartId, out var cartInHistory);
-            cartInHistory ??= new(Cart._shoppingCartId);
-            cartInHistory
+            cartInHistory ??= new(){_shoppingCartId = basket._cartId};
+            cartInHistory.AddBasket(basket);
             base.PurchaseBasket(id, basket);
+        }
+
+        public List<ShoppingCartHistory> GetHistory()
+        {
+            return OrderHistory.Values.ToList();
         }
 
     }

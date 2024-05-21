@@ -28,10 +28,6 @@ namespace MarketBackend.Domain.Market_Client
             Cart.removeFromCart(basket, productId, quantity);
         }
 
-        public virtual List<string> GetHistory(){
-            throw new NotImplementedException();
-        }
-
         public virtual bool ResToStoreManagerReq(){
             return true;
         }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MarketBackend.DAL;
+using MarketBackend.Domain.Market_Client;
 using MarketBackend.Services.Interfaces;
 
 namespace MarketBackend.Domain.Models
@@ -51,9 +52,10 @@ namespace MarketBackend.Domain.Models
     public class ShoppingCartHistory
     {
         public int _shoppingCartId{get; set;}
-        private ConcurrentDictionary<int, Basket> _baskets{get; set;}  
-
-        
-
+        private ConcurrentDictionary<int, Basket> _baskets{get; set;}
+        public void AddBasket(Basket basket)
+        {
+            _baskets.TryAdd(basket._basketId, Basket.Clone(basket));
+        }
     }
 }
