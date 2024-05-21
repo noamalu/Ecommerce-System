@@ -47,7 +47,8 @@ namespace MarketBackend.Domain.Market_Client
             RoleRepositoryRAM.Dispose();
             ShippingDetailsRepositoryRAM.Dispose();
             StoreRepositoryRAM.Dispose();
-            marketManagerFacade = new MarketManagerFacade();
+            ClientManager.Dispose();
+            marketManagerFacade = new MarketManagerFacade();            
         }
         
         public void InitiateSystemAdmin()
@@ -262,9 +263,9 @@ namespace MarketBackend.Domain.Market_Client
             }
         }
 
-        public void LoginClient(string username, string password)
+        public void LoginClient(int id, string username, string password)
         {
-            _clientManager.LoginClient(username, password);
+            _clientManager.LoginClient(id, username, password);
         }
 
         public void LogoutClient(int id)
@@ -304,9 +305,9 @@ namespace MarketBackend.Domain.Market_Client
 
         }
 
-        public void Register(string username, string password, string email, int age)
+        public void Register(int id, string username, string password, string email, int age)
         {
-            _clientManager.Register(username, password, email, age);
+            _clientManager.Register(id, username, password, email, age);
         }
 
         public void RemoveFromCart(int clientId, int productId, int basketId, int quantity)

@@ -11,7 +11,7 @@ namespace MarketBackend.Domain.Market_Client
 {
     public interface IMarketManagerFacade
     {
-        void Register(string username, string password, string email, int age);
+        void Register(int id, string username, string password, string email, int age);
         void EnterAsGuest(int id);
         void PurchaseCart(int id, PaymentDetails paymentDetails);
         void CreateStore(int id, string storeName, string email, string phoneNum);
@@ -22,7 +22,7 @@ namespace MarketBackend.Domain.Market_Client
         ShoppingCart ViewCart(int id);
         void AddToCart(int clientId, int storeId, int productId, int quantity);
 
-        void LoginClient(string username, string password);
+        void LoginClient(int id, string username, string password);
         void ExitGuest(int id);
         // void UpdateProductDiscount(int productId, double discount);
         List<ShoppingCart> GetPurchaseHistoryByClient(int id);
