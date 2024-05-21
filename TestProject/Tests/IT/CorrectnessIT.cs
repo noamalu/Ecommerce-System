@@ -105,23 +105,28 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
             Product product = marketManagerFacade.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, 1, false);
             int storeId = 1;
-            int userId2 = userId++;
+            int userId2 = mem1.Id + 1;
             marketManagerFacade.EnterAsGuest(userId2);
-            marketManagerFacade.Register(userId2, userName, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userId2, userName, userPassword);
-            userId2 = marketManagerFacade.GetMemberIDrByUserName(userName);
-            Client mem2 = clientManager.GetClientById(userId);
+            marketManagerFacade.Register(userId2, userName2, userPassword, email2, userAge);
+            marketManagerFacade.LoginClient(userId2, userName2, userPassword);
+            userId2 = marketManagerFacade.GetMemberIDrByUserName(userName2);
+            Client mem2 = clientManager.GetClientById(userId2);
             // Create multiple threads that add and remove products from the shop
             var threads = new List<Thread>();
-            for (int i = 0; i < 2; i++)
+            foreach (int userId in new int[]{userId, userId2})
             {
-                string pName = $"{productname1}-{i}-";
+                string pName = $"{productname1}-{userId}-";
                 threads.Add(new Thread(() =>
                 {
-                    for (int j = 0; j < NumIterations; j++)
-                    {
-                        marketManagerFacade.AddToCart(i, storeId, product._productid, 1);
-                        marketManagerFacade.PurchaseCart(i, paymentDetails, shippingDetails);
+                    try
+            {
+                marketManagerFacade.AddToCart(userId, storeId, product._productid, 1);
+                marketManagerFacade.PurchaseCart(userId, paymentDetails, shippingDetails);
+            }
+            catch (Exception ex)
+            {
+                // Handle exception here (e.g., log error)
+                Console.WriteLine($"Purchase failed for user {userId}: {ex.Message}");
                     }
                 }));
             }
@@ -130,8 +135,10 @@ namespace MarketBackend.Tests.IT
             threads.ForEach(t => t.Start());
             threads.ForEach(t => t.Join());
 
-            // Assert that the shop has the correct number of products
-            //need to check if only one succeed.
+            // Check that only one product remains in the shop
+            int expectedInventory = 0;
+            Assert.AreEqual(expectedInventory, product._quantity, "Shop should have only 0 products remaining");
+
         }
 
         [TestMethod]
