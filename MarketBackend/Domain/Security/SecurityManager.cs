@@ -2,20 +2,31 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MarketBackend.Services;
 using Microsoft.AspNetCore.Identity;
 
 
 namespace MarketBackend.Domain.Security
 {
-    //change both managers to singletons
     public class SecurityManager : ISecurityManager, ITokenManager
     {
         PasswordHasher<object> passwordHasher;
         private ITokenManager tokenManager;
-        public SecurityManager() { 
+        private static SecurityManager securityManagerInstance;
+        private SecurityManager() { 
             passwordHasher = new PasswordHasher<object>();
-            tokenManager = new TokenManager();
+            tokenManager = TokenManager.GetInstance();
         }
+
+        public static SecurityManager GetInstance()
+        {
+            if (securityManagerInstance == null)
+            {
+                securityManagerInstance = new SecurityManager();
+            }
+            return securityManagerInstance;
+        }
+
         public string EncryptPassword(string password)
         {
             return passwordHasher.HashPassword(null, password);
@@ -23,7 +34,7 @@ namespace MarketBackend.Domain.Security
 
         public bool VerifyPassword(string rawPassword, string hashedPassword)
         {
-            var result = passwordHasher.VerifyHashedPassword(null, rawPassword, hashedPassword);
+            var result = passwordHasher.VerifyHashedPassword(null, hashedPassword, rawPassword);
             return result == PasswordVerificationResult.Success;
         }
 
@@ -34,6 +45,20 @@ namespace MarketBackend.Domain.Security
         public bool ValidateToken(string token)
         {
             return tokenManager.ValidateToken(token);
+        }
+
+        public int ExtractUserId(string token)
+        {
+            return tokenManager.ExtractUserId(token);
+        }
+
+        public DateTime ExtractIssuedAt(string token)
+        {
+            return tokenManager.ExtractIssuedAt(token);
+        }
+        public DateTime ExtractExpiration(string token)
+        {
+            return tokenManager.ExtractExpiration(token);
         }
     }
 }

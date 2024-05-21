@@ -10,5 +10,8 @@ namespace MarketBackend.Domain.Security
     {
         public string GenerateToken(int userId);
         public bool ValidateToken(string token);
+        public int ExtractUserId(string token);
+        public DateTime ExtractIssuedAt(string token);
+        public DateTime ExtractExpiration(string token);
     }
 }
