@@ -78,7 +78,8 @@ namespace MarketBackend.DAL
         public Dictionary<int, Role> getShopRoles(int storeId)
         {
             if (!roles.ContainsKey(storeId))
-                throw new KeyNotFoundException($"store with ID {storeId} not found.");
+                // throw new KeyNotFoundException($"store with ID {storeId} not found.");
+                return new Dictionary<int, Role>();
             return roles[storeId];
         }
     }

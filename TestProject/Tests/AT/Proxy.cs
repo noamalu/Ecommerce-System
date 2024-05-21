@@ -155,6 +155,11 @@ namespace MarketBackend.Tests.AT
             return !res.ErrorOccured;
         }
 
+        public bool AddOwner(int activeId, int storeId, int toAddId){
+            Response res = marketService.AddOwner(activeId, storeId, toAddId);
+            return !res.ErrorOccured;
+        }
+
 
     }
 }
