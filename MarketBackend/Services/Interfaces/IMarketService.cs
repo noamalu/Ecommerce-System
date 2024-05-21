@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Payment;
+using MarketBackend.Domain.Shipping;
 
 namespace MarketBackend.Services.Interfaces
 {
@@ -34,7 +35,7 @@ namespace MarketBackend.Services.Interfaces
         public Response<HashSet<Product>> SearchByCategory(string category);
         public Response<string> GetInfo(int storeId);
         public Response<string> GetProductInfo(int storeId, int productId);
-        public Response PurchaseCart(int id, PaymentDetails paymentDetails);
+        public Response PurchaseCart(int id, PaymentDetails paymentDetails, ShippingDetails shippingDetails);
 
     }
 }
