@@ -40,5 +40,9 @@ namespace MarketBackend.Domain.Market_Client
             return true;
         }
 
+        public virtual void PurchaseBasket(int id, Basket basket)
+        {            
+            Cart.PurchaseBasket(id);
+        }
     }
 }

@@ -253,6 +253,11 @@ namespace MarketBackend.Domain.Market_Client
             }            
             throw new KeyNotFoundException($"Client ID {clientId} not found in members");
         }
+
+        public List<ShoppingCart> GetPurchaseHistoryByClient(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
    
 }

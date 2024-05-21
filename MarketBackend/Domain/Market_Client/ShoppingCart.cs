@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,6 +22,11 @@ namespace MarketBackend.Domain.Models
             basket.addToBasket(productId, quantity);
         }
 
+        public void AddBasketToCart(int basketId, int productId, int quantity){
+            Basket? basket = _basketRepository.TryGetById(basketId) ?? _basketRepository.CreateBasket(basketId, _shoppingCartId);
+            basket.addToBasket(productId, quantity);
+        }
+
         public void removeFromCart(int basketId, int productId, int quantity){
             Basket basket = _basketRepository.GetById(basketId);
             basket.RemoveFromBasket(productId, quantity);
@@ -35,5 +41,19 @@ namespace MarketBackend.Domain.Models
             };
             return retBaskets;
         }
+
+        public void PurchaseBasket(int basketId){
+            Basket basket = _basketRepository.GetById(basketId);
+            _basketRepository.Delete(basket);
+        }
+    }
+
+    public class ShoppingCartHistory
+    {
+        public int _shoppingCartId{get; set;}
+        private ConcurrentDictionary<int, Basket> _baskets{get; set;}  
+
+        
+
     }
 }

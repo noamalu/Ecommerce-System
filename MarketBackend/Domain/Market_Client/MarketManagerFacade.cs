@@ -247,7 +247,7 @@ namespace MarketBackend.Domain.Market_Client
 
         public List<ShoppingCart> GetPurchaseHistoryByClient(int id)
         {
-            throw new NotImplementedException();
+            return _clientManager.GetPurchaseHistoryByClient(id);
         }
 
         public List<Purchase> GetPurchaseHistoryByStore(int storeId, int userId)
@@ -306,8 +306,10 @@ namespace MarketBackend.Domain.Market_Client
             }
             foreach(var store in stores){
                 var totalPrice = store.CalculateBasketPrice(baskets[store.StoreId]);
-                if(_paymentSystem.Pay(paymentDetails, totalPrice) > 0) 
+                if(_paymentSystem.Pay(paymentDetails, totalPrice) > 0) {
                     store.PurchaseBasket(id, baskets[store.StoreId]);
+                    client.PurchaseBasket(id, baskets[store.StoreId]);
+                }
                 else 
                     throw new Exception("payment failed.");
             }
