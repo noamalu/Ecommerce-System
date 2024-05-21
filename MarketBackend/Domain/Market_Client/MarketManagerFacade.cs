@@ -39,7 +39,15 @@ namespace MarketBackend.Domain.Market_Client
         }
 
         public static void Dispose(){
-            marketManagerFacade = MarketManagerFacade.GetInstance();
+            StoreRepositoryRAM.Dispose();
+            BasketRepositoryRAM.Dispose();
+            ClientRepositoryRAM.Dispose();
+            PaymentDetailsRepositoryRAM.Dispose();
+            ProductRepositoryRAM.Dispose();
+            RoleRepositoryRAM.Dispose();
+            ShippingDetailsRepositoryRAM.Dispose();
+            StoreRepositoryRAM.Dispose();
+            marketManagerFacade = new MarketManagerFacade();
         }
         
         public void InitiateSystemAdmin()

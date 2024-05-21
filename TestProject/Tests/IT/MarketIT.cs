@@ -54,6 +54,7 @@ namespace MarketBackend.Tests.IT
             var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
+            marketManagerFacade.InitiateSystemAdmin();
         }
         [TestCleanup]
         public void Cleanup()
@@ -64,7 +65,7 @@ namespace MarketBackend.Tests.IT
         [TestMethod]
         public void AddProductToShop()
         {
-            marketManagerFacade.EnterAsGuest();
+            marketManagerFacade.EnterAsGuest(userId);
             marketManagerFacade.Register(userName, userPassword, email1, userAge);
             marketManagerFacade.LoginClient(userName, userPassword);
             Client mem = clientManager.GetClientById(userId);
@@ -77,7 +78,7 @@ namespace MarketBackend.Tests.IT
         [TestMethod]
         public void RemoveProductFromShop()
         {
-            marketManagerFacade.EnterAsGuest();
+            marketManagerFacade.EnterAsGuest(userId);
             marketManagerFacade.Register(userName, userPassword, email1, userAge);
             marketManagerFacade.LoginClient(userName, userPassword);
             Client mem = clientManager.GetClientById(userId);
@@ -95,7 +96,7 @@ namespace MarketBackend.Tests.IT
 
         public void AddProductToBasket()
         {
-            marketManagerFacade.EnterAsGuest();
+            marketManagerFacade.EnterAsGuest(userId);
             marketManagerFacade.Register(userName, userPassword, email1, userAge);
             marketManagerFacade.LoginClient(userName, userPassword);
             marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
@@ -112,7 +113,7 @@ namespace MarketBackend.Tests.IT
 
         public void RemoveProductFromBasket()
         {
-            marketManagerFacade.EnterAsGuest();
+            marketManagerFacade.EnterAsGuest(userId);
             marketManagerFacade.Register(userName, userPassword, email1, userAge);
             marketManagerFacade.LoginClient(userName, userPassword);
             marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
@@ -130,7 +131,7 @@ namespace MarketBackend.Tests.IT
 
         public void AddProductToBasketAndLogout()
         {
-            marketManagerFacade.EnterAsGuest();
+            marketManagerFacade.EnterAsGuest(userId);
             marketManagerFacade.Register(userName, userPassword, email1, userAge);
             marketManagerFacade.LoginClient(userName, userPassword);
             marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);

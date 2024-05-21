@@ -50,7 +50,7 @@ namespace MarketBackend.Tests.AT
             var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
-
+            proxy.InitiateSystemAdmin();
             
 
         }

@@ -43,6 +43,7 @@ namespace MarketBackend.Tests.AT
             var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
+            proxy.InitiateSystemAdmin();
         }
 
         [TestCleanup]
@@ -99,7 +100,7 @@ namespace MarketBackend.Tests.AT
         public void LogOutSuccess(){
             Assert.IsTrue(proxy.EnterAsGuest(userId));
             Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-            Assert.IsFalse(proxy.Login(userId, userName, userPassword));
+            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
             Assert.IsTrue(proxy.LogOut(userId));
         }
 

@@ -23,6 +23,10 @@ namespace MarketBackend.DAL
                 StoreRepository = new StoreRepositoryRAM();
             return StoreRepository;
         }
+
+        public static void Dispose(){
+            StoreRepository = new StoreRepositoryRAM();
+        }
         public void Add(Store store)
         {
             _stores.TryAdd(store.StoreId, store);

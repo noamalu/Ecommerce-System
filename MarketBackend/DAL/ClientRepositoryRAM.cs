@@ -28,6 +28,10 @@ namespace MarketBackend.DAL
             return _memberRepository;
         }
 
+        public static void Dispose(){
+            _memberRepository = new ClientRepositoryRAM();
+        }
+
         public IEnumerable<Member> getAll()
         {
             return IdxMember.Values;

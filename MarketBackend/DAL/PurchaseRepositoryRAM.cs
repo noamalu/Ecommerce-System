@@ -21,6 +21,10 @@ namespace MarketBackend.DAL
                 _purchaseRepo = new PurchaseRepositoryRAM();
             return _purchaseRepo;
         }
+
+        public static void Dispose(){
+            _purchaseRepo = new PurchaseRepositoryRAM();
+        }
         public void Add(Purchase item)
         {
             _purchaseById.Add(item.PurchaseId, item);

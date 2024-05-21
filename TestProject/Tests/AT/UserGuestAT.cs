@@ -25,12 +25,13 @@ namespace MarketBackend.Tests.AT
         public void Setup(){
             proxy = new Proxy();
             userId = proxy.GetUserId();
-            
+            proxy.InitiateSystemAdmin();
         }
 
         [TestCleanup]
         public void CleanUp(){
             proxy.Dispose();
+            proxy.ExitGuest(userId);
         }
 
         [TestMethod]
@@ -89,7 +90,7 @@ namespace MarketBackend.Tests.AT
         public void LogOutSuccess(){
             Assert.IsTrue(proxy.EnterAsGuest(userId));
             Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-            Assert.IsFalse(proxy.Login(userId, userName, userPassword));
+            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
             Assert.IsTrue(proxy.LogOut(userId));
         }
 

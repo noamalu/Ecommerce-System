@@ -25,6 +25,10 @@ namespace MarketBackend.DAL
             return _basketRepository;
         }
 
+        public static void Dispose(){
+            _basketRepository = new BasketRepositoryRAM();
+        }
+
         public void Add(Basket entity)
         {
             if(baskets.ContainsKey(entity._basketId)){

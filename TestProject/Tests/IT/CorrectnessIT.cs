@@ -51,6 +51,7 @@ namespace MarketBackend.Tests.IT
             var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
+            marketManagerFacade.InitiateSystemAdmin();
         }
         [TestCleanup]
         public void Cleanup()
@@ -61,7 +62,7 @@ namespace MarketBackend.Tests.IT
         [TestMethod]
         public void TestConcurrentShopManager()
         {
-            marketManagerFacade.EnterAsGuest();
+            marketManagerFacade.EnterAsGuest(userId);
             marketManagerFacade.Register(userName, userPassword, email1, userAge);
             marketManagerFacade.LoginClient(userName, userPassword);
             Client mem = clientManager.GetClientById(userId);

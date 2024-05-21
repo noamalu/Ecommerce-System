@@ -145,6 +145,15 @@ namespace MarketBackend.Tests.AT
             Response res = clientService.CreateStore(id, storeName, email, phoneNum);
             return !res.ErrorOccured;
         }
+        
+        public void InitiateSystemAdmin(){
+            clientService.InitiateSystemAdmin();
+        }
+
+        public bool ExitGuest(int id){
+            Response res = clientService.ExitGuest(id);
+            return !res.ErrorOccured;
+        }
 
 
     }

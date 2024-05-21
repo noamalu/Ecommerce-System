@@ -27,6 +27,11 @@ namespace MarketBackend.DAL
                 roleRepositoryRAM = new RoleRepositoryRAM();
             return roleRepositoryRAM;
         }
+
+        public static void Dispose(){
+            roleRepositoryRAM = new RoleRepositoryRAM();
+        }
+
         public Role GetById(int storeId)
         {
             if(!roles.ContainsKey(storeId))

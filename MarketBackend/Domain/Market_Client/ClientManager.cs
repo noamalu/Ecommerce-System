@@ -104,6 +104,7 @@ namespace MarketBackend.Domain.Market_Client
                     IsAbove18 = age >= 18
                 };
                 _clientRepository.Add(newClient);
+                MemberxClientId.TryAdd(newClient.Id, newClient);
                 UserCounter++;
                 return newClient;
             }
@@ -171,23 +172,29 @@ namespace MarketBackend.Domain.Market_Client
         {
             try{
                 var client = _clientRepository.GetByUserName(username);
-                if(_security.VerifyPassword(password, client.Password) && !client.IsLoggedIn)
+                if(_security.VerifyPassword(password, client.Password) && !client.IsLoggedIn){
+                    MemberxClientId.TryAdd(client.Id, client);
                     client.IsLoggedIn = true;
+                }
                 else
                     throw new Exception(@$"{client.UserName} already logged in.");
                     
             }catch(Exception){
                 throw;
-            }
-        }
+            }
+        }
 
         public void LogoutClient(int id)
         {
             try{
                 var client = GetMemberById(id);
                 
-                if(client.IsLoggedIn)
+                if(client.IsLoggedIn){
                     client.IsLoggedIn = false;
+                }
+                else{
+                    throw new Exception($"{client.UserName} not logged in");
+                }
                     
             }catch(Exception){
                 throw;

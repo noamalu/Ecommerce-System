@@ -25,6 +25,10 @@ namespace MarketBackend.DAL
             return _paymentRepository;
         }
 
+        public static void Dispose(){
+            _paymentRepository = new PaymentDetailsRepositoryRAM();
+        }
+
         public void Add(PaymentDetails entity)
         {
             var key = (entity.PaymentID, entity.CardNumber, entity.HolderID);
