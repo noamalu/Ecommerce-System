@@ -22,7 +22,6 @@ namespace MarketBackend.Domain.Market_Client
 
         public virtual void AddToCart(int basket, int productId, int quantity){
             Cart.addToCart(basket, productId, quantity);
-            throw new NotImplementedException();
         }
 
         public virtual void RemoveFromCart(int basket, int productId, int quantity){

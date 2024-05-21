@@ -10,6 +10,7 @@ namespace MarketBackend.DAL
     public class BasketRepositoryRAM : IBasketRepository
     {
         private readonly ConcurrentDictionary<int, Basket> baskets;
+        private int BasketCounter{get; set;}
 
         private static BasketRepositoryRAM _basketRepository = null;
         private object Lock;
@@ -17,6 +18,7 @@ namespace MarketBackend.DAL
         private BasketRepositoryRAM()
         {
             baskets = new ConcurrentDictionary<int, Basket>();
+            BasketCounter = 1;
             Lock = new object();
         }
         public static BasketRepositoryRAM GetInstance()
@@ -27,6 +29,16 @@ namespace MarketBackend.DAL
 
         public static void Dispose(){
             _basketRepository = new BasketRepositoryRAM();
+        }
+        public Basket CreateBasket(int storeId, int cartId)
+        {
+            var newBasket = new Basket(BasketCounter, storeId)
+            {
+                _cartId = cartId
+            };
+            baskets.TryAdd(newBasket._basketId, newBasket);
+            BasketCounter ++;
+            return newBasket;
         }
 
         public void Add(Basket entity)
@@ -62,7 +74,13 @@ namespace MarketBackend.DAL
                 throw new KeyNotFoundException($"Basket with ID {id} does not exist.");
             }
             return baskets[id];
-    }
+        }
+
+        public Basket? TryGetById(int id){
+
+            baskets.TryGetValue(id, out Basket? value);
+            return value;
+        }
 
         public void Update(Basket entity)
         {
