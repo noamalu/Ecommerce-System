@@ -66,8 +66,8 @@ namespace MarketBackend.Tests.IT
         public void AddProductToShop()
         {
             marketManagerFacade.EnterAsGuest(userId);
-            marketManagerFacade.Register(userName, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userName, userPassword);
+            marketManagerFacade.Register(userId, userName, userPassword, email1, userAge);
+            marketManagerFacade.LoginClient(userId, userName, userPassword);
             Client mem = clientManager.GetClientById(userId);
             marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
             marketManagerFacade.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, quantity1, false);
@@ -79,8 +79,8 @@ namespace MarketBackend.Tests.IT
         public void RemoveProductFromShop()
         {
             marketManagerFacade.EnterAsGuest(userId);
-            marketManagerFacade.Register(userName, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userName, userPassword);
+            marketManagerFacade.Register(userId, userName, userPassword, email1, userAge);
+            marketManagerFacade.LoginClient(userId, userName, userPassword);
             Client mem = clientManager.GetClientById(userId);
             marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
             marketManagerFacade.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, quantity1, false);
@@ -97,8 +97,8 @@ namespace MarketBackend.Tests.IT
         public void AddProductToBasket()
         {
             marketManagerFacade.EnterAsGuest(userId);
-            marketManagerFacade.Register(userName, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userName, userPassword);
+            marketManagerFacade.Register(userId, userName, userPassword, email1, userAge);
+            marketManagerFacade.LoginClient(userId, userName, userPassword);
             marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
             marketManagerFacade.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, quantity1, false);
             Product product = marketManagerFacade.GetStore(1).Products.ElementAt(0);
@@ -114,8 +114,8 @@ namespace MarketBackend.Tests.IT
         public void RemoveProductFromBasket()
         {
             marketManagerFacade.EnterAsGuest(userId);
-            marketManagerFacade.Register(userName, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userName, userPassword);
+            marketManagerFacade.Register(userId, userName, userPassword, email1, userAge);
+            marketManagerFacade.LoginClient(userId, userName, userPassword);
             marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
             marketManagerFacade.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, quantity1, false);
             Product product = marketManagerFacade.GetStore(1).Products.ElementAt(0);
@@ -132,8 +132,8 @@ namespace MarketBackend.Tests.IT
         public void AddProductToBasketAndLogout()
         {
             marketManagerFacade.EnterAsGuest(userId);
-            marketManagerFacade.Register(userName, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userName, userPassword);
+            marketManagerFacade.Register(userId, userName, userPassword, email1, userAge);
+            marketManagerFacade.LoginClient(userId, userName, userPassword);
             marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
             marketManagerFacade.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, quantity1, false);
             Product product = marketManagerFacade.GetStore(1).Products.ElementAt(0);
@@ -143,7 +143,7 @@ namespace MarketBackend.Tests.IT
             Basket relevantBasket = baskets[1];
             Assert.IsTrue(relevantBasket.products[1] == 1);
             marketManagerFacade.LogoutClient(userId);
-            marketManagerFacade.LoginClient(userName, userPassword);
+            marketManagerFacade.LoginClient(userId, userName, userPassword);
             client = clientManager.GetClientById(userId);
             baskets = client.Cart.GetBaskets();
             relevantBasket = baskets[1];

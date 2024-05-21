@@ -38,7 +38,7 @@ namespace MarketBackend.Domain.Market_Client
             return Manager;
         }
 
-        public void Dispose()
+        public static void Dispose()
         {
             Manager = new ClientManager();
 
@@ -92,26 +92,35 @@ namespace MarketBackend.Domain.Market_Client
             return client is not null;
         }
 
-        public Client Register(string username, string password, string email, int age)
+        public Client Register(int id, string username, string password, string email, int age)
         {
-            try{
-                var emailParsed = ValidateEmail(email);
-                ValidateUserName(username);
-                ValidatePassword(password);
-                
-                var newClient = new Member(UserCounter, username, emailParsed, _security.EncryptPassword(password))
-                {
-                    IsAbove18 = age >= 18
-                };
+            try
+            {
+                var newClient = CreateMember(username, password, email, age);
                 _clientRepository.Add(newClient);
-                MemberxClientId.TryAdd(newClient.Id, newClient);
-                UserCounter++;
+                MemberxClientId.TryAdd(id, newClient);
                 return newClient;
             }
-            catch (ArgumentException){
+            catch (ArgumentException)
+            {
                 throw;
             }
         }
+
+        private Member CreateMember(string username, string password, string email, int age)
+        {
+            var emailParsed = ValidateEmail(email);
+            ValidateUserName(username);
+            ValidatePassword(password);
+            
+            var newMember = new Member(UserCounter, username, emailParsed, _security.EncryptPassword(password))
+            {
+                IsAbove18 = age >= 18
+            };
+            UserCounter++;
+            return newMember;
+        }
+
 
         private MailAddress ValidateEmail(string email){
             try{
@@ -155,25 +164,37 @@ namespace MarketBackend.Domain.Market_Client
             return MemberxClientId.ContainsKey(clientId);
         }
 
-        public Client GetSystemAdmin()
+        public Member GetSystemAdmin()
         {
             var allMembers = _clientRepository.getAll();
-            return allMembers.Where(member => member.IsSystemAdmin).FirstOrDefault();
+            var allPossibleAdmin = allMembers.Where(member => member.IsSystemAdmin);
+            return allPossibleAdmin.FirstOrDefault();
         }
 
         public Client RegisterAsSystemAdmin(string username, string password, string email, int age)
         {
-            var registerAdmin = GetSystemAdmin() ?? Register(username, password, email, age);
-            _clientRepository.GetById(registerAdmin.Id).IsSystemAdmin = true;
-            return registerAdmin;
+            var registerAdmin = GetSystemAdmin();
+            if (registerAdmin != null) return registerAdmin;
+
+            try
+            {
+                registerAdmin = CreateMember(username, password, email, age);
+                _clientRepository.Add(registerAdmin);
+                registerAdmin.IsSystemAdmin = true;
+                return registerAdmin;
+            }
+            catch (ArgumentException)
+            {
+                throw;
+            }
         }
 
-        public void LoginClient(string username, string password)
+        public void LoginClient(int id, string username, string password)
         {
             try{
                 var client = _clientRepository.GetByUserName(username);
                 if(_security.VerifyPassword(password, client.Password) && !client.IsLoggedIn){
-                    MemberxClientId.TryAdd(client.Id, client);
+                    MemberxClientId.TryAdd(id, client);
                     client.IsLoggedIn = true;
                 }
                 else
@@ -191,6 +212,7 @@ namespace MarketBackend.Domain.Market_Client
                 
                 if(client.IsLoggedIn){
                     client.IsLoggedIn = false;
+                    MemberxClientId.TryRemove(new(id, client));
                 }
                 else{
                     throw new Exception($"{client.UserName} not logged in");

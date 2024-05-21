@@ -63,8 +63,8 @@ namespace MarketBackend.Tests.IT
         public void TestConcurrentShopManager()
         {
             marketManagerFacade.EnterAsGuest(userId);
-            marketManagerFacade.Register(userName, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userName, userPassword);
+            marketManagerFacade.Register(userId, userName, userPassword, email1, userAge);
+            marketManagerFacade.LoginClient(userId, userName, userPassword);
             Client mem = clientManager.GetClientById(userId);
             marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
             int storeId = 1;

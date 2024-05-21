@@ -113,7 +113,7 @@ namespace MarketBackend.Services
         {
              try
             {
-                marketManagerFacade.LoginClient(username, password);
+                marketManagerFacade.LoginClient(userId, username, password);
                 logger.Info($"Client {userId} logged in with username {username}.");
                 return new Response();
             }
@@ -143,7 +143,7 @@ namespace MarketBackend.Services
         {
              try
             {
-                marketManagerFacade.Register(username, password, email, age);
+                marketManagerFacade.Register(id, username, password, email, age);
                 logger.Info($"Client {id} registerd with username {username}.");
                 return new Response();
             }
