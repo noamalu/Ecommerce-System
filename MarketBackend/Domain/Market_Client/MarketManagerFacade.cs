@@ -31,6 +31,7 @@ namespace MarketBackend.Domain.Market_Client
             _paymentSystem = new PaymentSystemProxy();
             _shippingSystemFacade = new ShippingSystemProxy();
             _shippingSystemFacade.Connect();
+            _paymentSystem.Connect();
             InitiateSystemAdmin();
             
         }
