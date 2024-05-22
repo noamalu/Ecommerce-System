@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MarketBackend.DAL;
+using MarketBackend.Domain.Market_Client;
 using MarketBackend.Services.Interfaces;
 
 namespace MarketBackend.Domain.Models
@@ -21,6 +23,11 @@ namespace MarketBackend.Domain.Models
             basket.addToBasket(productId, quantity);
         }
 
+        public void AddBasketToCart(int basketId, int productId, int quantity){
+            Basket? basket = _basketRepository.TryGetById(basketId) ?? _basketRepository.CreateBasket(basketId, _shoppingCartId);
+            basket.addToBasket(productId, quantity);
+        }
+
         public void removeFromCart(int basketId, int productId, int quantity){
             Basket basket = _basketRepository.GetById(basketId);
             basket.RemoveFromBasket(productId, quantity);
@@ -34,6 +41,28 @@ namespace MarketBackend.Domain.Models
                 retBaskets.Add(basket._storeId, basket);
             };
             return retBaskets;
+        }
+
+        public void PurchaseBasket(int basketId){
+            Basket basket = _basketRepository.GetById(basketId);
+            _basketRepository.Delete(basket);
+        }
+    }
+
+    public class ShoppingCartHistory
+    {
+        public int _shoppingCartId{get; set;}
+        private ConcurrentDictionary<int, Basket> _baskets = new();
+        private ConcurrentDictionary<int, Product> _products = new();        
+        public void AddBasket(Basket basket)
+        {
+            _baskets.TryAdd(basket._basketId, Basket.Clone(basket));
+            foreach(var product in basket.products)
+            {
+                var storeProducts = ProductRepositoryRAM.GetInstance().GetShopProducts(basket._storeId);
+                var productDetailsFromStore = storeProducts.Where(p => p.ProductId == product.Key).FirstOrDefault().Clone();
+                if(productDetailsFromStore is not null) _products.TryAdd(product.Key, productDetailsFromStore);
+            }
         }
     }
 }

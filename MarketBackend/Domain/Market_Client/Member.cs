@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using MarketBackend.Domain.Models;
 
 namespace MarketBackend.Domain.Market_Client
 {
@@ -13,6 +14,7 @@ namespace MarketBackend.Domain.Market_Client
         public string Password {get; set;}
         public MailAddress Email {get; set;}
         public ConcurrentDictionary<int, Role> Roles {get; set;}
+        public ConcurrentDictionary<int,ShoppingCartHistory> OrderHistory {get; set;}
         public bool IsSystemAdmin {get; set;}
         public bool IsLoggedIn {get; set;}
         public Member(int id, string userName, MailAddress mailAddress, string password) : base(id)
@@ -20,12 +22,24 @@ namespace MarketBackend.Domain.Market_Client
             UserName = userName;
             Password = password;
             Email = mailAddress;
-            Roles = new();  
+            Roles = new(); 
+            OrderHistory = new(); 
             IsSystemAdmin = false;
             IsLoggedIn = false;
         }
 
-        
+        public override void PurchaseBasket(int id, Basket basket)
+        {
+            OrderHistory.TryGetValue(basket._cartId, out var cartInHistory);
+            cartInHistory ??= new(){_shoppingCartId = basket._cartId};
+            cartInHistory.AddBasket(basket);
+            base.PurchaseBasket(id, basket);
+        }
+
+        public List<ShoppingCartHistory> GetHistory()
+        {
+            return OrderHistory.Values.ToList();
+        }
 
     }
     
