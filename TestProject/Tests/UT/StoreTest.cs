@@ -67,7 +67,7 @@ namespace UnitTests
         {
             Assert.ThrowsException<Exception>(() => _Store.AddProduct(3,"Shampo", "" , "Shampo", 4784, "hair", 21, false));
         }
-        
+
         [TestMethod()]
         public void AddProductFailUserNotExist()
         {
@@ -77,18 +77,25 @@ namespace UnitTests
         [TestMethod()]
         public void RemoveProductSuccess()
         {
-            _shop.AddProduct(_owner.Id, "Ball4",new RegularSell(), "this is a ball4", 4784, Category.None, 21, new SynchronizedCollection<string> { "soccer", "basketball", "round" });
-            Product p1 = _shop.Products.ToList().Find((p) => p.Name == "Ball4");
-            _shop.RemoveProduct(_owner.Id, p1.Id);
-            Assert.IsTrue(!_shop.Products.Contains(p1));
+            _Store.AddProduct(_owner.Id, "Shampo", "" , "Shampo", 4784, "hair", 21, false);
+            Product p1 = _Store.Products.ToList().Find((p) => p.Name == "Shampo");
+            _Store.RemoveProduct(_owner.Id, p1.ProductId);
+            Assert.IsTrue(!_Store.Products.Contains(p1));
         }
 
         [TestMethod()]
-        public void RemoveProductFail()
+        public void RemoveProductFailNOPrermissions()
         {
-            _shop.AddProduct(_owner.Id, "Ball4",new RegularSell(), "this is a ball4", 4784, Category.None, 21, new SynchronizedCollection<string> { "soccer", "basketball", "round" });
-            Product p1 = _shop.Products.ToList().Find((p) => p.Name == "Ball4");
-            Assert.ThrowsException<Exception>(() => _shop.RemoveProduct(_owner.Id + 1, p1.Id));
+           _Store.AddProduct(_owner.Id, "Shampo", "" , "Shampo", 4784, "hair", 21, false);
+            Product p1 = _Store.Products.ToList().Find((p) => p.Name == "Shampo");
+            Assert.ThrowsException<Exception>(() => _Store.RemoveProduct(3, p1.ProductId));
+        }
+
+        public void RemoveProductFailUserNotExist()
+        {
+           _Store.AddProduct(_owner.Id, "Shampo", "" , "Shampo", 4784, "hair", 21, false);
+            Product p1 = _Store.Products.ToList().Find((p) => p.Name == "Shampo");
+            Assert.ThrowsException<Exception>(() => _Store.RemoveProduct(17, p1.ProductId));
         }
 
     }
