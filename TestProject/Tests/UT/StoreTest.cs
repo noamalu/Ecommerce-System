@@ -100,7 +100,7 @@ namespace UnitTests
         }
 
         [TestMethod()]
-        public void OpenShopSuccess()
+        public void OpenStoreSuccess()
         {
             _Store.Active = false;
             _Store.OpenStore(_owner.Id);
@@ -108,7 +108,7 @@ namespace UnitTests
         }
 
         [TestMethod()]
-        public void OpenShopFailUserNotExist()
+        public void OpenStoreFailUserNotExist()
         {
             _Store.Active = false;
             Assert.ThrowsException<Exception>(() => _Store.OpenStore(17));
@@ -116,18 +116,49 @@ namespace UnitTests
         }
 
         [TestMethod()]
-        public void OpenShopFailUserHasNoPermissions()
+        public void OpenStoreFailUserHasNoPermissions()
         {
             _Store.Active = false;
             Assert.ThrowsException<Exception>(() => _Store.OpenStore(3));
             Assert.IsFalse(_Store.Active);
         }
-
-        public void OpenShopFailStoreIsOpen()
+        [TestMethod()]
+        public void OpenStoreFailStoreIsOpen()
         {
             _Store.Active = true;
             Assert.ThrowsException<Exception>(() => _Store.OpenStore(_owner.Id));
             Assert.IsTrue(_Store.Active);
+        }
+
+              [TestMethod()]
+        public void closeStoreSuccess()
+        {
+            _Store.Active = true;
+            _Store.CloseStore(_owner.Id);
+            Assert.IsFalse(_Store.Active);
+        }
+
+        [TestMethod()]
+        public void CloseStoreFailUserNotExist()
+        {
+            _Store.Active = true;
+            Assert.ThrowsException<Exception>(() => _Store.CloseStore(17));
+            Assert.IsTrue(_Store.Active);
+        }
+
+        [TestMethod()]
+        public void CloseStoreFailUserHasNoPermissions()
+        {
+            _Store.Active = true;
+            Assert.ThrowsException<Exception>(() => _Store.CloseStore(3));
+            Assert.IsTrue(_Store.Active);
+        }
+        [TestMethod()]
+        public void CloseStoreFailStoreIsClose()
+        {
+            _Store.Active = false;
+            Assert.ThrowsException<Exception>(() => _Store.CloseStore(_owner.Id));
+            Assert.IsFalse(_Store.Active);
         }
 
 
