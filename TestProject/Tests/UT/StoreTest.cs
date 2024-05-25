@@ -130,7 +130,7 @@ namespace UnitTests
             Assert.IsTrue(_Store.Active);
         }
 
-              [TestMethod()]
+        [TestMethod()]
         public void closeStoreSuccess()
         {
             _Store.Active = true;
@@ -159,6 +159,43 @@ namespace UnitTests
             _Store.Active = false;
             Assert.ThrowsException<Exception>(() => _Store.CloseStore(_owner.Id));
             Assert.IsFalse(_Store.Active);
+        }
+
+         public void UpdateProductPriceSuccess()
+        {
+            _Store.UpdateProductPrice(_owner.Id, _p1.ProductId, 45555);
+            Assert.IsTrue(_p1.Price == 45555);
+        }
+
+        [TestMethod()]
+        public void UpdateProductPriceFailUserNotExist()
+        {
+            Assert.ThrowsException<Exception>(() => _Store.UpdateProductPrice(14, _p1.ProductId, 45555));
+        }
+
+        [TestMethod()]
+        public void UpdateProductPriceFailUserHasNotPermissions()
+        {
+            Assert.ThrowsException<Exception>(() => _Store.UpdateProductPrice(3, _p1.ProductId, 45555));
+        }
+
+        [TestMethod()]
+        public void UpdateProductQuantitySuccess()
+        {
+            _Store.UpdateProductQuantity(_owner.Id, _p1.ProductId, 45555);
+            Assert.IsTrue(_p1.Quantity == 45555);
+        }
+
+        [TestMethod()]
+        public void UpdateProductQuantityFailUserNotExist()
+        {
+            Assert.ThrowsException<Exception>(() => _Store.UpdateProductQuantity(14, _p1.ProductId, 45555));
+        }
+
+         [TestMethod()]
+        public void UpdateProductQuantityFailUserHasNotPermissions()
+        {
+            Assert.ThrowsException<Exception>(() => _Store.UpdateProductQuantity(3, _p1.ProductId, 45555));
         }
 
 
