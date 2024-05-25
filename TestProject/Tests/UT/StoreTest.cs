@@ -32,6 +32,14 @@ namespace UnitTests
             c.LoginClient(3, "Noa", "54321");
         }
 
+         [TestCleanup]
+        public void Cleanup()
+        {
+            MarketService.GetInstance().Dispose();
+            ClientService.GetInstance().Dispose();
+        
+        }
+
         [TestMethod()]
         public void AddProductSuccess()
         {
@@ -188,7 +196,7 @@ namespace UnitTests
         public void AddStaffMemberFailUserNotExist()
         {
             Role role = new Role(new StoreManagerRole(RoleName.Manager), (Member)_owner, _Store._storeId, 3);
-            _Store.AddStaffMember(3, role, 17);
+            Assert.ThrowsException<Exception>(() => _Store.AddStaffMember(3, role, 17));
             Assert.IsFalse(_Store.roles.ContainsValue(role));
 
         }
@@ -197,7 +205,7 @@ namespace UnitTests
         public void AddStaffMemberFailUserHasNoPermissions()
         {
             Role role = new Role(new StoreManagerRole(RoleName.Manager), (Member)_owner, _Store._storeId, 3);
-            _Store.AddStaffMember(3, role, 3);
+            Assert.ThrowsException<Exception>(() => _Store.AddStaffMember(3, role, 3));
             Assert.IsFalse(_Store.roles.ContainsValue(role));
         }
 
@@ -205,7 +213,7 @@ namespace UnitTests
         public void AddStaffMemberFailAnotherFounder()
         {
             Role role = new Role(new Founder(RoleName.Founder), (Member)_owner, _Store._storeId, 3);
-            _Store.AddStaffMember(3, role, _owner.Id);
+            Assert.ThrowsException<Exception>(() => _Store.AddStaffMember(3, role, _owner.Id));
             Assert.IsFalse(_Store.roles.ContainsValue(role));
 
         }
