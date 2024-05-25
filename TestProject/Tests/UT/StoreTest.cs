@@ -91,12 +91,46 @@ namespace UnitTests
             Assert.ThrowsException<Exception>(() => _Store.RemoveProduct(3, p1.ProductId));
         }
 
+        [TestMethod()]
         public void RemoveProductFailUserNotExist()
         {
            _Store.AddProduct(_owner.Id, "Shampo", "" , "Shampo", 4784, "hair", 21, false);
             Product p1 = _Store.Products.ToList().Find((p) => p.Name == "Shampo");
             Assert.ThrowsException<Exception>(() => _Store.RemoveProduct(17, p1.ProductId));
         }
+
+        [TestMethod()]
+        public void OpenShopSuccess()
+        {
+            _Store.Active = false;
+            _Store.OpenStore(_owner.Id);
+            Assert.IsTrue(_Store.Active);
+        }
+
+        [TestMethod()]
+        public void OpenShopFailUserNotExist()
+        {
+            _Store.Active = false;
+            Assert.ThrowsException<Exception>(() => _Store.OpenStore(17));
+            Assert.IsFalse(_Store.Active);
+        }
+
+        [TestMethod()]
+        public void OpenShopFailUserHasNoPermissions()
+        {
+            _Store.Active = false;
+            Assert.ThrowsException<Exception>(() => _Store.OpenStore(3));
+            Assert.IsFalse(_Store.Active);
+        }
+
+        public void OpenShopFailStoreIsOpen()
+        {
+            _Store.Active = true;
+            Assert.ThrowsException<Exception>(() => _Store.OpenStore(_owner.Id));
+            Assert.IsTrue(_Store.Active);
+        }
+
+
 
     }
 }
