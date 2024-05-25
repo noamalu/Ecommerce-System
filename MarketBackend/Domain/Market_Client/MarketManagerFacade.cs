@@ -159,12 +159,13 @@ namespace MarketBackend.Domain.Market_Client
         }
 
     
-        public void CreateStore(int id, string storeName, string email, string phoneNum)
+        public int CreateStore(int id, string storeName, string email, string phoneNum)
         {
+            int storeId=-1;
             Client store_founder = _clientManager.GetClientById(id);
             if(store_founder != null && _clientManager.CheckMemberIsLoggedIn(id))
             {
-                int storeId = _storeCounter++;
+                storeId = _storeCounter++;
                 if (_storeRepository.GetById(storeId) != null){
                     throw new Exception("Store exists");
                 }
@@ -182,6 +183,7 @@ namespace MarketBackend.Domain.Market_Client
             {
                 throw new Exception("Store founder must be a Member.");
             }
+            return storeId;
         }
 
         public void EditPurchasePolicy(int storeId)
