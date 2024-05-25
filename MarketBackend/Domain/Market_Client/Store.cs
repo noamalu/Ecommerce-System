@@ -109,7 +109,7 @@ namespace MarketBackend.Domain.Market_Client
             }
         }
 
-        private Product GetProduct(int productId)
+        public Product GetProduct(int productId)
         {
         lock (_lock)
             {

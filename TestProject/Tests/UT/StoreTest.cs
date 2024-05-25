@@ -3,6 +3,7 @@ using System.Net.Mail;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Services;
 using MarketBackend.DAL;
+using MarketBackend.Domain.Models;
 
 namespace UnitTests
 {
@@ -208,6 +209,42 @@ namespace UnitTests
             Assert.IsFalse(_Store.roles.ContainsValue(role));
 
         }
+
+        [TestMethod()]
+        public void PurchaseBasketSuccess()
+        {
+            Basket basket = new Basket(13, _Store._storeId);
+            basket.addToBasket(11, 10);
+            Purchase purchase = _Store.PurchaseBasket(3,basket);
+            Assert.IsTrue(_Store.Purchases.Contains(purchase));
+            Product product = _Store.GetProduct(11);
+            Assert.IsTrue(product._quantity == 11);
+        }
+
+        [TestMethod()]
+        public void PurchaseBasketFailStoreIsClose()
+        {
+            Basket basket = new Basket(13, _Store._storeId);
+            basket.addToBasket(11, 10);
+            _Store._active=false;
+            Assert.ThrowsException<Exception>(() => _Store.PurchaseBasket(3,basket));
+            Product product = _Store.GetProduct(11);
+            Assert.IsTrue(product._quantity == 21);
+            
+        }
+
+         [TestMethod()]
+        public void PurchaseBasketFailnotEnoughQuantity()
+        {
+            Basket basket = new Basket(13, _Store._storeId);
+            basket.addToBasket(11, 40);
+            Assert.ThrowsException<Exception>(() => _Store.PurchaseBasket(3,basket));
+            Product product = _Store.GetProduct(11);
+             Assert.IsTrue(product._quantity == 21);
+            
+        }
+
+
 
  
 
