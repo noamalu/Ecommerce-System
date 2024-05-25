@@ -109,7 +109,7 @@ namespace MarketBackend.Domain.Market_Client
             }
         }
 
-        private Product GetProduct(int productId)
+        public Product GetProduct(int productId)
         {
         lock (_lock)
             {
@@ -157,7 +157,7 @@ namespace MarketBackend.Domain.Market_Client
 
          public void UpdateProductPrice(int userId, int productID, double price)
         {
-           if(getRole(userId)!=null && getRole(userId).canOpenStore())
+           if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
             {
                 Product productToUpdate = GetProduct(productID);
                 if (productToUpdate != null)
@@ -172,7 +172,7 @@ namespace MarketBackend.Domain.Market_Client
 
         public void UpdateProductQuantity(int userId, int productID, int qauntity)
         {
-            if(getRole(userId)!=null && getRole(userId).canOpenStore())
+            if(getRole(userId)!=null && getRole(userId).canUpdateProductQuantity())
             {
                 Product productToUpdate = GetProduct(productID);
                 if (productToUpdate != null)
@@ -190,11 +190,11 @@ namespace MarketBackend.Domain.Market_Client
         {
             if (!_active)
                 throw new Exception($"Shop: {_storeName} is not active anymore");        
-                RemoveBasketProductsFromSupply(basket);                
-                double basketPrice = CalculateBasketPrice(basket);
-                Purchase pendingPurchase = new Purchase(GenerateUniquePurchaseId(), _storeId, userId, Basket.Clone(basket), basketPrice);
-                AddPurchase(pendingPurchase);
-                return pendingPurchase;
+            RemoveBasketProductsFromSupply(basket);                
+            double basketPrice = CalculateBasketPrice(basket);
+            Purchase pendingPurchase = new Purchase(GenerateUniquePurchaseId(), _storeId, userId, Basket.Clone(basket), basketPrice);
+            AddPurchase(pendingPurchase);
+            return pendingPurchase;
             
         }
 
