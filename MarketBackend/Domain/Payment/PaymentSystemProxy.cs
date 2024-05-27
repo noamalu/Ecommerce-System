@@ -45,6 +45,8 @@ namespace MarketBackend.Domain.Payment
 
         public int Pay(PaymentDetails cardDetails, double totalAmount)
         {
+            if (totalAmount <= 0)
+                return -1;
             if (connected)
             {
                 if (_realPaymentSystem == null)
