@@ -36,6 +36,8 @@ namespace MarketBackend.Domain.Market_Client
 
         public double _raiting {get; set;}
 
+        private EventManager _eventManager {get; set;}
+
         public Store(int Id, string name, string email, string phoneNum)
         {
             _storeId = Id;
@@ -50,6 +52,7 @@ namespace MarketBackend.Domain.Market_Client
             //_purchasePolicyManager = new PurchasePolicyManager(shopId);
             _raiting = 0;
             _productIdCounter = 1;
+            _eventManager = new EventManager(_storeId);
         }
 
          public int StoreId { get => _storeId; }
@@ -134,6 +137,8 @@ namespace MarketBackend.Domain.Market_Client
             if(getRole(userId)!=null && getRole(userId).canCloseStore()) {
                 if (_active){
                 _active = false;
+                Event e = new StoreClosedEvent(this, userId);
+                _eventManager.NotifySubscribers(e);
                 }
                 else {
                     throw new Exception("Store already closed.");
@@ -147,6 +152,8 @@ namespace MarketBackend.Domain.Market_Client
             if(getRole(userId)!=null && getRole(userId).canOpenStore()) {
                 if (!_active){
                 _active = true;
+                Event e = new StoreOpenEvent(this, userId);
+                _eventManager.NotifySubscribers(e);
                 }
                 else {
                     throw new Exception("Store already opened.");
@@ -194,6 +201,8 @@ namespace MarketBackend.Domain.Market_Client
             double basketPrice = CalculateBasketPrice(basket);
             Purchase pendingPurchase = new Purchase(GenerateUniquePurchaseId(), _storeId, userId, Basket.Clone(basket), basketPrice);
             AddPurchase(pendingPurchase);
+            Event e = new ProductSellEvent(this, pendingPurchase);
+            _eventManager.NotifySubscribers(e);
             return pendingPurchase;
             
         }
@@ -307,6 +316,8 @@ namespace MarketBackend.Domain.Market_Client
             if ((getRole(userId)!=null && getRole(userId).canAddStaffMember(role.getRoleName())) || (role.getRoleName() == RoleName.Founder && !checkForFounders() ))
             {
                 roles.Add(roleUserId, role);
+                Event e = new AddAppointmentEvent(this, userId, roleUserId, role);
+                _eventManager.NotifySubscribers(e);
                 //add to active user appointees list the newly appointed staff member
             }
             else throw new Exception($"Permission exception for userId: {userId}");
@@ -319,6 +330,8 @@ namespace MarketBackend.Domain.Market_Client
                 if (roles.ContainsKey(roleUserId))
                 {
                     roles.Remove(roleUserId);
+                    Event e = new RemoveAppointmentEvent(this, userId, roleUserId);
+                    _eventManager.NotifySubscribers(e);
                     //remove from active user appointees list the removed staff member
                 }
             }
