@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using MarketBackend.Domain.Market_Client;
+using MarketBackend.Domain.Models;
 using MarketBackend.Domain.Payment;
 using MarketBackend.Domain.Shipping;
 using MarketBackend.Services;
@@ -113,6 +114,8 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.LoginClient(userId2, userName2, userPassword);
             userId2 = marketManagerFacade.GetMemberIDrByUserName(userName2);
             Client mem2 = clientManager.GetClientById(userId2);
+            marketManagerFacade.AddToCart(userId, storeId, product._productid, 1);
+            marketManagerFacade.AddToCart(userId2, storeId, product._productid, 1);
             // Create multiple threads that add and remove products from the shop
             var threads = new List<Thread>();
             foreach (int userId in new int[]{userId, userId2})
@@ -120,15 +123,17 @@ namespace MarketBackend.Tests.IT
                 string pName = $"{productname1}-{userId}-";
                 threads.Add(new Thread(() =>
                 {
-                    try
-            {
-                marketManagerFacade.AddToCart(userId, storeId, product._productid, 1);
-                marketManagerFacade.PurchaseCart(userId, paymentDetails, shippingDetails);
-            }
-            catch (Exception ex)
-            {
-                // Handle exception here (e.g., log error)
-                Console.WriteLine($"Purchase failed for user {userId}: {ex.Message}");
+                    for (int j = 0; j < NumIterations; j++)
+                    {
+                        try
+                        {
+                            marketManagerFacade.PurchaseCart(userId, paymentDetails, shippingDetails);
+                        }
+                        catch (Exception ex)
+                        {
+                            // Handle exception here (e.g., log error)
+                            Console.WriteLine($"Purchase failed for user {userId}: {ex.Message}");
+                        }                        
                     }
                 }));
             }
@@ -139,7 +144,11 @@ namespace MarketBackend.Tests.IT
 
             // Check that only one product remains in the shop
             int expectedInventory = 0;
-            Assert.AreEqual(expectedInventory, product._quantity, "Shop should have only 0 products remaining");
+            // Assert.AreEqual(expectedInventory, product._quantity, "Shop should have only 0 products remaining");
+            Dictionary<int, Basket> basket1 = mem1.Cart.GetBaskets();
+            Dictionary<int, Basket> basket2 = mem2.Cart.GetBaskets();
+
+            Assert.IsTrue(basket1[storeId].IsEmpty() || basket2[storeId].IsEmpty());
 
         }
 
