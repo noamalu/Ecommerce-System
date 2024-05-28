@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MarketBackend.Services.Interfaces;
+using Microsoft.IdentityModel.Tokens;
 
 namespace MarketBackend.Domain.Models
 {
@@ -55,6 +56,11 @@ namespace MarketBackend.Domain.Models
         public string GetInfo()
         {
             throw new NotImplementedException();
+        }
+
+        public bool IsEmpty()
+        {
+            return products.IsNullOrEmpty();
         }
     }
 }
