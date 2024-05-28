@@ -41,6 +41,11 @@ namespace MarketBackend.Domain.Market_Client
             return OrderHistory.Values.ToList();
         }
 
+        public void Notify(string msg)
+        {
+            
+        }
+
     }
     
 }
