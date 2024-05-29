@@ -73,5 +73,10 @@ namespace MarketBackend.Domain.Market_Client
             }
         }
 
+        public void SubscribeStaffEvent(Member user)
+        {
+            _listeners["Staff Event"].Add(user);            
+        }
+
     }
 }
