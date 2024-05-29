@@ -46,6 +46,9 @@ namespace MarketBackend.Tests.AT
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
             proxy.InitiateSystemAdmin();
+            proxy.EnterAsGuest(userId);
+            proxy.Register(userId, userName, userPassword, email1, userAge);
+            proxy.Login(userId, userName, userPassword);
         }
 
         [TestCleanup]
@@ -56,9 +59,6 @@ namespace MarketBackend.Tests.AT
         [TestMethod]
         public void UniqueUsername_GoodCase()
         {
-            Assert.IsTrue(proxy.EnterAsGuest(userId));
-            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
             int userId2 = proxy.GetUserId();
             Assert.IsTrue(proxy.EnterAsGuest(userId2));
             Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge2));
@@ -68,9 +68,6 @@ namespace MarketBackend.Tests.AT
         [TestMethod]
         public void UniqueUsername_BadCase()
         {
-            Assert.IsTrue(proxy.EnterAsGuest(userId));
-            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
             int userId2 = proxy.GetUserId();
             Assert.IsTrue(proxy.EnterAsGuest(userId2));
             Assert.IsFalse(proxy.Register(userId2, userName, userPassword, email1, userAge));

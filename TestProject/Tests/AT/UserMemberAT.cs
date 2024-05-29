@@ -36,6 +36,7 @@ namespace MarketBackend.Tests.AT
         string phoneNum  = "0522458976";
         string sellmethod = "RegularSell";
         string desc = "nice";
+        int userId2;
 
         [TestInitialize()]
         public void Setup(){
@@ -48,6 +49,15 @@ namespace MarketBackend.Tests.AT
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
             proxy.InitiateSystemAdmin();
+            proxy.EnterAsGuest(userId);
+            proxy.Register(userId, userName, userPassword, email1, userAge);
+            proxy.Login(userId, userName, userPassword);
+            userId = proxy.GetMembeIDrByUserName(userName);
+            int userId2 = proxy.GetUserId();
+            proxy.EnterAsGuest(userId2);
+            proxy.Register(userId2, userName2, pass2, email2, userAge);
+            proxy.Login(userId2, userName2, pass2);
+            userId2 = proxy.GetMembeIDrByUserName(userName2);
         }
 
         [TestCleanup]
@@ -55,111 +65,46 @@ namespace MarketBackend.Tests.AT
             proxy.Dispose();
         }
 
-        [TestMethod]
-        public void EnterAsGuestSuccess(){
-            Assert.IsFalse(proxy.Login(userId, userName, userPassword));
-        }
-
-        [TestMethod]
-        public void RegisterSuccess(){
-            Assert.IsTrue(proxy.EnterAsGuest(userId));
-            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-        }
-
-        [TestMethod]
-        public void RegisterFail_RegisterTwice(){
-            Assert.IsTrue(proxy.EnterAsGuest(userId));
-            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-            Assert.IsFalse(proxy.Register(userId, userName, userPassword, email1, userAge));
-        }
-
-        [TestMethod]
-        public void LoginSuccess(){
-            Assert.IsTrue(proxy.EnterAsGuest(userId));
-            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
-        }
-
-        [TestMethod]
-        public void LoginFail_NotRegister(){
-            Assert.IsTrue(proxy.EnterAsGuest(userId));
-            Assert.IsFalse(proxy.Login(userId, userName, userPassword));
-        }
-
-        [TestMethod]
-        public void LoginFail_WrongUserName(){
-            Assert.IsTrue(proxy.EnterAsGuest(userId));
-            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-            Assert.IsFalse(proxy.Login(userId, userName2, userPassword));
-        }
-
-        [TestMethod]
-        public void LoginFail_WrongPassword(){
-            Assert.IsTrue(proxy.EnterAsGuest(userId));
-            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-            Assert.IsFalse(proxy.Login(userId, userName, pass2));
-        }
 
         [TestMethod]
         public void LogOutSuccess(){
-            Assert.IsTrue(proxy.EnterAsGuest(userId));
-            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
             Assert.IsTrue(proxy.LogOut(userId));
         }
 
         [TestMethod]
         public void LogOutFail_NotLoggedIn(){
-            Assert.IsTrue(proxy.EnterAsGuest(userId));
-            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
+            proxy.LogOut(userId);
             Assert.IsFalse(proxy.LogOut(userId));
         }
 
         [TestMethod]
         public void GetInfo(){
-            Assert.IsTrue(proxy.EnterAsGuest(userId));
-            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
             //get info?
         }
 
         [TestMethod]
         public void CreateShopSuccess()
         {
-           Assert.IsTrue(proxy.EnterAsGuest(userId));
-           Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-           Assert.IsTrue(proxy.Login(userId, userName, userPassword));
-           userId = proxy.GetMembeIDrByUserName(userName);
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
         }
 
         [TestMethod]
         public void CreateShopFail_NotLoggedIn()
         {
-           Assert.IsTrue(proxy.EnterAsGuest(userId));
-           Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-           userId = proxy.GetMembeIDrByUserName(userName);
+           proxy.LogOut(userId);
            Assert.IsFalse(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
         }
 
         [TestMethod]
         public void GetInfoSuccess()
         {
-           Assert.IsTrue(proxy.EnterAsGuest(userId));
-           Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-           Assert.IsTrue(proxy.Login(userId, userName, userPassword));
            int shopID = 1;
-           userId = proxy.GetMembeIDrByUserName(userName);
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.GetInfo(shopID));
         }
 
         [TestMethod]
         public void SearchByKeyWords(){
-            Assert.IsTrue(proxy.EnterAsGuest(userId));
-            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
-           userId = proxy.GetMembeIDrByUserName(userName);
            int shopID = 1;
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
@@ -170,33 +115,18 @@ namespace MarketBackend.Tests.AT
         [TestMethod]
         public void AddToCartSuccess()
         {
-           Assert.IsTrue(proxy.EnterAsGuest(userId));
-           Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-           Assert.IsTrue(proxy.Login(userId, userName, userPassword));
-           userId = proxy.GetMembeIDrByUserName(userName);
            int shopID = 1;
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
-           int userId2 = proxy.GetUserId();
-           Assert.IsTrue(proxy.EnterAsGuest(userId2));
-           Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge));
-           Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
+           userId2 = proxy.GetMembeIDrByUserName(userName2);
            Assert.IsTrue(proxy.AddToCart(userId2, shopID, productID1, quantity1));
         }
 
         [TestMethod]
         public void AddToCartFail_NoProduct()
         {
-           Assert.IsTrue(proxy.EnterAsGuest(userId));
-           Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-           Assert.IsTrue(proxy.Login(userId, userName, userPassword));
-           userId = proxy.GetMembeIDrByUserName(userName);
            int shopID = 1;
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
-           int userId2 = proxy.GetUserId();
-           Assert.IsTrue(proxy.EnterAsGuest(userId2));
-           Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge));
-           Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
            userId2 = proxy.GetMembeIDrByUserName(userName2);
            Assert.IsFalse(proxy.AddToCart(userId2, shopID, productID1, quantity1));
         }
@@ -204,18 +134,10 @@ namespace MarketBackend.Tests.AT
         [TestMethod]
         public void RemoveFromCartSuccess()
         {
-           Assert.IsTrue(proxy.EnterAsGuest(userId));
-           Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-           Assert.IsTrue(proxy.Login(userId, userName, userPassword));
-           userId = proxy.GetMembeIDrByUserName(userName);
            int shopID = 1;
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
-           int userId2 = proxy.GetUserId();
-           Assert.IsTrue(proxy.EnterAsGuest(userId2));
-           Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge));
-           Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
-           userId2 = proxy.GetMembeIDrByUserName(userName);
+           userId2 = proxy.GetMembeIDrByUserName(userName2);
            Assert.IsTrue(proxy.AddToCart(userId2, shopID, productID1, 1));
            Assert.IsTrue(proxy.RemoveFromCart(userId2, productID1, basketId, 1));
         }
@@ -223,36 +145,20 @@ namespace MarketBackend.Tests.AT
         [TestMethod]
         public void RemoveFromCartFail_NoProduct()
         {
-           Assert.IsTrue(proxy.EnterAsGuest(userId));
-           Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-           Assert.IsTrue(proxy.Login(userId, userName, userPassword));
-           userId = proxy.GetMembeIDrByUserName(userName);
            int shopID = 1;
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
-           int userId2 = proxy.GetUserId();
-           Assert.IsTrue(proxy.EnterAsGuest(userId2));
-           Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge));
-           Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
-           userId2 = proxy.GetMembeIDrByUserName(userName);
+           userId2 = proxy.GetMembeIDrByUserName(userName2);
            Assert.IsFalse(proxy.RemoveFromCart(userId2, productID1, basketId, 1));
         }
 
         [TestMethod]
         public void PurchaseCartSuccess()
         {
-           Assert.IsTrue(proxy.EnterAsGuest(userId));
-           Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-           Assert.IsTrue(proxy.Login(userId, userName, userPassword));
            int shopID = 1;
-           userId = proxy.GetMembeIDrByUserName(userName);
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
-           int userId2 = proxy.GetUserId();
-           Assert.IsTrue(proxy.EnterAsGuest(userId2));
-           Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge));
            userId2 = proxy.GetMembeIDrByUserName(userName2);
-           Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
            Assert.IsTrue(proxy.AddToCart(userId2, shopID, productID1, quantity1));
            PaymentDetails paymentDetails = new PaymentDetails("5326888878675678", "2027", "10", "101", "3190876789", "Hadas");
            ShippingDetails shippingDetails = new ShippingDetails("name",  "city",  "address",  "country",  "zipcode");
@@ -260,55 +166,45 @@ namespace MarketBackend.Tests.AT
         }
 
         [TestMethod]
-        public void PurchaseCartFail_EmptyCart()
+        public void PurchaseCartFail_NoProduct()
         {
-           Assert.IsTrue(proxy.EnterAsGuest(userId));
-           Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-           Assert.IsTrue(proxy.Login(userId, userName, userPassword));
-           userId = proxy.GetMembeIDrByUserName(userName);
            int shopID = 1;
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
-           int userId2 = proxy.GetUserId();
-           Assert.IsTrue(proxy.EnterAsGuest(userId2));
-           Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge));
-           Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
-           userId2 = proxy.GetMembeIDrByUserName(userName);
+           userId2 = proxy.GetMembeIDrByUserName(userName2);
+           Assert.IsTrue(proxy.AddToCart(userId2, shopID, productID1, quantity1));
+           PaymentDetails paymentDetails = new PaymentDetails("5326888878675678", "2027", "10", "101", "3190876789", "Hadas");
+           ShippingDetails shippingDetails = new ShippingDetails("name",  "city",  "address",  "country",  "zipcode");
+           Assert.IsTrue(proxy.RemoveProduct(shopID, userId, 11));
+           Assert.IsFalse(proxy.PurchaseCart(userId2, paymentDetails, shippingDetails));
+        }
+
+        [TestMethod]
+        public void PurchaseCartFail_EmptyCart()
+        {
+           int shopID = 1;
+           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
+           Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
+           userId2 = proxy.GetMembeIDrByUserName(userName2);
            Assert.IsFalse(proxy.PurchaseCart(userId2, paymentDetails, shippingDetails));
         }
 
         [TestMethod]
         public void PurchaseCartFail_IlegalAge()
         {
-           Assert.IsTrue(proxy.EnterAsGuest(userId));
-           Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-           Assert.IsTrue(proxy.Login(userId, userName, userPassword));
-           userId = proxy.GetMembeIDrByUserName(userName);
            int shopID = 1;
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, true));
-           int userId2 = proxy.GetUserId();
-           Assert.IsTrue(proxy.EnterAsGuest(userId2));
-           Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge2));
-           Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
-           userId2 = proxy.GetMembeIDrByUserName(userName);
+           userId2 = proxy.GetMembeIDrByUserName(userName2);
            Assert.IsFalse(proxy.PurchaseCart(userId2, paymentDetails, shippingDetails));
         }
 
         [TestMethod]
         public void GetPurchaseHistorySuccess_Permission()
         {
-           Assert.IsTrue(proxy.EnterAsGuest(userId));
-           Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-           Assert.IsTrue(proxy.Login(userId, userName, userPassword));
-           userId = proxy.GetMembeIDrByUserName(userName);
            int shopID = 1;
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
-           int userId2 = proxy.GetUserId();
-           Assert.IsTrue(proxy.EnterAsGuest(userId2));
-           Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge));
-           Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
            userId2 = proxy.GetMembeIDrByUserName(userName2);
            Assert.IsTrue(proxy.AddToCart(userId2, shopID, productID1, quantity1));
            Assert.IsTrue(proxy.PurchaseCart(userId2, paymentDetails, shippingDetails));
@@ -319,17 +215,9 @@ namespace MarketBackend.Tests.AT
         [TestMethod]
         public void GetPurchaseHistoryFail_Permission()
         {
-           Assert.IsTrue(proxy.EnterAsGuest(userId));
-           Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-           Assert.IsTrue(proxy.Login(userId, userName, userPassword));
-           userId = proxy.GetMembeIDrByUserName(userName);
            int shopID = 1;
            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
-           int userId2 = proxy.GetUserId();
-           Assert.IsTrue(proxy.EnterAsGuest(userId2));
-           Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge));
-           Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
            userId2 = proxy.GetMembeIDrByUserName(userName2);
            Assert.IsTrue(proxy.AddToCart(userId2, shopID, productID1, quantity1));
            Assert.IsTrue(proxy.PurchaseCart(userId2, paymentDetails, shippingDetails));

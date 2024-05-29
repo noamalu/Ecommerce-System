@@ -44,6 +44,9 @@ namespace MarketBackend.Tests.IT
         string sellmethod = "RegularSell";
         string desc = "nice";
         int productCounter = 0;
+        int storeId = 1;
+        int userId2;
+        
 
         [TestInitialize]
         public void Setup()
@@ -57,6 +60,16 @@ namespace MarketBackend.Tests.IT
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
             marketManagerFacade.InitiateSystemAdmin();
+            marketManagerFacade.EnterAsGuest(userId);
+            marketManagerFacade.Register(userId, userName, userPassword, email1, userAge);
+            marketManagerFacade.LoginClient(userId, userName, userPassword);
+            userId = marketManagerFacade.GetMemberIDrByUserName(userName);
+            marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
+            userId2 = userId + 1;
+            marketManagerFacade.EnterAsGuest(userId2);
+            marketManagerFacade.Register(userId2, userName2, userPassword, email2, userAge);
+            marketManagerFacade.LoginClient(userId2, userName2, userPassword);
+            userId2 = marketManagerFacade.GetMemberIDrByUserName(userName2);
         }
         [TestCleanup]
         public void Cleanup()
@@ -67,13 +80,7 @@ namespace MarketBackend.Tests.IT
         [TestMethod]
         public void TestConcurrentShopManager()
         {
-            marketManagerFacade.EnterAsGuest(userId);
-            marketManagerFacade.Register(userId, userName, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userId, userName, userPassword);
-            userId = marketManagerFacade.GetMemberIDrByUserName(userName);
             Client mem = clientManager.GetClientById(userId);
-            marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
-            int storeId = 1;
             // Create multiple threads that add and remove products from the shop
             var threads = new List<Thread>();
             for (int i = 0; i < NumThreads; i++)
@@ -100,19 +107,9 @@ namespace MarketBackend.Tests.IT
         [TestMethod]
         public void TwoClientsByLastProductTogether()
         {
-            marketManagerFacade.EnterAsGuest(userId);
-            marketManagerFacade.Register(userId, userName, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userId, userName, userPassword);
-            userId = marketManagerFacade.GetMemberIDrByUserName(userName);
             Client mem1 = clientManager.GetClientById(userId);
-            marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
             Product product = marketManagerFacade.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, 1, false);
             int storeId = 1;
-            int userId2 = mem1.Id + 1;
-            marketManagerFacade.EnterAsGuest(userId2);
-            marketManagerFacade.Register(userId2, userName2, userPassword, email2, userAge);
-            marketManagerFacade.LoginClient(userId2, userName2, userPassword);
-            userId2 = marketManagerFacade.GetMemberIDrByUserName(userName2);
             Client mem2 = clientManager.GetClientById(userId2);
             marketManagerFacade.AddToCart(userId, storeId, product._productid, 1);
             marketManagerFacade.AddToCart(userId2, storeId, product._productid, 1);
@@ -155,19 +152,8 @@ namespace MarketBackend.Tests.IT
         [TestMethod]
         public void RemoveProductAndPurchaseProductTogether()
         {
-            marketManagerFacade.EnterAsGuest(userId);
-            marketManagerFacade.Register(userId, userName, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userId, userName, userPassword);
-            userId = marketManagerFacade.GetMemberIDrByUserName(userName);
             Client mem1 = clientManager.GetClientById(userId);
-            marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
             Product product = marketManagerFacade.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, 1, false);
-            int storeId = 1;
-            int userId2 = mem1.Id + 1;
-            marketManagerFacade.EnterAsGuest(userId2);
-            marketManagerFacade.Register(userId2, userName2, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userId2, userName2, userPassword);
-            userId2 = marketManagerFacade.GetMemberIDrByUserName(userName2);
             Client mem2 = clientManager.GetClientById(userId);
             // Create multiple threads that add and remove products from the shop
             Boolean thorwnExeption  = false;
@@ -200,18 +186,7 @@ namespace MarketBackend.Tests.IT
         [TestMethod]
         public void TwoStoreOwnerAppointThirdToManagerTogether()
         {
-            marketManagerFacade.EnterAsGuest(userId);
-            marketManagerFacade.Register(userId, userName, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userId, userName, userPassword);
-            userId = marketManagerFacade.GetMemberIDrByUserName(userName);
             Client mem1 = clientManager.GetClientById(userId);
-            marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
-            int storeId = 1;
-            int userId2 = mem1.Id +1;
-            marketManagerFacade.EnterAsGuest(userId2);
-            marketManagerFacade.Register(userId2, userName2, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userId2, userName2, userPassword);
-            userId2 = marketManagerFacade.GetMemberIDrByUserName(userName2);
             Client mem2 = clientManager.GetClientById(userId);
             marketManagerFacade.AddManger(userId, storeId, userId2);
             Permission permission = Permission.all;

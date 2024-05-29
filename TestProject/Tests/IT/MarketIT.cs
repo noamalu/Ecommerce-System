@@ -55,6 +55,13 @@ namespace MarketBackend.Tests.IT
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
             marketManagerFacade.InitiateSystemAdmin();
+            marketManagerFacade.EnterAsGuest(userId);
+            marketManagerFacade.Register(userId, userName, userPassword, email1, userAge);
+            marketManagerFacade.LoginClient(userId, userName, userPassword);
+            userId = marketManagerFacade.GetMemberIDrByUserName(userName);
+            marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
+            marketManagerFacade.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, quantity1, false);
+
         }
         [TestCleanup]
         public void Cleanup()
@@ -65,13 +72,6 @@ namespace MarketBackend.Tests.IT
         [TestMethod]
         public void AddProductToShop()
         {
-            marketManagerFacade.EnterAsGuest(userId);
-            marketManagerFacade.Register(userId, userName, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userId, userName, userPassword);
-            userId = marketManagerFacade.GetMemberIDrByUserName(userName);
-            Client mem = clientManager.GetClientById(userId);
-            marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
-            marketManagerFacade.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, quantity1, false);
             Store store = marketManagerFacade.GetStore(1);
             Assert.IsTrue(!(store.Products.Count() == 0));
         }
@@ -79,13 +79,6 @@ namespace MarketBackend.Tests.IT
         [TestMethod]
         public void RemoveProductFromShop()
         {
-            marketManagerFacade.EnterAsGuest(userId);
-            marketManagerFacade.Register(userId, userName, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userId, userName, userPassword);
-            userId = marketManagerFacade.GetMemberIDrByUserName(userName);
-            Client mem = clientManager.GetClientById(userId);
-            marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
-            marketManagerFacade.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, quantity1, false);
             Store store = marketManagerFacade.GetStore(1);
             Assert.IsTrue(!(store.Products.Count() == 0));
             int prodId = 11;
@@ -98,13 +91,6 @@ namespace MarketBackend.Tests.IT
 
         public void AddProductToBasket()
         {
-            marketManagerFacade.EnterAsGuest(userId);
-            marketManagerFacade.Register(userId, userName, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userId, userName, userPassword);
-            userId = marketManagerFacade.GetMemberIDrByUserName(userName);
-            marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
-            marketManagerFacade.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, quantity1, false);
-            Product product = marketManagerFacade.GetStore(1).Products.ElementAt(0);
             marketManagerFacade.AddToCart(userId, 1, 11, 1);
             Client client = clientManager.GetClientById(userId);
             Dictionary<int, Basket> baskets = client.Cart.GetBaskets();
@@ -116,13 +102,6 @@ namespace MarketBackend.Tests.IT
 
         public void RemoveProductFromBasket()
         {
-            marketManagerFacade.EnterAsGuest(userId);
-            marketManagerFacade.Register(userId, userName, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userId, userName, userPassword);
-            userId = marketManagerFacade.GetMemberIDrByUserName(userName);
-            marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
-            marketManagerFacade.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, quantity1, false);
-            Product product = marketManagerFacade.GetStore(1).Products.ElementAt(0);
             marketManagerFacade.AddToCart(userId, 1, 11, 1);
             marketManagerFacade.RemoveFromCart(userId, 11, 1, 1);
             Client client = clientManager.GetClientById(userId);
@@ -135,13 +114,6 @@ namespace MarketBackend.Tests.IT
 
         public void AddProductToBasketAndLogout()
         {
-            marketManagerFacade.EnterAsGuest(userId);
-            marketManagerFacade.Register(userId, userName, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userId, userName, userPassword);
-            userId = marketManagerFacade.GetMemberIDrByUserName(userName);
-            marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
-            marketManagerFacade.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, quantity1, false);
-            Product product = marketManagerFacade.GetStore(1).Products.ElementAt(0);
             marketManagerFacade.AddToCart(userId, 1, 11, 1);
             Client client = clientManager.GetClientById(userId);
             Dictionary<int, Basket> baskets = client.Cart.GetBaskets();
