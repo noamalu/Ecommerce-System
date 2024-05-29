@@ -17,6 +17,12 @@ namespace MarketBackend.Domain.Market_Client
         public ConcurrentDictionary<int,ShoppingCartHistory> OrderHistory {get; set;}
         public bool IsSystemAdmin {get; set;}
         public bool IsLoggedIn {get; set;}
+        public bool IsNotification {get; set;}
+        object _lock = new Object();
+
+        private SynchronizedCollection<Message> alerts;
+        public NotificationManager _alertManager = NotificationManager.GetInstance();
+
         public Member(int id, string userName, MailAddress mailAddress, string password) : base(id)
         {
             UserName = userName;
@@ -43,7 +49,32 @@ namespace MarketBackend.Domain.Market_Client
 
         public void Notify(string msg)
         {
-            
+            var message = new Message(msg);
+
+            if (IsNotification && IsLoggedIn)
+            {
+                _alertManager.SendNotification(msg, UserName);
+                message.Seen = true;
+            }
+            alerts.Add(message);            
+
+        }
+
+        public void NotificationOn()
+        {
+            if (!IsNotification)
+            {
+                IsNotification = true;
+            }
+            else throw new Exception("Notification On");
+        }
+
+        public List<Message> GetMessages()
+        {
+            lock (_lock)
+            {                
+                return alerts.ToList();
+            }
         }
 
     }

@@ -18,6 +18,7 @@
     <PackageReference Include="NLog" Version="5.3.2" />
     <PackageReference Include="NLog.Config" Version="4.7.15" />
     <PackageReference Include="System.ServiceModel.Primitives" Version="4.9.0" />
+    <PackageReference Include="WebSocketSharp-netstandard" Version="1.0.1" />
     
   </ItemGroup>
 
