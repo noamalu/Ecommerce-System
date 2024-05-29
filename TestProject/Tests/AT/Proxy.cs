@@ -3,6 +3,7 @@ using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Payment;
 using NLog;
 using MarketBackend.Domain.Shipping;
+using Moq;
 
 namespace MarketBackend.Tests.AT
 {
@@ -15,9 +16,16 @@ namespace MarketBackend.Tests.AT
         
 
         public Proxy(){
-            
-            marketService = MarketService.GetInstance();
-            clientService = ClientService.GetInstance();
+            var mockShippingSystem = new Mock<IShippingSystemFacade>();
+            var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
+            mockPaymentSystem.Setup(pay =>pay.Connect()).Returns(true);
+            mockShippingSystem.Setup(ship => ship.Connect()).Returns(true);
+            mockPaymentSystem.Setup(pay =>pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(1);
+            mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
+            mockShippingSystem.SetReturnsDefault(true);
+            mockPaymentSystem.SetReturnsDefault(true);            
+            marketService = MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
+            clientService = ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             
         }
 

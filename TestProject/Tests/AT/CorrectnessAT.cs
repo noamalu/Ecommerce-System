@@ -43,6 +43,10 @@ namespace MarketBackend.Tests.AT
             userId = proxy.GetUserId();
             var mockShippingSystem = new Mock<IShippingSystemFacade>();
             var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
+            mockPaymentSystem.Setup(pay =>pay.Connect()).Returns(true);
+            mockShippingSystem.Setup(ship => ship.Connect()).Returns(true);
+            mockPaymentSystem.Setup(pay =>pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(1);
+            mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
             proxy.InitiateSystemAdmin();

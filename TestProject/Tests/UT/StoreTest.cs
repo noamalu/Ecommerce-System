@@ -4,6 +4,9 @@ using MarketBackend.Domain.Market_Client;
 using MarketBackend.Services;
 using MarketBackend.DAL;
 using MarketBackend.Domain.Models;
+using Moq;
+using MarketBackend.Domain.Shipping;
+using MarketBackend.Domain.Payment;
 
 namespace UnitTests
 {
@@ -17,10 +20,18 @@ namespace UnitTests
         [TestInitialize]
         public void Initialize()
         {
-            MarketService s = MarketService.GetInstance();
-            ClientService c = ClientService.GetInstance();
+            var mockShippingSystem = new Mock<IShippingSystemFacade>();
+            var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
+            mockPaymentSystem.Setup(pay =>pay.Connect()).Returns(true);
+            mockShippingSystem.Setup(ship => ship.Connect()).Returns(true);
+            mockPaymentSystem.Setup(pay =>pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(1);
+            mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
+            mockShippingSystem.SetReturnsDefault(true);
+            mockPaymentSystem.SetReturnsDefault(true);
+            MarketService s = MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
+            ClientService c = ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             ClientManager CM = ClientManager.GetInstance();
-            MarketManagerFacade MMF = MarketManagerFacade.GetInstance();
+            MarketManagerFacade MMF = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             c.Register(2, "nofar", "12345", "nofar@gmail.com", 19);
             c.LoginClient(2, "nofar", "12345");
             int storeId= MMF.CreateStore(2, "shop1", "shop@gmail.com", "0502552798");
@@ -35,8 +46,16 @@ namespace UnitTests
          [TestCleanup]
         public void Cleanup()
         {
-            MarketService.GetInstance().Dispose();
-            ClientService.GetInstance().Dispose();
+            var mockShippingSystem = new Mock<IShippingSystemFacade>();
+            var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
+            mockPaymentSystem.Setup(pay =>pay.Connect()).Returns(true);
+            mockShippingSystem.Setup(ship => ship.Connect()).Returns(true);
+            mockPaymentSystem.Setup(pay =>pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(1);
+            mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
+            mockShippingSystem.SetReturnsDefault(true);
+            mockPaymentSystem.SetReturnsDefault(true);
+            MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object).Dispose();
+            ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object).Dispose();
         
         }
 

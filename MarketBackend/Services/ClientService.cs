@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Models;
 using MarketBackend.Domain.Payment;
+using MarketBackend.Domain.Shipping;
 using MarketBackend.Services.Interfaces;
+using MarketBackend.Services.Models;
 using Microsoft.Extensions.Logging;
 using NLog;
 
@@ -18,21 +20,21 @@ namespace MarketBackend.Services
         private static ClientService _clientService = null;
         private MarketManagerFacade marketManagerFacade;
         private Logger logger;
-        private ClientService(){
-            marketManagerFacade = MarketManagerFacade.GetInstance();
+        private ClientService(IShippingSystemFacade shippingSystemFacade, IPaymentSystemFacade paymentSystem){
+            marketManagerFacade = MarketManagerFacade.GetInstance(shippingSystemFacade, paymentSystem);
             logger = MyLogger.GetLogger();
         }
 
-        public static ClientService GetInstance(){
+        public static ClientService GetInstance(IShippingSystemFacade shippingSystemFacade, IPaymentSystemFacade paymentSystem){
             if (_clientService == null){
-                _clientService = new ClientService();
+                _clientService = new ClientService(shippingSystemFacade, paymentSystem);
             }
             return _clientService;
         }
 
         public void Dispose(){
             MarketManagerFacade.Dispose();
-            _clientService = new ClientService();
+            _clientService = null;
         }
         public Response AddToCart(int clientId, int storeId, int productId, int quantity)
         {
@@ -94,18 +96,18 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response<List<ShoppingCartHistory>> GetPurchaseHistory(int id)
+        public Response<List<ShoppingCartResultDto>> GetPurchaseHistory(int id)
         {
              try
             {
                 List<ShoppingCartHistory> shoppingCarts = marketManagerFacade.GetPurchaseHistoryByClient(id);
                 //log
-                return Response<List<ShoppingCartHistory>>.FromValue(shoppingCarts);
+                return Response<List<ShoppingCartResultDto>>.FromValue(shoppingCarts.Select(cart => new ShoppingCartResultDto(cart)).ToList());
             }
             catch (Exception e)
             {
                 logger.Error($"Error in getting purchase history for client {id}, Error message: {e.Message}");
-                return Response<List<ShoppingCartHistory>>.FromError(e.Message);
+                return Response<List<ShoppingCartResultDto>>.FromError(e.Message);
             }
         }
 
@@ -199,18 +201,18 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response<ShoppingCart> ViewCart(int id)
+        public Response<ShoppingCartResultDto> ViewCart(int id)
         {
             try
             {
                 ShoppingCart cart = marketManagerFacade.ViewCart(id);
                 logger.Info($"Client {id} view cart successfully.");
-                return Response<ShoppingCart>.FromValue(cart);
+                return Response<ShoppingCartResultDto>.FromValue(new(cart));
             }
             catch (Exception e)
             {
                 logger.Error($"Error in view cart for client {id}. Error message: {e.Message}");
-                return Response<ShoppingCart>.FromError(e.Message);
+                return Response<ShoppingCartResultDto>.FromError(e.Message);
             }
         }
 
