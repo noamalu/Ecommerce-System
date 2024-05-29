@@ -27,8 +27,8 @@ namespace MarketBackend.Domain.Market_Client
 
          public SynchronizedCollection<Product> _products {get; set;}
          public SynchronizedCollection<Purchase> _purchases {get; set;}
-        // public DiscountPolicyManager _discountPolicyManager {get; set;}
-        // public PurchasePolicyManager _purchasePolicyManager {get; set;}
+         public DiscountPolicyManager _discountPolicyManager {get; set;}
+         public PurchasePolicyManager _purchasePolicyManager {get; set;}
         public Dictionary<int, Role> roles {get; set;}
          public long _productIdCounter {get; set;}
         public int _purchaseIdCounter {get; set;}
