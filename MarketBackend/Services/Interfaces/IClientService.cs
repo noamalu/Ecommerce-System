@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Models;
 using MarketBackend.Domain.Payment;
+using MarketBackend.Services.Models;
 
 namespace MarketBackend.Services.Interfaces
 {
@@ -18,11 +19,11 @@ namespace MarketBackend.Services.Interfaces
         public Response<bool> ResToStoreOwnershipReq(int id); //respond to store ownership request
         public Response LogoutClient(int id);
         public Response RemoveFromCart(int clientId, int productId, int basketId, int quantity);
-        public Response<ShoppingCart> ViewCart(int id);
+        public Response<ShoppingCartResultDto> ViewCart(int id);
         public Response AddToCart(int clientId, int storeId, int productId, int quantity);
         public Response LoginClient(int clientId, string username, string password);
         public Response ExitGuest(int id);
-        public Response<List<ShoppingCartHistory>> GetPurchaseHistory(int id);
+        public Response<List<ShoppingCartResultDto>> GetPurchaseHistory(int id);
         public Response EditPurchasePolicy(int storeId);
     }
 }

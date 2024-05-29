@@ -26,20 +26,20 @@ namespace MarketBackend.Domain.Market_Client
         private int _storeCounter = 1;
 
         
-        private MarketManagerFacade(){
+        private MarketManagerFacade(IShippingSystemFacade shippingSystemFacade, IPaymentSystemFacade paymentSystem){
             _storeRepository = StoreRepositoryRAM.GetInstance();
             _clientManager = ClientManager.GetInstance();
-            _paymentSystem = new PaymentSystemProxy();
-            _shippingSystemFacade = new ShippingSystemProxy();
+            _paymentSystem = paymentSystem;
+            _shippingSystemFacade = shippingSystemFacade;
             _shippingSystemFacade.Connect();
             _paymentSystem.Connect();
             InitiateSystemAdmin();
             
         }
 
-        public static MarketManagerFacade GetInstance(){
+        public static MarketManagerFacade GetInstance(IShippingSystemFacade shippingSystemFacade, IPaymentSystemFacade paymentSystem){
             if (marketManagerFacade == null){
-                marketManagerFacade = new MarketManagerFacade();
+                marketManagerFacade = new MarketManagerFacade(shippingSystemFacade, paymentSystem);
             }
             return marketManagerFacade;
         }
@@ -55,7 +55,7 @@ namespace MarketBackend.Domain.Market_Client
             StoreRepositoryRAM.Dispose();
             ClientManager.Dispose();
             PurchaseRepositoryRAM.Dispose();
-            marketManagerFacade = new MarketManagerFacade();            
+            marketManagerFacade = null;            
         }
         
         public void InitiateSystemAdmin()

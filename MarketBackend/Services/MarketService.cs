@@ -3,6 +3,7 @@ using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Payment;
 using NLog;
 using MarketBackend.Domain.Shipping;
+using MarketBackend.Services.Models;
 
 namespace MarketBackend.Services
 {
@@ -11,21 +12,21 @@ namespace MarketBackend.Services
         private static MarketService _marketService = null;
         private MarketManagerFacade marketManagerFacade;
         private Logger logger;
-        private MarketService(){
-            marketManagerFacade = MarketManagerFacade.GetInstance();
+        private MarketService(IShippingSystemFacade shippingSystemFacade, IPaymentSystemFacade paymentSystem){
+            marketManagerFacade = MarketManagerFacade.GetInstance(shippingSystemFacade, paymentSystem);
             logger = MyLogger.GetLogger();
         }
 
-        public static MarketService GetInstance(){
+        public static MarketService GetInstance(IShippingSystemFacade shippingSystemFacade, IPaymentSystemFacade paymentSystem){
             if (_marketService == null){
-                _marketService = new MarketService();
+                _marketService = new MarketService(shippingSystemFacade, paymentSystem);
             }
             return _marketService;
         }
 
         public void Dispose(){
             MarketManagerFacade.Dispose();
-            _marketService = new MarketService();
+            _marketService = null;
         }
         
         public Response AddManger(int activeId, int storeId, int toAddId)
@@ -73,18 +74,18 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response AddProduct(int storeId, int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
+        public Response<int> AddProduct(int storeId, int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
         {
             try
             {
-                marketManagerFacade.AddProduct(storeId, userId, name, sellMethod, description, price, category, quantity, ageLimit);
+                var product = marketManagerFacade.AddProduct(storeId, userId, name, sellMethod, description, price, category, quantity, ageLimit);
                 logger.Info($"Client {userId} added product {name} store {storeId} with sellmethod {sellMethod}, description {description}, category {category}, price {price}, quantity {quantity}, ageLimit {ageLimit}.");
-                return new Response();
+                return Response<int>.FromValue(product._productid);
             }
             catch (Exception e)
             {
                 logger.Error($"Error in adding product {name} to store {storeId} by client {userId}, with  sellmethod {sellMethod}, description {description}, category {category}, price {price}, quantity {quantity}, ageLimit {ageLimit}. Error message: {e.Message}");
-                return new Response(e.Message);
+                return Response<int>.FromError(e.Message);
             }
         }
 
@@ -432,18 +433,18 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response<List<Purchase>> GetPurchaseHistory(int storeId, int clientId)
+        public Response<List<PurchaseResultDto>> GetPurchaseHistory(int storeId, int clientId)
         {
              try
             {
                 List<Purchase> purchases = marketManagerFacade.GetPurchaseHistoryByStore(storeId, clientId);
                 //log
-                return Response<List<Purchase>>.FromValue(purchases);
+                return Response<List<PurchaseResultDto>>.FromValue(purchases.Select(purchase => new PurchaseResultDto(purchase)).ToList());
             }
             catch (Exception e)
             {
                 logger.Error($"Error in getting purchase history for store {storeId}, client {clientId}, Error message: {e.Message}");
-                return Response<List<Purchase>>.FromError(e.Message);
+                return Response<List<PurchaseResultDto>>.FromError(e.Message);
             }
         }
 
