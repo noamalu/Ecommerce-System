@@ -27,8 +27,8 @@ namespace MarketBackend.Domain.Market_Client
 
          public SynchronizedCollection<Product> _products {get; set;}
          public SynchronizedCollection<Purchase> _purchases {get; set;}
-        // public DiscountPolicyManager _discountPolicyManager {get; set;}
-        // public PurchasePolicyManager _purchasePolicyManager {get; set;}
+         public DiscountPolicyManager _discountPolicyManager {get; set;}
+         public PurchasePolicyManager _purchasePolicyManager {get; set;}
         public Dictionary<int, Role> roles {get; set;}
          public long _productIdCounter {get; set;}
         public int _purchaseIdCounter {get; set;}
@@ -324,6 +324,14 @@ namespace MarketBackend.Domain.Market_Client
 
         }
 
+        public void SubscribeStaffMember(Member appoint, Member appointe)
+        {
+            _eventManager.Listeners["Add Appointment Event"].Add(appoint);
+            _eventManager.Listeners["Add Appointment Event"].Add(appointe);
+            _eventManager.Listeners["Remove Appointment Event"].Add(appoint);
+            _eventManager.Listeners["Remove Appointment Event"].Add(appointe);
+        }
+
         public void RemoveStaffMember(int roleUserId, int userId){
             if(getRole(userId)!=null && getRole(userId).canRemoveStaffMember(getRole(roleUserId).getRoleName()))
             {
@@ -388,6 +396,15 @@ namespace MarketBackend.Domain.Market_Client
                 }
             }
             return true;
+        }
+
+        public void SubscribeStoreOwner(Member member)
+        {
+            _eventManager.Listeners["Store Closed Event"].Add(member);
+            _eventManager.Listeners["Store Open Event"].Add(member);
+            _eventManager.Listeners["Product Sell Event"].Add(member);
+            _eventManager.Listeners["Remove Appointment Event"].Add(member);
+            _eventManager.Listeners["Add Appointment Event"].Add(member);
         }
     }
 }

@@ -178,6 +178,7 @@ namespace MarketBackend.Domain.Market_Client
                 Role role = new Role(new Founder(RoleName.Founder), activeMember, storeId, id);
 
                 store.AddStaffMember(id, role, id); 
+                store.SubscribeStoreOwner(activeMember);
             }
             else
             {
@@ -483,7 +484,10 @@ namespace MarketBackend.Domain.Market_Client
             Store store = _storeRepository.GetById(storeId);
             if (store != null && _clientManager.CheckMemberIsLoggedIn(activeId))
             {
+                Member appoint = _clientManager.GetMemberById(activeId);
+                Member appointe = _clientManager.GetMemberById(toAddId);
                 store.AddStaffMember(toAddId, role, activeId);
+                store.SubscribeStaffMember(appoint, appointe);
             }
             else
                 throw new Exception("Store doesn't exist!");
