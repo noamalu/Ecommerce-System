@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Payment;
 using MarketBackend.Domain.Shipping;
+using MarketBackend.Services.Models;
 
 namespace MarketBackend.Services.Interfaces
 {
     public interface IMarketService
     {
-        public Response AddProduct(int storeId, int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit);
+        public Response<int> AddProduct(int storeId, int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit);
         public Response RemoveProduct(int storeId,int userId, int productId);
         public Response RemoveStaffMember(int storeId, int activeId, Role role, int toRemoveId);
         public Response AddStaffMember(int storeId, int activeId, Role role, int toAddId);
@@ -36,7 +37,7 @@ namespace MarketBackend.Services.Interfaces
         public Response<string> GetInfo(int storeId);
         public Response<string> GetProductInfo(int storeId, int productId);
         public Response PurchaseCart(int id, PaymentDetails paymentDetails, ShippingDetails shippingDetails);
-        public Response<List<Purchase>> GetPurchaseHistory(int storeId, int clientId);
+        public Response<List<PurchaseResultDto>> GetPurchaseHistory(int storeId, int clientId);
 
     }
 }
