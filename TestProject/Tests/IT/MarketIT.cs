@@ -34,6 +34,7 @@ namespace MarketBackend.Tests.IT
         int userAge2 = 16;
         int basketId = 1;
         PaymentDetails paymentDetails = new PaymentDetails("5326888878675678", "2027", "10", "101", "3190876789", "Hadas");
+        ShippingDetails shippingDetails = new ShippingDetails("name",  "city",  "address",  "country",  "zipcode");
         private const int NumThreads = 10;
         private const int NumIterations = 100;
         string productname1 = "product1";
@@ -42,14 +43,16 @@ namespace MarketBackend.Tests.IT
         string sellmethod = "RegularSell";
         string desc = "nice";
         int productCounter = 0;
+        Mock<IShippingSystemFacade> mockShippingSystem;
+        Mock<IPaymentSystemFacade> mockPaymentSystem;
 
         [TestInitialize]
         public void Setup()
         {
             // Initialize the managers
             MarketManagerFacade.Dispose();
-            var mockShippingSystem = new Mock<IShippingSystemFacade>();
-            var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
+            mockShippingSystem = new Mock<IShippingSystemFacade>();
+            mockPaymentSystem = new Mock<IPaymentSystemFacade>();
             mockPaymentSystem.Setup(pay =>pay.Connect()).Returns(true);
             mockShippingSystem.Setup(ship => ship.Connect()).Returns(true);
             mockPaymentSystem.Setup(pay =>pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(1);
@@ -129,6 +132,32 @@ namespace MarketBackend.Tests.IT
             baskets = client.Cart.GetBaskets();
             relevantBasket = baskets[1];
             Assert.IsTrue(relevantBasket.products[productID1] == 1);
+        }
+
+        [TestMethod]
+        public void PurchaseCartFail_Payment_OrderCancel()
+        {
+            marketManagerFacade.AddToCart(userId, 1, 11, 1);
+            mockPaymentSystem.Setup(pay =>pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(-1);
+            Assert.ThrowsException<Exception>(() => marketManagerFacade.PurchaseCart(userId, paymentDetails, shippingDetails));
+            Member client = clientManager.GetMemberById(userId);
+            Store store = marketManagerFacade.GetStore(1);
+            Assert.IsTrue(client.OrderHistory.IsEmpty);
+            Assert.IsTrue(client.Cart.GetBaskets()[1].products.ContainsKey(productID1));
+            Assert.IsTrue(store.Products.Count == 1);
+        }
+
+        [TestMethod]
+        public void PurchaseCartFail_Shipping_OrderCancel()
+        {
+            marketManagerFacade.AddToCart(userId, 1, 11, 1);
+            mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(-1);
+            Assert.ThrowsException<Exception>(() => marketManagerFacade.PurchaseCart(userId, paymentDetails, shippingDetails));
+            Member client = clientManager.GetMemberById(userId);
+            Store store = marketManagerFacade.GetStore(1);
+            Assert.IsTrue(client.OrderHistory.IsEmpty);
+            Assert.IsTrue(client.Cart.GetBaskets()[1].products.ContainsKey(productID1));
+            Assert.IsTrue(store.Products.Count == 1);
         }
     }
 }

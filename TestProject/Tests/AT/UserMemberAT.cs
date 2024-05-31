@@ -37,13 +37,15 @@ namespace MarketBackend.Tests.AT
         string sellmethod = "RegularSell";
         string desc = "nice";
         int userId2;
+        Mock<IShippingSystemFacade> mockShippingSystem;
+        Mock<IPaymentSystemFacade> mockPaymentSystem;
 
         [TestInitialize()]
         public void Setup(){
             proxy = new Proxy();
             userId = proxy.GetUserId();
-            var mockShippingSystem = new Mock<IShippingSystemFacade>();
-            var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
+            mockShippingSystem = new Mock<IShippingSystemFacade>();
+            mockPaymentSystem = new Mock<IPaymentSystemFacade>();
             mockPaymentSystem.Setup(pay =>pay.Connect()).Returns(true);
             mockShippingSystem.Setup(ship => ship.Connect()).Returns(true);
             mockPaymentSystem.Setup(pay =>pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(1);
@@ -201,6 +203,26 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, true));
            userId2 = proxy.GetMembeIDrByUserName(userName2);
            Assert.IsFalse(proxy.PurchaseCart(userId2, paymentDetails, shippingDetails));
+        }
+
+        [TestMethod]
+        public void PurchaseCartFail_Payment(){
+            int shopID = 1;
+            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
+            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
+            userId2 = proxy.GetMembeIDrByUserName(userName2);
+            mockPaymentSystem.SetReturnsDefault(false);
+            Assert.IsFalse(proxy.PurchaseCart(userId2, paymentDetails, shippingDetails));
+        }
+
+        [TestMethod]
+        public void PurchaseCartFail_Shipping(){
+            int shopID = 1;
+            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
+            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
+            userId2 = proxy.GetMembeIDrByUserName(userName2);
+            mockShippingSystem.SetReturnsDefault(false);
+            Assert.IsFalse(proxy.PurchaseCart(userId2, paymentDetails, shippingDetails));
         }
 
         [TestMethod]

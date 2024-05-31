@@ -103,6 +103,12 @@ namespace MarketBackend.Tests.AT
         }
 
         [TestMethod]
+        public void UpdateProductPriceFail_NoProduct()
+        {
+           Assert.IsFalse(proxy.UpdateProductPrice(shopID, userId, productID1, negPrice));     
+        }
+
+        [TestMethod]
         public void UpdateProductQuantitySuccess()
         {
            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false)); 
@@ -110,9 +116,15 @@ namespace MarketBackend.Tests.AT
         }
 
         [TestMethod]
-        public void UpdateProductQuantityFail_NegativePrice()
+        public void UpdateProductQuantityFail_NegativeQuantity()
         {
            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false)); 
+           Assert.IsFalse(proxy.UpdateProductQuantity(shopID, userId, productID1, negQuantity));     
+        }
+
+        [TestMethod]
+        public void UpdateProductQuantityFail_NoProduct()
+        {
            Assert.IsFalse(proxy.UpdateProductQuantity(shopID, userId, productID1, negQuantity));     
         }
 
@@ -153,8 +165,10 @@ namespace MarketBackend.Tests.AT
            userId2 = proxy.GetMembeIDrByUserName(userName2);
            Assert.IsTrue(proxy.Login(userId2, userName2, pass2));
            Assert.IsTrue(proxy.AddOwner(userId, shopID, userId2));
-         //   Assert.IsTrue(proxy.Remov(userId, shopID, userId2));
+           Assert.IsTrue(proxy.RemoveStaffMember(shopID, userId, null, userId2));
         }
+
+        
 
         
     }
