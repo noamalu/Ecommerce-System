@@ -21,7 +21,10 @@ export const Buttons: React.FC<ButtonsProps> = ({
   onClick,
 }) => {
   return (
-    <button className={`buttons ${className} ${icon} ${size} ${state} ${type}`}>
+    <button
+      className={`buttons ${className} ${icon} ${size} ${state} ${type}`}
+      onClick={onClick}
+    >
       {buttonsMainTextTitle}
     </button>
   );

@@ -10,33 +10,37 @@ export const HomeScreen = () => {
     const [age, setAge] = useState("");
   
     const handleButtonClick = async () => {
-      try {
-        const tokenId = 123; // Assuming you have a tokenId
-        const response = await fetch("api/Client/Guest/Register?tokenId=" + tokenId, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            Username: username,
-            Password: password,
-            Email: email,
-            Age: age
-          })
-        });
-  
-        if (!response.ok) {
-          throw new Error("Failed to register");
+        try {
+          const tokenId = 123; // Assuming you have a tokenId
+          console.log("Sending request to register"); // Log before sending request
+          const response = await fetch("api/Client/Guest/Register?tokenId=" + tokenId, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              Username: username,
+              Password: password,
+              Email: email,
+              Age: age
+            })
+          });
+     
+          console.log("Request sent, awaiting response"); // Log after sending request
+     
+          if (!response.ok) {
+            throw new Error("Failed to register");
+          }
+     
+          const data = await response.json();
+          console.log(data); // Log the response from the server
+     
+          // You can add further logic here based on the response from the server
+        } catch (error) {
+          console.error("Error:", error);
         }
-  
-        const data = await response.json();
-        console.log(data); // Log the response from the server
-  
-        // You can add further logic here based on the response from the server
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
+      };
+     
     return (
     <div className="home-screen">
       <div className="div">
