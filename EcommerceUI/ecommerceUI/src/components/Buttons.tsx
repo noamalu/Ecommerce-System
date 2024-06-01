@@ -8,6 +8,7 @@ interface ButtonsProps {
   size?: string;
   state?: string;
   type?: string;
+  onClick?: () => void;
 }
 
 export const Buttons: React.FC<ButtonsProps> = ({
@@ -17,6 +18,7 @@ export const Buttons: React.FC<ButtonsProps> = ({
   size,
   state,
   type,
+  onClick,
 }) => {
   return (
     <button className={`buttons ${className} ${icon} ${size} ${state} ${type}`}>

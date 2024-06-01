@@ -1,10 +1,43 @@
-import React from "react";
+import React, {useState} from "react";
 import { Buttons } from "./Buttons";
 import { InputFields } from "./InputFields";
 import "./style.css";
 
 export const HomeScreen = () => {
-  return (
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [email, setEmail] = useState("");
+    const [age, setAge] = useState("");
+  
+    const handleButtonClick = async () => {
+      try {
+        const tokenId = 123; // Assuming you have a tokenId
+        const response = await fetch("api/Client/Guest/Register?tokenId=" + tokenId, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            Username: username,
+            Password: password,
+            Email: email,
+            Age: age
+          })
+        });
+  
+        if (!response.ok) {
+          throw new Error("Failed to register");
+        }
+  
+        const data = await response.json();
+        console.log(data); // Log the response from the server
+  
+        // You can add further logic here based on the response from the server
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+    return (
     <div className="home-screen">
       <div className="div">
         <footer className="footer">
@@ -18,6 +51,7 @@ export const HomeScreen = () => {
                     inputFieldsMainPlaceholder="Email Address"
                     state="default"
                     textBelow={false}
+                    
                   />
                   <Buttons
                     buttonsMainTextTitle="Join"
@@ -26,6 +60,7 @@ export const HomeScreen = () => {
                     size="small"
                     state="default"
                     type="text-link"
+                    onClick={handleButtonClick}
                   />
                 </div>
               </div>
