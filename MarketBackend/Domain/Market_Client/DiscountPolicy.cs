@@ -11,7 +11,7 @@ public class DiscountPolicy : IPolicy
             Precentage = percentage;
         }
 
-        public DiscountPolicy(int id,int shopId, DateTime expirationDate, RuleSubject subject) : base(id,shopId, expirationDate, subject)
+        public DiscountPolicy(int id,int storeId, DateTime expirationDate, RuleSubject subject) : base(id,storeId, expirationDate, subject)
         {
         }
 

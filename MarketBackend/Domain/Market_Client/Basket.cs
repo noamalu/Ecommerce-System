@@ -67,7 +67,6 @@ namespace MarketBackend.Domain.Market_Client
             return null;
         }
 
-        //todo: implement _basketItems
         public static Basket Clone(Basket basketToClone)
         {
             var newBasket = new Basket(basketToClone._basketId, basketToClone._storeId)
@@ -100,6 +99,13 @@ namespace MarketBackend.Domain.Market_Client
                 if(basketItem.Product == p) return true;
             }
             return false;
+        }   
+        public double GetBasketPriceBeforeDiscounts()
+        {
+            double price = 0;
+            foreach (BasketItem basketItem in _basketItems)
+                price += basketItem.Product.Price * basketItem.Quantity;
+            return price;
         }
     }
 }

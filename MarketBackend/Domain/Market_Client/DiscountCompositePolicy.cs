@@ -9,7 +9,7 @@ namespace MarketBackend.Domain.Market_Client
         public NumericOperator NumericOperator { get => _numericOperator; set => _numericOperator = value; }
         public List<IPolicy> Policies { get => _policies; set => _policies = value; }
 
-        public DiscountCompositePolicy(int id,int shopId, DateTime expirationDate, RuleSubject subject, NumericOperator Operator, List<IPolicy> policies) :base(id, shopId, expirationDate, subject)
+        public DiscountCompositePolicy(int id,int storeId, DateTime expirationDate, RuleSubject subject, NumericOperator Operator, List<IPolicy> policies) :base(id, storeId, expirationDate, subject)
         {
             Precentage = 0;
             Subject = new RuleSubject();

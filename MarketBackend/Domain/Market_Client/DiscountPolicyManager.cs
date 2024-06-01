@@ -13,8 +13,8 @@ namespace MarketBackend.Domain.Market_Client
         {
             if (!Policies.TryGetValue(policyId, out IPolicy policy))
             {
-                //todo if (PolicyRepo.GetInstance().ContainsID(policyId))
-                    //rodo return (DiscountPolicy)PolicyRepo.GetInstance().GetById(policyId);
+                if (PolicyRepositoryRAM.GetInstance().ContainsID(policyId))
+                    return (DiscountPolicy)PolicyRepositoryRAM.GetInstance().GetById(policyId);
                 throw new Exception("Policy was not found");
             }
             return (DiscountPolicy)policy;
@@ -25,7 +25,7 @@ namespace MarketBackend.Domain.Market_Client
             int unicId = int.Parse($"{_storeId}{id}");
             DiscountPolicy policy = new DiscountPolicy(unicId, StoreId, expirationDate, subject, rule, precentage);
             Policies.TryAdd(policy.Id, policy);
-            // todo PolicyRepo.GetInstance().Add(policy);
+            PolicyRepositoryRAM.GetInstance().Add(policy);
         }
 
         public void AddCompositePolicy(int id, DateTime expirationDate, RuleSubject subject, NumericOperator Operator, List<int> policies)

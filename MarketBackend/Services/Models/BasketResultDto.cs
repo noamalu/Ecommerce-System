@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MarketBackend.DAL;
-using MarketBackend.Domain.Models;
+using MarketBackend.Domain.Market_Client;
 
 namespace MarketBackend.Services.Models
 {

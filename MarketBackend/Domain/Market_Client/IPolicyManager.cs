@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MarketBackend.DAL;
 
 namespace MarketBackend.Domain.Market_Client
 {
@@ -28,7 +29,7 @@ namespace MarketBackend.Domain.Market_Client
             {
                 throw new Exception("Policy was not found");
             }
-            // todo :PolicyRepo.GetInstance().Delete(policyId);
+            PolicyRepositoryRAM.GetInstance().Delete(policyId);
         }
         public void Apply(Basket basket)
         {
