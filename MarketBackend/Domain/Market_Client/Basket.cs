@@ -93,5 +93,13 @@ namespace MarketBackend.Domain.Market_Client
         {
             return products.IsNullOrEmpty();
         }
+        public bool HasProduct(Product p)
+        {
+            foreach(BasketItem basketItem in _basketItems)
+            {
+                if(basketItem.Product == p) return true;
+            }
+            return false;
+        }
     }
 }

@@ -1,4 +1,6 @@
 
+using MarketBackend.DAL;
+
 namespace MarketBackend.Domain.Market_Client
 {
     public class DiscountPolicyManager : IPolicyManager<DiscountPolicy>
@@ -33,12 +35,12 @@ namespace MarketBackend.Domain.Market_Client
             {
                 policiesToAdd.Add(GetPolicy(policyId));
                 Policies.TryRemove(policyId, out IPolicy dummy);
-                PolicyRepo.GetInstance().Delete(policyId);
+                PolicyRepositoryRAM.GetInstance().Delete(policyId);
             }
             int unicId = int.Parse($"{_storeId}{id}");
             DiscountCompositePolicy policy = new DiscountCompositePolicy(unicId,_storeId, expirationDate, subject, Operator, policiesToAdd);
             Policies.TryAdd(policy.Id, policy);
-            PolicyRepo.GetInstance().Add(policy);
+            PolicyRepositoryRAM.GetInstance().Add(policy);
         }
 
     }

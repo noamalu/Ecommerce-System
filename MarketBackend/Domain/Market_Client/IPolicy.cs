@@ -23,6 +23,14 @@
             _storeId = storeId;
         }
 
+        public IPolicy(int id ,int storeId, DateTime expirationDate, RuleSubject subject)
+        {
+            _id = id;
+            _expirationDate = expirationDate;
+            _subject = subject;
+            _storeId = storeId;
+        }
+
         public abstract void Apply(Basket basket);
         public abstract string GetInfo();
         public abstract bool IsValidForBasket(Basket basket);

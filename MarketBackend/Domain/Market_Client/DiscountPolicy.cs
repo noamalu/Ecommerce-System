@@ -11,6 +11,10 @@ public class DiscountPolicy : IPolicy
             Precentage = percentage;
         }
 
+        public DiscountPolicy(int id,int shopId, DateTime expirationDate, RuleSubject subject) : base(id,shopId, expirationDate, subject)
+        {
+        }
+
         
         public override void Apply(Basket basket)
         {
