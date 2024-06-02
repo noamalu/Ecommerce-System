@@ -13,7 +13,7 @@ export const HomeScreen = () => {
         try {
           const tokenId = 123; // Assuming you have a tokenId
           console.log("Sending request to register"); // Log before sending request
-          const response = await fetch("/api/Client/Guest/Register", {
+          const response = await fetch("api/Client/Guest/Register", {
             method: "POST",
             headers: {
               "Content-Type": "application/json"
