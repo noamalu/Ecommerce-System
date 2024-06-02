@@ -28,11 +28,11 @@ namespace MarketBackend.Domain.Market_Client
         public void addToBasket(int productId, int quantity){
             if (products.ContainsKey(productId)){
                 products[productId] += quantity;
-                _basketItems.Add(new BasketItem(ProductRepositoryRAM.GetInstance().GetById(productId), quantity)) ;
+                FindBasketItem(productId).Quantity += quantity;
             }
             else{
                 products[productId] = quantity;
-                FindBasketItem(productId).Quantity += quantity;
+                _basketItems.Add(new BasketItem(ProductRepositoryRAM.GetInstance().GetById(productId), quantity)) ;
             }
         }
 
