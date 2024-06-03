@@ -26,6 +26,7 @@ export const HomeScreen = () => {
                     Age: age
                 })
             });
+
      
           console.log("Request sent, awaiting response"); // Log after sending request
      
