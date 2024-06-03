@@ -4,44 +4,42 @@ import { InputFields } from "./InputFields";
 import "./style.css";
 
 export const HomeScreen = () => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [email, setEmail] = useState("");
-    const [age, setAge] = useState("");
+    const [username, setUsername] = useState("a ");
+    const [password, setPassword] = useState(" a");
+    const [email, setEmail] = useState(" a");
+    const [age, setAge] = useState("12");
   
     const handleButtonClick = async () => {
-        try {
-            const tokenId = 123; // Assuming you have a tokenId
-            console.log("Sending request to register"); // Log before sending request
 
-            const response = await fetch(`http://localhost:7163/api/Client/Guest/Register?tokenId=${tokenId}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    Username: username,
-                    Password: password,
-                    Email: email,
-                    Age: age
-                })
-            });
+      try {
+          const tokenId = 123; // Assuming you have a tokenId
+          console.log("Sending request to register"); // Log before sending request
 
-     
+          const response = await fetch(`https://localhost:7163/api/Client/Guest/Register?tokenId=${tokenId}`, {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                  username: username.trim(), // Trimmed to remove leading/trailing spaces
+                  password: password.trim(), // Trimmed to remove leading/trailing spaces
+                  email: email.trim(), // Trimmed to remove leading/trailing spaces
+                  age: age.trim() // Trimmed to remove leading/trailing spaces
+              })
+          });
+
           console.log("Request sent, awaiting response"); // Log after sending request
-     
+
           if (!response.ok) {
-            throw new Error("Failed to register");
+              throw new Error(`Failed to register: ${response.status}`);
           }
-     
+
           const data = await response.json();
-          console.log(data); // Log the response from the server
-     
-          // You can add further logic here based on the response from the server
-        } catch (error) {
+          console.log("Response received:", data); // Log the response from the server
+      } catch (error) {
           console.error("Error:", error);
-        }
-      };
+      }
+  };
      
     return (
     <div className="home-screen">
