@@ -32,6 +32,7 @@ namespace MarketBackend.Domain.Market_Client
             OrderHistory = new(); 
             IsSystemAdmin = false;
             IsLoggedIn = false;
+            alerts = new SynchronizedCollection<Message>();
         }
 
         public override void PurchaseBasket(int id, Basket basket)

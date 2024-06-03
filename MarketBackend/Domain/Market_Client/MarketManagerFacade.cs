@@ -331,16 +331,17 @@ namespace MarketBackend.Domain.Market_Client
             foreach(var store in stores){
                 var totalPrice = store.CalculateBasketPrice(baskets[store.StoreId]);
                 if(_paymentSystem.Pay(paymentDetails, totalPrice) > 0) {
-                    store.PurchaseBasket(id, baskets[store.StoreId]);
-                    client.PurchaseBasket(id, baskets[store.StoreId]);
+                    if(_shippingSystemFacade.OrderShippment(shippingDetails) > 0){
+                        store.PurchaseBasket(id, baskets[store.StoreId]);
+                        client.PurchaseBasket(id, baskets[store.StoreId]);
+                    }
+                    else{
+                        throw new Exception("shippment failed.");
+                    }                  
                 }
                 else 
                     throw new Exception("payment failed.");
-            }
-
-            _shippingSystemFacade.OrderShippment(shippingDetails);
-
-            
+            }           
 
         }
 
