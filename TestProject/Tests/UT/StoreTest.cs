@@ -207,7 +207,7 @@ namespace UnitTests
         {
             Role role = new Role(new StoreManagerRole(RoleName.Manager), (Member)_owner, _Store._storeId, 3);
             _Store.AddStaffMember(3, role, _owner.Id);
-            Assert.IsTrue(_Store.roles.ContainsValue(role));
+            Assert.IsTrue(_Store.roles.ContainsKey(_owner.Id));
 
         }
 
@@ -216,7 +216,7 @@ namespace UnitTests
         {
             Role role = new Role(new StoreManagerRole(RoleName.Manager), (Member)_owner, _Store._storeId, 3);
             Assert.ThrowsException<Exception>(() => _Store.AddStaffMember(3, role, 17));
-            Assert.IsFalse(_Store.roles.ContainsValue(role));
+            Assert.IsFalse(_Store.roles.ContainsKey(3));
 
         }
 
@@ -225,7 +225,7 @@ namespace UnitTests
         {
             Role role = new Role(new StoreManagerRole(RoleName.Manager), (Member)_owner, _Store._storeId, 3);
             Assert.ThrowsException<Exception>(() => _Store.AddStaffMember(3, role, 3));
-            Assert.IsFalse(_Store.roles.ContainsValue(role));
+            Assert.IsFalse(_Store.roles.ContainsKey(3));
         }
 
         [TestMethod()]
@@ -233,7 +233,7 @@ namespace UnitTests
         {
             Role role = new Role(new Founder(RoleName.Founder), (Member)_owner, _Store._storeId, 3);
             Assert.ThrowsException<Exception>(() => _Store.AddStaffMember(3, role, _owner.Id));
-            Assert.IsFalse(_Store.roles.ContainsValue(role));
+            Assert.IsFalse(_Store.roles.ContainsKey(3));
 
         }
 

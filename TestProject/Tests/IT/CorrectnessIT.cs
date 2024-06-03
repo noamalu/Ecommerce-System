@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.IO.Compression;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Models;
@@ -201,20 +202,43 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.LoginClient(userId3, userName3, userPassword);
             userId3 = marketManagerFacade.GetMemberIDrByUserName(userName);
             Boolean thorwnExeption  = false;
-            var threads = new List<Thread>();
-            foreach (int userId in new int[]{mem1.Id, mem2.Id})
+            ConcurrentBag<bool> results = new ConcurrentBag<bool>();
+            var threads = new List<Thread>()
             {
-                try{
-                    marketManagerFacade.AddManger(userId, storeId, userId3);
-                }catch{
-                    thorwnExeption  = true;
-                }
-                
-            }
+                new Thread(() =>
+                {
+                    try
+                    {
+                        marketManagerFacade.AddManger(userId, storeId, userId3);
+                        results.Add(true);
+                    }
+                    catch{
+                        thorwnExeption  = true;
+                        results.Add(false);
+                    }
+                }),
+                new Thread(() =>
+                {
+                    try
+                    {
+                        marketManagerFacade.AddManger(userId, storeId, userId3);
+                        results.Add(true);
+                    }
+                    catch{
+                        thorwnExeption  = true;
+                        results.Add(false);
+                    }
+                })  
+            };
             threads.ForEach(t => t.Start());
             threads.ForEach(t => t.Join());
-            Assert.AreEqual(true, thorwnExeption);
-            
+            int successCount = results.Count(r => r == true);
+            int exceptionCount = results.Count(r => r == false);
+            Store store = marketManagerFacade.GetStore(storeId);
+            // Assert.AreEqual(true, thorwnExeption);
+            Assert.AreEqual(1, successCount, "Exactly one thread should succeed in adding the manager.");
+            Assert.AreEqual(1, exceptionCount, "Exactly one thread should throw an exception.");
+            Assert.IsTrue(store.roles.ContainsKey(userId));
         }
     }
 }
