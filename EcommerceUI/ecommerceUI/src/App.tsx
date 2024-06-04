@@ -1,19 +1,23 @@
-// src/App.tsx
 import React, { useState } from 'react';
+import {BrowserRouter, Routes, Route} from 'react-router-dom'
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import { HomeScreen } from './components/HomeScreen';
-import RegistrationForm from './components/RegistrationForm';
+import { Home } from "./pages/Home"
+import { Login } from "./pages/Login"
+import { NavBar } from "./components/NavBar"
 
 function App() {
-  const [showRegistrationForm, setShowRegistrationForm] = useState(false);
-
-  const handleToggleForm = () => {
-    setShowRegistrationForm((prevState) => !prevState);
-  };
-
   return (
     <div>
-      <HomeScreen onToggleForm={handleToggleForm} showRegistrationForm={showRegistrationForm} />
+      <NavBar />
+      <BrowserRouter>
+        <Routes>
+          <Route index element = {<Home/>}/>
+          <Route path="/home" element={<Home/>}/>
+          <Route path="/login" element={<Login/>}/>
+        </Routes>
+      </BrowserRouter>
+       
     </div>
   );
 }
