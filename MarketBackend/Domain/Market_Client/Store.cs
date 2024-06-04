@@ -20,13 +20,13 @@ namespace MarketBackend.Domain.Market_Client
          public int _storeId {get; set;}
          public string _storeName {get; set;}
          public bool _active {get; set;}
+         public History _history {get; set;}
 
          public string _storePhoneNum {get; set;}
 
          public string _storeEmailAdd {get; set;}
 
          public SynchronizedCollection<Product> _products {get; set;}
-         public SynchronizedCollection<Purchase> _purchases {get; set;}
          public DiscountPolicyManager _discountPolicyManager {get; set;}
          public PurchasePolicyManager _purchasePolicyManager {get; set;}
         public ConcurrentDictionary<int, Role> roles {get; set;}
@@ -47,9 +47,9 @@ namespace MarketBackend.Domain.Market_Client
             _active = true;
             _products = ProductRepositoryRAM.GetInstance().GetShopProducts(_storeId);
             roles = RoleRepositoryRAM.GetInstance().getShopRoles(_storeId);
-            _purchases = PurchaseRepositoryRAM.GetInstance().GetShopPurchaseHistory(_storeId);
-            //_discountPolicyManager = new DiscountPolicyManager(shopId);
-            //_purchasePolicyManager = new PurchasePolicyManager(shopId);
+            _history = new History(_storeId);
+            _discountPolicyManager = new DiscountPolicyManager(_storeId);
+            _purchasePolicyManager = new PurchasePolicyManager(_storeId);
             _raiting = 0;
             _productIdCounter = 1;
             _eventManager = new EventManager(_storeId);
@@ -59,7 +59,7 @@ namespace MarketBackend.Domain.Market_Client
         public SynchronizedCollection<Product> Products { get => _products; set => _products = value; }
         public bool Active { get => _active; set => _active = value; }
         public string Name { get => _storeName; set => _storeName = value; }
-        public SynchronizedCollection<Purchase> Purchases { get => _purchases; set => _purchases = value; }
+        
     
 
         public Product AddProduct(int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
@@ -200,7 +200,7 @@ namespace MarketBackend.Domain.Market_Client
             RemoveBasketProductsFromSupply(basket);                
             double basketPrice = CalculateBasketPrice(basket);
             Purchase pendingPurchase = new Purchase(GenerateUniquePurchaseId(), _storeId, userId, Basket.Clone(basket), basketPrice);
-            AddPurchase(pendingPurchase);
+            _history.AddPurchase(pendingPurchase);
             Event e = new ProductSellEvent(this, pendingPurchase);
             _eventManager.NotifySubscribers(e);
             return pendingPurchase;
@@ -218,11 +218,7 @@ namespace MarketBackend.Domain.Market_Client
             return totalPrice;
         }
 
-         private void AddPurchase(Purchase p)
-        {
-                _purchases.Add(p);
-                PurchaseRepositoryRAM.GetInstance().Add(p);
-        }
+        
 
         public bool checkBasketInSupply(Basket basket)
         {
@@ -284,7 +280,7 @@ namespace MarketBackend.Domain.Market_Client
         {
             if(getRole(userId)!=null && getRole(userId).canGetHistory())
             {
-                return _purchases.ToList();
+                return _history._purchases.ToList();
             }
             else throw new Exception($"Permission exception for userId: {userId}");
         }

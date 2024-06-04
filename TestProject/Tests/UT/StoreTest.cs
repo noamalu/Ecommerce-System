@@ -243,7 +243,7 @@ namespace UnitTests
             Basket basket = new Basket(13, _Store._storeId);
             basket.addToBasket(11, 10);
             Purchase purchase = _Store.PurchaseBasket(3,basket);
-            Assert.IsTrue(_Store.Purchases.Contains(purchase));
+            Assert.IsTrue(_Store._history._purchases.Contains(purchase));
             Product product = _Store.GetProduct(11);
             Assert.IsTrue(product._quantity == 11);
         }
