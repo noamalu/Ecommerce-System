@@ -43,13 +43,38 @@ const RegistrationForm: React.FC = () => {
     return formErrors;
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formErrors = validate();
     if (Object.keys(formErrors).length === 0) {
-      console.log('Form data:', formData);
-      // Here you can handle form submission (e.g., send data to a server)
-      alert("Registered successfully");
+      try {
+        const tokenId = 123; //need to chnage token id
+        const response = await fetch(`https://localhost:7163/api/Client/Guest/Register?tokenId=${tokenId}`, 
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+  
+        if (response.ok) {
+          console.log('Registration successful');
+          alert("Registered successfully");
+          // Reset form data if needed
+          setFormData({ username: '', email: '', password: '' });
+        } else {
+          // Handle error response
+          const responseData = await response.json();
+          console.error('Registration failed:', responseData);
+          // Optionally, you can set specific errors based on the response
+          alert('Registration failed. Please try again later.');
+        }
+      } catch (error) {
+        console.error('Error occurred while registering:', error);
+        // Handle network errors or other exceptions
+        alert('An error occurred while processing your request. Please try again later.');
+      }
     } else {
       setErrors(formErrors);
     }
