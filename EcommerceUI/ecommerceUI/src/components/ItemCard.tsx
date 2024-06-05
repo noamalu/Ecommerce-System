@@ -12,7 +12,7 @@ interface ItemCard {
     productId: number;
 }
 
-export const ItemCard: React.FC<ItemCard> = ({storeId, productId, itemName, description, price}) => {
+export const ItemCard: React.FC<ItemCard> = ({storeId, productId,itemName, description, price}) => {
         return (
             // <h1> card</h1>
             <Card style={{ width: '18rem' }}>

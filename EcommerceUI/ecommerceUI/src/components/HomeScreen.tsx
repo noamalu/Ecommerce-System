@@ -2,7 +2,7 @@
 import React from "react";
 import { Buttons } from "./Buttons";
 import { InputFields } from "./InputFields";
-import RegistrationForm from "./RegistrationForm";
+import RegistrationForm from "./LoginForm";
 import "./style.css";
 
 interface HomeScreenProps {

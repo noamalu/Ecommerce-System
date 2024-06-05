@@ -41,7 +41,8 @@ export const NavBar: React.FC<NavBar> = () => {
                 />
                 <Button variant="outline-success">Search</Button>
               </Form>
-              <Button variant="outline-info" href="/login">login</Button>
+              <Button variant="outline-info" href="/login">Login</Button>
+              <Button variant="outline-info" href="/register">Register</Button>
             </Navbar.Collapse>
           </Container>
         </Navbar>
