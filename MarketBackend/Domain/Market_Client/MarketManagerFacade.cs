@@ -512,5 +512,141 @@ namespace MarketBackend.Domain.Market_Client
             else
                 throw new Exception("Store doesn't exist!");
         }
+
+        // policies ------------------------------------------------
+        public void RemovePolicy(int clientId, int storeId, int policyID,string type)
+        {
+            _clientManager.CheckMemberIsLoggedIn(clientId);
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+                store.RemovePolicy(clientId, policyID, type);
+            }
+            else
+                throw new Exception("Store doesn't exist!");
+        }
+        public void AddSimpleRule(int clientId, int storeId,string subject)
+        {
+            _clientManager.CheckMemberIsLoggedIn(clientId);
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+                store.AddSimpleRule(clientId, subject);
+            }
+            else
+                throw new Exception("Store doesn't exist!");
+        }
+        public void AddQuantityRule(int clientId, int storeId, string subject, int minQuantity, int maxQuantity)
+        {
+            _clientManager.CheckMemberIsLoggedIn(clientId);
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+                store.AddQuantityRule(clientId, subject, minQuantity, maxQuantity);
+            }
+            else
+                throw new Exception("Store doesn't exist!");
+        }
+        public void AddTotalPriceRule(int clientId, int storeId, string subject, int targetPrice)
+        {
+            _clientManager.CheckMemberIsLoggedIn(clientId);
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+                store.AddTotalPriceRule(clientId, subject, targetPrice);
+            }
+            else
+                throw new Exception("Store doesn't exist!");
+        }
+        public void AddCompositeRule(int clientId, int storeId, int Operator, List<int> rules)
+        {
+            _clientManager.CheckMemberIsLoggedIn(clientId);
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+                store.AddCompositeRule(clientId, Operator, rules);
+            }
+            else
+                throw new Exception("Store doesn't exist!");
+        }
+        public void UpdateRuleSubject(int clientId, int storeId, int ruleId, string subject)
+        {
+            _clientManager.CheckMemberIsLoggedIn(clientId);
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+                store.UpdateRuleSubject(clientId, ruleId, subject);
+            }
+            else
+                throw new Exception("Store doesn't exist!");
+        }
+        public void UpdateRuleQuantity(int clientId, int storeId, int ruleId, int minQuantity, int maxQuantity)
+        {
+            _clientManager.CheckMemberIsLoggedIn(clientId);
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+                store.UpdateRuleQuantity(clientId, ruleId, minQuantity, maxQuantity);
+            }
+            else
+                throw new Exception("Store doesn't exist!");
+        }
+        public void UpdateRuleTargetPrice(int clientId, int storeId, int ruleId, int targetPrice)
+        {
+            _clientManager.CheckMemberIsLoggedIn(clientId);
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+                store.UpdateRuleTargetPrice(clientId, ruleId, targetPrice);
+            }
+            else
+                throw new Exception("Store doesn't exist!");
+        }
+        public void UpdateCompositeOperator(int clientId, int storeId, int ruleId, int Operator)
+        {
+            _clientManager.CheckMemberIsLoggedIn(clientId);
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+                store.UpdateCompositeOperator(clientId, ruleId, Operator);
+            }
+            else
+                throw new Exception("Store doesn't exist!");
+        }
+        public void UpdateCompositeRules(int clientId, int storeId, int ruleId, List<int> rules)
+        {
+            _clientManager.CheckMemberIsLoggedIn(clientId);
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+                store.UpdateCompositeRules(clientId, ruleId, rules);
+            }
+            else
+                throw new Exception("Store doesn't exist!");
+        }
+
+        public void AddPurchasePolicy(int clientId, int storeId, DateTime expirationDate, string subject, int ruleId)
+        {
+            _clientManager.CheckMemberIsLoggedIn(clientId);
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+                store.AddPurchasePolicy(clientId, expirationDate, subject, ruleId);
+            }
+            else
+                throw new Exception("Store doesn't exist!");
+        }
+        public void AddDiscountPolicy(int clientId, int storeId, DateTime expirationDate, string subject, int ruleId, double precentage)
+        {
+            _clientManager.CheckMemberIsLoggedIn(clientId);
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+                store.AddDiscountPolicy(clientId, expirationDate, subject, ruleId, precentage);
+            }
+            else
+                throw new Exception("Store doesn't exist!");
+        }
+        public void AddCompositePolicy(int clientId, int storeId, DateTime expirationDate, string subject, int Operator, List<int> policies)
+        {
+            _clientManager.CheckMemberIsLoggedIn(clientId);
+            Store store = _storeRepository.GetById(storeId);
+            if (store != null){
+                NumericOperator op = (NumericOperator)Enum.ToObject(typeof(NumericOperator), Operator);
+                store.AddCompositePolicy(clientId, expirationDate, subject, op, policies);
+            }
+            else
+                throw new Exception("Store doesn't exist!");
+        }
+        // ---------------------------------------------------------
+
     }
 }
