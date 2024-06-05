@@ -6,20 +6,17 @@ import Form from 'react-bootstrap/Form';
 
 interface FormData {
   username: string;
-  email: string;
   password: string;
 }
 
 interface Errors {
   username?: string;
-  email?: string;
   password?: string;
 }
 
 const RegistrationForm: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
     username: '',
-    email: '',
     password: ''
   });
 
@@ -36,8 +33,8 @@ const RegistrationForm: React.FC = () => {
   const validate = (): Errors => {
     let formErrors: Errors = {};
     if (!formData.username) formErrors.username = 'Username is required';
-    if (!formData.email) formErrors.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) formErrors.email = 'Email is invalid';
+    // if (!formData.email) formErrors.email = 'Email is required';
+    // else if (!/\S+@\S+\.\S+/.test(formData.email)) formErrors.email = 'Email is invalid';
     if (!formData.password) formErrors.password = 'Password is required';
     else if (formData.password.length < 6) formErrors.password = 'Password must be at least 6 characters';
     return formErrors;
@@ -62,7 +59,7 @@ const RegistrationForm: React.FC = () => {
           console.log('Registration successful');
           alert("Registered successfully");
           // Reset form data if needed
-          setFormData({ username: '', email: '', password: '' });
+          setFormData({ username: '', password: '' });
         } else {
           // Handle error response
           const responseData = await response.json();
@@ -92,7 +89,7 @@ const RegistrationForm: React.FC = () => {
             {errors.username && <p>{errors.username}</p>}
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        {/* <Form.Group className="mb-3">
           <Form.Label>Email</Form.Label>
           <Form.Control type="text"
             name="email"
@@ -100,7 +97,7 @@ const RegistrationForm: React.FC = () => {
             onChange={handleChange} 
             placeholder="email" />
             {errors.email && <p>{errors.email}</p>}
-        </Form.Group>
+        </Form.Group> */}
 
         <Form.Group className="mb-3" >
           <Form.Label>Password</Form.Label>

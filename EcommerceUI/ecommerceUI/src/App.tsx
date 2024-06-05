@@ -6,6 +6,8 @@ import { Home } from "./pages/Home"
 import { Login } from "./pages/Login"
 import { NavBar } from "./components/NavBar"
 import { Register } from './pages/Register';
+import { Profile } from './pages/Profile';
+
 
 function App() {
   return (
@@ -17,6 +19,7 @@ function App() {
           <Route path="/home" element={<Home/>}/>
           <Route path="/login" element={<Login/>}/>
           <Route path="/Register" element={<Register/>}/>
+          <Route path="/profile" element={<Profile/>}/>
         </Routes>
       </BrowserRouter>
        
