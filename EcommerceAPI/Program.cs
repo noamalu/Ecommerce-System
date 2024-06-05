@@ -17,7 +17,7 @@ builder.Logging.ClearProviders(); // Clear all default logging providers
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:5175")  // Replace with your actual origin
+        builder => builder.WithOrigins("http://localhost:5173")  // Replace with your actual origin
                            .AllowAnyHeader()
                            .AllowAnyMethod());
 });
