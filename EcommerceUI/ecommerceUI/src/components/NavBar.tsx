@@ -12,7 +12,7 @@ export const NavBar: React.FC<NavBar> = () => {
     return (
         <Navbar expand="lg" className="bg-body-tertiary" fixed="top">
           <Container fluid>
-            <Navbar.Brand href="#">Ecommerce</Navbar.Brand>
+            <Navbar.Brand href="/">Ecommerce</Navbar.Brand>
             <Navbar.Toggle aria-controls="navbarScroll" />
             <Navbar.Collapse id="navbarScroll">
               <Nav
@@ -43,6 +43,7 @@ export const NavBar: React.FC<NavBar> = () => {
               </Form>
               <Button variant="outline-info" href="/login">Login</Button>
               <Button variant="outline-info" href="/register">Register</Button>
+              <Button variant="outline-info" href="/profile">Profile</Button>
             </Navbar.Collapse>
           </Container>
         </Navbar>
