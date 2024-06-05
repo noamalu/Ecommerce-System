@@ -23,6 +23,8 @@ namespace MarketBackend.Domain.Market_Client
          public History _history {get; set;}
          private ConcurrentDictionary<int, IRule> _rules {get; set;}
 
+         private StoreRuleFactory _storeRuleFactory {get; set;}
+
          public string _storePhoneNum {get; set;}
 
          public string _storeEmailAdd {get; set;}
@@ -57,6 +59,8 @@ namespace MarketBackend.Domain.Market_Client
             _policyIdFactory = 1;
             _eventManager = new EventManager(_storeId);
             _rules = new ConcurrentDictionary<int, IRule>();
+            _storeRuleFactory = new StoreRuleFactory(_storeId);
+
         }
 
          public int StoreId { get => _storeId; }
@@ -506,6 +510,128 @@ namespace MarketBackend.Domain.Market_Client
             }
             return true;
         }
+
+        public int AddSimpleRule(int userId, string subject)
+        {
+            if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+            {
+                _storeRuleFactory.setFeatures(CastProductOrCategory(subject));
+                IRule newRule = _storeRuleFactory.makeRule(typeof(SimpleRule));
+                _rules.TryAdd(newRule.Id, newRule);
+                RuleRepositoryRAM.GetInstance().Add(newRule);
+                return newRule.Id;
+
+            }
+            else throw new Exception($"Permission exception for userId: {userId}");
+               
+        }
+
+        public int AddQuantityRule(int userId, string subject, int minQuantity, int maxQuantity)
+        {
+            if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+            {
+                _storeRuleFactory.setFeatures(CastProductOrCategory(subject), minQuantity, maxQuantity);
+                IRule newRule = _storeRuleFactory.makeRule(typeof(QuantityRule));
+                _rules.TryAdd(newRule.Id, newRule);
+                RuleRepositoryRAM.GetInstance().Add(newRule);
+                return newRule.Id;
+
+            }
+            else throw new Exception($"Permission exception for userId: {userId}");
+           
+        }
+         public int AddTotalPriceRule(int userId, string subject, int targetPrice)
+        {
+            if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+            {
+                _storeRuleFactory.setFeatures(CastProductOrCategory(subject), targetPrice);
+                IRule newRule = _storeRuleFactory.makeRule(typeof(TotalPriceRule));
+                _rules.TryAdd(newRule.Id, newRule);
+                RuleRepositoryRAM.GetInstance().Add(newRule);
+                return newRule.Id;
+
+            }
+            else throw new Exception($"Permission exception for userId: {userId}");
+            
+        }
+
+        public int AddCompositeRule(int userId, LogicalOperator Operator, List<int> rules)
+        {
+            if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+            {
+                List<IRule> rulesToAdd = new List<IRule>();
+                foreach (int id in rules)
+                {
+                    rulesToAdd.Add(GetRule(id));
+                }
+                _storeRuleFactory.setFeatures(Operator, rulesToAdd);
+                IRule newRule = _storeRuleFactory.makeRule(typeof(CompositeRule));
+                _rules.TryAdd(newRule.Id, newRule);
+                RuleRepositoryRAM.GetInstance().Add(newRule);
+                return newRule.Id;
+            }
+                else throw new Exception($"Permission exception for userId: {userId}");
+        }
+        public void UpdateRuleSubject(int userId, int ruleId, string subject)
+        {
+             if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+            {
+                IRule rule = GetRule(ruleId);
+                rule.Subject = CastProductOrCategory(subject);
+                RuleRepositoryRAM.GetInstance().Update(rule);
+            }
+            else throw new Exception($"Permission exception for userId: {userId}");
+        }
+        public void UpdateRuleTargetPrice(int userId, int ruleId, int targetPrice)
+        {
+            if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+            {
+                IRule rule = GetRule(ruleId);
+                ((TotalPriceRule)rule).TotalPrice = targetPrice;
+                RuleRepositoryRAM.GetInstance().Update(rule);
+            }
+            else throw new Exception($"Permission exception for userId: {userId}");   
+        }
+        public void UpdateCompositeOperator(int userId, int ruleId, LogicalOperator Operator)
+        {
+            if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+            {
+                IRule rule = GetRule(ruleId);
+                ((CompositeRule)rule).Operator = Operator;
+                RuleRepositoryRAM.GetInstance().Update(rule);
+            }
+            else throw new Exception($"Permission exception for userId: {userId}");
+           
+        }
+
+        public void UpdateRuleQuantity(int userId, int ruleId, int minQuantity, int maxQuantity)
+        {
+            if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+            {
+                IRule rule = GetRule(ruleId);
+                ((QuantityRule)rule).MinQuantity = minQuantity;
+                ((QuantityRule)rule).MaxQuantity = maxQuantity;
+                RuleRepositoryRAM.GetInstance().Update(rule);
+            }
+            else throw new Exception($"Permission exception for userId: {userId}");
+        }
+
+         public void UpdateCompositeRules(int userId, int ruleId, List<int> rules)
+        {
+            if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+            {
+                IRule rule = GetRule(ruleId);
+                ((CompositeRule)rule).Rules.Clear();
+                foreach (int id in rules)
+                {
+                    ((CompositeRule)rule).AddRule(GetRule(ruleId));
+                }
+                RuleRepositoryRAM.GetInstance().Update(rule);
+
+                }
+                else throw new Exception($"Permission exception for userId: {userId}");
+        }
+
 
         public void SubscribeStoreOwner(Member member)
         {

@@ -559,7 +559,8 @@ namespace MarketBackend.Domain.Market_Client
             _clientManager.CheckMemberIsLoggedIn(clientId);
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
-                store.AddCompositeRule(clientId, Operator, rules);
+                LogicalOperator op = (LogicalOperator)Enum.ToObject(typeof(LogicalOperator), Operator);
+                store.AddCompositeRule(clientId, op, rules);
             }
             else
                 throw new Exception("Store doesn't exist!");
@@ -599,7 +600,8 @@ namespace MarketBackend.Domain.Market_Client
             _clientManager.CheckMemberIsLoggedIn(clientId);
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
-                store.UpdateCompositeOperator(clientId, ruleId, Operator);
+                LogicalOperator op = (LogicalOperator)Enum.ToObject(typeof(LogicalOperator), Operator);
+                store.UpdateCompositeOperator(clientId, ruleId, op);
             }
             else
                 throw new Exception("Store doesn't exist!");
