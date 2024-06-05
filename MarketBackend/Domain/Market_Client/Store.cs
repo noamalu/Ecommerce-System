@@ -21,6 +21,7 @@ namespace MarketBackend.Domain.Market_Client
          public string _storeName {get; set;}
          public bool _active {get; set;}
          public History _history {get; set;}
+         private ConcurrentDictionary<int, IRule> _rules {get; set;}
 
          public string _storePhoneNum {get; set;}
 
@@ -33,6 +34,7 @@ namespace MarketBackend.Domain.Market_Client
          public long _productIdCounter {get; set;}
         public int _purchaseIdCounter {get; set;}
 
+        public int _policyIdFactory {get; set;}
 
         public double _raiting {get; set;}
 
@@ -52,7 +54,9 @@ namespace MarketBackend.Domain.Market_Client
             _purchasePolicyManager = new PurchasePolicyManager(_storeId);
             _raiting = 0;
             _productIdCounter = 1;
+            _policyIdFactory = 1;
             _eventManager = new EventManager(_storeId);
+            _rules = new ConcurrentDictionary<int, IRule>();
         }
 
          public int StoreId { get => _storeId; }
@@ -132,6 +136,109 @@ namespace MarketBackend.Domain.Market_Client
         }
         }
 
+        public void AddDiscountPolicy(int userId, DateTime expirationDate, string subject, int ruledId, double precantage)
+        {
+           
+             if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+                {
+                    IRule rule = GetRule(ruledId);
+                    _discountPolicyManager.AddPolicy(_policyIdFactory++, expirationDate, CastProductOrCategory(subject), rule, precantage);
+                }
+                else throw new Exception($"Permission exception for userId: {userId}");
+            
+            
+        }
+
+        public void AddCompositePolicy(int userId, DateTime expirationDate, string subject, NumericOperator Operator, List<int> policies)
+        {
+            
+                 if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+                {
+                    _discountPolicyManager.AddCompositePolicy(_policyIdFactory, expirationDate, CastProductOrCategory(subject), Operator, policies);
+                }
+                else throw new Exception($"Permission exception for userId: {userId}");
+           
+        }
+
+        public void RemovePolicy(int userId, int policyId, string type)
+        {
+            
+                if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+                {
+                    switch (type)
+                    {
+                        case "DiscountPolicy": _discountPolicyManager.RemovePolicy(policyId); break;
+                        case "PurchasePolicy": _purchasePolicyManager.RemovePolicy(policyId); break;
+                    }
+                }
+                else throw new Exception($"Permission exception for userId: {userId}");
+            
+        }
+
+        public void RemoveDiscountPolicy(int userId, int policyId)
+        {
+           
+                if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+                {
+                    _discountPolicyManager.RemovePolicy(policyId);
+                }
+                else throw new Exception($"Permission exception for userId: {userId}");
+            
+        }
+
+        public void AddPurchasePolicy(int userId, DateTime expirationDate, string subject, int ruledId)
+        {
+             if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+            {
+                IRule rule = GetRule(ruledId);
+                _purchasePolicyManager.AddPolicy(_policyIdFactory++, expirationDate, CastProductOrCategory(subject), rule);
+            }
+            else throw new Exception($"Permission exception for userId: {userId}");
+        }
+        public void RemovePurchasePolicy(int userId, int policyId)
+        {
+            if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+            {
+                _purchasePolicyManager.RemovePolicy(policyId);
+            }
+                else throw new Exception($"Permission exception for userId: {userId}");
+            
+        }
+
+
+        private RuleSubject CastProductOrCategory(string subject)
+        {
+            if (subject == _storeName){
+                return new RuleSubject(subject, StoreId);
+            }
+            
+            foreach (Product p in _products){
+                if (p.Name.ToLower().Equals(subject.ToLower()))
+                    {
+                        return new RuleSubject(p);
+                    }
+                if (p.Category.ToLower().Equals(subject.ToLower()))
+                    {
+                        return new RuleSubject(subject);  
+                    }
+                else throw new Exception("could not find subject");
+            }
+         throw new Exception("could not find subject");
+        }
+        
+
+        private IRule GetRule(int ruleId)
+        {
+
+            if (_rules.TryGetValue(ruleId, out IRule rule))
+            {
+                return rule;
+            }
+            else
+                throw new Exception($"No Rule matches ruleId: {ruleId}");
+
+        }
+
         public void CloseStore(int userId)
         {
             if(getRole(userId)!=null && getRole(userId).canCloseStore()) {
@@ -196,7 +303,11 @@ namespace MarketBackend.Domain.Market_Client
          public Purchase PurchaseBasket(int userId, Basket basket)
         {
             if (!_active)
-                throw new Exception($"Shop: {_storeName} is not active anymore");        
+                throw new Exception($"Shop: {_storeName} is not active anymore");      
+
+            basket.resetDiscount();
+            _purchasePolicyManager.Apply(basket);
+            _discountPolicyManager.Apply(basket);  
             RemoveBasketProductsFromSupply(basket);                
             double basketPrice = CalculateBasketPrice(basket);
             Purchase pendingPurchase = new Purchase(GenerateUniquePurchaseId(), _storeId, userId, Basket.Clone(basket), basketPrice);
@@ -209,17 +320,19 @@ namespace MarketBackend.Domain.Market_Client
 
         public double CalculateBasketPrice(Basket basket){
             double totalPrice =0;
-            foreach (KeyValuePair<int, int> product in basket.products)
+            basket.resetDiscount();
+            _discountPolicyManager.Apply(basket);
+            foreach(BasketItem basketItem in basket.BasketItems)
             {
-                Product productToBuy = GetProduct(product.Key);
-                int quantity = product.Value;
-                totalPrice += quantity*productToBuy.Price;
+                double productPrice = basketItem.PriceAfterDiscount;
+                int quantity = basketItem.Quantity;
+                totalPrice += productPrice * quantity;
             }
             return totalPrice;
         }
 
-        
 
+    
         public bool checkBasketInSupply(Basket basket)
         {
             foreach (KeyValuePair<int, int> product in basket.products)
