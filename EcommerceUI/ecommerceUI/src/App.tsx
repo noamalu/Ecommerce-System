@@ -10,6 +10,9 @@ import { Profile } from './pages/Profile';
 
 
 function App() {
+  const [loggedIn, setLoggedIn] = useState(false)
+  const [username, setUsername] = useState('')
+
   return (
     <div>
       <NavBar />
@@ -17,7 +20,7 @@ function App() {
         <Routes>
           <Route index element = {<Home/>}/>
           <Route path="/home" element={<Home/>}/>
-          <Route path="/login" element={<Login/>}/>
+          <Route path="/login" element={<Login setLoggedIn={setLoggedIn} setUserName={setUsername} userr={username} />}  />
           <Route path="/Register" element={<Register/>}/>
           <Route path="/profile" element={<Profile/>}/>
         </Routes>
