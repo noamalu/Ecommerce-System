@@ -1,47 +1,55 @@
-import React, {useState} from "react";
+// src/components/HomeScreen.tsx
+import React from "react";
 import { Buttons } from "./Buttons";
 import { InputFields } from "./InputFields";
+import RegistrationForm from "./LoginForm";
 import "./style.css";
 
-export const HomeScreen = () => {
-    const [username, setUsername] = useState("a ");
-    const [password, setPassword] = useState(" a");
-    const [email, setEmail] = useState(" a");
-    const [age, setAge] = useState("12");
-  
-    const handleButtonClick = async () => {
+interface HomeScreenProps {
+  onToggleForm: () => void;
+  showRegistrationForm: boolean;
+}
 
-      try {
-          const tokenId = 123; // Assuming you have a tokenId
-          console.log("Sending request to register"); // Log before sending request
+export const HomeScreen: React.FC<HomeScreenProps> = ({ onToggleForm, showRegistrationForm }) => {
+  const handleButtonClick = async () => {
+    try {
+      const tokenId = 123; // Assuming you have a tokenId
+      const response = await fetch(`https://localhost:7163/api/Client/Guest/Register?tokenId=${tokenId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username: "username", 
+          password: "password",
+          email: "email",
+          age: "age"
+        })
+      });
 
-          const response = await fetch(`https://localhost:7163/api/Client/Guest/Register?tokenId=${tokenId}`, {
-              method: "POST",
-              headers: {
-                  "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                  username: username.trim(), // Trimmed to remove leading/trailing spaces
-                  password: password.trim(), // Trimmed to remove leading/trailing spaces
-                  email: email.trim(), // Trimmed to remove leading/trailing spaces
-                  age: age.trim() // Trimmed to remove leading/trailing spaces
-              })
-          });
 
-          console.log("Request sent, awaiting response"); // Log after sending request
 
-          if (!response.ok) {
-              throw new Error(`Failed to register: ${response.status}`);
-          }
-
-          const data = await response.json();
-          console.log("Response received:", data); // Log the response from the server
-      } catch (error) {
-          console.error("Error:", error);
+      if (!response.ok) {
+        throw new Error(`Failed to register: ${response.status}`);
       }
+
+      const data = await response.json();
+      console.log("Response received:", data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+
+    
   };
-     
-    return (
+  
+  const handleFrameClick = () => {
+    showRegistrationForm = true;
+  }
+ 
+
+    
+
+  return (
     <div className="home-screen">
       <div className="div">
         <footer className="footer">
@@ -108,10 +116,14 @@ export const HomeScreen = () => {
           <div className="MENU">
             <div className="text-wrapper-4">logo</div>
             <div className="frame-7">
+            <button className="show-registration-button" onClick={onToggleForm}>
+              
+            </button>
+            {showRegistrationForm && <RegistrationForm />}
               <div className="div-wrapper">
                 <div className="text-wrapper-5">RS</div>
               </div>
-              <img className="bell" alt="Bell" src="bell.svg" />
+              <img className="bell" alt="Bell" src="bell.svg" onClick={onToggleForm} style={{ cursor: 'pointer' }} />
               <img className="line" alt="Line" src="line-316.svg" />
               <img className="img" alt="Shopping bag" src="shopping-bag.svg" />
             </div>
@@ -124,328 +136,7 @@ export const HomeScreen = () => {
             <div className="text-wrapper-7">1,201 items</div>
           </div>
           <div className="products">
-            <div className="product-desktop">
-              <div className="main-article-link">
-                <div className="label">
-                  <div className="label-2">
-                    <div className="text-wrapper-8">New Arrival</div>
-                  </div>
-                </div>
-                <img className="image-2" alt="Image" src="image.svg" />
-              </div>
-              <div className="frame-10">
-                <div className="frame-11">
-                  <div className="frame-12">
-                    <div className="basic-jumper-with">product name&nbsp;&nbsp;01</div>
-                    <img className="img" alt="Frame" src="frame-39.svg" />
-                  </div>
-                  <div className="swatches-wrapper">
-                    <div className="swatches">
-                      <div className="main-article">
-                        <div className="link-beige" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="frame-wrapper">
-                  <div className="frame-13">
-                    <div className="text-wrapper-9">$140.00</div>
-                    <div className="text-wrapper-10">$220.00</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="product-desktop">
-              <div className="main-article-link">
-                <div className="label">
-                  <div className="label-2">
-                    <div className="text-wrapper-8">New Arrival</div>
-                  </div>
-                </div>
-                <img className="image-3" alt="Image" src="image-2.svg" />
-              </div>
-              <div className="frame-10">
-                <div className="frame-11">
-                  <div className="frame-12">
-                    <div className="basic-jumper-with">product name&nbsp;&nbsp;01</div>
-                    <img className="img" alt="Frame" src="frame-39-2.svg" />
-                  </div>
-                  <div className="swatches-wrapper">
-                    <div className="swatches">
-                      <div className="main-article">
-                        <div className="link-beige" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="frame-wrapper">
-                  <div className="frame-13">
-                    <div className="text-wrapper-9">$140.00</div>
-                    <div className="text-wrapper-10">$220.00</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="product-desktop">
-              <div className="main-article-link">
-                <div className="label">
-                  <div className="label-2">
-                    <div className="text-wrapper-8">New Arrival</div>
-                  </div>
-                </div>
-                <img className="image-4" alt="Image" src="image-3.svg" />
-              </div>
-              <div className="frame-10">
-                <div className="frame-11">
-                  <div className="frame-12">
-                    <div className="basic-jumper-with">product name&nbsp;&nbsp;01</div>
-                    <img className="img" alt="Frame" src="frame-39-3.svg" />
-                  </div>
-                  <div className="swatches-wrapper">
-                    <div className="swatches">
-                      <div className="main-article">
-                        <div className="link-beige" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="frame-wrapper">
-                  <div className="frame-13">
-                    <div className="text-wrapper-9">$140.00</div>
-                    <div className="text-wrapper-10">$220.00</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="product-desktop">
-              <div className="main-article-link">
-                <div className="label">
-                  <div className="label-2">
-                    <div className="text-wrapper-8">New Arrival</div>
-                  </div>
-                </div>
-                <img className="image-5" alt="Image" src="image-4.svg" />
-              </div>
-              <div className="frame-10">
-                <div className="frame-11">
-                  <div className="frame-12">
-                    <div className="basic-jumper-with">product name&nbsp;&nbsp;01</div>
-                    <img className="img" alt="Frame" src="frame-39-4.svg" />
-                  </div>
-                  <div className="swatches-wrapper">
-                    <div className="swatches">
-                      <div className="main-article">
-                        <div className="link-beige" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="frame-wrapper">
-                  <div className="frame-13">
-                    <div className="text-wrapper-9">$140.00</div>
-                    <div className="text-wrapper-10">$220.00</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="products">
-            <div className="product-desktop">
-              <div className="main-article-link">
-                <div className="label">
-                  <div className="label-2">
-                    <div className="text-wrapper-8">New Arrival</div>
-                  </div>
-                </div>
-                <img className="image-6" alt="Image" src="image-5.svg" />
-              </div>
-              <div className="frame-10">
-                <div className="frame-11">
-                  <div className="frame-12">
-                    <div className="basic-jumper-with">product name&nbsp;&nbsp;01</div>
-                    <img className="img" alt="Frame" src="frame-39-5.svg" />
-                  </div>
-                  <div className="swatches-wrapper">
-                    <div className="swatches">
-                      <div className="main-article">
-                        <div className="link-beige" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="frame-wrapper">
-                  <div className="frame-13">
-                    <div className="text-wrapper-9">$140.00</div>
-                    <div className="text-wrapper-10">$220.00</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="product-desktop">
-              <div className="main-article-link">
-                <div className="label">
-                  <div className="label-2">
-                    <div className="text-wrapper-8">New Arrival</div>
-                  </div>
-                </div>
-                <img className="image-7" alt="Image" src="image-6.svg" />
-              </div>
-              <div className="frame-10">
-                <div className="frame-11">
-                  <div className="frame-12">
-                    <div className="basic-jumper-with">product name&nbsp;&nbsp;01</div>
-                    <img className="img" alt="Frame" src="frame-39-6.svg" />
-                  </div>
-                  <div className="swatches-wrapper">
-                    <div className="swatches">
-                      <div className="main-article">
-                        <div className="link-beige" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="frame-wrapper">
-                  <div className="frame-13">
-                    <div className="text-wrapper-9">$140.00</div>
-                    <div className="text-wrapper-10">$220.00</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="product-desktop">
-              <div className="main-article-link">
-                <div className="label">
-                  <div className="label-2">
-                    <div className="text-wrapper-8">New Arrival</div>
-                  </div>
-                </div>
-                <img className="image-8" alt="Image" src="image-7.svg" />
-              </div>
-              <div className="frame-10">
-                <div className="frame-11">
-                  <div className="frame-12">
-                    <div className="basic-jumper-with">product name&nbsp;&nbsp;01</div>
-                    <img className="img" alt="Frame" src="frame-39-7.svg" />
-                  </div>
-                  <div className="swatches-wrapper">
-                    <div className="swatches">
-                      <div className="main-article">
-                        <div className="link-beige" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="frame-wrapper">
-                  <div className="frame-13">
-                    <div className="text-wrapper-9">$140.00</div>
-                    <div className="text-wrapper-10">$220.00</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="product-desktop">
-              <div className="main-article-link">
-                <div className="label">
-                  <div className="label-2">
-                    <div className="text-wrapper-8">New Arrival</div>
-                  </div>
-                </div>
-                <img className="image-9" alt="Image" src="image-8.svg" />
-              </div>
-              <div className="frame-10">
-                <div className="frame-11">
-                  <div className="frame-12">
-                    <div className="basic-jumper-with">product name&nbsp;&nbsp;01</div>
-                    <img className="img" alt="Frame" src="frame-39-8.svg" />
-                  </div>
-                  <div className="swatches-wrapper">
-                    <div className="swatches">
-                      <div className="main-article">
-                        <div className="link-beige" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                      <div className="link-black-wrapper">
-                        <div className="link-black" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="frame-wrapper">
-                  <div className="frame-13">
-                    <div className="text-wrapper-9">$140.00</div>
-                    <div className="text-wrapper-10">$220.00</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Product Cards */}
           </div>
         </div>
         <img className="line-2" alt="Line" src="line-318.svg" />
@@ -453,3 +144,5 @@ export const HomeScreen = () => {
     </div>
   );
 };
+
+
