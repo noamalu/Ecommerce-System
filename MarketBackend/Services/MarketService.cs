@@ -447,6 +447,188 @@ namespace MarketBackend.Services
                 return Response<List<PurchaseResultDto>>.FromError(e.Message);
             }
         }
+        public Response RemovePolicy (int clientId, int storeId, int policyID,string type)
+        {
+            try
+            {
+                marketManagerFacade.RemovePolicy(clientId, storeId, policyID, type);
+                logger.Info($"Remove policy {policyID} for store {storeId} succeed.");
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in removing policy {policyID} for store {storeId}. Error message: {e.Message}");
+                return new Response(e.Message);
+            }
+        }
+        public Response AddSimpleRule(int clientId, int storeId,string subject)
+        {
+            try
+            {
+                marketManagerFacade.AddSimpleRule(clientId, storeId, subject);
+                logger.Info($"Add simple rule for store {storeId} succeed.");
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in adding simple rule for store {storeId}. Error message: {e.Message}");
+                return new Response(e.Message);
+            }
+        }
+        public Response AddQuantityRule(int clientId, int storeId, string subject, int minQuantity, int maxQuantity)
+        {
+            try
+            {
+                marketManagerFacade.AddQuantityRule(clientId, storeId, subject, minQuantity, maxQuantity);
+                logger.Info($"Add quantity rule for store {storeId} succeed.");
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in adding quantity rule for store {storeId}. Error message: {e.Message}");
+                return new Response(e.Message);
+            }
+        }
+        public Response AddTotalPriceRule(int clientId, int storeId, string subject, int targetPrice)
+        {
+            try
+            {
+                marketManagerFacade.AddTotalPriceRule(clientId, storeId, subject, targetPrice);
+                logger.Info($"Add total price rule for store {storeId} succeed.");
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in adding total price rule for store {storeId}. Error message: {e.Message}");
+                return new Response(e.Message);
+            }
+        }
+        public Response AddCompositeRule(int clientId, int storeId, int Operator, List<int> rules)
+        {
+            try
+            {
+                marketManagerFacade.AddCompositeRule(clientId, storeId, Operator, rules);
+                logger.Info($"Add composite rule for store {storeId} succeed.");
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in adding composite rule for store {storeId}. Error message: {e.Message}");
+                return new Response(e.Message);
+            }
+        }
+        public Response UpdateRuleSubject(int clientId, int storeId, int ruleId, string subject)
+        {
+            try
+            {
+                marketManagerFacade.UpdateRuleSubject(clientId, storeId, ruleId, subject);
+                logger.Info($"Update rule subject for rule {ruleId} in store {storeId} succeed.");
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in updating rule subject for rule {ruleId} in store {storeId}. Error message: {e.Message}");
+                return new Response(e.Message);
+            }
+        }
+        public Response UpdateRuleQuantity(int clientId, int storeId, int ruleId, int minQuantity, int maxQuantity)
+        {
+            try
+            {
+                marketManagerFacade.UpdateRuleQuantity(clientId, storeId, ruleId, minQuantity, maxQuantity);
+                logger.Info($"Update rule quantity for rule {ruleId} in store {storeId} succeed.");
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in updating rule quantity for rule {ruleId} in store {storeId}. Error message: {e.Message}");
+                return new Response(e.Message);
+            }
+        }
+        public Response UpdateRuleTargetPrice(int clientId, int storeId, int ruleId, int targetPrice)
+        {
+            try
+            {
+                marketManagerFacade.UpdateRuleTargetPrice(clientId, storeId, ruleId, targetPrice);
+                logger.Info($"Update rule target price for rule {ruleId} in store {storeId} succeed.");
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in updating rule target price for rule {ruleId} in store {storeId}. Error message: {e.Message}");
+                return new Response(e.Message);
+            }
+        }
+        public Response UpdateCompositeOperator(int clientId, int storeId, int ruleId, int Operator)
+        {
+            try
+            {
+                marketManagerFacade.UpdateCompositeOperator(clientId, storeId, ruleId, Operator);
+                logger.Info($"Update composite operator for rule {ruleId} in store {storeId} succeed.");
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in updating composite operator for rule {ruleId} in store {storeId}. Error message: {e.Message}");
+                return new Response(e.Message);
+            }
+        }
+        public Response UpdateCompositeRules(int clientId, int storeId, int ruleId, List<int> rules)
+        {
+            try
+            {
+                marketManagerFacade.UpdateCompositeRules(clientId, storeId, ruleId, rules);
+                logger.Info($"Update composite rules for rule {ruleId} in store {storeId} succeed.");
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in updating composite rules for rule {ruleId} in store {storeId}. Error message: {e.Message}");
+                return new Response(e.Message);
+            }
+        }
+        public Response AddPurchasePolicy(int clientId, int storeId, DateTime expirationDate, string subject, int ruleId)
+        {
+            try
+            {
+                marketManagerFacade.AddPurchasePolicy(clientId, storeId, expirationDate, subject, ruleId);
+                logger.Info($"Add purchase policy for store {storeId} succeed.");
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in adding purchase policy for store {storeId}. Error message: {e.Message}");
+                return new Response(e.Message);
+            }
+        }
+        public Response AddDiscountPolicy(int clientId, int storeId, DateTime expirationDate, string subject, int ruleId, double precentage)
+        {
+            try
+            {
+                marketManagerFacade.AddDiscountPolicy(clientId, storeId, expirationDate, subject, ruleId, precentage);
+                logger.Info($"Add discount policy for store {storeId} succeed.");
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in adding discount policy for store {storeId}. Error message: {e.Message}");
+                return new Response(e.Message);
+            }
+        }
+        public Response AddCompositePolicy(int clientId, int storeId, DateTime expirationDate, string subject, int Operator, List<int> policies)
+        {
+            try
+            {
+                marketManagerFacade.AddCompositePolicy(clientId, storeId, expirationDate, subject, Operator, policies);
+                logger.Info($"Add composite policy for store {storeId} succeed.");
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in adding composite policy for store {storeId}. Error message: {e.Message}");
+                return new Response(e.Message);
+            }
+        }
 
 
     }
