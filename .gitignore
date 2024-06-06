@@ -596,3 +596,7 @@ Ecommerce-System.sln
 # End of https://www.toptal.com/developers/gitignore/api/csharp,visualstudiocode,visualstudio
 
 Ecommerce-System.sln
+EcommerceUI/ecommerceUI/package.json
+EcommerceUI/ecommerceUI/package-lock.json
+EcommerceUI/ecommerceUI/package.json
+EcommerceUI/ecommerceUI/package-lock.json

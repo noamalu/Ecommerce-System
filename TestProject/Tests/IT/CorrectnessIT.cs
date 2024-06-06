@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.IO.Compression;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Models;
@@ -132,10 +133,9 @@ namespace MarketBackend.Tests.IT
                         }
                         catch (Exception ex)
                         {
-                            // Handle exception here (e.g., log error)
                             Console.WriteLine($"Purchase failed for user {userId}: {ex.Message}");
-                        }                        
-                    }
+                        }    
+                    }                 
                 }));
             }
 
@@ -143,13 +143,10 @@ namespace MarketBackend.Tests.IT
             threads.ForEach(t => t.Start());
             threads.ForEach(t => t.Join());
 
-            // Check that only one product remains in the shop
-            int expectedInventory = 0;
-            // Assert.AreEqual(expectedInventory, product._quantity, "Shop should have only 0 products remaining");
             Dictionary<int, Basket> basket1 = mem1.Cart.GetBaskets();
             Dictionary<int, Basket> basket2 = mem2.Cart.GetBaskets();
 
-            Assert.IsTrue(basket1[storeId].IsEmpty() || basket2[storeId].IsEmpty());
+            Assert.IsTrue(basket1.Count == 0 || basket2.Count == 0);
 
         }
 
@@ -159,24 +156,30 @@ namespace MarketBackend.Tests.IT
             Client mem1 = clientManager.GetClientById(userId);
             Product product = marketManagerFacade.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, 1, false);
             Client mem2 = clientManager.GetClientById(userId);
-            // Create multiple threads that add and remove products from the shop
-            Boolean thorwnExeption  = false;
+            marketManagerFacade.AddToCart(userId, storeId, productID1, 1);
+            bool thorwnExeptionStore  = false;
+            bool thorwnExeptionClient = false;
+
             var threads = new List<Thread>
             {
+
                 new Thread(() =>
                 {
-                    marketManagerFacade.RemoveProduct(storeId, mem1.Id, productID1);
+                    try
+                    {
+                        marketManagerFacade.RemoveProduct(storeId, mem1.Id, productID1);
+                    }catch{
+                        thorwnExeptionStore = true;
+                    }
                         
                 }),
                 new Thread(() =>
                 {
                     try{
-                        marketManagerFacade.AddToCart(userId, storeId, productID1, 1);
-                        Thread.Sleep(1000);
                         marketManagerFacade.PurchaseCart(mem2.Id, paymentDetails, shippingDetails);
 
                     }catch{
-                        thorwnExeption = true;
+                        thorwnExeptionClient = true;
                     }
                     }),
             };
@@ -184,7 +187,11 @@ namespace MarketBackend.Tests.IT
             threads.ForEach(t => t.Start());
             threads.ForEach(t => t.Join());
 
-            Assert.AreEqual(true, thorwnExeption);
+            Assert.IsTrue(thorwnExeptionStore || thorwnExeptionClient);
+            Assert.IsFalse(thorwnExeptionStore && thorwnExeptionClient);
+            Dictionary<int, Basket> basket = mem2.Cart.GetBaskets();
+            Assert.IsTrue((basket.Count == 1 && thorwnExeptionClient) || (basket.Count == 0 && thorwnExeptionStore));
+            
         }
 
         [TestMethod]
@@ -200,21 +207,44 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.Register(userId3, userName3, userPassword, email1, userAge);
             marketManagerFacade.LoginClient(userId3, userName3, userPassword);
             userId3 = marketManagerFacade.GetMemberIDrByUserName(userName);
-            Boolean thorwnExeption  = false;
-            var threads = new List<Thread>();
-            foreach (int userId in new int[]{mem1.Id, mem2.Id})
+            bool thorwnExeption  = false;
+            ConcurrentBag<bool> results = new ConcurrentBag<bool>();
+            var threads = new List<Thread>()
             {
-                try{
-                    marketManagerFacade.AddManger(userId, storeId, userId3);
-                }catch{
-                    thorwnExeption  = true;
-                }
-                
-            }
+                new Thread(() =>
+                {
+                    try
+                    {
+                        marketManagerFacade.AddManger(userId, storeId, userId3);
+                        results.Add(true);
+                    }
+                    catch{
+                        thorwnExeption  = true;
+                        results.Add(false);
+                    }
+                }),
+                new Thread(() =>
+                {
+                    try
+                    {
+                        marketManagerFacade.AddManger(userId2, storeId, userId3);
+                        results.Add(true);
+                    }
+                    catch{
+                        thorwnExeption  = true;
+                        results.Add(false);
+                    }
+                })  
+            };
             threads.ForEach(t => t.Start());
             threads.ForEach(t => t.Join());
+            int successCount = results.Count(r => r == true);
+            int exceptionCount = results.Count(r => r == false);
+            Store store = marketManagerFacade.GetStore(storeId);
             Assert.AreEqual(true, thorwnExeption);
-            
+            Assert.AreEqual(1, successCount, "Exactly one thread should succeed in adding the manager.");
+            Assert.AreEqual(1, exceptionCount, "Exactly one thread should throw an exception.");
+            Assert.IsTrue(store.roles.ContainsKey(userId));
         }
     }
 }

@@ -12,13 +12,13 @@ namespace MarketBackend.DAL
 {
     public class RoleRepositoryRAM : IRoleRepository
     {
-        public ConcurrentDictionary<int, Dictionary<int, Role>> roles; //<storeId, <memberId, Role>>
+        public ConcurrentDictionary<int, ConcurrentDictionary<int, Role>> roles; //<storeId, <memberId, Role>>
         private static RoleRepositoryRAM roleRepositoryRAM = null;
         
 
         private RoleRepositoryRAM()
         {
-            roles = new ConcurrentDictionary<int, Dictionary<int, Role>>();
+            roles = new ConcurrentDictionary<int, ConcurrentDictionary<int, Role>>();
         }
 
         public static RoleRepositoryRAM GetInstance()
@@ -51,11 +51,11 @@ namespace MarketBackend.DAL
         {
             if (!roles.ContainsKey(entity.storeId))
             {
-                roles[entity.storeId] = new Dictionary<int, Role>();
+                roles[entity.storeId] = new ConcurrentDictionary<int, Role>();
                 roles[entity.storeId][entity.memberId] = entity;
             }
             else
-                roles[entity.storeId].Add(entity.memberId, entity);
+                roles[entity.storeId].TryAdd(entity.memberId, entity);
         }
         public IEnumerable<Role> getAll()
         {
@@ -72,14 +72,14 @@ namespace MarketBackend.DAL
         {
             if (!roles.ContainsKey(entity.storeId) && roles[entity.storeId].ContainsKey(entity.memberId))
                 throw new KeyNotFoundException($"member with ID {entity.memberId} at store with ID {entity.storeId} not found.");
-            roles[entity.storeId].Remove(entity.memberId);
+            roles[entity.storeId].TryRemove(new KeyValuePair<int, Role>(entity.memberId, entity));
         }
 
-        public Dictionary<int, Role> getShopRoles(int storeId)
+        public ConcurrentDictionary<int, Role> getShopRoles(int storeId)
         {
             if (!roles.ContainsKey(storeId))
                 // throw new KeyNotFoundException($"store with ID {storeId} not found.");
-                return new Dictionary<int, Role>();
+                return new ConcurrentDictionary<int, Role>();
             return roles[storeId];
         }
     }

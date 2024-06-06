@@ -29,7 +29,7 @@ namespace MarketBackend.Domain.Market_Client
          public SynchronizedCollection<Purchase> _purchases {get; set;}
          public DiscountPolicyManager _discountPolicyManager {get; set;}
          public PurchasePolicyManager _purchasePolicyManager {get; set;}
-        public Dictionary<int, Role> roles {get; set;}
+        public ConcurrentDictionary<int, Role> roles {get; set;}
          public long _productIdCounter {get; set;}
         public int _purchaseIdCounter {get; set;}
 
@@ -315,7 +315,7 @@ namespace MarketBackend.Domain.Market_Client
         public void AddStaffMember(int roleUserId ,Role role, int userId){
             if ((getRole(userId)!=null && getRole(userId).canAddStaffMember(role.getRoleName())) || (role.getRoleName() == RoleName.Founder && !checkForFounders() ))
             {
-                roles.Add(roleUserId, role);
+                roles.TryAdd(roleUserId, role);
                 Event e = new AddAppointmentEvent(this, userId, roleUserId, role);
                 _eventManager.NotifySubscribers(e);
                 //add to active user appointees list the newly appointed staff member
@@ -337,7 +337,7 @@ namespace MarketBackend.Domain.Market_Client
             {
                 if (roles.ContainsKey(roleUserId))
                 {
-                    roles.Remove(roleUserId);
+                    roles.TryRemove(new KeyValuePair<int, Role>(roleUserId, roles[roleUserId]));
                     Event e = new RemoveAppointmentEvent(this, userId, roleUserId);
                     _eventManager.NotifySubscribers(e);
                     //remove from active user appointees list the removed staff member

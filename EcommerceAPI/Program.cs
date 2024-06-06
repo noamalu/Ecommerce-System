@@ -40,7 +40,17 @@ static string GetLocalIPAddress()
 builder.Logging.ClearProviders(); // Clear all default logging providers
 // builder.Logging.AddFile("logs/app.log"); // Specify the log file path
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder.WithOrigins("http://localhost:5173")  // Replace with your actual origin
+                           .AllowAnyHeader()
+                           .AllowAnyMethod());
+});
+
 var app = builder.Build();
+
+app.UseCors("AllowSpecificOrigin");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
