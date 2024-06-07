@@ -11,10 +11,10 @@ namespace MarketBackend.Services
     {
         private static MarketService _marketService = null;
         private MarketManagerFacade marketManagerFacade;
-        private Logger logger;
+        // private Logger logger;
         private MarketService(IShippingSystemFacade shippingSystemFacade, IPaymentSystemFacade paymentSystem){
             marketManagerFacade = MarketManagerFacade.GetInstance(shippingSystemFacade, paymentSystem);
-            logger = MyLogger.GetLogger();
+            // logger = MyLogger.GetLogger();
         }
 
         public static MarketService GetInstance(IShippingSystemFacade shippingSystemFacade, IPaymentSystemFacade paymentSystem){
@@ -34,12 +34,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.AddManger(activeId, storeId, toAddId);
-                logger.Info($"client {activeId} added {toAddId} as manager.");
+                // logger.Info($"client {activeId} added {toAddId} as manager.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in adding {toAddId} by {activeId} as a manager. Error message: {e.Message}");
+                // logger.Error($"Error in adding {toAddId} by {activeId} as a manager. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -49,12 +49,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.AddOwner(activeId, storeId, toAddId);
-                logger.Info($"client {activeId} added {toAddId} as owner.");
+                // logger.Info($"client {activeId} added {toAddId} as owner.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in adding {toAddId} by {activeId} as a owner. Error message: {e.Message}");
+                // logger.Error($"Error in adding {toAddId} by {activeId} as a owner. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -64,12 +64,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.AddPermission(activeId, storeId, toAddId, permission);
-                logger.Info($"Client {activeId} added permission {permission} to client {toAddId} in store {storeId}.");
+                // logger.Info($"Client {activeId} added permission {permission} to client {toAddId} in store {storeId}.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in adding permission {permission} by client {activeId} to client {toAddId} in store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in adding permission {permission} by client {activeId} to client {toAddId} in store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -79,12 +79,12 @@ namespace MarketBackend.Services
             try
             {
                 var product = marketManagerFacade.AddProduct(storeId, userId, name, sellMethod, description, price, category, quantity, ageLimit);
-                logger.Info($"Client {userId} added product {name} store {storeId} with sellmethod {sellMethod}, description {description}, category {category}, price {price}, quantity {quantity}, ageLimit {ageLimit}.");
+                // logger.Info($"Client {userId} added product {name} store {storeId} with sellmethod {sellMethod}, description {description}, category {category}, price {price}, quantity {quantity}, ageLimit {ageLimit}.");
                 return Response<int>.FromValue(product._productid);
             }
             catch (Exception e)
             {
-                logger.Error($"Error in adding product {name} to store {storeId} by client {userId}, with  sellmethod {sellMethod}, description {description}, category {category}, price {price}, quantity {quantity}, ageLimit {ageLimit}. Error message: {e.Message}");
+                // logger.Error($"Error in adding product {name} to store {storeId} by client {userId}, with  sellmethod {sellMethod}, description {description}, category {category}, price {price}, quantity {quantity}, ageLimit {ageLimit}. Error message: {e.Message}");
                 return Response<int>.FromError(e.Message);
             }
         }
@@ -94,12 +94,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.CloseStore(clientId, storeId);
-                logger.Info($"Client {clientId} closed store {storeId}");
+                // logger.Info($"Client {clientId} closed store {storeId}");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in closing store {storeId} by client {clientId}. Error message: {e.Message}");
+                // logger.Error($"Error in closing store {storeId} by client {clientId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -109,12 +109,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.EditPurchasePolicy(storeId);
-                logger.Info($"Purchase policy was edited in store {storeId}");
+                // logger.Info($"Purchase policy was edited in store {storeId}");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in editing purchase policy in store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in editing purchase policy in store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -124,12 +124,12 @@ namespace MarketBackend.Services
             try
             {
                 Member founder = marketManagerFacade.GetFounder(storeId);
-                logger.Info($"Founder for store {storeId} got.");
+                // logger.Info($"Founder for store {storeId} got.");
                 return Response<Member>.FromValue(founder);
             }
             catch (Exception e)
             {
-                logger.Error($"Error in getting founfer for store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in getting founfer for store {storeId}. Error message: {e.Message}");
                 return Response<Member>.FromError(e.Message);
             }
         }
@@ -139,12 +139,12 @@ namespace MarketBackend.Services
             try
             {
                 List<Member> managers = marketManagerFacade.GetMangers(storeId);
-                logger.Info($"Managers for store {storeId} got.");
+                // logger.Info($"Managers for store {storeId} got.");
                 return Response<List<Member>>.FromValue(managers);
             }
             catch (Exception e)
             {
-                logger.Error($"Error in getting managers for store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in getting managers for store {storeId}. Error message: {e.Message}");
                 return Response<List<Member>>.FromError(e.Message);
             }
         }
@@ -154,12 +154,12 @@ namespace MarketBackend.Services
             try
             {
                 List<Member> owners = marketManagerFacade.GetOwners(storeId);
-                logger.Info($"Owners for store {storeId} got.");
+                // logger.Info($"Owners for store {storeId} got.");
                 return Response<List<Member>>.FromValue(owners);
             }
             catch (Exception e)
             {
-                logger.Error($"Error in getting owners for store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in getting owners for store {storeId}. Error message: {e.Message}");
                 return Response<List<Member>>.FromError(e.Message);
             }
         }
@@ -169,12 +169,12 @@ namespace MarketBackend.Services
             try
             {
                 bool ans = marketManagerFacade.IsAvailable(productId);
-                logger.Info($"product {productId} available: {ans}.");
+                // logger.Info($"product {productId} available: {ans}.");
                 return Response<bool>.FromValue(ans);
             }
             catch (Exception e)
             {
-                logger.Error($"Error in checking available of product {productId}. Error message: {e.Message}");
+                // logger.Error($"Error in checking available of product {productId}. Error message: {e.Message}");
                 return Response<bool>.FromError(e.Message);
             }
         }
@@ -184,12 +184,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.OpenStore(clientId, storeId);
-                logger.Info($"client {clientId} opened store {storeId}.");
+                // logger.Info($"client {clientId} opened store {storeId}.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in open store {storeId} by client {clientId}. Error message: {e.Message}");
+                // logger.Error($"Error in open store {storeId} by client {clientId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -199,12 +199,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.RemoveManger(activeId, storeId, toRemoveId);
-                logger.Info($"client {activeId} removed manager of client {toRemoveId} in store {storeId}.");
+                // logger.Info($"client {activeId} removed manager of client {toRemoveId} in store {storeId}.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in removing manager of client {toRemoveId} by client {activeId} in store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in removing manager of client {toRemoveId} by client {activeId} in store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -214,12 +214,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.RemoveOwner(activeId, storeId, toRemoveId);
-                logger.Info($"client {activeId} removed owner of client {toRemoveId} in store {storeId}.");
+                // logger.Info($"client {activeId} removed owner of client {toRemoveId} in store {storeId}.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in removing owner of client {toRemoveId} by client {activeId} in store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in removing owner of client {toRemoveId} by client {activeId} in store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -244,12 +244,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.RemoveProduct(storeId, userId, productId);
-                logger.Info($"Client {userId} removed product {productId} from store {storeId}.");
+                // logger.Info($"Client {userId} removed product {productId} from store {storeId}.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in removing product {productId} from store {storeId} by client {userId}. Error message: {e.Message}");
+                // logger.Error($"Error in removing product {productId} from store {storeId} by client {userId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -259,12 +259,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.RemoveStaffMember(storeId, activeId, role, toRemoveId);
-                logger.Info($"client {activeId} removed role {role} for client {toRemoveId} in store {storeId}");
+                // logger.Info($"client {activeId} removed role {role} for client {toRemoveId} in store {storeId}");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in removing role {role} for client {toRemoveId} by client {activeId} in store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in removing role {role} for client {toRemoveId} by client {activeId} in store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -274,12 +274,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.AddStaffMember(storeId, activeId, role, toAddId);
-                logger.Info($"client {activeId} added role {role} for client {toAddId} in store {storeId}");
+                // logger.Info($"client {activeId} added role {role} for client {toAddId} in store {storeId}");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in adding role {role} for client {toAddId} by client {activeId} in store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in adding role {role} for client {toAddId} by client {activeId} in store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -289,12 +289,12 @@ namespace MarketBackend.Services
         //     try
         //     {
         //         marketManagerFacade.UpdateProductDiscount(productId, discount);
-        //         logger.Info($"Product {productId} discount was updated to {discount}.");
+                // logger.Info($"Product {productId} discount was updated to {discount}.");
         //         return new Response();
         //     }
         //     catch (Exception e)
         //     {
-        //         logger.Error($"Error in updating product {productId} discount to {discount}. Error message: {e.Message}");
+                // logger.Error($"Error in updating product {productId} discount to {discount}. Error message: {e.Message}");
         //         return new Response(e.Message);
         //     }
         // }
@@ -304,12 +304,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.UpdateProductPrice(storeId, userId, productId, price);
-                logger.Info($"Product {productId} price was updated to {price}.");
+                // logger.Info($"Product {productId} price was updated to {price}.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in updating product {productId} price to {price}. Error message: {e.Message}");
+                // logger.Error($"Error in updating product {productId} price to {price}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -319,12 +319,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.UpdateProductQuantity(storeId, userId,productId, quantity);
-                logger.Info($"Product {productId} quantity was updated to {quantity}.");
+                // logger.Info($"Product {productId} quantity was updated to {quantity}.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in updating product {productId} quantoty to {quantity}. Error message: {e.Message}");
+                // logger.Error($"Error in updating product {productId} quantoty to {quantity}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -334,12 +334,12 @@ namespace MarketBackend.Services
             try
             {
                 HashSet<Product> products = marketManagerFacade.SearchByKeyWords(keywords);
-                logger.Info($"Search by keyWords {keywords} succeed.");
+                // logger.Info($"Search by keyWords {keywords} succeed.");
                 return Response<HashSet<Product>>.FromValue(products);
             }
             catch (Exception e)
             {
-                logger.Error($"Error in search by keyword {keywords}. Error message: {e.Message}");
+                // logger.Error($"Error in search by keyword {keywords}. Error message: {e.Message}");
                 return Response<HashSet<Product>>.FromError(e.Message);
             }
         }
@@ -350,12 +350,12 @@ namespace MarketBackend.Services
             try
             {
                 HashSet<Product> products = marketManagerFacade.SearchByName(name);
-                logger.Info($"Search by name {name} succeed.");
+                // logger.Info($"Search by name {name} succeed.");
                 return Response<HashSet<Product>>.FromValue(products);
             }
             catch (Exception e)
             {
-                logger.Error($"Error in search by name {name}. Error message: {e.Message}");
+                // logger.Error($"Error in search by name {name}. Error message: {e.Message}");
                 return Response<HashSet<Product>>.FromError(e.Message);
             }
         }
@@ -365,12 +365,12 @@ namespace MarketBackend.Services
             try
             {
                 HashSet<Product> products = marketManagerFacade.SearchByCategory(category);
-                logger.Info($"Search by category {category} succeed.");
+                // logger.Info($"Search by category {category} succeed.");
                 return Response<HashSet<Product>>.FromValue(products);
             }
             catch (Exception e)
             {
-                logger.Error($"Error in search by category {category}. Error message: {e.Message}");
+                // logger.Error($"Error in search by category {category}. Error message: {e.Message}");
                 return Response<HashSet<Product>>.FromError(e.Message);
             }
         }
@@ -379,12 +379,12 @@ namespace MarketBackend.Services
             try
             {
                 string info = marketManagerFacade.GetInfo(storeId);
-                logger.Info($"Info got for store {storeId}");
+                // logger.Info($"Info got for store {storeId}");
                 return Response<string>.FromValue(info);
             }
             catch (Exception e)
             {
-                logger.Error($"Error in getting info for store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in getting info for store {storeId}. Error message: {e.Message}");
                 return Response<string>.FromError(e.Message);
             }
         }
@@ -393,12 +393,12 @@ namespace MarketBackend.Services
             try
             {
                 string info = marketManagerFacade.GetProductInfo(storeId, productId);
-                logger.Info($"Info got for product {productId} in store {storeId}");
+                // logger.Info($"Info got for product {productId} in store {storeId}");
                 return Response<string>.FromValue(info);
             }
             catch (Exception e)
             {
-                logger.Error($"Error in getting info for product {productId} in store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in getting info for product {productId} in store {storeId}. Error message: {e.Message}");
                 return Response<string>.FromError(e.Message);
             }
         }
@@ -408,12 +408,12 @@ namespace MarketBackend.Services
              try
             {
                 marketManagerFacade.PurchaseCart(id, paymentDetails, shippingDetails);
-                logger.Info($"Purchase cart for client {id} succeed.");
+                // logger.Info($"Purchase cart for client {id} succeed.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in purchase cart for client {id}. Error message: {e.Message}");
+                // logger.Error($"Error in purchase cart for client {id}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -423,12 +423,12 @@ namespace MarketBackend.Services
              try
             {
                 marketManagerFacade.AddKeyWord(keyWord, storeId, productId);
-                logger.Info($"Add keyWord for product {productId} in store {storeId} succeed.");
+                // logger.Info($"Add keyWord for product {productId} in store {storeId} succeed.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in Adding keyWord for product {productId} in store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in Adding keyWord for product {productId} in store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -443,7 +443,7 @@ namespace MarketBackend.Services
             }
             catch (Exception e)
             {
-                logger.Error($"Error in getting purchase history for store {storeId}, client {clientId}, Error message: {e.Message}");
+                // logger.Error($"Error in getting purchase history for store {storeId}, client {clientId}, Error message: {e.Message}");
                 return Response<List<PurchaseResultDto>>.FromError(e.Message);
             }
         }

@@ -7,11 +7,13 @@ import { Login } from "./pages/Login"
 import { NavBar } from "./components/NavBar"
 import { Register } from './pages/Register';
 import { Profile } from './pages/Profile';
+import { initSession } from './services/SessionService';
 import { Search } from './pages/Search';
 
 
 
 function App() {
+  initSession();
   const [loggedIn, setLoggedIn] = useState(false)
   const [username, setUsername] = useState('')
 

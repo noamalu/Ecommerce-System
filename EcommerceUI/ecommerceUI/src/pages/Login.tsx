@@ -2,6 +2,7 @@ import React, {Component, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import LoginForm from "../components/LoginForm";
 
 
 interface Login{
@@ -35,10 +36,10 @@ export const Login = (props: { setLoggedIn: (arg0: boolean) => void; setUserName
     return
   }
 
-  if (password.length < 7) {
-    setPasswordError('The password must be 8 characters or longer')
-    return
-  }
+  // if (password.length < 7) {
+  //   setPasswordError('The password must be 8 characters or longer')
+  //   return
+  // }
   
   logIn()
    
@@ -46,30 +47,34 @@ export const Login = (props: { setLoggedIn: (arg0: boolean) => void; setUserName
   
   const logIn = () => {
     
-    fetch('Ecommerce-System/EcommerceUI/ecommerceUI/src/components/HomeScreen.tsx', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({username, password }),
-    })
-      .then((r) => r.json())
-      .then((r) => {
-        if ('success' === r.message) {
-          localStorage.setItem('user', JSON.stringify({ username, token: r.token }))
-          props.setLoggedIn(true)
-          props.setUserName(username)
-          navigate('/')
-        } else {
-          window.alert('Wrong email or password')
-        }
-      })
+    // fetch('Ecommerce-System/EcommerceUI/ecommerceUI/src/components/HomeScreen.tsx', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({username, password }),
+    // })
+    //   .then((r) => r.json())
+    //   .then((r) => {
+    //     if ('success' === r.message) {
+    //       localStorage.setItem('user', JSON.stringify({ username, token: r.token }))
+    //       props.setLoggedIn(true)
+    //       props.setUserName(username)
+    //       navigate('/')
+    //     } else {
+    //       window.alert('Wrong email or password')
+    //     }
+    //   })
   }
 
 
   return (
-    <>
-    <Form.Group className="mb-3">
+    <LoginForm/>
+    
+    );
+}
+
+{/* <Form.Group className="mb-3">
       <Form.Label>Username</Form.Label>
       <Form.Control type="text"
         name="username"
@@ -91,8 +96,7 @@ export const Login = (props: { setLoggedIn: (arg0: boolean) => void; setUserName
     <Button variant="primary" type="submit" onClick={onButtonClick}>
       Login 
     </Button>
-     </> 
-    );
-}
+     </>  */}
+
 
 
