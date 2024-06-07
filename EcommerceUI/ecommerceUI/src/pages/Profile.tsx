@@ -12,10 +12,14 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { ProfileStoreNav } from "../components/ProfileStoreNav";
+import LogoutButton from "../components/LogoutButton";
 
 
+interface ProfileProps {
+    setLoggedIn: (loggedIn: boolean) => void;
+}
 
-export const Profile = () => {
+export const Profile: React.FC<ProfileProps> = ({setLoggedIn}) => {
     
 
     return (
@@ -28,7 +32,7 @@ export const Profile = () => {
                         <Button variant="outline-secondary">Profile option 1</Button>
                         <Button variant="outline-secondary">Profile option 2</Button>
                         <Button variant="outline-secondary">Profile option 3</Button>
-                        <Button variant="outline-secondary">Profile option 4</Button>
+                        <LogoutButton setLoggedIn={setLoggedIn} />
                     </Stack>
                 </Col>
                 
