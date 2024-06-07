@@ -223,9 +223,9 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Client/CreateStore")]
-        public async Task<ObjectResult> OpenStore([Required][FromQuery]int tokenId, [FromRoute] int storeId)
+        public async Task<ObjectResult> CreateStore([Required][FromQuery]int tokenId, [Required][FromBody] StoreDto storeInfo)
         {
-            Response response = await Task.Run(() => _clientService.CreateStore(tokenId, "name","email", "050"));
+            Response response = await Task.Run(() => _clientService.CreateStore(tokenId, storeInfo.Name, storeInfo.Email, storeInfo.PhoneNum));
             if (response.ErrorOccured)
             {
                 var openShopResponse = new ServerResponse<string>
@@ -238,7 +238,7 @@ namespace EcommerceAPI.Controllers
             {
                 var openShopResponse = new ServerResponse<string>
                 {
-                    Value = "open-shop-success",
+                    Value = "create-shop-success",
                 };
                 return Ok(openShopResponse);
             }
