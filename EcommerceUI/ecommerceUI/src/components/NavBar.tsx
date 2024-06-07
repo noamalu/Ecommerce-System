@@ -12,11 +12,13 @@ import Dropdown from 'react-bootstrap/Dropdown';
 
 
 
-interface NavBar {
+interface NavBarProps {
+  loggedIn: boolean;
+  setLoggedIn: (loggedIn: boolean) => void;
 }
 
-export const NavBar: React.FC = () => {
-    const [query, setQuery] = useState('');
+export const NavBar: React.FC<NavBarProps> = ({ loggedIn, setLoggedIn }) => {
+  const [query, setQuery] = useState('');
     const [selectedFilter, setSelectedFilter] = useState('name');
     const navigate = useNavigate();
 
@@ -38,6 +40,7 @@ export const NavBar: React.FC = () => {
     return (
         <Navbar expand="lg" className="bg-body-tertiary" fixed="top">
           <Container fluid>
+          <RiShoppingCart2Line size={30} />
             <Navbar.Brand href="/">Ecommerce</Navbar.Brand>
             <Navbar.Toggle aria-controls="navbarScroll" />
             <Navbar.Collapse id="navbarScroll">
@@ -76,10 +79,13 @@ export const NavBar: React.FC = () => {
               {/* show all the time */}
               <Button variant="outline-info" onClick={() => navigate('/cart')}> <RiShoppingCart2Line size={20} /> </Button>
               {/* show if not logged in */}
-              <Button variant="outline-info" onClick={() => navigate('/login')}>Login</Button>
-              <Button variant="outline-info" onClick={() => navigate('/register')}>Register</Button>
+              {!loggedIn && (
+              <Button variant="outline-info" onClick={() => navigate('/login')}>Login</Button> )}
+              {!loggedIn && (
+              <Button variant="outline-info" onClick={() => navigate('/register')}>Register</Button> )}
               {/* show if logged in */}
-              <Button variant="outline-info" onClick={() => navigate('/profile')}><RiUserLine size={20} /></Button>
+              {loggedIn && (
+              <Button variant="outline-info" onClick={() => navigate('/profile')}><RiUserLine size={20} /></Button>)}
             </Navbar.Collapse>
           </Container>
         </Navbar>

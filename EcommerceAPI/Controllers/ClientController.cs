@@ -219,29 +219,6 @@ namespace EcommerceAPI.Controllers
             {
                 return Ok(ServerResponse<List<ShoppingCartResultDto>>.OkResponse(response.Value));
             }
-        }   
-
-        [HttpPost]
-        [Route("Client/CreateStore")]
-        public async Task<ObjectResult> CreateStore([Required][FromQuery]int tokenId, [Required][FromBody] StoreDto storeInfo)
-        {
-            Response response = await Task.Run(() => _clientService.CreateStore(tokenId, storeInfo.Name, storeInfo.Email, storeInfo.PhoneNum));
-            if (response.ErrorOccured)
-            {
-                var openShopResponse = new ServerResponse<string>
-                {
-                    ErrorMessage = response.ErrorMessage,
-                };
-                return BadRequest(openShopResponse);
-            }
-            else
-            {
-                var openShopResponse = new ServerResponse<string>
-                {
-                    Value = "create-shop-success",
-                };
-                return Ok(openShopResponse);
-            }
-        }             
+        }                
     }
 }

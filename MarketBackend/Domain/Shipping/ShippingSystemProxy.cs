@@ -8,11 +8,11 @@ namespace MarketBackend.Domain.Shipping
 {
     public class ShippingSystemProxy : IShippingSystemFacade
     {
-        private RealShippingSystem? _realShippingSystem;
+        private IShippingSystemFacade? _realShippingSystem;
         public static bool connected;
         private static int fakeTransactionId = 10000;
 
-        public ShippingSystemProxy(RealShippingSystem? realShippingSystem = null)
+        public ShippingSystemProxy(IShippingSystemFacade? realShippingSystem = null)
         {
             _realShippingSystem = realShippingSystem;
             connected = false;

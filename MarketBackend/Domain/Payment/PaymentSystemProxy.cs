@@ -7,11 +7,11 @@ namespace MarketBackend.Domain.Payment
 {
     public class PaymentSystemProxy : IPaymentSystemFacade
     {
-        private readonly RealPaymentSystem? _realPaymentSystem;
+        private readonly IPaymentSystemFacade? _realPaymentSystem;
         public static bool connected;
         private static int fakeTransactionId = 10000;
 
-        public PaymentSystemProxy(RealPaymentSystem realPaymentSystem)
+        public PaymentSystemProxy(IPaymentSystemFacade realPaymentSystem)
         {
             _realPaymentSystem = realPaymentSystem ?? throw new ArgumentNullException(nameof(realPaymentSystem));
             connected = false;

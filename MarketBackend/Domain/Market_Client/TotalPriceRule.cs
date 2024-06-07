@@ -17,7 +17,7 @@ namespace MarketBackend.Domain.Market_Client{
 
         public override bool Predicate(Basket basket)
         {
-            return basket.GetBasketPriceBeforeDiscounts() > _totalPrice;
+            return basket.GetBasketPriceBeforeDiscounts() <= _totalPrice;
         }
 
         public override void Update()

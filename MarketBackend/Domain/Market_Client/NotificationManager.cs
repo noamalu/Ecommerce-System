@@ -60,7 +60,8 @@ namespace MarketBackend.Domain.Market_Client
                 {
                     try{
                         var webSocket = session.Context.WebSocket;
-                        webSocket.Send(json);
+                        if (webSocket?.IsAlive ?? false)
+                            webSocket.Send(json);
                     }catch(Exception)
                     {
                         throw;

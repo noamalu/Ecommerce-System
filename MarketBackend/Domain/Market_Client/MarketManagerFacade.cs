@@ -177,8 +177,8 @@ namespace MarketBackend.Domain.Market_Client
                 Member activeMember = (Member)_clientManager.GetClientById(id);
                 Role role = new Role(new Founder(RoleName.Founder), activeMember, storeId, id);
 
+                store.AddStaffMember(id, role, id); 
                 store.SubscribeStoreOwner(activeMember);
-                store.AddStaffMember(id, role, id);                 
             }
             else
             {
@@ -524,43 +524,43 @@ namespace MarketBackend.Domain.Market_Client
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public int AddSimpleRule(int clientId, int storeId,string subject)
+        public void AddSimpleRule(int clientId, int storeId,string subject)
         {
             _clientManager.CheckMemberIsLoggedIn(clientId);
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
-                return store.AddSimpleRule(clientId, subject);
+                store.AddSimpleRule(clientId, subject);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public int AddQuantityRule(int clientId, int storeId, string subject, int minQuantity, int maxQuantity)
+        public void AddQuantityRule(int clientId, int storeId, string subject, int minQuantity, int maxQuantity)
         {
             _clientManager.CheckMemberIsLoggedIn(clientId);
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
-                return store.AddQuantityRule(clientId, subject, minQuantity, maxQuantity);
+                store.AddQuantityRule(clientId, subject, minQuantity, maxQuantity);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public int AddTotalPriceRule(int clientId, int storeId, string subject, int targetPrice)
+        public void AddTotalPriceRule(int clientId, int storeId, string subject, int targetPrice)
         {
             _clientManager.CheckMemberIsLoggedIn(clientId);
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
-                return store.AddTotalPriceRule(clientId, subject, targetPrice);
+                store.AddTotalPriceRule(clientId, subject, targetPrice);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public int AddCompositeRule(int clientId, int storeId, int Operator, List<int> rules)
+        public void AddCompositeRule(int clientId, int storeId, int Operator, List<int> rules)
         {
             _clientManager.CheckMemberIsLoggedIn(clientId);
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
                 LogicalOperator op = (LogicalOperator)Enum.ToObject(typeof(LogicalOperator), Operator);
-                return store.AddCompositeRule(clientId, op, rules);
+                store.AddCompositeRule(clientId, op, rules);
             }
             else
                 throw new Exception("Store doesn't exist!");
@@ -627,12 +627,12 @@ namespace MarketBackend.Domain.Market_Client
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public int AddDiscountPolicy(int clientId, int storeId, DateTime expirationDate, string subject, int ruleId, double precentage)
+        public void AddDiscountPolicy(int clientId, int storeId, DateTime expirationDate, string subject, int ruleId, double precentage)
         {
             _clientManager.CheckMemberIsLoggedIn(clientId);
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
-                return store.AddDiscountPolicy(clientId, expirationDate, subject, ruleId, precentage);
+                store.AddDiscountPolicy(clientId, expirationDate, subject, ruleId, precentage);
             }
             else
                 throw new Exception("Store doesn't exist!");

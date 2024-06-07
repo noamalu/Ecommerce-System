@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import { initWebSocket } from '../services/NotificationsService';
 
 
 interface FormData {
@@ -46,7 +45,7 @@ const RegistrationForm: React.FC = () => {
     const formErrors = validate();
     if (Object.keys(formErrors).length === 0) {
       try {
-        const tokenId = 1234; //need to chnage token id
+        const tokenId = 123; //need to chnage token id
         const response = await fetch(`https://localhost:7163/api/Client/Guest/Login?tokenId=${tokenId}`, 
         {
           method: 'POST',
@@ -57,8 +56,6 @@ const RegistrationForm: React.FC = () => {
         });
   
         if (response.ok) {
-          const address = `ws://127.0.0.1:4560/${formData.username}-alerts`;
-          initWebSocket(address);
           console.log('Registration successful');
           alert("Registered successfully");
           // Reset form data if needed
