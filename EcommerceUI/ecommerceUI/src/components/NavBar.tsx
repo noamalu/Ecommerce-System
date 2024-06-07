@@ -4,6 +4,8 @@ import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
+import { RiShoppingCart2Line, RiUserLine } from 'react-icons/ri'; // Importing the shopping cart icon
+
 
 interface NavBar {
 }
@@ -12,6 +14,7 @@ export const NavBar: React.FC<NavBar> = () => {
     return (
         <Navbar expand="lg" className="bg-body-tertiary" fixed="top">
           <Container fluid>
+          <RiShoppingCart2Line size={30} />
             <Navbar.Brand href="/">Ecommerce</Navbar.Brand>
             <Navbar.Toggle aria-controls="navbarScroll" />
             <Navbar.Collapse id="navbarScroll">
@@ -43,7 +46,7 @@ export const NavBar: React.FC<NavBar> = () => {
               </Form>
               <Button variant="outline-info" href="/login">Login</Button>
               <Button variant="outline-info" href="/register">Register</Button>
-              <Button variant="outline-info" href="/profile">Profile</Button>
+              <Button variant="outline-info" href="/profile"><RiUserLine size={20} /></Button>
             </Navbar.Collapse>
           </Container>
         </Navbar>
