@@ -14,6 +14,8 @@ namespace MarketBackend.Domain.Shipping
         private readonly HttpClient _httpClient;
         private readonly string _url;
 
+        public RealShippingSystem()
+        {}
         public RealShippingSystem(HttpClient httpClient, string url)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
@@ -42,7 +44,7 @@ namespace MarketBackend.Domain.Shipping
             }
             return false;
         }
-        public int OrderShippment(ShippingDetails details)
+        public virtual int OrderShippment(ShippingDetails details)
         {
           if (_url == null)
                 throw new NotImplementedException();

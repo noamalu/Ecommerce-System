@@ -67,7 +67,7 @@ namespace UnitTests
         // Fails - Test with Mock that the payment system returns -1 when the payment fails due to a missing contact
         public void TestMockedPaymentSystemRejection()
         {
-            var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
+            var mockPaymentSystem = new Mock<RealPaymentSystem>();
             mockPaymentSystem.Setup(ps => ps.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(-1);
             paymentSystem = new PaymentSystemProxy(mockPaymentSystem.Object);
             int transactionId = paymentSystem.Pay(paymentDetails, totalAmount);

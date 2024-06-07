@@ -11,13 +11,15 @@ namespace MarketBackend.Domain.Payment
         private readonly HttpClient _httpClient;
         private readonly string _url;
 
+        public RealPaymentSystem()
+        {}
         public RealPaymentSystem(HttpClient httpClient, string url)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _url = url ?? throw new ArgumentNullException(nameof(url));
         }
 
-        public int Pay(PaymentDetails cardDetails, double totalAmount)
+        public virtual int Pay(PaymentDetails cardDetails, double totalAmount)
         {
             if (_url == null)
                 throw new NotImplementedException();

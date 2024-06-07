@@ -62,10 +62,10 @@ namespace UnitTests
         // Fails - Test with Mock that the shipping system returns -1 when the shippinh fails due to a missing connection
         public void TestMockedShippingSystemRejection()
         {
-            var mockPaymentSystem = new Mock<IShippingSystemFacade>();
-            mockPaymentSystem.Setup(ps => ps.OrderShippment(It.IsAny<ShippingDetails>())).Returns(-1);
+            var mockShippingSystem = new Mock<RealShippingSystem>();
+            mockShippingSystem.Setup(ps => ps.OrderShippment(It.IsAny<ShippingDetails>())).Returns(-1);
 
-            shippingSystem = new ShippingSystemProxy(mockPaymentSystem.Object);
+            shippingSystem = new ShippingSystemProxy(mockShippingSystem.Object);
             int transactionId = shippingSystem.OrderShippment(shippingDetails);
 
             Assert.AreEqual(-1, transactionId);
