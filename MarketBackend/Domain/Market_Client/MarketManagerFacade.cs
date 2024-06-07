@@ -177,8 +177,8 @@ namespace MarketBackend.Domain.Market_Client
                 Member activeMember = (Member)_clientManager.GetClientById(id);
                 Role role = new Role(new Founder(RoleName.Founder), activeMember, storeId, id);
 
+                store.AddStaffMember(id, role, id); 
                 store.SubscribeStoreOwner(activeMember);
-                store.AddStaffMember(id, role, id);                 
             }
             else
             {

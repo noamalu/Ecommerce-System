@@ -21,7 +21,7 @@ function App() {
     <div>
       
       <BrowserRouter>
-        <NavBar />
+        <NavBar loggedIn={false} setLoggedIn={setLoggedIn}/>
         <Routes>
           <Route index element = {<Home/>}/>
           <Route path="/home" element={<Home/>}/>

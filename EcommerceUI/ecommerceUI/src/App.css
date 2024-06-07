@@ -50,10 +50,6 @@ body {
   
 }
 
-.flex {
-  display: flex;
-}
-
 .full-height-row {
   height: 92vh;
   width: 100vw;
