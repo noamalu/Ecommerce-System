@@ -9,7 +9,7 @@ import { Register } from './pages/Register';
 import { Profile } from './pages/Profile';
 import { initSession } from './services/SessionService';
 import { Search } from './pages/Search';
-
+import { Cart } from './pages/Cart';
 
 
 function App() {
@@ -29,6 +29,7 @@ function App() {
           <Route path="/Register" element={<Register/>}/>
           <Route path="/search" element={<Search/>}/>
           <Route path="/profile" element={<Profile setLoggedIn={setLoggedIn}/>}/>
+          <Route path="/cart" element={<Cart/>}/>
         </Routes>
       </BrowserRouter>
     </div>
