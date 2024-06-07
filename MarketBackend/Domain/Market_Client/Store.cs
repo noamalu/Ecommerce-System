@@ -21,7 +21,7 @@ namespace MarketBackend.Domain.Market_Client
          public string _storeName {get; set;}
          public bool _active {get; set;}
          public History _history {get; set;}
-         private ConcurrentDictionary<int, IRule> _rules {get; set;}
+         public ConcurrentDictionary<int, IRule> _rules {get; set;}
 
          private StoreRuleFactory _storeRuleFactory {get; set;}
 
@@ -140,13 +140,14 @@ namespace MarketBackend.Domain.Market_Client
         }
         }
 
-        public void AddDiscountPolicy(int userId, DateTime expirationDate, string subject, int ruledId, double precantage)
+        public int AddDiscountPolicy(int userId, DateTime expirationDate, string subject, int ruledId, double precantage)
         {
            
              if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
                 {
                     IRule rule = GetRule(ruledId);
                     _discountPolicyManager.AddPolicy(_policyIdFactory++, expirationDate, CastProductOrCategory(subject), rule, precantage);
+                    return rule.Id;
                 }
                 else throw new Exception($"Permission exception for userId: {userId}");
             
@@ -225,7 +226,6 @@ namespace MarketBackend.Domain.Market_Client
                     {
                         return new RuleSubject(subject);  
                     }
-                else throw new Exception("could not find subject");
             }
          throw new Exception("could not find subject");
         }
@@ -530,6 +530,9 @@ namespace MarketBackend.Domain.Market_Client
         {
             if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
             {
+                if(minQuantity >= maxQuantity || minQuantity < 0 || maxQuantity < 0){
+                    throw new Exception($"Illegal quantities");
+                }
                 _storeRuleFactory.setFeatures(CastProductOrCategory(subject), minQuantity, maxQuantity);
                 IRule newRule = _storeRuleFactory.makeRule(typeof(QuantityRule));
                 _rules.TryAdd(newRule.Id, newRule);
@@ -544,6 +547,9 @@ namespace MarketBackend.Domain.Market_Client
         {
             if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
             {
+                if(targetPrice < 0){
+                    throw new Exception($"Negtive price.");
+                }
                 _storeRuleFactory.setFeatures(CastProductOrCategory(subject), targetPrice);
                 IRule newRule = _storeRuleFactory.makeRule(typeof(TotalPriceRule));
                 _rules.TryAdd(newRule.Id, newRule);
