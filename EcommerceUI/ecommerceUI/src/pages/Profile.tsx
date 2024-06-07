@@ -11,11 +11,12 @@ import Table from 'react-bootstrap/Table';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
+import { ProfileStoreNav } from "../components/ProfileStoreNav";
 
 
 
 export const Profile = () => {
-    const [num, setNum] = useState(1);
+    
 
     return (
         <>
@@ -30,68 +31,11 @@ export const Profile = () => {
                         <Button variant="outline-secondary">Profile option 4</Button>
                     </Stack>
                 </Col>
+                
                 <Col  className="profile-right">
-                    <Nav variant="tabs" defaultActiveKey="/home">
-                        <Nav.Item>
-                            <Nav.Link href="" onClick={() => setNum(1)}>Store 1</Nav.Link>
-                        </Nav.Item>
-                        <Nav.Item>
-                            <Nav.Link onClick={() => setNum(2)}>Store 2</Nav.Link>
-                        </Nav.Item>
-                    </Nav>
-                    <p> store {num} </p>
-                    <Table striped bordered hover>
-                        <thead>
-                            <tr>
-                            <th>#</th>
-                            <th>name</th>
-                            <th>phone number</th>
-                            <th>role</th>
-                            <th>appointer</th>
-                            <th>permissions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                            <td>1</td>
-                            <td>Mark</td>
-                            <td>+972 52-123-4567</td>
-                            <td>Founder</td>
-                            <td></td>
-                            <td> 
-                                <Dropdown>
-                                <Dropdown.Toggle variant="success" id="dropdown-basic">
-                                    Dropdown Button
-                                </Dropdown.Toggle>
-
-                                <Dropdown.Menu>
-                                    <Dropdown.Item href="#/action-1">
-                                        <Form>
-                                                <div key="default-checkbox" className="mb-3">
-                                                <Form.Check
-                                                    type="checkbox"
-                                                    id="default-checkbox"
-                                                    label="permission 1"
-                                                />
-                                                <Form.Check
-                                                    type="checkbox"
-                                                    id="default-checkbox"
-                                                    label="permission 2"
-                                                />
-                                                <Form.Check
-                                                    type="checkbox"
-                                                    id="default-checkbox"
-                                                    label="permission 3"
-                                                />
-                                                </div>
-                                        </Form>
-                                    </Dropdown.Item>
-                                </Dropdown.Menu>
-                                </Dropdown>
-                            </td>
-                            </tr>
-                        </tbody>
-                        </Table>
+                    
+                    <ProfileStoreNav/>
+                    
                 </Col>
             </Row>
         
