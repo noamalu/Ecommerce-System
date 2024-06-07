@@ -461,60 +461,60 @@ namespace MarketBackend.Services
                 return new Response(e.Message);
             }
         }
-        public Response AddSimpleRule(int clientId, int storeId,string subject)
+        public Response<int> AddSimpleRule(int clientId, int storeId,string subject)
         {
             try
             {
-                marketManagerFacade.AddSimpleRule(clientId, storeId, subject);
+                int rule = marketManagerFacade.AddSimpleRule(clientId, storeId, subject);
                 logger.Info($"Add simple rule for store {storeId} succeed.");
-                return new Response();
+                return Response<int>.FromValue(rule);
             }
             catch (Exception e)
             {
                 logger.Error($"Error in adding simple rule for store {storeId}. Error message: {e.Message}");
-                return new Response(e.Message);
+                return Response<int>.FromError(e.Message);
             }
         }
-        public Response AddQuantityRule(int clientId, int storeId, string subject, int minQuantity, int maxQuantity)
+        public Response<int> AddQuantityRule(int clientId, int storeId, string subject, int minQuantity, int maxQuantity)
         {
             try
             {
-                marketManagerFacade.AddQuantityRule(clientId, storeId, subject, minQuantity, maxQuantity);
+                int rule = marketManagerFacade.AddQuantityRule(clientId, storeId, subject, minQuantity, maxQuantity);
                 logger.Info($"Add quantity rule for store {storeId} succeed.");
-                return new Response();
+                return Response<int>.FromValue(rule);
             }
             catch (Exception e)
             {
                 logger.Error($"Error in adding quantity rule for store {storeId}. Error message: {e.Message}");
-                return new Response(e.Message);
+                return Response<int>.FromError(e.Message);
             }
         }
-        public Response AddTotalPriceRule(int clientId, int storeId, string subject, int targetPrice)
+        public Response<int> AddTotalPriceRule(int clientId, int storeId, string subject, int targetPrice)
         {
             try
             {
-                marketManagerFacade.AddTotalPriceRule(clientId, storeId, subject, targetPrice);
+                int rule = marketManagerFacade.AddTotalPriceRule(clientId, storeId, subject, targetPrice);
                 logger.Info($"Add total price rule for store {storeId} succeed.");
-                return new Response();
+                return Response<int>.FromValue(rule);
             }
             catch (Exception e)
             {
                 logger.Error($"Error in adding total price rule for store {storeId}. Error message: {e.Message}");
-                return new Response(e.Message);
+                return Response<int>.FromError(e.Message);
             }
         }
-        public Response AddCompositeRule(int clientId, int storeId, int Operator, List<int> rules)
+        public Response<int> AddCompositeRule(int clientId, int storeId, int Operator, List<int> rules)
         {
             try
             {
-                marketManagerFacade.AddCompositeRule(clientId, storeId, Operator, rules);
+                int rule = marketManagerFacade.AddCompositeRule(clientId, storeId, Operator, rules);
                 logger.Info($"Add composite rule for store {storeId} succeed.");
-                return new Response();
+                return Response<int>.FromValue(rule);
             }
             catch (Exception e)
             {
                 logger.Error($"Error in adding composite rule for store {storeId}. Error message: {e.Message}");
-                return new Response(e.Message);
+                return Response<int>.FromError(e.Message);
             }
         }
         public Response UpdateRuleSubject(int clientId, int storeId, int ruleId, string subject)
@@ -601,18 +601,18 @@ namespace MarketBackend.Services
                 return new Response(e.Message);
             }
         }
-        public Response AddDiscountPolicy(int clientId, int storeId, DateTime expirationDate, string subject, int ruleId, double precentage)
+        public Response<int> AddDiscountPolicy(int clientId, int storeId, DateTime expirationDate, string subject, int ruleId, double precentage)
         {
             try
             {
-                marketManagerFacade.AddDiscountPolicy(clientId, storeId, expirationDate, subject, ruleId, precentage);
+                int policy = marketManagerFacade.AddDiscountPolicy(clientId, storeId, expirationDate, subject, ruleId, precentage);
                 logger.Info($"Add discount policy for store {storeId} succeed.");
-                return new Response();
+                return Response<int>.FromValue(policy);
             }
             catch (Exception e)
             {
                 logger.Error($"Error in adding discount policy for store {storeId}. Error message: {e.Message}");
-                return new Response(e.Message);
+                return Response<int>.FromError(e.Message);
             }
         }
         public Response AddCompositePolicy(int clientId, int storeId, DateTime expirationDate, string subject, int Operator, List<int> policies)
