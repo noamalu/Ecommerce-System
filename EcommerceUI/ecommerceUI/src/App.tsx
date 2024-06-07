@@ -25,8 +25,8 @@ function App() {
           <Route path="/home" element={<Home/>}/>
           <Route path="/login" element={<Login setLoggedIn={setLoggedIn} setUserName={setUsername} userr={username} />}  />
           <Route path="/Register" element={<Register/>}/>
-          <Route path="/profile" element={<Profile/>}/>
           <Route path="/search" element={<Search/>}/>
+          <Route path="/profile" element={<Profile setLoggedIn={setLoggedIn}/>}/>
         </Routes>
       </BrowserRouter>
     </div>
