@@ -7,6 +7,8 @@ import { Login } from "./pages/Login"
 import { NavBar } from "./components/NavBar"
 import { Register } from './pages/Register';
 import { Profile } from './pages/Profile';
+import { Search } from './pages/Search';
+
 
 
 function App() {
@@ -15,17 +17,18 @@ function App() {
 
   return (
     <div>
-      <NavBar />
+      
       <BrowserRouter>
+        <NavBar />
         <Routes>
           <Route index element = {<Home/>}/>
           <Route path="/home" element={<Home/>}/>
           <Route path="/login" element={<Login setLoggedIn={setLoggedIn} setUserName={setUsername} userr={username} />}  />
           <Route path="/Register" element={<Register/>}/>
           <Route path="/profile" element={<Profile/>}/>
+          <Route path="/search" element={<Search/>}/>
         </Routes>
       </BrowserRouter>
-       
     </div>
   );
 }
