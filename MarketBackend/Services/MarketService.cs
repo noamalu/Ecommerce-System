@@ -452,12 +452,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.RemovePolicy(clientId, storeId, policyID, type);
-                logger.Info($"Remove policy {policyID} for store {storeId} succeed.");
+                // logger.Info($"Remove policy {policyID} for store {storeId} succeed.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in removing policy {policyID} for store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in removing policy {policyID} for store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -466,12 +466,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.AddSimpleRule(clientId, storeId, subject);
-                logger.Info($"Add simple rule for store {storeId} succeed.");
+                // logger.Info($"Add simple rule for store {storeId} succeed.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in adding simple rule for store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in adding simple rule for store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -480,12 +480,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.AddQuantityRule(clientId, storeId, subject, minQuantity, maxQuantity);
-                logger.Info($"Add quantity rule for store {storeId} succeed.");
+                // logger.Info($"Add quantity rule for store {storeId} succeed.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in adding quantity rule for store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in adding quantity rule for store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -494,12 +494,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.AddTotalPriceRule(clientId, storeId, subject, targetPrice);
-                logger.Info($"Add total price rule for store {storeId} succeed.");
+                // logger.Info($"Add total price rule for store {storeId} succeed.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in adding total price rule for store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in adding total price rule for store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -508,12 +508,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.AddCompositeRule(clientId, storeId, Operator, rules);
-                logger.Info($"Add composite rule for store {storeId} succeed.");
+                // logger.Info($"Add composite rule for store {storeId} succeed.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in adding composite rule for store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in adding composite rule for store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -522,12 +522,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.UpdateRuleSubject(clientId, storeId, ruleId, subject);
-                logger.Info($"Update rule subject for rule {ruleId} in store {storeId} succeed.");
+                // logger.Info($"Update rule subject for rule {ruleId} in store {storeId} succeed.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in updating rule subject for rule {ruleId} in store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in updating rule subject for rule {ruleId} in store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -536,12 +536,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.UpdateRuleQuantity(clientId, storeId, ruleId, minQuantity, maxQuantity);
-                logger.Info($"Update rule quantity for rule {ruleId} in store {storeId} succeed.");
+                // logger.Info($"Update rule quantity for rule {ruleId} in store {storeId} succeed.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in updating rule quantity for rule {ruleId} in store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in updating rule quantity for rule {ruleId} in store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -550,12 +550,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.UpdateRuleTargetPrice(clientId, storeId, ruleId, targetPrice);
-                logger.Info($"Update rule target price for rule {ruleId} in store {storeId} succeed.");
+                // logger.Info($"Update rule target price for rule {ruleId} in store {storeId} succeed.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in updating rule target price for rule {ruleId} in store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in updating rule target price for rule {ruleId} in store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -564,12 +564,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.UpdateCompositeOperator(clientId, storeId, ruleId, Operator);
-                logger.Info($"Update composite operator for rule {ruleId} in store {storeId} succeed.");
+                // logger.Info($"Update composite operator for rule {ruleId} in store {storeId} succeed.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in updating composite operator for rule {ruleId} in store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in updating composite operator for rule {ruleId} in store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -578,12 +578,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.UpdateCompositeRules(clientId, storeId, ruleId, rules);
-                logger.Info($"Update composite rules for rule {ruleId} in store {storeId} succeed.");
+                // logger.Info($"Update composite rules for rule {ruleId} in store {storeId} succeed.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in updating composite rules for rule {ruleId} in store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in updating composite rules for rule {ruleId} in store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -592,12 +592,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.AddPurchasePolicy(clientId, storeId, expirationDate, subject, ruleId);
-                logger.Info($"Add purchase policy for store {storeId} succeed.");
+                // logger.Info($"Add purchase policy for store {storeId} succeed.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in adding purchase policy for store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in adding purchase policy for store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -606,12 +606,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.AddDiscountPolicy(clientId, storeId, expirationDate, subject, ruleId, precentage);
-                logger.Info($"Add discount policy for store {storeId} succeed.");
+                // logger.Info($"Add discount policy for store {storeId} succeed.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in adding discount policy for store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in adding discount policy for store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -620,12 +620,12 @@ namespace MarketBackend.Services
             try
             {
                 marketManagerFacade.AddCompositePolicy(clientId, storeId, expirationDate, subject, Operator, policies);
-                logger.Info($"Add composite policy for store {storeId} succeed.");
+                // logger.Info($"Add composite policy for store {storeId} succeed.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in adding composite policy for store {storeId}. Error message: {e.Message}");
+                // logger.Error($"Error in adding composite policy for store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
