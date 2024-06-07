@@ -31,9 +31,9 @@ namespace MarketBackend.Services.Interfaces
         public Response RemovePermission(int activeId, int storeId, int toRemoveId);
         public Response AddPermission(int activeId, int storeId, int toAddId, Permission permission);
         public Response EditPurchasePolicy(int storeId);
-        public Response<HashSet<Product>> SearchByKeywords(string keywords);
-        public Response<HashSet<Product>> SearchByName(string name);
-        public Response<HashSet<Product>> SearchByCategory(string category);
+        public Response<List<ProductResultDto>> SearchByKeywords(string keywords);
+        public Response<List<ProductResultDto>> SearchByName(string name);
+        public Response<List<ProductResultDto>> SearchByCategory(string category);
         public Response<string> GetInfo(int storeId);
         public Response<string> GetProductInfo(int storeId, int productId);
         public Response PurchaseCart(int id, PaymentDetails paymentDetails, ShippingDetails shippingDetails);

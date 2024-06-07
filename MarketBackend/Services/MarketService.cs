@@ -329,49 +329,50 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response<HashSet<Product>> SearchByKeywords(string keywords)
+        public Response<List<ProductResultDto>> SearchByKeywords(string keywords)
         {
             try
             {
-                HashSet<Product> products = marketManagerFacade.SearchByKeyWords(keywords);
+                var products = marketManagerFacade.SearchByKeyWords(keywords);
+                
                 // logger.Info($"Search by keyWords {keywords} succeed.");
-                return Response<HashSet<Product>>.FromValue(products);
+                return Response<List<ProductResultDto>>.FromValue(products.Select(product => new ProductResultDto(product)).ToList());
             }
             catch (Exception e)
             {
                 // logger.Error($"Error in search by keyword {keywords}. Error message: {e.Message}");
-                return Response<HashSet<Product>>.FromError(e.Message);
+                return Response<List<ProductResultDto>>.FromError(e.Message);
             }
         }
 
-        public Response<HashSet<Product>> SearchByName(string name)
+        public Response<List<ProductResultDto>> SearchByName(string name)
         {
             string lowerName = name.ToLower();
             try
             {
                 HashSet<Product> products = marketManagerFacade.SearchByName(name);
                 // logger.Info($"Search by name {name} succeed.");
-                return Response<HashSet<Product>>.FromValue(products);
+                return Response<List<ProductResultDto>>.FromValue(products.Select(product => new ProductResultDto(product)).ToList());
             }
             catch (Exception e)
             {
                 // logger.Error($"Error in search by name {name}. Error message: {e.Message}");
-                return Response<HashSet<Product>>.FromError(e.Message);
+                return Response<List<ProductResultDto>>.FromError(e.Message);
             }
         }
 
-        public Response<HashSet<Product>> SearchByCategory(string category)
+        public Response<List<ProductResultDto>> SearchByCategory(string category)
         {
             try
             {
                 HashSet<Product> products = marketManagerFacade.SearchByCategory(category);
                 // logger.Info($"Search by category {category} succeed.");
-                return Response<HashSet<Product>>.FromValue(products);
+                return Response<List<ProductResultDto>>.FromValue(products.Select(product => new ProductResultDto(product)).ToList());
             }
             catch (Exception e)
             {
                 // logger.Error($"Error in search by category {category}. Error message: {e.Message}");
-                return Response<HashSet<Product>>.FromError(e.Message);
+                return Response<List<ProductResultDto>>.FromError(e.Message);
             }
         }
 

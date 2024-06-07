@@ -276,20 +276,59 @@ namespace EcommerceAPI.Controllers
             }
         }                        
 
-        // [HttpPost]
-        // [Route("search")]
-        // public ActionResult<Response<List<ProductResultDto>>> Search([FromBody] SearchRequest request)
-        // {
-        //     Response<List<ProductResultDto>> response = _marketService.SearchByCategory(request.SessionId, request.Word, request.SearchType, request.FilterType, request.LowPrice, request.HighPrice, request.LowRate, request.HighRate, request.Category);
-        //     if (response.ErrorOccured)
-        //     {
-        //         return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
-        //     }
-        //     else
-        //     {
-        //         return Ok(ServerResponse<List<SProduct>>.OkResponse(response.Value));
-        //     }
-        // }
+        [HttpGet]
+        [Route("Search/KeyWords")]
+        public ActionResult<Response<List<ProductResultDto>>> SearchByKeywords([Required][FromQuery]int tokenId, [FromQuery] List<string> keyword)
+        {
+            var products = new List<ProductResultDto>();
+            foreach(var word in keyword){
+                Response<List<ProductResultDto>> response = _marketService.SearchByKeywords(word);
+                if (response.ErrorOccured)
+                {
+                    return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+                }else{
+                    products.AddRange(response.Value);
+                }
+            }
+
+            return Ok(ServerResponse<List<ProductResultDto>>.OkResponse(products));
+        }
+
+        [HttpGet]
+        [Route("Search/Name")]
+        public ActionResult<Response<List<ProductResultDto>>> SearchByNames([Required][FromQuery]int tokenId, [FromQuery] List<string> name)
+        {
+            var products = new List<ProductResultDto>();
+            foreach(var word in name){
+                Response<List<ProductResultDto>> response = _marketService.SearchByName(word);
+                if (response.ErrorOccured)
+                {
+                    return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+                }else{
+                    products.AddRange(response.Value);
+                }
+            }
+
+            return Ok(ServerResponse<List<ProductResultDto>>.OkResponse(products));
+        }
+
+        [HttpGet]
+        [Route("Search/Category")]
+        public ActionResult<Response<List<ProductResultDto>>> SearchByCategory([Required][FromQuery]int tokenId, [FromQuery] List<string> category)
+        {
+            var products = new List<ProductResultDto>();
+            foreach(var word in category){
+                Response<List<ProductResultDto>> response = _marketService.SearchByCategory(word);
+                if (response.ErrorOccured)
+                {
+                    return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+                }else{
+                    products.AddRange(response.Value);
+                }
+            }
+
+            return Ok(ServerResponse<List<ProductResultDto>>.OkResponse(products));
+        }
 
 
         [HttpPost]
