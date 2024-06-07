@@ -107,5 +107,13 @@ namespace MarketBackend.Domain.Market_Client
                 price += basketItem.Product.Price * basketItem.Quantity;
             return price;
         }
+        public void resetDiscount()
+        {
+            foreach (BasketItem basketItem in _basketItems)
+            {
+                if(basketItem.Product._sellMethod is RegularSell)
+                    basketItem.PriceAfterDiscount = basketItem.Product.Price;
+            }
+        }
     }
 }

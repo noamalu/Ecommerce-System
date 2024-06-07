@@ -56,6 +56,20 @@ namespace MarketBackend.Domain.Market_Client
         void Filter (HashSet<Product> products, string category, double lowPrice, double highPrice, double lowProductRate, double highProductRate, double lowStoreRate, double highStoreRate);
         string GetProductInfo(int storId, int productId);
         public void AddStaffMember(int storeId, int activeId, Role role, int toAddId);   
-        public string GetInfo(int storeId);     
+        public string GetInfo(int storeId);    
+        public void RemovePolicy(int clientId, int storeId, int policyID,string type);
+        public void AddSimpleRule(int clientId, int storeId,string subject);
+        public void AddQuantityRule(int clientId, int storeId, string subject, int minQuantity, int maxQuantity);
+        public void AddTotalPriceRule(int clientId, int storeId, string subject, int targetPrice);
+        public void AddCompositeRule(int clientId, int storeId, int Operator, List<int> rules);
+        public void UpdateRuleSubject(int clientId, int storeId, int ruleId, string subject);
+        public void UpdateRuleQuantity(int clientId, int storeId, int ruleId, int minQuantity, int maxQuantity);
+        public void UpdateRuleTargetPrice(int clientId, int storeId, int ruleId, int targetPrice);
+        public void UpdateCompositeOperator(int clientId, int storeId, int ruleId, int Operator);
+        public void UpdateCompositeRules(int clientId, int storeId, int ruleId, List<int> rules);
+        public void AddPurchasePolicy(int clientId, int storeId, DateTime expirationDate, string subject, int ruleId);
+        public void AddDiscountPolicy(int clientId, int storeId, DateTime expirationDate, string subject, int ruleId, double precentage);
+        public void AddCompositePolicy(int clientId, int storeId, DateTime expirationDate, string subject, int Operator, List<int> policies);
+
     }
 }

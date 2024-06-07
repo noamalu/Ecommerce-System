@@ -2,6 +2,7 @@ namespace MarketBackend.Domain.Market_Client{
     public class RuleSubject{
         private Product _product;
         private string _category;
+        
 
         public Product Product { get => _product; set => _product = value; }
         public string Category { get => _category; set => _category = value; }
@@ -16,6 +17,10 @@ namespace MarketBackend.Domain.Market_Client{
         public RuleSubject(string category)
         {
             _category = category;
+        }
+        public RuleSubject(string stpreName, int storId)
+        {
+            
         }
         public bool IsProduct()
         {
