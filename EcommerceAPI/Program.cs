@@ -11,7 +11,16 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
-WebSocketServer notificationServer = new WebSocketServer($"ws://{GetLocalIPAddress()}:" + 7888);
+// Add Distributed Memory Cache and Session services
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Sets the timeout for the session
+    options.Cookie.HttpOnly = true; // Makes the session cookie accessible only to the server
+    options.Cookie.IsEssential = true; // Marks the session cookie as essential for the application
+});
+
+WebSocketServer notificationServer = new WebSocketServer(System.Net.IPAddress.Parse("127.0.0.1"), 4560);//new WebSocketServer($"ws://{GetLocalIPAddress()}:" + 7888);
 // WebSocketServer logsServer = new WebSocketServer(System.Net.IPAddress.Parse("127.0.0.1"), 4560);
 // logsServer.AddWebSocketService<logsService>("/logs");
 notificationServer.Start();
@@ -60,6 +69,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseSession();
 
 app.UseAuthorization();
 
