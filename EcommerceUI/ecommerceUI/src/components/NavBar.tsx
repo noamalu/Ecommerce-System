@@ -6,18 +6,28 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import { useNavigate } from 'react-router-dom';
+import SplitButton from 'react-bootstrap/SplitButton';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 
 
 export const NavBar: React.FC = () => {
     const [query, setQuery] = useState('');
+    const [selectedFilter, setSelectedFilter] = useState('name');
     const navigate = useNavigate();
 
+
+    // Function to handle the event when an option is clicked
+    const handleFilterClick = (option: string) => {
+      // Update the selected option
+      setSelectedFilter(option);
+    };
+
     const onSearchClick = (event: React.FormEvent<HTMLFormElement>) => {
-      console.log("onSearchcLICKKC");
+      console.log("onSearchClick");
       event.preventDefault();
       if (query.trim()) {
-        navigate(`/search?query=${encodeURIComponent(query)}`);
+        navigate(`/search?query=${encodeURIComponent(query)}&filter=${encodeURIComponent(selectedFilter)}`);
       }
     };
 
@@ -53,7 +63,17 @@ export const NavBar: React.FC = () => {
                   value={query}
                   onChange={(ev) => setQuery(ev.target.value)}
                 />
-                <Button variant="outline-success" type="submit">Search</Button>
+                    <SplitButton
+                      key="search"
+                      variant="outline-success"
+                      type="submit"
+                      title="search"
+                    >
+                      <Dropdown.Item eventKey="1" active={selectedFilter == "name"} onClick={() => handleFilterClick("name")}> name</Dropdown.Item>
+                      <Dropdown.Item eventKey="2" active={selectedFilter == "category"} onClick={() => handleFilterClick("category")}> category </Dropdown.Item>
+                      <Dropdown.Item eventKey="3" active={selectedFilter == "keyword"} onClick={() => handleFilterClick("keyword")}> keyword </Dropdown.Item>
+                    </SplitButton>
+                {/* <Button variant="outline-success" type="submit">Search</Button> */}
               </Form>
               <Button variant="outline-info" onClick={() => navigate('/login')}>Login</Button>
               <Button variant="outline-info" onClick={() => navigate('/register')}>Register</Button>
