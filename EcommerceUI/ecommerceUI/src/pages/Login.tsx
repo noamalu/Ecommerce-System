@@ -45,8 +45,8 @@ export const Login = (props: { setLoggedIn: (arg0: boolean) => void; setUserName
   }
   
   const logIn = () => {
-    
-    fetch('Ecommerce-System/EcommerceUI/ecommerceUI/src/components/HomeScreen.tsx', {
+    const tokenId = 1234; //need to chnage token id
+    fetch(`https://localhost:7163/api/Client/Guest/Login?tokenId=${tokenId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

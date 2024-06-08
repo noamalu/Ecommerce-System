@@ -10,7 +10,7 @@ import { Profile } from './pages/Profile';
 import { initSession } from './services/SessionService';
 import { Search } from './pages/Search';
 import { Cart } from './pages/Cart';
-
+import { ProfileStoreNav } from './components/ProfileStoreNav';
 
 function App() {
   initSession();
