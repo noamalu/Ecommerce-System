@@ -46,7 +46,7 @@ static string GetLocalIPAddress()
     throw new Exception("No network adapters with an IPv4 address in the system!");
 }
 // Configure logging
-builder.Logging.ClearProviders(); // Clear all default logging providers
+//builder.Logging.ClearProviders(); // Clear all default logging providers
 // builder.Logging.AddFile("logs/app.log"); // Specify the log file path
 
 builder.Services.AddCors(options =>
