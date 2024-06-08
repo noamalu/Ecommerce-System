@@ -20,7 +20,8 @@ interface ProfileProps {
 }
 
 export const Profile: React.FC<ProfileProps> = ({setLoggedIn}) => {
-    
+    const userDataString = localStorage.getItem('user') as string
+    const userData = JSON.parse(userDataString);
 
     return (
         <>
@@ -28,7 +29,7 @@ export const Profile: React.FC<ProfileProps> = ({setLoggedIn}) => {
                 <Col md={2} className="profile-left">
                     <Stack gap={2} >
                         <Image src={avatar} roundedCircle className="w-25 mx-auto" />
-                        <p> John Doe</p>
+                        <p> {userData.username}</p>
                         <Button variant="outline-secondary">Profile option 1</Button>
                         <Button variant="outline-secondary">Profile option 2</Button>
                         <Button variant="outline-secondary">Profile option 3</Button>
