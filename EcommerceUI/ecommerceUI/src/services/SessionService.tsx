@@ -12,6 +12,7 @@ const userName = "userName";
 const isGuest = "isGuest";
 const sessionId = "sessionId";
 const isAdmin = "isAdmin";
+const isLogged = "isLoggedIn";
 
 export async function initSession() {
   if (storage.getItem(isInitOccured) === null) {
@@ -67,6 +68,7 @@ export async function initFields(id: string) {
   setIsGuest(true);
   setUsername("guest");
   setIsAdmin(false);
+  setLoggedIn(false);
 }
 
 export function clearSession() {
@@ -115,3 +117,8 @@ export function getIsAdmin(): boolean {
 export function setIsAdmin(value: boolean): void {
   storage.setItem(isAdmin, value.toString());
 }
+
+export function setLoggedIn(value: boolean) {
+  storage.setItem(isLogged, value.toString());
+}
+

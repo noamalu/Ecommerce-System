@@ -27,27 +27,28 @@ export const ProfileStoreNav = () => {
     return (
         <>
             <Container className="d-flex justify-content-between align-items-center my-3">
-                <p className="mb-0">Store {num}</p>
+                <Nav variant="tabs" defaultActiveKey="/home">
+                    <Nav.Item>
+                        <Nav.Link href="" onClick={() => setNum(1)}>Store 1</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link onClick={() => setNum(2)}>Store 2</Nav.Link>
+                    </Nav.Item>
+                </Nav>
                 <Button variant="primary" onClick={() => setShowCreateStoreModal(true)}>Create Store</Button>
             </Container>
-            <Nav variant="tabs" defaultActiveKey="/home">
-                <Nav.Item>
-                    <Nav.Link href="" onClick={() => setNum(1)}>Store 1</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                    <Nav.Link onClick={() => setNum(2)}>Store 2</Nav.Link>
-                </Nav.Item>
-            </Nav>
-            <p> store {num} </p>
-            <Table striped bordered hover>
+            <Container className="d-flex justify-content-between align-items-center my-3">
+                <p className="mb-0">Store {num}</p>
+            </Container>
+            <Table striped bordered hover className="my-3">
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>name</th>
-                        <th>phone number</th>
-                        <th>role</th>
-                        <th>appointer</th>
-                        <th>permissions</th>
+                        <th>Name</th>
+                        <th>Phone Number</th>
+                        <th>Role</th>
+                        <th>Appointer</th>
+                        <th>Permissions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -69,17 +70,17 @@ export const ProfileStoreNav = () => {
                                                 <Form.Check
                                                     type="checkbox"
                                                     id="default-checkbox"
-                                                    label="permission 1"
+                                                    label="Permission 1"
                                                 />
                                                 <Form.Check
                                                     type="checkbox"
                                                     id="default-checkbox"
-                                                    label="permission 2"
+                                                    label="Permission 2"
                                                 />
                                                 <Form.Check
                                                     type="checkbox"
                                                     id="default-checkbox"
-                                                    label="permission 3"
+                                                    label="Permission 3"
                                                 />
                                             </div>
                                         </Form>
@@ -106,6 +107,6 @@ export const ProfileStoreNav = () => {
             </Modal>
         </>
     );
-    };
+};
     
     export default ProfileStoreNav;
