@@ -11,7 +11,6 @@ import { initSession } from './services/SessionService';
 import { Search } from './pages/Search';
 import { Cart } from './pages/Cart';
 import { ProfileStoreNav } from './components/ProfileStoreNav';
-import { AuthProvider } from './services/AuthProvider';
 
 
 
@@ -22,20 +21,18 @@ function App() {
 
   return (
     <div>
-      <AuthProvider>
       <BrowserRouter>
         <NavBar loggedIn={false} setLoggedIn={setLoggedIn}/>
         <Routes>
           <Route index element = {<Home/>}/>
           <Route path="/home" element={<Home/>}/>
-          <Route path="/login" element={<Login setLoggedIn={setLoggedIn} setUserName={setUsername} />}  />
+          <Route path="/login" element={<Login/>}  />
           <Route path="/Register" element={<Register/>}/>
           <Route path="/search" element={<Search/>}/>
-          <Route path="/profile" element={<Profile setLoggedIn={setLoggedIn}/>}/>
+          <Route path="/profile" element={<Profile/>}/>
           <Route path="/cart" element={<Cart/>}/>
         </Routes>
       </BrowserRouter>
-      </AuthProvider>
     </div>
   );
 }

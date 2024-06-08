@@ -122,3 +122,10 @@ export function setLoggedIn(value: boolean) {
   storage.setItem(isLogged, value.toString());
 }
 
+
+
+export function getLoggedIn(): boolean {
+  const value = storage.getItem(isLogged);
+  return value === "true";
+}
+

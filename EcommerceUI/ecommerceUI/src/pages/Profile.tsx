@@ -13,15 +13,16 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { ProfileStoreNav } from "../components/ProfileStoreNav";
 import LogoutButton from "../components/LogoutButton";
+import {getLoggedIn, getUserName} from '../services/SessionService';
+
 
 
 interface ProfileProps {
-    setLoggedIn: (loggedIn: boolean) => void;
+   
 }
 
-export const Profile: React.FC<ProfileProps> = ({setLoggedIn}) => {
-    const userDataString = localStorage.getItem('user') as string
-    const userData = JSON.parse(userDataString);
+export const Profile: React.FC<ProfileProps> = () => {
+    const userDataString = getUserName();  
 
     return (
         <>
@@ -29,11 +30,11 @@ export const Profile: React.FC<ProfileProps> = ({setLoggedIn}) => {
                 <Col md={2} className="profile-left">
                     <Stack gap={2} >
                         <Image src={avatar} roundedCircle className="w-25 mx-auto" />
-                        <p> {userData.username}</p>
+                        <p> {userDataString}</p>
                         <Button variant="outline-secondary">Profile option 1</Button>
                         <Button variant="outline-secondary">Profile option 2</Button>
                         <Button variant="outline-secondary">Profile option 3</Button>
-                        <LogoutButton setLoggedIn={setLoggedIn} />
+                        <LogoutButton/>
                     </Stack>
                 </Col>
                 

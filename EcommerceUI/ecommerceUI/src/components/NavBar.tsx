@@ -9,6 +9,8 @@ import { RiShoppingCart2Line, RiUserLine } from 'react-icons/ri'; // Importing t
 import { useNavigate } from 'react-router-dom';
 import SplitButton from 'react-bootstrap/SplitButton';
 import Dropdown from 'react-bootstrap/Dropdown';
+import {getLoggedIn} from '../services/SessionService';
+
 
 
 
@@ -79,12 +81,12 @@ export const NavBar: React.FC<NavBarProps> = (props:{loggedIn : boolean, setLogg
               {/* show all the time */}
               <Button variant="outline-info" onClick={() => navigate('/cart')}> <RiShoppingCart2Line size={20} /> </Button>
               {/* show if not logged in */}
-              {!props.loggedIn && (
+              {!getLoggedIn() && (
               <Button variant="outline-info" onClick={() => navigate('/login')}>Login</Button> )}
-              {!props.loggedIn && (
+              {!getLoggedIn() && (
               <Button variant="outline-info" onClick={() => navigate('/register')}>Register</Button> )}
               {/* show if logged in */}
-              {!props.loggedIn && (
+              {getLoggedIn() && (
               <Button variant="outline-info" onClick={() => navigate('/profile')}><RiUserLine size={20} /></Button>)}
             </Navbar.Collapse>
           </Container>
