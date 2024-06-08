@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { setUsername } from "../services/SessionService";
+import { setLoggedIn } from "../services/SessionService";
+
 
 
 
@@ -51,6 +53,7 @@ export const Login = () => {
       body: JSON.stringify({username, password }),
     }).then((r) => {
       if (r.ok) {
+        setLoggedIn(true)
         return r.json(); 
       } else {
         throw new Error('Wrong username or password');

@@ -1,10 +1,10 @@
 import React from 'react';
+import {setLoggedIn} from '../services/SessionService';
 
 interface LogoutButtonProps {
-    setLoggedIn: (loggedIn: boolean) => void;
 }
 
-const LogoutButton: React.FC<LogoutButtonProps> = ({setLoggedIn}) => {
+const LogoutButton: React.FC<LogoutButtonProps> = () => {
 
     const handleLogout = async () => {
       try {
