@@ -2,17 +2,14 @@ import React, {Component, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import { setUsername } from "../services/SessionService";
 
 
-interface Login{
-  setLoggedIn: (arg0: boolean) => void;
-  setUsername: (arg0: string) => void;
-  userr: string;
-}
 
-export const Login = (props: { setLoggedIn: (arg0: boolean) => void; setUserName: (arg0: string) => void; userr: string }) => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+
+export const Login = () => {
+  const [username, setusername] = useState('')
+  const [password, setpassword] = useState('')
   const [usernameError, setUsernameError] = useState('')
   const [passwordError, setPasswordError] = useState('')
 
@@ -52,19 +49,22 @@ export const Login = (props: { setLoggedIn: (arg0: boolean) => void; setUserName
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({username, password }),
+    }).then((r) => {
+      if (r.ok) {
+        return r.json(); 
+      } else {
+        throw new Error('Wrong username or password');
+      }
     })
-      .then((r) => r.json())
-      .then((r) => {
-        if ('success' === r.message) {
-          localStorage.setItem('user', JSON.stringify({ username, token: r.token }))
-          props.setLoggedIn(true)
-          props.setUserName(username)
-          navigate('/')
-        } else {
-          window.alert('Wrong email or password')
-        }
-      })
-  }
+    .then((data) => {
+      // `data` is the parsed JSON object
+      setUsername(username);
+      navigate('/');
+    })
+    .catch((error) => {
+      window.alert(error.message);
+    });
+};
 
 
   return (
@@ -74,7 +74,7 @@ export const Login = (props: { setLoggedIn: (arg0: boolean) => void; setUserName
       <Form.Control type="text"
         name="username"
         value={username}
-        onChange={(ev) => setUsername(ev.target.value)} 
+        onChange={(ev) => setusername(ev.target.value)} 
         placeholder="username" />
     </Form.Group>
     <label className="errorLabel">{usernameError}</label>
@@ -84,7 +84,7 @@ export const Login = (props: { setLoggedIn: (arg0: boolean) => void; setUserName
       <Form.Control type="password" placeholder="Password" 
                     name="password"
                     value={password}
-                    onChange={(ev) => setPassword(ev.target.value)}
+                    onChange={(ev) => setpassword(ev.target.value)}
                     />
     </Form.Group>
     <label className="errorLabel">{passwordError}</label>
