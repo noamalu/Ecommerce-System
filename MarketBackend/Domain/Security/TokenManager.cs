@@ -37,7 +37,7 @@ namespace MarketBackend.Domain.Security
             }
             return tokenManagerInstance;
         }
-        public string GenerateToken(int userId)
+        public string GenerateToken(string username)
         {
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
@@ -45,7 +45,7 @@ namespace MarketBackend.Domain.Security
             var currentTimeUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds(); // Get current time as Unix timestamp
 
             var token = new JwtSecurityToken(
-                claims: new[] { new Claim("userId", userId.ToString()),
+                claims: new[] { new Claim("username", username),
                                new Claim(JwtRegisteredClaimNames.Iat, currentTimeUnix.ToString(), ClaimValueTypes.Integer64) },
                 expires: DateTime.Now.AddMinutes(ExpirationTime),
                 signingCredentials: credentials
@@ -77,19 +77,18 @@ namespace MarketBackend.Domain.Security
             }
         }
 
-        public int ExtractUserId(string token)
+        public string ExtractUsername(string token)
         {
            
             var jsonToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
-            var userIdClaim = jsonToken?.Claims.FirstOrDefault(claim => claim.Type == "userId");
+            var usernameClaim = jsonToken?.Claims.FirstOrDefault(claim => claim.Type == "username");
 
-            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+            if (usernameClaim != null)
             {
-                return userId;
+                return usernameClaim.Value;
             }
 
             throw new SecurityTokenException("Invalid token or userId claim not found");
-
         }
 
         public DateTime ExtractIssuedAt(string token)
