@@ -38,18 +38,18 @@ namespace MarketBackend.Domain.Security
             return result == PasswordVerificationResult.Success;
         }
 
-        public string GenerateToken(int userId)
+        public string GenerateToken(string username)
         {
-            return tokenManager.GenerateToken(userId);
+            return tokenManager.GenerateToken(username);
         }
         public bool ValidateToken(string token)
         {
             return tokenManager.ValidateToken(token);
         }
 
-        public int ExtractUserId(string token)
+        public string ExtractUsername(string token)
         {
-            return tokenManager.ExtractUserId(token);
+            return tokenManager.ExtractUsername(token);
         }
 
         public DateTime ExtractIssuedAt(string token)

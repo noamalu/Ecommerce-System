@@ -12,7 +12,7 @@ namespace UnitTests
         private SecurityManager _securityManager;
         private TokenManager _tokenManager;
 
-        int mockId = 1507;
+        string mockUsername = "oli";
         string mockPassword = "olassecurepassword";
         string mockToken;
         DateTime mockIssueTime;
@@ -25,7 +25,7 @@ namespace UnitTests
             _tokenManager = TokenManager.GetInstance();
             mockIssueTime = DateTime.UtcNow;
             mockExpirationTime = mockIssueTime.AddMinutes(_tokenManager.ExpirationTime);
-            mockToken = _securityManager.GenerateToken(mockId);
+            mockToken = _securityManager.GenerateToken(mockUsername);
         }
         
         [TestMethod]
@@ -38,7 +38,7 @@ namespace UnitTests
         [TestMethod]
         public void TestAttemptExtractUserId() 
         {
-            Assert.AreEqual(mockId, _securityManager.ExtractUserId(mockToken));
+            Assert.AreEqual(mockUsername, _securityManager.ExtractUsername(mockToken));
         }
 
 
