@@ -226,6 +226,7 @@ namespace MarketBackend.Tests.IT
             Store store = marketManagerFacade.GetStore(1);
             Assert.IsTrue(store._history._purchases.Count == 0);
         }
+        
 
         [TestMethod]
         public void PurchaseCart_composite_rule__or_Success()
