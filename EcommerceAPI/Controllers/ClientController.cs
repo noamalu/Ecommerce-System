@@ -25,7 +25,7 @@ namespace EcommerceAPI.Controllers
         private IClientService _clientService;
 
         private static Dictionary<string, IList<string>> _clientPendingAlerts = new();
-        private static Dictionary<int, string> _clientTokenIdxAlertPath = new();
+        private static Dictionary<string, string> _alertPathByclientIdentifier = new();
         public ClientController(WebSocketServer alerts, WebSocketServer logs, IShippingSystemFacade shippingSystemFacade, IPaymentSystemFacade paymentSystem)
         {
             this._clientService = ClientService.GetInstance(shippingSystemFacade, paymentSystem);
@@ -44,7 +44,7 @@ namespace EcommerceAPI.Controllers
         
         [HttpPost]
         [Route("Guest/Login")]
-        public async Task<ActionResult<ServerResponse<string>>> Login([Required][FromQuery]int tokenId, [FromBody] ClientDto client)
+        public async Task<ActionResult<ServerResponse<string>>> Login([FromBody] ClientDto client)
         {
             string relativePath = $"/{client.Username}-alerts";
             try
@@ -64,7 +64,7 @@ namespace EcommerceAPI.Controllers
                 return BadRequest(loginResponse);
             }
             
-            Response response = await Task.Run(() => _clientService.LoginClient(tokenId, client.Username, client.Password));
+            Response<string> response = await Task.Run(() => _clientService.LoginClient(client.Username, client.Password));
             if (response.ErrorOccured)
             {
                 _alertServer.RemoveWebSocketService(relativePath);
@@ -76,10 +76,10 @@ namespace EcommerceAPI.Controllers
             }
             else
             {
-                _clientTokenIdxAlertPath.Add(tokenId, relativePath);
+                _alertPathByclientIdentifier.Add(response.Value, relativePath);
                 var createShopResponse = new ServerResponse<string>
                 {
-                    Value = tokenId.ToString(),
+                    Value = response.Value,
                 };
                 return Ok(createShopResponse);
             }
@@ -92,9 +92,9 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Member/Logout")]
-        public async Task<ActionResult<ServerResponse<string>>> Logout([Required][FromQuery]int tokenId, [FromBody] ClientDto client)
+        public async Task<ActionResult<ServerResponse<string>>> Logout([Required][FromQuery]string identifier)
         {
-            Response response = await Task.Run(() => _clientService.LoginClient(tokenId, client.Username, client.Password));
+            Response response = await Task.Run(() => _clientService.LogoutClient(identifier));
             ServerResponse<string> logoutResponse;
             if (response.ErrorOccured)
             {
@@ -104,10 +104,10 @@ namespace EcommerceAPI.Controllers
                 };
                 return BadRequest(logoutResponse);
             }
-            if (_clientTokenIdxAlertPath.ContainsKey(tokenId))
+            if (_alertPathByclientIdentifier.ContainsKey(identifier))
             {
-                _alertServer.RemoveWebSocketService(_clientTokenIdxAlertPath[tokenId]);
-                _clientTokenIdxAlertPath.Remove(tokenId);
+                _alertServer.RemoveWebSocketService(_alertPathByclientIdentifier[identifier]);
+                _alertPathByclientIdentifier.Remove(identifier);
             }
             logoutResponse = new ServerResponse<string>
             {
@@ -118,10 +118,10 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Guest")]
-        public async Task<ActionResult<ServerResponse<string>>> EnterAsGuest([Required][FromQuery]int tokenId)
+        public async Task<ActionResult<ServerResponse<string>>> EnterAsGuest([Required][FromQuery]string identifier)
         {
             string session = HttpContext.Session.Id;
-            Response response = await Task.Run(() => _clientService.EnterAsGuest(tokenId));
+            Response response = await Task.Run(() => _clientService.EnterAsGuest(identifier));
             if (response.ErrorOccured)
             {
                 var enterAsGuestResponse = new ServerResponse<string>
@@ -142,9 +142,9 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Guest/Register")]
-        public async Task<ActionResult<ServerResponse<string>>> Register([Required][FromQuery]int tokenId, [FromBody] ExtendedClientDto client)
+        public async Task<ActionResult<ServerResponse<string>>> Register([FromBody] ExtendedClientDto client)
         {
-            Response response = await Task.Run(() => _clientService.Register(tokenId, client.Username, client.Password, client.Email, client.Age));
+            Response response = await Task.Run(() => _clientService.Register(client.Username, client.Password, client.Email, client.Age));
             if (response.ErrorOccured)
             {
                 var registerResponse = new ServerResponse<string>
@@ -157,7 +157,7 @@ namespace EcommerceAPI.Controllers
             {
                 var registerResponse = new ServerResponse<string>
                 {
-                    Value = tokenId.ToString(),
+                    Value = client.Username,
                 };
                 return Ok(registerResponse);
             }
@@ -166,13 +166,13 @@ namespace EcommerceAPI.Controllers
 
         [HttpPut] //client controller
         [Route("Cart")]
-        public async Task<ActionResult<ServerResponse<string>>> UpdateCart([Required][FromQuery]int tokenId, [FromBody] ProductDto product)
+        public async Task<ActionResult<ServerResponse<string>>> UpdateCart([Required][FromQuery]string identifier, [FromBody] ProductDto product)
         {
             if(!product.IsValidForCart()) return BadRequest("product must contain id, store id and product name");
 
             Response response = product.Quantity > 0 ? 
-                await Task.Run(() => _clientService.AddToCart(tokenId, product.StoreId, (int)product.Id, product.Quantity)) : 
-                await Task.Run(() => _clientService.RemoveFromCart(tokenId, product.StoreId, (int)product.Id, Math.Abs(product.Quantity)));
+                await Task.Run(() => _clientService.AddToCart(identifier, product.StoreId, (int)product.Id, product.Quantity)) : 
+                await Task.Run(() => _clientService.RemoveFromCart(identifier, product.StoreId, (int)product.Id, Math.Abs(product.Quantity)));
             if (response.ErrorOccured)
             {
                 var addToCartResponse = new ServerResponse<string>
@@ -193,9 +193,9 @@ namespace EcommerceAPI.Controllers
 
         [HttpGet]
         [Route("Cart")]
-        public ActionResult<Response<ShoppingCartResultDto>> GetShoppingCartInfo([Required][FromQuery]int tokenId)
+        public ActionResult<Response<ShoppingCartResultDto>> GetShoppingCartInfo([Required][FromQuery]string identifier)
         {
-            Response<ShoppingCartResultDto> response = _clientService.ViewCart(tokenId);
+            Response<ShoppingCartResultDto> response = _clientService.ViewCart(identifier);
             if (response.ErrorOccured)
             {
                 return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
@@ -208,9 +208,9 @@ namespace EcommerceAPI.Controllers
 
         [HttpGet]
         [Route("Member/PurchaseHistory")]
-        public ActionResult<Response<List<ShoppingCartResultDto>>> GetMemberPurchaseHistory([Required][FromQuery]int tokenId)
+        public ActionResult<Response<List<ShoppingCartResultDto>>> GetMemberPurchaseHistory([Required][FromQuery]string identifier)
         {
-            Response<List<ShoppingCartResultDto>> response = _clientService.GetPurchaseHistory(tokenId);
+            Response<List<ShoppingCartResultDto>> response = _clientService.GetPurchaseHistoryByClient(identifier);
             if (response.ErrorOccured)
             {
                 return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
@@ -223,9 +223,9 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Client/CreateStore")]
-        public async Task<ObjectResult> CreateStore([Required][FromQuery]int tokenId, [Required][FromBody] StoreDto storeInfo)
+        public async Task<ObjectResult> CreateStore([Required][FromQuery]string identifier, [Required][FromBody] StoreDto storeInfo)
         {
-            Response response = await Task.Run(() => _clientService.CreateStore(tokenId, storeInfo.Name, storeInfo.Email, storeInfo.PhoneNum));
+            Response response = await Task.Run(() => _clientService.CreateStore(identifier, storeInfo.Name, storeInfo.Email, storeInfo.PhoneNum));
             if (response.ErrorOccured)
             {
                 var openShopResponse = new ServerResponse<string>

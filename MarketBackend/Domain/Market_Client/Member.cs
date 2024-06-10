@@ -37,9 +37,11 @@ namespace MarketBackend.Domain.Market_Client
 
         public override void PurchaseBasket(Basket basket)
         {
-            OrderHistory.TryGetValue(basket._cartId, out var cartInHistory);
-            cartInHistory ??= new(){_shoppingCartId = basket._cartId};
-            cartInHistory.AddBasket(basket);
+            if(!OrderHistory.TryGetValue(basket._cartId, out var cartInHistory)){
+                cartInHistory ??= new(){_shoppingCartId = basket._cartId};
+                OrderHistory.TryAdd(basket._cartId, cartInHistory);
+            }            
+            cartInHistory.AddBasket(basket);            
             base.PurchaseBasket(basket);
         }
 

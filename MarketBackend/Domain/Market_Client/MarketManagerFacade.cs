@@ -340,7 +340,7 @@ namespace MarketBackend.Domain.Market_Client
                 if(_paymentSystem.Pay(paymentDetails, totalPrice) > 0) {
                     if(_shippingSystemFacade.OrderShippment(shippingDetails) > 0){
                         store.PurchaseBasket(identifier, baskets[store.StoreId]);
-                        client.PurchaseBasket(baskets[store.StoreId]);
+                        _clientManager.PurchaseBasket(identifier, baskets[store.StoreId]);
                     }
                     else{
                         throw new Exception("shippment failed.");

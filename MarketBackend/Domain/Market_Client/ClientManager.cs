@@ -276,6 +276,14 @@ namespace MarketBackend.Domain.Market_Client
         {
             return GetMemberByUserName(userName).GetHistory();
         }
+
+        public void PurchaseBasket(string identifier, Basket basket)
+        {
+            if(GetMemberByIdentifier(identifier) is not null)
+                GetMemberByIdentifier(identifier)?.PurchaseBasket(basket);
+            else
+                GetClientByIdentifier(identifier)?.PurchaseBasket(basket);
+        }
     }
    
 }
