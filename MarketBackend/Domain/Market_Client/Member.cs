@@ -35,12 +35,12 @@ namespace MarketBackend.Domain.Market_Client
             alerts = new SynchronizedCollection<Message>();
         }
 
-        public override void PurchaseBasket(int id, Basket basket)
+        public override void PurchaseBasket(Basket basket)
         {
             OrderHistory.TryGetValue(basket._cartId, out var cartInHistory);
             cartInHistory ??= new(){_shoppingCartId = basket._cartId};
             cartInHistory.AddBasket(basket);
-            base.PurchaseBasket(id, basket);
+            base.PurchaseBasket(basket);
         }
 
         public List<ShoppingCartHistory> GetHistory()

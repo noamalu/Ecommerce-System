@@ -3,11 +3,11 @@ namespace MarketBackend.Domain.Market_Client
 {
     public class RemoveAppointmentEvent : Event
     {
-        private int _member;
-        private int _removedMember;
+        private string _member;
+        private string _removedMember;
         private Store _store;
 
-        public RemoveAppointmentEvent(Store store, int member, int removedMember) : base("Remove Appointment Event")
+        public RemoveAppointmentEvent(Store store, string member, string removedMember) : base("Remove Appointment Event")
         {
             _store = store;
             _member = member;

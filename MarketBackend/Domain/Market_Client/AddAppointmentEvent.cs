@@ -3,11 +3,11 @@ namespace MarketBackend.Domain.Market_Client
 {
     public class AddAppointmentEvent : Event
     {
-        private int _member;
-        private int _memberToAdd;
+        private string _member;
+        private string _memberToAdd;
         private Store _store;
         private Role _role;
-        public AddAppointmentEvent(Store store, int member, int memberToAdd, Role role) : base("Add Appointment Event")
+        public AddAppointmentEvent(Store store, string member, string memberToAdd, Role role) : base("Add Appointment Event")
         {
             _store = store;
             _member = member;

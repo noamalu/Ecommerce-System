@@ -36,56 +36,56 @@ namespace MarketBackend.Services
             MarketManagerFacade.Dispose();
             _clientService = null;
         }
-        public Response AddToCart(int clientId, int storeId, int productId, int quantity)
+        public Response AddToCart(string identifier, int storeId, int productId, int quantity)
         {
             try
             {
-                marketManagerFacade.AddToCart(clientId, storeId, productId, quantity);
-                logger.Info($"client {clientId} added product {productId} with quantity {quantity} to cart in store {storeId}");
+                marketManagerFacade.AddToCart(identifier, storeId, productId, quantity);
+                logger.Info($"client {identifier} added product {productId} with quantity {quantity} to cart in store {storeId}");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in adding product of client {clientId}. Error message: {e.Message}");
+                logger.Error($"Error in adding product of client {identifier}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
 
-        public Response CreateStore(int id, string storeName, string email, string phoneNum)
+        public Response CreateStore(string identifier, string storeName, string email, string phoneNum)
         {
             try
             {
-                marketManagerFacade.CreateStore(id, storeName, email, phoneNum);
-                logger.Info($"client {id} created store '{storeName}'");
+                marketManagerFacade.CreateStore(identifier, storeName, email, phoneNum);
+                logger.Info($"client {identifier} created store '{storeName}'");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in creating store of client {id}. Error message: {e.Message}");
+                logger.Error($"Error in creating store of client {identifier}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
 
-        public Response EnterAsGuest(int id)
+        public Response<string> EnterAsGuest(string identifier)
         {
              try
             {
-                marketManagerFacade.EnterAsGuest(id);
-                logger.Info($"Client {id} entered as guest.");
-                return new Response();
+                marketManagerFacade.EnterAsGuest(identifier);
+                logger.Info($"Client {identifier} entered as guest.");
+                return Response<string>.FromValue(identifier);
             }
             catch (Exception e)
             {
-                logger.Error($"Error in entering as guest for client {id}, Error message: {e.Message}");
-                return new Response(e.Message);
+                logger.Error($"Error in entering as guest for client {identifier}, Error message: {e.Message}");
+                return Response<string>.FromError(e.Message);
             }
         }
 
-        public Response ExitGuest(int id)
+        public Response ExitGuest(string identifier)
         {
              try
             {
-                marketManagerFacade.ExitGuest(id);
+                marketManagerFacade.ExitGuest(identifier);
                 logger.Info($"Client exited.");
                 return new Response();
             }
@@ -96,122 +96,122 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response<List<ShoppingCartResultDto>> GetPurchaseHistory(int id)
+        public Response<List<ShoppingCartResultDto>> GetPurchaseHistoryByClient(string userName)
         {
              try
             {
-                List<ShoppingCartHistory> shoppingCarts = marketManagerFacade.GetPurchaseHistoryByClient(id);
+                List<ShoppingCartHistory> shoppingCarts = marketManagerFacade.GetPurchaseHistoryByClient(userName);
                 //log
                 return Response<List<ShoppingCartResultDto>>.FromValue(shoppingCarts.Select(cart => new ShoppingCartResultDto(cart)).ToList());
             }
             catch (Exception e)
             {
-                logger.Error($"Error in getting purchase history for client {id}, Error message: {e.Message}");
+                logger.Error($"Error in getting purchase history for client {userName}, Error message: {e.Message}");
                 return Response<List<ShoppingCartResultDto>>.FromError(e.Message);
             }
         }
 
-        public Response LoginClient(int userId, string username, string password)
+        public Response<string> LoginClient(string username, string password)
         {
              try
             {
-                marketManagerFacade.LoginClient(userId, username, password);
-                logger.Info($"Client {userId} logged in with username {username}.");
+                string token = marketManagerFacade.LoginClient(username, password);
+                logger.Info($"Client {username} logged in with username {username}.");
+                return Response<string>.FromValue(token);
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in log in for client {username} with username {username}. Error message: {e.Message}");
+                return Response<string>.FromError(e.Message);
+            }
+        }
+
+        public Response LogoutClient(string identifier)
+        {
+             try
+            {
+                marketManagerFacade.LogoutClient(identifier);
+                logger.Info($"Client {identifier} logged out.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in log in for client {userId} with username {username}. Error message: {e.Message}");
+                logger.Error($"Error in logout for client {identifier}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
 
-        public Response LogoutClient(int id)
+        public Response Register(string username, string password, string email, int age)
         {
              try
             {
-                marketManagerFacade.LogoutClient(id);
-                logger.Info($"Client {id} logged out.");
+                marketManagerFacade.Register(username, password, email, age);
+                logger.Info($"Client {username} registerd with username {username}.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in logout for client {id}. Error message: {e.Message}");
+                logger.Error($"Error in register for client with username {username}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
 
-        public Response Register(int id, string username, string password, string email, int age)
-        {
-             try
-            {
-                marketManagerFacade.Register(id, username, password, email, age);
-                logger.Info($"Client {id} registerd with username {username}.");
-                return new Response();
-            }
-            catch (Exception e)
-            {
-                logger.Error($"Error in register for client {id} with username {username}. Error message: {e.Message}");
-                return new Response(e.Message);
-            }
-        }
-
-        public Response RemoveFromCart(int clientId, int productId, int basketId, int quantity)
+        public Response RemoveFromCart(string identifier, int productId, int basketId, int quantity)
         {
             try
             {
-                marketManagerFacade.RemoveFromCart(clientId, productId, basketId, quantity);
-                logger.Info($"Client {clientId} removed {quantity} products {productId} from basket {basketId}.");
+                marketManagerFacade.RemoveFromCart(identifier, productId, basketId, quantity);
+                logger.Info($"Client {identifier} removed {quantity} products {productId} from basket {basketId}.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in removing {quantity} products {productId} from basket {basketId} for client {clientId}. Error message: {e.Message}");
+                logger.Error($"Error in removing {quantity} products {productId} from basket {basketId} for client {identifier}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
 
-        public Response<bool> ResToStoreManageReq(int id)
+        public Response<bool> ResToStoreManageReq(string identifier)
         {
             try
             {
-                bool ans = marketManagerFacade.ResToStoreManageReq(id);
-                logger.Info($"Client {id} responed to store manager request: {ans}");
+                bool ans = marketManagerFacade.ResToStoreManageReq(identifier);
+                logger.Info($"Client {identifier} responed to store manager request: {ans}");
                 return Response<bool>.FromValue(ans);
             }
             catch (Exception e)
             {
-                logger.Error($"Error in responding to store manager request for client {id}. Error message: {e.Message}");
+                logger.Error($"Error in responding to store manager request for client {identifier}. Error message: {e.Message}");
                 return Response<bool>.FromError(e.Message);
             }
         }
 
-        public Response<bool> ResToStoreOwnershipReq(int id)
+        public Response<bool> ResToStoreOwnershipReq(string identifier)
         {
             try
             {
-                bool ans = marketManagerFacade.ResToStoreOwnershipReq(id);
-                logger.Info($"Client {id} responed to store owner request: {ans}");
+                bool ans = marketManagerFacade.ResToStoreOwnershipReq(identifier);
+                logger.Info($"Client {identifier} responed to store owner request: {ans}");
                 return Response<bool>.FromValue(ans);
             }
             catch (Exception e)
             {
-                logger.Error($"Error in responding to store owner request for client {id}. Error message: {e.Message}");
+                logger.Error($"Error in responding to store owner request for client {identifier}. Error message: {e.Message}");
                 return Response<bool>.FromError(e.Message);
             }
         }
 
-        public Response<ShoppingCartResultDto> ViewCart(int id)
+        public Response<ShoppingCartResultDto> ViewCart(string identifier)
         {
             try
             {
-                ShoppingCart cart = marketManagerFacade.ViewCart(id);
-                logger.Info($"Client {id} view cart successfully.");
+                ShoppingCart cart = marketManagerFacade.ViewCart(identifier);
+                logger.Info($"Client {identifier} view cart successfully.");
                 return Response<ShoppingCartResultDto>.FromValue(new(cart));
             }
             catch (Exception e)
             {
-                logger.Error($"Error in view cart for client {id}. Error message: {e.Message}");
+                logger.Error($"Error in view cart for client {identifier}. Error message: {e.Message}");
                 return Response<ShoppingCartResultDto>.FromError(e.Message);
             }
         }

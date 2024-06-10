@@ -32,7 +32,7 @@ namespace MarketBackend.Domain.Market_Client
          public SynchronizedCollection<Product> _products {get; set;}
          public DiscountPolicyManager _discountPolicyManager {get; set;}
          public PurchasePolicyManager _purchasePolicyManager {get; set;}
-        public ConcurrentDictionary<int, Role> roles {get; set;}
+        public ConcurrentDictionary<string, Role> roles {get; set;}
          public long _productIdCounter {get; set;}
         public int _purchaseIdCounter {get; set;}
 
@@ -70,16 +70,16 @@ namespace MarketBackend.Domain.Market_Client
         
     
 
-        public Product AddProduct(int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
+        public Product AddProduct(string userName, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
         {
-                    if(getRole(userId)!=null && getRole(userId).canAddProduct()) {
+                    if(getRole(userName)!=null && getRole(userName).canAddProduct()) {
 
                         int productId = GenerateUniqueProductId();
                         Product newProduct = new Product(productId, this._storeId, name, sellMethod, description, price, category, quantity, ageLimit);
                         AddProduct(newProduct);
                         return newProduct;
                     }
-                    else throw new Exception($"Permission exception for userId: {userId}");
+                    else throw new Exception($"Permission exception for userName: {userName}");
             
         }
 
@@ -101,13 +101,13 @@ namespace MarketBackend.Domain.Market_Client
             return int.Parse($"{_storeId}{_purchaseIdCounter++}");
         }
 
-        public void RemoveProduct(int userId, int productId)
+        public void RemoveProduct(string userName, int productId)
         {
-                if(getRole(userId)!=null && getRole(userId).canRemoveProduct()) {
+                if(getRole(userName)!=null && getRole(userName).canRemoveProduct()) {
                     Product productToRemove = GetProduct(productId);
                     RemoveProduct(productToRemove);  
                 }
-                else throw new Exception($"Permission exception for userId: {userId}");
+                else throw new Exception($"Permission exception for userName: {userName}");
                
         }
         private void RemoveProduct(Product p)
@@ -128,9 +128,9 @@ namespace MarketBackend.Domain.Market_Client
             }
         }
 
-        private Role getRole(int userId){
+        private Role getRole(string userName){
 
-        if (roles.TryGetValue(userId, out Role role))
+        if (roles.TryGetValue(userName, out Role role))
         {
             return role;
         }
@@ -140,35 +140,35 @@ namespace MarketBackend.Domain.Market_Client
         }
         }
 
-        public int AddDiscountPolicy(int userId, DateTime expirationDate, string subject, int ruledId, double precantage)
+        public int AddDiscountPolicy(string userName, DateTime expirationDate, string subject, int ruledId, double precantage)
         {
            
-             if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+             if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
                 {
                     IRule rule = GetRule(ruledId);
                     _discountPolicyManager.AddPolicy(_policyIdFactory++, expirationDate, CastProductOrCategory(subject), rule, precantage);
                     return rule.Id;
                 }
-                else throw new Exception($"Permission exception for userId: {userId}");
+                else throw new Exception($"Permission exception for userName: {userName}");
             
             
         }
 
-        public void AddCompositePolicy(int userId, DateTime expirationDate, string subject, NumericOperator Operator, List<int> policies)
+        public void AddCompositePolicy(string userName, DateTime expirationDate, string subject, NumericOperator Operator, List<int> policies)
         {
             
-                 if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+                 if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
                 {
                     _discountPolicyManager.AddCompositePolicy(_policyIdFactory, expirationDate, CastProductOrCategory(subject), Operator, policies);
                 }
-                else throw new Exception($"Permission exception for userId: {userId}");
+                else throw new Exception($"Permission exception for userName: {userName}");
            
         }
 
-        public void RemovePolicy(int userId, int policyId, string type)
+        public void RemovePolicy(string userName, int policyId, string type)
         {
             
-                if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+                if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
                 {
                     switch (type)
                     {
@@ -176,37 +176,37 @@ namespace MarketBackend.Domain.Market_Client
                         case "PurchasePolicy": _purchasePolicyManager.RemovePolicy(policyId); break;
                     }
                 }
-                else throw new Exception($"Permission exception for userId: {userId}");
+                else throw new Exception($"Permission exception for userName: {userName}");
             
         }
 
-        public void RemoveDiscountPolicy(int userId, int policyId)
+        public void RemoveDiscountPolicy(string userName, int policyId)
         {
            
-                if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+                if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
                 {
                     _discountPolicyManager.RemovePolicy(policyId);
                 }
-                else throw new Exception($"Permission exception for userId: {userId}");
+                else throw new Exception($"Permission exception for userName: {userName}");
             
         }
 
-        public void AddPurchasePolicy(int userId, DateTime expirationDate, string subject, int ruledId)
+        public void AddPurchasePolicy(string userName, DateTime expirationDate, string subject, int ruledId)
         {
-             if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+             if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
                 IRule rule = GetRule(ruledId);
                 _purchasePolicyManager.AddPolicy(_policyIdFactory++, expirationDate, CastProductOrCategory(subject), rule);
             }
-            else throw new Exception($"Permission exception for userId: {userId}");
+            else throw new Exception($"Permission exception for userName: {userName}");
         }
-        public void RemovePurchasePolicy(int userId, int policyId)
+        public void RemovePurchasePolicy(string userName, int policyId)
         {
-            if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+            if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
                 _purchasePolicyManager.RemovePolicy(policyId);
             }
-                else throw new Exception($"Permission exception for userId: {userId}");
+                else throw new Exception($"Permission exception for userName: {userName}");
             
         }
 
@@ -243,39 +243,39 @@ namespace MarketBackend.Domain.Market_Client
 
         }
 
-        public void CloseStore(int userId)
+        public void CloseStore(string userName)
         {
-            if(getRole(userId)!=null && getRole(userId).canCloseStore()) {
+            if(getRole(userName)!=null && getRole(userName).canCloseStore()) {
                 if (_active){
                 _active = false;
-                Event e = new StoreClosedEvent(this, userId);
+                Event e = new StoreClosedEvent(this, userName);
                 _eventManager.NotifySubscribers(e);
                 }
                 else {
                     throw new Exception("Store already closed.");
                 }
             }
-             else throw new Exception($"Permission exception for userId: {userId}");
+             else throw new Exception($"Permission exception for userName: {userName}");
         }
 
-        public void OpenStore(int userId)
+        public void OpenStore(string userName)
         {
-            if(getRole(userId)!=null && getRole(userId).canOpenStore()) {
+            if(getRole(userName)!=null && getRole(userName).canOpenStore()) {
                 if (!_active){
                 _active = true;
-                Event e = new StoreOpenEvent(this, userId);
+                Event e = new StoreOpenEvent(this, userName);
                 _eventManager.NotifySubscribers(e);
                 }
                 else {
                     throw new Exception("Store already opened.");
                 }
             }   
-             else throw new Exception($"Permission exception for userId: {userId}");
+             else throw new Exception($"Permission exception for userName: {userName}");
         }
 
-         public void UpdateProductPrice(int userId, int productID, double price)
+         public void UpdateProductPrice(string userName, int productID, double price)
         {
-           if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+           if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
                 Product productToUpdate = GetProduct(productID);
                 if (productToUpdate != null)
@@ -285,12 +285,12 @@ namespace MarketBackend.Domain.Market_Client
                 }
                 else throw new Exception("Invalid product Id");
             }
-            else throw new Exception($"Permission exception for userId: {userId}");
+            else throw new Exception($"Permission exception for userName: {userName}");
         }
 
-        public void UpdateProductQuantity(int userId, int productID, int qauntity)
+        public void UpdateProductQuantity(string userName, int productID, int qauntity)
         {
-            if(getRole(userId)!=null && getRole(userId).canUpdateProductQuantity())
+            if(getRole(userName)!=null && getRole(userName).canUpdateProductQuantity())
             {
                 Product productToUpdate = GetProduct(productID);
                 if (productToUpdate != null)
@@ -300,11 +300,11 @@ namespace MarketBackend.Domain.Market_Client
                 }
                 else throw new Exception("Invalid product Id");
             }
-            else throw new Exception(String.Format("Permission exception for userId: %d", userId));
+            else throw new Exception(String.Format("Permission exception for userName: %d", userName));
         }
 
 
-         public Purchase PurchaseBasket(int userId, Basket basket)
+         public Purchase PurchaseBasket(string identifier, Basket basket)
         {
             if (!_active)
                 throw new Exception($"Shop: {_storeName} is not active anymore");      
@@ -314,7 +314,7 @@ namespace MarketBackend.Domain.Market_Client
             _discountPolicyManager.Apply(basket);  
             RemoveBasketProductsFromSupply(basket);                
             double basketPrice = CalculateBasketPrice(basket);
-            Purchase pendingPurchase = new Purchase(GenerateUniquePurchaseId(), _storeId, userId, Basket.Clone(basket), basketPrice);
+            Purchase pendingPurchase = new Purchase(GenerateUniquePurchaseId(), _storeId, identifier, Basket.Clone(basket), basketPrice);
             _history.AddPurchase(pendingPurchase);
             Event e = new ProductSellEvent(this, pendingPurchase);
             _eventManager.NotifySubscribers(e);
@@ -393,13 +393,13 @@ namespace MarketBackend.Domain.Market_Client
             return _products.ToList().FindAll((p) =>  p.Category == category).ToHashSet();
         }
 
-        public List<Purchase> getHistory(int userId)
+        public List<Purchase> getHistory(string userName)
         {
-            if(getRole(userId)!=null && getRole(userId).canGetHistory())
+            if(getRole(userName)!=null && getRole(userName).canGetHistory())
             {
                 return _history._purchases.ToList();
             }
-            else throw new Exception($"Permission exception for userId: {userId}");
+            else throw new Exception($"Permission exception for userName: {userName}");
         }
 
         public string getInfo()
@@ -425,15 +425,15 @@ namespace MarketBackend.Domain.Market_Client
             }
         }
 
-        public void AddStaffMember(int roleUserId ,Role role, int userId){
-            if ((getRole(userId)!=null && getRole(userId).canAddStaffMember(role.getRoleName())) || (role.getRoleName() == RoleName.Founder && !checkForFounders() ))
+        public void AddStaffMember(string roleuserName ,Role role, string userName){
+            if ((getRole(userName)!=null && getRole(userName).canAddStaffMember(role.getRoleName())) || (role.getRoleName() == RoleName.Founder && !checkForFounders() ))
             {
-                roles.TryAdd(roleUserId, role);
-                Event e = new AddAppointmentEvent(this, userId, roleUserId, role);
+                roles.TryAdd(roleuserName, role);
+                Event e = new AddAppointmentEvent(this, userName, roleuserName, role);
                 _eventManager.NotifySubscribers(e);
                 //add to active user appointees list the newly appointed staff member
             }
-            else throw new Exception($"Permission exception for userId: {userId}");
+            else throw new Exception($"Permission exception for userName: {userName}");
 
         }
 
@@ -445,18 +445,18 @@ namespace MarketBackend.Domain.Market_Client
             _eventManager.Listeners["Remove Appointment Event"].Add(appointe);
         }
 
-        public void RemoveStaffMember(int roleUserId, int userId){
-            if(getRole(userId)!=null && getRole(userId).canRemoveStaffMember(getRole(roleUserId).getRoleName()))
+        public void RemoveStaffMember(string roleuserName, string userName){
+            if(getRole(userName)!=null && getRole(userName).canRemoveStaffMember(getRole(roleuserName).getRoleName()))
             {
-                if (roles.ContainsKey(roleUserId))
+                if (roles.ContainsKey(roleuserName))
                 {
-                    roles.TryRemove(new KeyValuePair<int, Role>(roleUserId, roles[roleUserId]));
-                    Event e = new RemoveAppointmentEvent(this, userId, roleUserId);
+                    roles.TryRemove(new KeyValuePair<string, Role>(roleuserName, roles[roleuserName]));
+                    Event e = new RemoveAppointmentEvent(this, userName, roleuserName);
                     _eventManager.NotifySubscribers(e);
                     //remove from active user appointees list the removed staff member
                 }
             }
-            else throw new Exception($"Permission exception for userId: {userId}");
+            else throw new Exception($"Permission exception for userName: {userName}");
 
         }
 
@@ -468,23 +468,23 @@ namespace MarketBackend.Domain.Market_Client
             GetProduct(productId).RemoveKeyword(keyWord);
         }
 
-        public void AddPermission(int userId, int toAddId, Permission permission)
+        public void AddPermission(string userName, string toAddUserName, Permission permission)
         {
-            if (getRole(userId) != null && getRole(userId).canEditPermissions())
+            if (getRole(userName) != null && getRole(userName).canEditPermissions())
             {
-                getRole(toAddId).addPermission(permission);
+                getRole(toAddUserName).addPermission(permission);
             }
-            else throw new Exception($"Permission exception for userId: {userId}");
+            else throw new Exception($"Permission exception for userName: {userName}");
 
         }
 
-        public void RemovePermission(int userId, int toRemoveId, Permission permission)
+        public void RemovePermission(string userName, string toRemoveUserName, Permission permission)
         {
-            if (getRole(userId) != null && getRole(userId).canEditPermissions())
+            if (getRole(userName) != null && getRole(userName).canEditPermissions())
             {
-                getRole(toRemoveId).addPermission(permission);
+                getRole(toRemoveUserName).addPermission(permission);
             }
-            else throw new Exception($"Permission exception for userId: {userId}");
+            else throw new Exception($"Permission exception for userName: {userName}");
 
         }
 
@@ -511,9 +511,9 @@ namespace MarketBackend.Domain.Market_Client
             return true;
         }
 
-        public int AddSimpleRule(int userId, string subject)
+        public int AddSimpleRule(string userName, string subject)
         {
-            if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+            if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
                 _storeRuleFactory.setFeatures(CastProductOrCategory(subject));
                 IRule newRule = _storeRuleFactory.makeRule(typeof(SimpleRule));
@@ -522,13 +522,13 @@ namespace MarketBackend.Domain.Market_Client
                 return newRule.Id;
 
             }
-            else throw new Exception($"Permission exception for userId: {userId}");
+            else throw new Exception($"Permission exception for userName: {userName}");
                
         }
 
-        public int AddQuantityRule(int userId, string subject, int minQuantity, int maxQuantity)
+        public int AddQuantityRule(string userName, string subject, int minQuantity, int maxQuantity)
         {
-            if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+            if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
                 if(minQuantity >= maxQuantity || minQuantity < 0 || maxQuantity < 0){
                     throw new Exception($"Illegal quantities");
@@ -540,12 +540,12 @@ namespace MarketBackend.Domain.Market_Client
                 return newRule.Id;
 
             }
-            else throw new Exception($"Permission exception for userId: {userId}");
+            else throw new Exception($"Permission exception for userName: {userName}");
            
         }
-         public int AddTotalPriceRule(int userId, string subject, int targetPrice)
+         public int AddTotalPriceRule(string userName, string subject, int targetPrice)
         {
-            if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+            if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
                 if(targetPrice < 0){
                     throw new Exception($"Negtive price.");
@@ -557,13 +557,13 @@ namespace MarketBackend.Domain.Market_Client
                 return newRule.Id;
 
             }
-            else throw new Exception($"Permission exception for userId: {userId}");
+            else throw new Exception($"Permission exception for userName: {userName}");
             
         }
 
-        public int AddCompositeRule(int userId, LogicalOperator Operator, List<int> rules)
+        public int AddCompositeRule(string userName, LogicalOperator Operator, List<int> rules)
         {
-            if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+            if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
                 List<IRule> rulesToAdd = new List<IRule>();
                 foreach (int id in rules)
@@ -576,55 +576,55 @@ namespace MarketBackend.Domain.Market_Client
                 RuleRepositoryRAM.GetInstance().Add(newRule);
                 return newRule.Id;
             }
-                else throw new Exception($"Permission exception for userId: {userId}");
+                else throw new Exception($"Permission exception for userName: {userName}");
         }
-        public void UpdateRuleSubject(int userId, int ruleId, string subject)
+        public void UpdateRuleSubject(string userName, int ruleId, string subject)
         {
-             if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+             if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
                 IRule rule = GetRule(ruleId);
                 rule.Subject = CastProductOrCategory(subject);
                 RuleRepositoryRAM.GetInstance().Update(rule);
             }
-            else throw new Exception($"Permission exception for userId: {userId}");
+            else throw new Exception($"Permission exception for userName: {userName}");
         }
-        public void UpdateRuleTargetPrice(int userId, int ruleId, int targetPrice)
+        public void UpdateRuleTargetPrice(string userName, int ruleId, int targetPrice)
         {
-            if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+            if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
                 IRule rule = GetRule(ruleId);
                 ((TotalPriceRule)rule).TotalPrice = targetPrice;
                 RuleRepositoryRAM.GetInstance().Update(rule);
             }
-            else throw new Exception($"Permission exception for userId: {userId}");   
+            else throw new Exception($"Permission exception for userName: {userName}");   
         }
-        public void UpdateCompositeOperator(int userId, int ruleId, LogicalOperator Operator)
+        public void UpdateCompositeOperator(string userName, int ruleId, LogicalOperator Operator)
         {
-            if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+            if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
                 IRule rule = GetRule(ruleId);
                 ((CompositeRule)rule).Operator = Operator;
                 RuleRepositoryRAM.GetInstance().Update(rule);
             }
-            else throw new Exception($"Permission exception for userId: {userId}");
+            else throw new Exception($"Permission exception for userName: {userName}");
            
         }
 
-        public void UpdateRuleQuantity(int userId, int ruleId, int minQuantity, int maxQuantity)
+        public void UpdateRuleQuantity(string userName, int ruleId, int minQuantity, int maxQuantity)
         {
-            if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+            if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
                 IRule rule = GetRule(ruleId);
                 ((QuantityRule)rule).MinQuantity = minQuantity;
                 ((QuantityRule)rule).MaxQuantity = maxQuantity;
                 RuleRepositoryRAM.GetInstance().Update(rule);
             }
-            else throw new Exception($"Permission exception for userId: {userId}");
+            else throw new Exception($"Permission exception for userName: {userName}");
         }
 
-         public void UpdateCompositeRules(int userId, int ruleId, List<int> rules)
+         public void UpdateCompositeRules(string userName, int ruleId, List<int> rules)
         {
-            if(getRole(userId)!=null && getRole(userId).canUpdateProductPrice())
+            if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
                 IRule rule = GetRule(ruleId);
                 ((CompositeRule)rule).Rules.Clear();
@@ -635,7 +635,7 @@ namespace MarketBackend.Domain.Market_Client
                 RuleRepositoryRAM.GetInstance().Update(rule);
 
                 }
-                else throw new Exception($"Permission exception for userId: {userId}");
+                else throw new Exception($"Permission exception for userName: {userName}");
         }
 
 

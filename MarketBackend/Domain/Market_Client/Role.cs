@@ -11,15 +11,15 @@ namespace MarketBackend.Domain.Market_Client
     {
         public RoleType role { get; }
         public int storeId { get; }
-        public int memberId { get; }
+        public string userName { get; }
         public Member appointer;
         public List<Member> appointees;
 
-        public Role(RoleType role, Member appointer, int storeId, int memberId) { 
+        public Role(RoleType role, Member appointer, int storeId, string userName) { 
             this.role = role;
             this.appointer = appointer;
             this.storeId = storeId;
-            this.memberId = memberId;
+            this.userName = userName;
             appointees = new List<Member>();
         }
 
