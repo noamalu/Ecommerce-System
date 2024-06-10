@@ -31,35 +31,31 @@ export const ItemCard: React.FC<ItemCard> = ({storeId, productId,itemName, descr
         )
 }
 
-//make an add to cart request or something
-const addToCart = async (storeId: number, productId: number) => {
-    try {
-        const tokenId = 123; //need to chnage token id
-        const response = await fetch(`https://localhost:7163/api/Client/Cart?tokenId=${tokenId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          id: productId, // Assuming you have productId and other necessary data
-          storeId: storeId,
-          quantity: 1 // Assuming you're adding one item at a time
-        })
-      });
-  
-      if (response.ok) {
-        const responseData = await response.json();
-        console.log('Cart update success:', responseData);
-        alert('Product added to cart successfully!');
-      } else {
-        console.error('Cart update failed:', response.statusText);
-        alert('Failed to add product to cart. Please try again later.');
-      }
-    } catch (error) {
-      console.error('Error occurred while adding to cart:', error);
-      alert('An error occurred while processing your request. Please try again later.');
+const addToCart =  (storeid: number, productId: number) => { 
+  const tokenId = 123;
+  fetch(`https://localhost:7163/api/Client/Cart?tokenId=${tokenId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+                storeId: storeid,
+                id: productId,
+                productName: "string", //should not be neccessary
+                price: 0, //should not be neccessary
+                quantity: 1,
+              })
+  }).then((r) => {
+    if (r.ok) {
+      console.log("put in cart worked")
+      return;
+    } else {
+      throw new Error('put in cart didnt work');
     }
-  };
-  
+  })
+  .catch((error) => {
+    window.alert(error.message);
+  });
+}
 
 export default ItemCard;

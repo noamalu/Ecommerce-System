@@ -43,19 +43,29 @@
 */
 
 body {
-  padding-top: 5vh;
-  /* background-color: brown; */
-  display:block;
+  padding-top: 6vh;
+  display:block !important;
   text-align: center;
-  
 }
 
 .flex {
   display: flex;
 }
 
+.small-padding {
+  padding-top: 2vh;
+}
+
 .full-height-row {
   height: 92vh;
+  width: 100vw;
+}
+
+.full-height {
+  height: 92vh;
+}
+
+.full-width {
   width: 100vw;
 }
 
