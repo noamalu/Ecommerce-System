@@ -1,12 +1,8 @@
 import React, {Component, useState, useEffect} from "react";
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
-import Button from 'react-bootstrap/Button';
-import Stack from 'react-bootstrap/Stack';
 import  Container  from "react-bootstrap/Container";
-import { useLocation } from 'react-router-dom';
 import ItemCard from "./ItemCard";
-import parse from 'html-react-parser';
 
 
 interface SearchResults {
@@ -34,6 +30,7 @@ export const SearchResults = ({query, filter}) => {
 
                 const data = await response.json();
                 setDataValue(data.value);
+                console.log(dataValue);
             } catch (error) {
                 console.error('Error:', error);
             }
@@ -46,7 +43,7 @@ export const SearchResults = ({query, filter}) => {
 
     return(
         <>
-            <Container className="flex">
+            <Container className="flex small-padding">
                 { <Row xs={1} md={Math.min(dataValue.length, 4)} className="g-4">
                 {dataValue.map((product) => (
                     <Col key={product.id}>
@@ -54,7 +51,8 @@ export const SearchResults = ({query, filter}) => {
                         description={product.description}
                         price={product.price} addToCart={function (storeId: number, productId: number): void {
                             throw new Error("Function not implemented.");
-                        } } storeId={product.storeId} productId={product.id}  />
+                        // } } storeId={product.storeId} productId={product.id}  />
+                        } } storeId={1} productId={product.id}  />
                     </Col>
                 ))}
               </Row> }

@@ -12,8 +12,6 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import {getLoggedIn} from '../services/SessionService';
 
 
-
-
 interface NavBarProps {
   loggedIn: boolean;
   setLoggedIn: (loggedIn: boolean) => void;
@@ -23,7 +21,6 @@ export const NavBar: React.FC<NavBarProps> = (props:{loggedIn : boolean, setLogg
   const [query, setQuery] = useState('');
     const [selectedFilter, setSelectedFilter] = useState('name');
     const navigate = useNavigate();
-
 
     // Function to handle the event when an option is clicked
     const handleFilterClick = (option: string) => {
