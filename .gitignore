@@ -602,3 +602,4 @@ EcommerceUI/ecommerceUI/package.json
 EcommerceUI/ecommerceUI/package-lock.json
 EcommerceUI/package-lock.json
 EcommerceUI/package.json
+/MarketBackend/DAL/ClientRepositoryRAM.cs

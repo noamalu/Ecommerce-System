@@ -16,8 +16,8 @@ namespace MarketBackend.Domain.Market_Client
     public class ClientManager
     {
         private static ClientManager Manager = null;
-        private static ConcurrentDictionary<int, Member> MemberxClientId {get; set;}
-        private static ConcurrentDictionary<int, Guest> ActiveGuests {get; set;}        
+        private static ConcurrentDictionary<string, Member> MemberxClientId {get; set;}
+        private static ConcurrentDictionary<string, Guest> ActiveGuests {get; set;}        
         private readonly IClientRepository _clientRepository;
         private readonly SecurityManager _security;
         private int UserCounter {get; set;}
@@ -26,8 +26,8 @@ namespace MarketBackend.Domain.Market_Client
         private ClientManager()
         {
             UserCounter = 1;
-            ActiveGuests = new ConcurrentDictionary<int, Guest>();
-            MemberxClientId = new ConcurrentDictionary<int, Member>();
+            ActiveGuests = new ConcurrentDictionary<string, Guest>();
+            MemberxClientId = new ConcurrentDictionary<string, Member>();
             _clientRepository = ClientRepositoryRAM.GetInstance();
             _security = SecurityManager.GetInstance();
         }
@@ -44,31 +44,31 @@ namespace MarketBackend.Domain.Market_Client
 
         }
 
-        public static bool CheckClientId(int clientId)
+        public static bool CheckClientId(string identifier)
         {
-            if (MemberxClientId.ContainsKey(clientId) || ActiveGuests.ContainsKey(clientId))
+            if (MemberxClientId.ContainsKey(identifier) || ActiveGuests.ContainsKey(identifier))
                 return true;
 
-            throw new KeyNotFoundException($"Client ID {clientId} not found in members or active guests.");
+            throw new KeyNotFoundException($"Client ID {identifier} not found in members or active guests.");
         }
 
-        public Client GetClientById(int clientId)
+        public Client GetClientById(string identifier)
         {
-            if (MemberxClientId.TryGetValue(clientId, out var member))
+            if (MemberxClientId.TryGetValue(identifier, out var member))
             {
                 return member;
             }
 
-            if (ActiveGuests.TryGetValue(clientId, out var guest))
+            if (ActiveGuests.TryGetValue(identifier, out var guest))
             {
                 return guest;
             }
 
             return null;
         }
-        public Guest GetGuestById(int clientId)
+        public Guest GetGuestById(string identiifer)
         {
-            if (ActiveGuests.TryGetValue(clientId, out var guest))
+            if (ActiveGuests.TryGetValue(identiifer, out var guest))
             {
                 return guest;
             }
@@ -76,29 +76,28 @@ namespace MarketBackend.Domain.Market_Client
             return null;
         }
 
-        public Member GetMemberById(int clientId)
+        public Member GetMemberById(string identifier)
         {
-            if (MemberxClientId.TryGetValue(clientId, out var member))
+            if (MemberxClientId.TryGetValue(identifier, out var member))
             {
                 return member;
             }            
-            throw new KeyNotFoundException($"Client ID {clientId} not found in members");
+            throw new KeyNotFoundException($"identifier={identifier} not found in members");
         }
 
-        public bool AddToCart(int clientId, int storeId, int productId, int quantity)
+        public bool AddToCart(string identifier, int storeId, int productId, int quantity)
         {
-            Client client = GetClientById(clientId);
+            Client client = GetClientById(identifier);
             client?.AddToCart(storeId ,productId, quantity);
             return client is not null;
         }
 
-        public Client Register(int id, string username, string password, string email, int age)
+        public Client Register(string username, string password, string email, int age)
         {
             try
             {
                 var newClient = CreateMember(username, password, email, age);
                 _clientRepository.Add(newClient);
-                MemberxClientId.TryAdd(newClient.Id, newClient);
                 return newClient;
             }
             catch (ArgumentException)
@@ -148,20 +147,20 @@ namespace MarketBackend.Domain.Market_Client
             return true;            
         }
 
-        public void RemoveFromCart(int clientId, int productId, int basketId, int quantity)
+        public void RemoveFromCart(string identifier, int productId, int basketId, int quantity)
         {
-            var client = GetClientById(clientId);
+            var client = GetClientById(identifier);
             client.RemoveFromCart(basketId, productId, quantity);
         }
 
-        public ShoppingCart ViewCart(int clientId)
+        public ShoppingCart ViewCart(string identifier)
         {
-            var client = GetClientById(clientId);
+            var client = GetClientById(identifier);
             return client.Cart;
         }
 
-        public bool IsMember(int clientId){
-            return MemberxClientId.ContainsKey(clientId);
+        public bool IsMember(string identifier){
+            return MemberxClientId.ContainsKey(identifier);
         }
 
         public Member GetSystemAdmin()
@@ -189,11 +188,13 @@ namespace MarketBackend.Domain.Market_Client
             }
         }
 
-        public void LoginClient(int id, string username, string password)
+        public void LoginClient(string username, string password)
         {
             try{
                 var client = _clientRepository.GetByUserName(username);
+                
                 if(_security.VerifyPassword(password, client.Password) && !client.IsLoggedIn){
+                    var id = _security.GenerateToken(username);
                     MemberxClientId.TryAdd(id, client);
                     client.IsLoggedIn = true;
                 }
@@ -205,35 +206,45 @@ namespace MarketBackend.Domain.Market_Client
             }
         }
 
-        public void LogoutClient(int id)
+        public void LogoutClient(string identifier)
         {
             try{
-                var client = GetMemberById(id);
+                if (_security.ValidateToken(identifier))
+                {
+                    var client = GetMemberById(identifier);
+
+                    if (client.IsLoggedIn)
+                    {
+                        client.IsLoggedIn = false;
+                        MemberxClientId.TryRemove(new(identifier, client));
+                    }
+                    else
+                    {
+                        throw new Exception($"{client.UserName} not logged in");
+                    }
+                }
+                else
+                {
+                    throw new Exception($"Invalid token");
+                }
                 
-                if(client.IsLoggedIn){
-                    client.IsLoggedIn = false;
-                    MemberxClientId.TryRemove(new(id, client));
-                }
-                else{
-                    throw new Exception($"{client.UserName} not logged in");
-                }
                     
             }catch(Exception){
                 throw;
             }
         }
 
-        public void BrowseAsGuest(int id)
+        public void BrowseAsGuest(string identifier)
         {
             var guest = new Guest(UserCounter);
-            ActiveGuests.TryAdd(id, guest);
+            ActiveGuests.TryAdd(identifier, guest);
             UserCounter++;
         }
 
-        public void DeactivateGuest(int id)
+        public void DeactivateGuest(string identifier)
         {
-            var client = GetGuestById(id);
-            ActiveGuests.TryRemove(id, out client);
+            var client = GetGuestById(identifier);
+            ActiveGuests.TryRemove(identifier, out client);
         }
 
 
@@ -245,18 +256,18 @@ namespace MarketBackend.Domain.Market_Client
             }
             return -1;       
         }
-        public bool CheckMemberIsLoggedIn(int clientId)
+        public bool CheckMemberIsLoggedIn(string identifier)
         {
-            if (MemberxClientId.TryGetValue(clientId, out var member))
+            if (MemberxClientId.TryGetValue(identifier, out var member))
             {
                 return member.IsLoggedIn;
             }            
-            throw new KeyNotFoundException($"Client ID {clientId} not found in members");
+            throw new KeyNotFoundException($"identifier= {identifier} not found in members");
         }
 
-        public List<ShoppingCartHistory> GetPurchaseHistoryByClient(int id)
+        public List<ShoppingCartHistory> GetPurchaseHistoryByClient(string identifier)
         {
-            return GetMemberById(id).GetHistory();
+            return GetMemberById(identifier).GetHistory();
         }
     }
    

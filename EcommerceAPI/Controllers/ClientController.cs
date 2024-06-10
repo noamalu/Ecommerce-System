@@ -144,7 +144,8 @@ namespace EcommerceAPI.Controllers
         [Route("Guest/Register")]
         public async Task<ActionResult<ServerResponse<string>>> Register([Required][FromQuery]int tokenId, [FromBody] ExtendedClientDto client)
         {
-            Response response = await Task.Run(() => _clientService.Register(tokenId, client.Username, client.Password, client.Email, client.Age));
+            string session = HttpContext.Session.Id;
+            Response response = await Task.Run(() => _clientService.Register(session, client.Username, client.Password, client.Email, client.Age));
             if (response.ErrorOccured)
             {
                 var registerResponse = new ServerResponse<string>

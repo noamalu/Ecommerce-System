@@ -12,21 +12,21 @@ namespace MarketBackend.Domain.Market_Client
 {
     public interface IMarketManagerFacade
     {
-        void Register(int id, string username, string password, string email, int age);
-        void EnterAsGuest(int id);
-        void PurchaseCart(int id, PaymentDetails paymentDetails, ShippingDetails shippingDetails);
-        int CreateStore(int id, string storeName, string email, string phoneNum);
-        bool ResToStoreManageReq(int id);
-        bool ResToStoreOwnershipReq(int id); //respond to store ownership request
-        void LogoutClient(int id);
+        void Register(string identifier, string username, string password, string email, int age);
+        void EnterAsGuest(string identifier);
+        void PurchaseCart(string identifier, PaymentDetails paymentDetails, ShippingDetails shippingDetails);
+        int CreateStore(string identifier, string storeName, string email, string phoneNum);
+        bool ResToStoreManageReq(string identifier);
+        bool ResToStoreOwnershipReq(string identifier); //respond to store ownership request
+        void LogoutClient(string identifier);
         void RemoveFromCart(int clientId, int productId, int basketId, int quantity);
-        ShoppingCart ViewCart(int id);
+        ShoppingCart ViewCart(string identifier);
         void AddToCart(int clientId, int storeId, int productId, int quantity);
 
-        void LoginClient(int id, string username, string password);
-        void ExitGuest(int id);
+        void LoginClient(string identifier, string username, string password);
+        void ExitGuest(string identifier);
         // void UpdateProductDiscount(int productId, double discount);
-        List<ShoppingCartHistory> GetPurchaseHistoryByClient(int id);
+        List<ShoppingCartHistory> GetPurchaseHistoryByClient(string identifier);
         List<Purchase> GetPurchaseHistoryByStore(int storeId, int userId);
         Product AddProduct(int storeId, int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit);
         void RemoveProduct(int storeId,int userId, int productId);

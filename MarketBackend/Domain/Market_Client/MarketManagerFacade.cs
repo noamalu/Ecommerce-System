@@ -345,9 +345,9 @@ namespace MarketBackend.Domain.Market_Client
 
         }
 
-        public void Register(int id, string username, string password, string email, int age)
+        public void Register(string username, string password, string email, int age)
         {
-            _clientManager.Register(id, username, password, email, age);
+            _clientManager.Register(username, password, email, age);
         }
 
         public void RemoveFromCart(int clientId, int productId, int basketId, int quantity)
