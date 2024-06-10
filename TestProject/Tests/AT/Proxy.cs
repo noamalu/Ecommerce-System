@@ -180,6 +180,23 @@ namespace MarketBackend.Tests.AT
             return !res.ErrorOccured;
         }
 
+        public bool AddSimpleRule(int clientId, int storeId,string subject){
+            Response res = marketService.AddSimpleRule(clientId, storeId, subject);
+            return !res.ErrorOccured;
+        }
+
+        public bool AddQuantityRule(int clientId, int storeId, string subject, int minQuantity, int maxQuantity){
+            Response res = marketService.AddQuantityRule(clientId, storeId, subject, minQuantity, maxQuantity);
+            return !res.ErrorOccured;
+        }
+
+        public bool AddTotalPriceRule(int clientId, int storeId, string subject, int targetPrice){
+            Response res = marketService.AddTotalPriceRule(clientId, storeId, subject, targetPrice);
+            return !res.ErrorOccured;
+        }
+
+
+
 
     }
 }
