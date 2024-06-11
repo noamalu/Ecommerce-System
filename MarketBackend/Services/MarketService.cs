@@ -29,77 +29,77 @@ namespace MarketBackend.Services
             _marketService = null;
         }
         
-        public Response AddManger(int activeId, int storeId, int toAddId)
+        public Response AddManger(string identifier, int storeId, string toAddUserName)
         {
             try
             {
-                marketManagerFacade.AddManger(activeId, storeId, toAddId);
-                logger.Info($"client {activeId} added {toAddId} as manager.");
+                marketManagerFacade.AddManger(identifier, storeId, toAddUserName);
+                logger.Info($"client {identifier} added {toAddUserName} as manager.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in adding {toAddId} by {activeId} as a manager. Error message: {e.Message}");
+                logger.Error($"Error in adding {toAddUserName} by {identifier} as a manager. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
 
-        public Response AddOwner(int activeId, int storeId, int toAddId)
+        public Response AddOwner(string identifier, int storeId, string toAddUserName)
         {
             try
             {
-                marketManagerFacade.AddOwner(activeId, storeId, toAddId);
-                logger.Info($"client {activeId} added {toAddId} as owner.");
+                marketManagerFacade.AddOwner(identifier, storeId, toAddUserName);
+                logger.Info($"client {identifier} added {toAddUserName} as owner.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in adding {toAddId} by {activeId} as a owner. Error message: {e.Message}");
+                logger.Error($"Error in adding {toAddUserName} by {identifier} as a owner. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
 
-        public Response AddPermission(int activeId, int storeId, int toAddId, Permission permission)
+        public Response AddPermission(string identifier, int storeId, string toAddUserName, Permission permission)
         {
             try
             {
-                marketManagerFacade.AddPermission(activeId, storeId, toAddId, permission);
-                logger.Info($"Client {activeId} added permission {permission} to client {toAddId} in store {storeId}.");
+                marketManagerFacade.AddPermission(identifier, storeId, toAddUserName, permission);
+                logger.Info($"Client {identifier} added permission {permission} to client {toAddUserName} in store {storeId}.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in adding permission {permission} by client {activeId} to client {toAddId} in store {storeId}. Error message: {e.Message}");
+                logger.Error($"Error in adding permission {permission} by client {identifier} to client {toAddUserName} in store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
 
-        public Response<int> AddProduct(int storeId, int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
+        public Response<int> AddProduct(int storeId, string identifier, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
         {
             try
             {
-                var product = marketManagerFacade.AddProduct(storeId, userId, name, sellMethod, description, price, category, quantity, ageLimit);
-                logger.Info($"Client {userId} added product {name} store {storeId} with sellmethod {sellMethod}, description {description}, category {category}, price {price}, quantity {quantity}, ageLimit {ageLimit}.");
+                var product = marketManagerFacade.AddProduct(storeId, identifier, name, sellMethod, description, price, category, quantity, ageLimit);
+                logger.Info($"Client {identifier} added product {name} store {storeId} with sellmethod {sellMethod}, description {description}, category {category}, price {price}, quantity {quantity}, ageLimit {ageLimit}.");
                 return Response<int>.FromValue(product._productid);
             }
             catch (Exception e)
             {
-                logger.Error($"Error in adding product {name} to store {storeId} by client {userId}, with  sellmethod {sellMethod}, description {description}, category {category}, price {price}, quantity {quantity}, ageLimit {ageLimit}. Error message: {e.Message}");
+                logger.Error($"Error in adding product {name} to store {storeId} by client {identifier}, with  sellmethod {sellMethod}, description {description}, category {category}, price {price}, quantity {quantity}, ageLimit {ageLimit}. Error message: {e.Message}");
                 return Response<int>.FromError(e.Message);
             }
         }
 
-        public Response CloseStore(int clientId, int storeId)
+        public Response CloseStore(string identifier, int storeId)
         {
             try
             {
-                marketManagerFacade.CloseStore(clientId, storeId);
-                logger.Info($"Client {clientId} closed store {storeId}");
+                marketManagerFacade.CloseStore(identifier, storeId);
+                logger.Info($"Client {identifier} closed store {storeId}");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in closing store {storeId} by client {clientId}. Error message: {e.Message}");
+                logger.Error($"Error in closing store {storeId} by client {identifier}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -179,56 +179,56 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response OpenStore(int clientId, int storeId)
+        public Response OpenStore(string identifier, int storeId)
         {
             try
             {
-                marketManagerFacade.OpenStore(clientId, storeId);
-                logger.Info($"client {clientId} opened store {storeId}.");
+                marketManagerFacade.OpenStore(identifier, storeId);
+                logger.Info($"client {identifier} opened store {storeId}.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in open store {storeId} by client {clientId}. Error message: {e.Message}");
+                logger.Error($"Error in open store {storeId} by client {identifier}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
 
-        public Response RemoveManger(int activeId, int storeId, int toRemoveId)
+        public Response RemoveManger(string identifier, int storeId, string toRemoveUserName)
         {
             try
             {
-                marketManagerFacade.RemoveManger(activeId, storeId, toRemoveId);
-                logger.Info($"client {activeId} removed manager of client {toRemoveId} in store {storeId}.");
+                marketManagerFacade.RemoveManger(identifier, storeId, toRemoveUserName);
+                logger.Info($"client {identifier} removed manager of client {toRemoveUserName} in store {storeId}.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in removing manager of client {toRemoveId} by client {activeId} in store {storeId}. Error message: {e.Message}");
+                logger.Error($"Error in removing manager of client {toRemoveUserName} by client {identifier} in store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
 
-        public Response RemoveOwner(int activeId, int storeId, int toRemoveId)
+        public Response RemoveOwner(string identifier, int storeId, string toRemoveUserName)
         {
             try
             {
-                marketManagerFacade.RemoveOwner(activeId, storeId, toRemoveId);
-                logger.Info($"client {activeId} removed owner of client {toRemoveId} in store {storeId}.");
+                marketManagerFacade.RemoveOwner(identifier, storeId, toRemoveUserName);
+                logger.Info($"client {identifier} removed owner of client {toRemoveUserName} in store {storeId}.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in removing owner of client {toRemoveId} by client {activeId} in store {storeId}. Error message: {e.Message}");
+                logger.Error($"Error in removing owner of client {toRemoveUserName} by client {identifier} in store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
 
-        public Response RemovePermission(int activeId, int storeId, int toRemoveId)
+        public Response RemovePermission(string identifier, int storeId, string toRemoveUserName, Permission permission)
         {
             try
             {
-                marketManagerFacade.RemovePermission(activeId, storeId, toRemoveId);
+                marketManagerFacade.RemovePermission(identifier, storeId, toRemoveUserName, permission);
                 //log
                 return new Response();
             }
@@ -239,47 +239,47 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response RemoveProduct(int storeId,int userId, int productId)
+        public Response RemoveProduct(int storeId,string identifier, int productId)
         {
             try
             {
-                marketManagerFacade.RemoveProduct(storeId, userId, productId);
-                logger.Info($"Client {userId} removed product {productId} from store {storeId}.");
+                marketManagerFacade.RemoveProduct(storeId, identifier, productId);
+                logger.Info($"Client {identifier} removed product {productId} from store {storeId}.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in removing product {productId} from store {storeId} by client {userId}. Error message: {e.Message}");
+                logger.Error($"Error in removing product {productId} from store {storeId} by client {identifier}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
 
-        public Response RemoveStaffMember(int storeId, int activeId, Role role, int toRemoveId)
+        public Response RemoveStaffMember(int storeId, string identifier, Role role, string toRemoveUserName)
         {
             try
             {
-                marketManagerFacade.RemoveStaffMember(storeId, activeId, role, toRemoveId);
-                logger.Info($"client {activeId} removed role {role} for client {toRemoveId} in store {storeId}");
+                marketManagerFacade.RemoveStaffMember(storeId, identifier, role, toRemoveUserName);
+                logger.Info($"client {identifier} removed role {role} for client {toRemoveUserName} in store {storeId}");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in removing role {role} for client {toRemoveId} by client {activeId} in store {storeId}. Error message: {e.Message}");
+                logger.Error($"Error in removing role {role} for client {toRemoveUserName} by client {identifier} in store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
 
-        public Response AddStaffMember(int storeId, int activeId, Role role, int toAddId)
+        public Response AddStaffMember(int storeId, string identifier, Role role, string toAddUserName)
         {
             try
             {
-                marketManagerFacade.AddStaffMember(storeId, activeId, role, toAddId);
-                logger.Info($"client {activeId} added role {role} for client {toAddId} in store {storeId}");
+                marketManagerFacade.AddStaffMember(storeId, identifier, role, toAddUserName);
+                logger.Info($"client {identifier} added role {role} for client {toAddUserName} in store {storeId}");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in adding role {role} for client {toAddId} by client {activeId} in store {storeId}. Error message: {e.Message}");
+                logger.Error($"Error in adding role {role} for client {toAddUserName} by client {identifier} in store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -299,11 +299,11 @@ namespace MarketBackend.Services
         //     }
         // }
 
-        public Response UpdateProductPrice(int storeId, int userId, int productId, double price)
+        public Response UpdateProductPrice(int storeId, string identifier,  int productId, double price)
         {
             try
             {
-                marketManagerFacade.UpdateProductPrice(storeId, userId, productId, price);
+                marketManagerFacade.UpdateProductPrice(storeId, identifier, productId, price);
                 logger.Info($"Product {productId} price was updated to {price}.");
                 return new Response();
             }
@@ -314,11 +314,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response UpdateProductQuantity(int storeId, int userId, int productId, int quantity)
+        public Response UpdateProductQuantity(int storeId, string identifier, int productId, int quantity)
         {
             try
             {
-                marketManagerFacade.UpdateProductQuantity(storeId, userId,productId, quantity);
+                marketManagerFacade.UpdateProductQuantity(storeId, identifier,productId, quantity);
                 logger.Info($"Product {productId} quantity was updated to {quantity}.");
                 return new Response();
             }
@@ -404,22 +404,22 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response PurchaseCart(int id, PaymentDetails paymentDetails, ShippingDetails shippingDetails)
+        public Response PurchaseCart(string identifier, PaymentDetails paymentDetails, ShippingDetails shippingDetails)
         {
              try
             {
-                marketManagerFacade.PurchaseCart(id, paymentDetails, shippingDetails);
-                logger.Info($"Purchase cart for client {id} succeed.");
+                marketManagerFacade.PurchaseCart(identifier, paymentDetails, shippingDetails);
+                logger.Info($"Purchase cart for client {identifier} succeed.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in purchase cart for client {id}. Error message: {e.Message}");
+                logger.Error($"Error in purchase cart for client {identifier}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
 
-        public Response AddKeyWord(int id, string keyWord, int storeId, int productId)
+        public Response AddKeyWord(string identifier, string keyWord, int storeId, int productId)
         {
              try
             {
@@ -434,25 +434,25 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response<List<PurchaseResultDto>> GetPurchaseHistory(int storeId, int clientId)
+        public Response<List<PurchaseResultDto>> GetPurchaseHistoryByStore(int storeId, string identifier)
         {
              try
             {
-                List<Purchase> purchases = marketManagerFacade.GetPurchaseHistoryByStore(storeId, clientId);
+                List<Purchase> purchases = marketManagerFacade.GetPurchaseHistoryByStore(storeId, identifier);
                 //log
                 return Response<List<PurchaseResultDto>>.FromValue(purchases.Select(purchase => new PurchaseResultDto(purchase)).ToList());
             }
             catch (Exception e)
             {
-                logger.Error($"Error in getting purchase history for store {storeId}, client {clientId}, Error message: {e.Message}");
+                logger.Error($"Error in getting purchase history for store {storeId}, client {identifier}, Error message: {e.Message}");
                 return Response<List<PurchaseResultDto>>.FromError(e.Message);
             }
         }
-        public Response RemovePolicy (int clientId, int storeId, int policyID,string type)
+        public Response RemovePolicy (string identifier, int storeId, int policyID,string type)
         {
             try
             {
-                marketManagerFacade.RemovePolicy(clientId, storeId, policyID, type);
+                marketManagerFacade.RemovePolicy(identifier, storeId, policyID, type);
                 logger.Info($"Remove policy {policyID} for store {storeId} succeed.");
                 return new Response();
             }
@@ -462,11 +462,11 @@ namespace MarketBackend.Services
                 return new Response(e.Message);
             }
         }
-        public Response<int> AddSimpleRule(int clientId, int storeId,string subject)
+        public Response<int> AddSimpleRule(string identifier, int storeId,string subject)
         {
             try
             {
-                int rule = marketManagerFacade.AddSimpleRule(clientId, storeId, subject);
+                int rule = marketManagerFacade.AddSimpleRule(identifier, storeId, subject);
                 logger.Info($"Add simple rule for store {storeId} succeed.");
                 return Response<int>.FromValue(rule);
             }
@@ -476,11 +476,11 @@ namespace MarketBackend.Services
                 return Response<int>.FromError(e.Message);
             }
         }
-        public Response<int> AddQuantityRule(int clientId, int storeId, string subject, int minQuantity, int maxQuantity)
+        public Response<int> AddQuantityRule(string identifier, int storeId, string subject, int minQuantity, int maxQuantity)
         {
             try
             {
-                int rule = marketManagerFacade.AddQuantityRule(clientId, storeId, subject, minQuantity, maxQuantity);
+                int rule = marketManagerFacade.AddQuantityRule(identifier, storeId, subject, minQuantity, maxQuantity);
                 logger.Info($"Add quantity rule for store {storeId} succeed.");
                 return Response<int>.FromValue(rule);
             }
@@ -490,11 +490,11 @@ namespace MarketBackend.Services
                 return Response<int>.FromError(e.Message);
             }
         }
-        public Response<int> AddTotalPriceRule(int clientId, int storeId, string subject, int targetPrice)
+        public Response<int> AddTotalPriceRule(string identifier, int storeId, string subject, int targetPrice)
         {
             try
             {
-                int rule = marketManagerFacade.AddTotalPriceRule(clientId, storeId, subject, targetPrice);
+                int rule = marketManagerFacade.AddTotalPriceRule(identifier, storeId, subject, targetPrice);
                 logger.Info($"Add total price rule for store {storeId} succeed.");
                 return Response<int>.FromValue(rule);
             }
@@ -504,11 +504,11 @@ namespace MarketBackend.Services
                 return Response<int>.FromError(e.Message);
             }
         }
-        public Response<int> AddCompositeRule(int clientId, int storeId, int Operator, List<int> rules)
+        public Response<int> AddCompositeRule(string identifier, int storeId, int Operator, List<int> rules)
         {
             try
             {
-                int rule = marketManagerFacade.AddCompositeRule(clientId, storeId, Operator, rules);
+                int rule = marketManagerFacade.AddCompositeRule(identifier, storeId, Operator, rules);
                 logger.Info($"Add composite rule for store {storeId} succeed.");
                 return Response<int>.FromValue(rule);
             }
@@ -518,11 +518,11 @@ namespace MarketBackend.Services
                 return Response<int>.FromError(e.Message);
             }
         }
-        public Response UpdateRuleSubject(int clientId, int storeId, int ruleId, string subject)
+        public Response UpdateRuleSubject(string identifier, int storeId, int ruleId, string subject)
         {
             try
             {
-                marketManagerFacade.UpdateRuleSubject(clientId, storeId, ruleId, subject);
+                marketManagerFacade.UpdateRuleSubject(identifier, storeId, ruleId, subject);
                 logger.Info($"Update rule subject for rule {ruleId} in store {storeId} succeed.");
                 return new Response();
             }
@@ -532,11 +532,11 @@ namespace MarketBackend.Services
                 return new Response(e.Message);
             }
         }
-        public Response UpdateRuleQuantity(int clientId, int storeId, int ruleId, int minQuantity, int maxQuantity)
+        public Response UpdateRuleQuantity(string identifier, int storeId, int ruleId, int minQuantity, int maxQuantity)
         {
             try
             {
-                marketManagerFacade.UpdateRuleQuantity(clientId, storeId, ruleId, minQuantity, maxQuantity);
+                marketManagerFacade.UpdateRuleQuantity(identifier, storeId, ruleId, minQuantity, maxQuantity);
                 logger.Info($"Update rule quantity for rule {ruleId} in store {storeId} succeed.");
                 return new Response();
             }
@@ -546,11 +546,11 @@ namespace MarketBackend.Services
                 return new Response(e.Message);
             }
         }
-        public Response UpdateRuleTargetPrice(int clientId, int storeId, int ruleId, int targetPrice)
+        public Response UpdateRuleTargetPrice(string identifier, int storeId, int ruleId, int targetPrice)
         {
             try
             {
-                marketManagerFacade.UpdateRuleTargetPrice(clientId, storeId, ruleId, targetPrice);
+                marketManagerFacade.UpdateRuleTargetPrice(identifier, storeId, ruleId, targetPrice);
                 logger.Info($"Update rule target price for rule {ruleId} in store {storeId} succeed.");
                 return new Response();
             }
@@ -560,11 +560,11 @@ namespace MarketBackend.Services
                 return new Response(e.Message);
             }
         }
-        public Response UpdateCompositeOperator(int clientId, int storeId, int ruleId, int Operator)
+        public Response UpdateCompositeOperator(string identifier, int storeId, int ruleId, int Operator)
         {
             try
             {
-                marketManagerFacade.UpdateCompositeOperator(clientId, storeId, ruleId, Operator);
+                marketManagerFacade.UpdateCompositeOperator(identifier, storeId, ruleId, Operator);
                 logger.Info($"Update composite operator for rule {ruleId} in store {storeId} succeed.");
                 return new Response();
             }
@@ -574,11 +574,11 @@ namespace MarketBackend.Services
                 return new Response(e.Message);
             }
         }
-        public Response UpdateCompositeRules(int clientId, int storeId, int ruleId, List<int> rules)
+        public Response UpdateCompositeRules(string identifier, int storeId, int ruleId, List<int> rules)
         {
             try
             {
-                marketManagerFacade.UpdateCompositeRules(clientId, storeId, ruleId, rules);
+                marketManagerFacade.UpdateCompositeRules(identifier, storeId, ruleId, rules);
                 logger.Info($"Update composite rules for rule {ruleId} in store {storeId} succeed.");
                 return new Response();
             }
@@ -588,11 +588,11 @@ namespace MarketBackend.Services
                 return new Response(e.Message);
             }
         }
-        public Response AddPurchasePolicy(int clientId, int storeId, DateTime expirationDate, string subject, int ruleId)
+        public Response AddPurchasePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int ruleId)
         {
             try
             {
-                marketManagerFacade.AddPurchasePolicy(clientId, storeId, expirationDate, subject, ruleId);
+                marketManagerFacade.AddPurchasePolicy(identifier, storeId, expirationDate, subject, ruleId);
                 logger.Info($"Add purchase policy for store {storeId} succeed.");
                 return new Response();
             }
@@ -602,11 +602,11 @@ namespace MarketBackend.Services
                 return new Response(e.Message);
             }
         }
-        public Response<int> AddDiscountPolicy(int clientId, int storeId, DateTime expirationDate, string subject, int ruleId, double precentage)
+        public Response<int> AddDiscountPolicy(string identifier, int storeId, DateTime expirationDate, string subject, int ruleId, double precentage)
         {
             try
             {
-                int policy = marketManagerFacade.AddDiscountPolicy(clientId, storeId, expirationDate, subject, ruleId, precentage);
+                int policy = marketManagerFacade.AddDiscountPolicy(identifier, storeId, expirationDate, subject, ruleId, precentage);
                 logger.Info($"Add discount policy for store {storeId} succeed.");
                 return Response<int>.FromValue(policy);
             }
@@ -616,11 +616,11 @@ namespace MarketBackend.Services
                 return Response<int>.FromError(e.Message);
             }
         }
-        public Response AddCompositePolicy(int clientId, int storeId, DateTime expirationDate, string subject, int Operator, List<int> policies)
+        public Response AddCompositePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int Operator, List<int> policies)
         {
             try
             {
-                marketManagerFacade.AddCompositePolicy(clientId, storeId, expirationDate, subject, Operator, policies);
+                marketManagerFacade.AddCompositePolicy(identifier, storeId, expirationDate, subject, Operator, policies);
                 logger.Info($"Add composite policy for store {storeId} succeed.");
                 return new Response();
             }

@@ -12,18 +12,18 @@ namespace MarketBackend.Services.Interfaces
 {
     public interface IClientService
     {
-        public Response Register(int id, string username, string password, string email, int age);
-        public Response EnterAsGuest(int id);
-        public Response CreateStore(int id, string storeName, string email, string phoneNum);
-        public Response<bool> ResToStoreManageReq(int id);
-        public Response<bool> ResToStoreOwnershipReq(int id); //respond to store ownership request
-        public Response LogoutClient(int id);
-        public Response RemoveFromCart(int clientId, int productId, int basketId, int quantity);
-        public Response<ShoppingCartResultDto> ViewCart(int id);
-        public Response AddToCart(int clientId, int storeId, int productId, int quantity);
-        public Response LoginClient(int clientId, string username, string password);
-        public Response ExitGuest(int id);
-        public Response<List<ShoppingCartResultDto>> GetPurchaseHistory(int id);
+        public Response Register(string username, string password, string email, int age);
+        public Response<string> EnterAsGuest(string identifier);
+        public Response CreateStore(string identifier, string storeName, string email, string phoneNum);
+        public Response<bool> ResToStoreManageReq(string identifier);
+        public Response<bool> ResToStoreOwnershipReq(string identifier); //respond to store ownership request
+        public Response LogoutClient(string identifier);
+        public Response RemoveFromCart(string identifier, int productId, int basketId, int quantity);
+        public Response<ShoppingCartResultDto> ViewCart(string identifier);
+        public Response AddToCart(string identifier, int storeId, int productId, int quantity);
+        public Response<string> LoginClient(string username, string password);
+        public Response ExitGuest(string identifier);
+        public Response<List<ShoppingCartResultDto>> GetPurchaseHistoryByClient(string userName);
         public Response EditPurchasePolicy(int storeId);
     }
 }

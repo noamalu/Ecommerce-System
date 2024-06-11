@@ -10,7 +10,11 @@ namespace MarketBackend.Tests.AT
     public class UserGuestAT
     {
         string userName = "user1";
+        string session1 = "1";
+        string token1;
         string userName2 = "user2";
+        string session2 = "2";
+        string token2;
         string userPassword = "pass1";
         string pass2 = "pass2";
         string email1 = "printz@post.bgu.ac.il";
@@ -31,77 +35,75 @@ namespace MarketBackend.Tests.AT
         [TestCleanup]
         public void CleanUp(){
             proxy.Dispose();
-            proxy.ExitGuest(userId);
+            proxy.ExitGuest(session1);
         }
 
         [TestMethod]
         public void EnterAsGuestSuccess(){
-            Assert.IsFalse(proxy.Login(userId, userName, userPassword));
-            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
+            Assert.IsFalse(proxy.Login(userName, userPassword));
+            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge));
         }
 
         [TestMethod]
         public void RegisterSuccess(){
-            Assert.IsTrue(proxy.EnterAsGuest(userId));
-            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
+            Assert.IsTrue(proxy.EnterAsGuest(session1));
+            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge));
         }
 
         [TestMethod]
         public void RegisterFail_RegisterTwice(){
-            Assert.IsTrue(proxy.EnterAsGuest(userId));
-            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-            Assert.IsFalse(proxy.Register(userId, userName, userPassword, email1, userAge));
+            Assert.IsTrue(proxy.EnterAsGuest(session1));
+            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge));
+            Assert.IsFalse(proxy.Register(userName, userPassword, email1, userAge));
         }
 
         [TestMethod]
         public void RegisterFail_WrongEmail(){
-            Assert.IsTrue(proxy.EnterAsGuest(userId));
-            Assert.IsFalse(proxy.Register(userId, userName, userPassword, wrongEmail, userAge));
+            Assert.IsTrue(proxy.EnterAsGuest(session1));
+            Assert.IsFalse(proxy.Register(userName, userPassword, wrongEmail, userAge));
         }
 
         [TestMethod]
         public void LoginSuccess(){
-            Assert.IsTrue(proxy.EnterAsGuest(userId));
-            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
+            Assert.IsTrue(proxy.EnterAsGuest(session1));
+            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge));
+            Assert.IsTrue(proxy.Login(userName, userPassword));
         }
 
         [TestMethod]
         public void LoginFail_NotRegister(){
-            Assert.IsTrue(proxy.EnterAsGuest(userId));
-            Assert.IsFalse(proxy.Login(userId, userName, userPassword));
+            Assert.IsTrue(proxy.EnterAsGuest(session1));
+            Assert.IsFalse(proxy.Login(userName, userPassword));
         }
 
         [TestMethod]
         public void LoginFail_WrongUserName(){
-            Assert.IsTrue(proxy.EnterAsGuest(userId));
-            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-            Assert.IsFalse(proxy.Login(userId, userName2, userPassword));
+            Assert.IsTrue(proxy.EnterAsGuest(session1));
+            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge));
+            Assert.IsFalse(proxy.Login(userName2, userPassword));
         }
 
         [TestMethod]
         public void LoginFail_WrongPassword(){
-            Assert.IsTrue(proxy.EnterAsGuest(userId));
-            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-            Assert.IsFalse(proxy.Login(userId, userName, pass2));
+            Assert.IsTrue(proxy.EnterAsGuest(session1));
+            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge));
+            Assert.IsFalse(proxy.Login(userName, pass2));
         }
 
         [TestMethod]
         public void LogOutSuccess(){
-            Assert.IsTrue(proxy.EnterAsGuest(userId));
-            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-            Assert.IsTrue(proxy.Login(userId, userName, userPassword));
+            Assert.IsTrue(proxy.EnterAsGuest(session1));
+            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge));
+            string token1 = proxy.LoginWithToken(userName, userPassword);
             proxy.GetMembeIDrByUserName(userName);
-            Assert.IsTrue(proxy.LogOut(userId));
+            Assert.IsTrue(proxy.LogOut(token1));
         }
 
         [TestMethod]
         public void LogOutFail_NotLoggedIn(){
-            Assert.IsTrue(proxy.EnterAsGuest(userId));
-            Assert.IsTrue(proxy.Register(userId, userName, userPassword, email1, userAge));
-            Assert.IsFalse(proxy.LogOut(userId));
+            Assert.IsTrue(proxy.EnterAsGuest(session1));
+            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge));
+            Assert.IsFalse(proxy.LogOut(session1));
         }
-
-
     }
 }

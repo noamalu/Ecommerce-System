@@ -3,12 +3,12 @@ namespace MarketBackend.Domain.Market_Client
 {
     public class StoreOpenEvent : Event
     {
-        private int _member;
+        private string _member;
         private Store _store;
 
-        public StoreOpenEvent(Store store, int member) : base("Store Open Event")
+        public StoreOpenEvent(Store store, string userName) : base("Store Open Event")
         {
-            _member = member;
+            _member = userName;
             _store = store;
         }
 

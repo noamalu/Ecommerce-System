@@ -13,13 +13,17 @@ namespace UnitTests
         Role founder;
         Role owner;
         Role manager;
+        string username0 = "username0";
+        string username1 = "username1";
+        string username2 = "username2";
+
 
         [TestInitialize]
         public void SetUp()
         {
-            founder = new Role(new Founder(RoleName.Founder), null, 0, 0);
-            owner = new Role(new Owner(RoleName.Owner), null, 0, 1);
-            manager = new Role(new StoreManagerRole(RoleName.Manager), null, 0, 2);
+            founder = new Role(new Founder(RoleName.Founder), null, 0, username0);
+            owner = new Role(new Owner(RoleName.Owner), null, 0, username1);
+            manager = new Role(new StoreManagerRole(RoleName.Manager), null, 0, username2);
         }
 
         [TestMethod]

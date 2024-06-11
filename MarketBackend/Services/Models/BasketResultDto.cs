@@ -14,8 +14,8 @@ namespace MarketBackend.Services.Models
         public double Price { get; set; }
 
         public BasketResultDto(Basket basket){
-            var store = StoreRepositoryRAM.GetInstance().GetById(StoreId);
             StoreId = basket._storeId;
+            var store = StoreRepositoryRAM.GetInstance().GetById(StoreId);
             Price = store.CalculateBasketPrice(basket);
             Products = store.Products.Where(product => basket.products.Keys.Contains(product.ProductId))
                 .Select(product => new ProductResultDto(product){Quantity = basket.products[product.ProductId]}).ToList();

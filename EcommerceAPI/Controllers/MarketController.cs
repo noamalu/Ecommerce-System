@@ -66,10 +66,10 @@ namespace EcommerceAPI.Controllers
 
         // [HttpPost]
         // [Route("Staff")]
-        // public async Task<ObjectResult> Appoint([Required][FromQuery]int tokenId, [FromBody] StaffMemberDto staffMember)
+        // public async Task<ObjectResult> Appoint([Required][FromQuery]string identifier, [FromBody] StaffMemberDto staffMember)
         // {
         //     var role = GetRoleByName(staffMember.Role);
-        //     Response<int> response = await Task.Run(() => _marketService.AddStaffMember(staffMember.StoreId, tokenId, new Role(new(role), new(), staffMember.StoreId, staffMember.Id), staffMember.Id));
+        //     Response<int> response = await Task.Run(() => _marketService.AddStaffMember(staffMember.StoreId, identifier, new Role(new(role), new(), staffMember.StoreId, staffMember.Id), staffMember.Id));
             
         //     if (response.ErrorOccured)
         //     {
@@ -104,9 +104,9 @@ namespace EcommerceAPI.Controllers
         }
         // [HttpPost]
         // [Route("remove-appoint")]
-        // public async Task<ObjectResult> RemoveAppoint([Required][FromQuery]int tokenId, [FromBody] StaffMemberDto staffMember)
+        // public async Task<ObjectResult> RemoveAppoint([Required][FromQuery]string identifier, [FromBody] StaffMemberDto staffMember)
         // {
-        //     Response response = await Task.Run(() => _marketService.RemoveStaffMember(staffMember.StoreId, tokenId, staffMember.Id));
+        //     Response response = await Task.Run(() => _marketService.RemoveStaffMember(staffMember.StoreId, identifier, staffMember.Id));
         //     if (response.ErrorOccured)
         //     {
         //         var removeAppointResponse = new ServerResponse<string>
@@ -150,9 +150,9 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Store/{storeId}/Close")]
-        public async Task<ObjectResult> CloseStore([Required][FromQuery]int tokenId, [FromRoute] int storeId)
+        public async Task<ObjectResult> CloseStore([Required][FromQuery]string identifier, [FromRoute] int storeId)
         {
-            Response response = await Task.Run(() => _marketService.CloseStore(tokenId, storeId));
+            Response response = await Task.Run(() => _marketService.CloseStore(identifier, storeId));
             if (response.ErrorOccured)
             {
                 var closeShopResponse = new ServerResponse<string>
@@ -173,9 +173,9 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Store/{storeId}/Open")]
-        public async Task<ObjectResult> OpenStore([Required][FromQuery]int tokenId, [FromRoute] int storeId)
+        public async Task<ObjectResult> OpenStore([Required][FromQuery]string identifier, [FromRoute] int storeId)
         {
-            Response response = await Task.Run(() => _marketService.OpenStore(tokenId, storeId));
+            Response response = await Task.Run(() => _marketService.OpenStore(identifier, storeId));
             if (response.ErrorOccured)
             {
                 var openShopResponse = new ServerResponse<string>
@@ -196,12 +196,12 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Purchase")]
-        public async Task<ObjectResult> PurchaseCart([Required][FromQuery]int tokenId, [FromBody] PurchaseDto purchaseInfo)
+        public async Task<ObjectResult> PurchaseCart([Required][FromQuery]string identifier, [FromBody] PurchaseDto purchaseInfo)
         {
             if(!purchaseInfo.IsValid()) return BadRequest("all fileds are required");
             var shippingDetails = purchaseInfo.ShippingInfo();
             var paymentDetails = purchaseInfo.PaymentInfo();
-            Response response = await Task.Run(() => _marketService.PurchaseCart(tokenId, paymentDetails, shippingDetails));
+            Response response = await Task.Run(() => _marketService.PurchaseCart(identifier, paymentDetails, shippingDetails));
             if (response.ErrorOccured)
             {
                 var purchaseBasketResponse = new ServerResponse<string>
@@ -222,10 +222,10 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Store/{storeId}/Products/Remove")]
-        public async Task<ObjectResult> RemoveProduct([Required][FromQuery]int tokenId, [FromRoute] int storeId, [FromBody] ProductDto product)
+        public async Task<ObjectResult> RemoveProduct([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] ProductDto product)
         {
             if(product.Id is null) return BadRequest("product must contain id");
-            Response response = await Task.Run(() => _marketService.RemoveProduct(tokenId, storeId, (int)product.Id));
+            Response response = await Task.Run(() => _marketService.RemoveProduct(storeId, identifier, (int)product.Id));
             if (response.ErrorOccured)
             {
                 return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
@@ -238,10 +238,10 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Store/{storeId}/Products/Add")]
-        public async Task<ActionResult<int>> AddProduct([Required][FromQuery]int tokenId, [FromRoute] int storeId, [FromBody] ProductDto product)
+        public async Task<ActionResult<int>> AddProduct([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] ProductDto product)
         {
             if(!product.IsValidCreate()) return BadRequest("product must contain store id and product name");
-            Response<int> response = await Task.Run(() => _marketService.AddProduct(storeId, tokenId, product.ProductName, product.SellMethod, product.ProductDescription, (double)product.Price, product.Category, product.Quantity, product.AgeLimit));
+            Response<int> response = await Task.Run(() => _marketService.AddProduct(storeId, identifier, product.ProductName, product.SellMethod, product.ProductDescription, (double)product.Price, product.Category, product.Quantity, product.AgeLimit));
             if (response.ErrorOccured)
             {
                 var addProductResponse = new ServerResponse<string>
@@ -262,23 +262,28 @@ namespace EcommerceAPI.Controllers
         
         [HttpPut]
         [Route("Store/{storeId}/Products/{productId}")]
-        public async Task<ObjectResult> UpdateProduct([Required][FromQuery]int tokenId, [FromRoute] int storeId, [FromRoute] int productId, [FromBody] ProductDto product)
+        public async Task<ObjectResult> UpdateProduct([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromRoute] int productId, [FromBody] ProductDto product)
         {
-            Response response = product.Price is not null ? await Task.Run(() => _marketService.UpdateProductPrice(tokenId, storeId, productId, (double)product.Price)) : await Task.Run(() => _marketService.UpdateProductQuantity(tokenId, storeId, productId, product.Quantity));
-            if (response.ErrorOccured)
-            {
-                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
-            }
-            else
-            {
-                return Ok(ServerResponse<string>.OkResponse("update product success"));
+            List<Task<Response>> tasks =
+            [
+                Task.Run(() => _marketService.UpdateProductPrice(storeId, identifier, productId, (double)product.Price)),
+                Task.Run(() => _marketService.UpdateProductQuantity(storeId, identifier, productId, product.Quantity)),
+            ];
+            var responses = await Task.WhenAll(tasks.ToArray());
 
+            if (responses.Any(response => response.ErrorOccured))
+            {
+                foreach(var response in responses){
+                    if(response.ErrorOccured)
+                        return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+                }
             }
+            return Ok(ServerResponse<string>.OkResponse("update product success"));
         }                        
 
         [HttpGet]
         [Route("Search/KeyWords")]
-        public ActionResult<Response<List<ProductResultDto>>> SearchByKeywords([Required][FromQuery]int tokenId, [FromQuery] List<string> keyword)
+        public ActionResult<Response<List<ProductResultDto>>> SearchByKeywords([Required][FromQuery]string identifier, [FromQuery] List<string> keyword)
         {
             var products = new List<ProductResultDto>();
             foreach(var word in keyword){
@@ -296,7 +301,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpGet]
         [Route("Search/Name")]
-        public ActionResult<Response<List<ProductResultDto>>> SearchByNames([Required][FromQuery]int tokenId, [FromQuery] List<string> name)
+        public ActionResult<Response<List<ProductResultDto>>> SearchByNames([Required][FromQuery]string identifier, [FromQuery] List<string> name)
         {
             var products = new List<ProductResultDto>();
             foreach(var word in name){
@@ -314,7 +319,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpGet]
         [Route("Search/Category")]
-        public ActionResult<Response<List<ProductResultDto>>> SearchByCategory([Required][FromQuery]int tokenId, [FromQuery] List<string> category)
+        public ActionResult<Response<List<ProductResultDto>>> SearchByCategory([Required][FromQuery]string identifier, [FromQuery] List<string> category)
         {
             var products = new List<ProductResultDto>();
             foreach(var word in category){
@@ -333,9 +338,9 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Store/{storeId}/PurchuseHistory")]
-        public ActionResult<Response<List<PurchaseResultDto>>> ShowShopPurchaseHistory([Required][FromQuery]int tokenId, [FromRoute] int storeId)
+        public ActionResult<Response<List<PurchaseResultDto>>> ShowShopPurchaseHistory([Required][FromQuery]string identifier, [FromRoute] int storeId)
         {
-            Response<List<PurchaseResultDto>> response = _marketService.GetPurchaseHistory(storeId, tokenId);
+            Response<List<PurchaseResultDto>> response = _marketService.GetPurchaseHistoryByStore(storeId, identifier);
             if (response.ErrorOccured)
             {
                 return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));

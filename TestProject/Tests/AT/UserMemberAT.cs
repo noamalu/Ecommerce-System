@@ -2,6 +2,7 @@ using System.IO.Compression;
 using MarketBackend.Domain.Payment;
 using MarketBackend.Domain.Shipping;
 using MarketBackend.Services;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -11,7 +12,11 @@ namespace MarketBackend.Tests.AT
     public class UserMemberAT
     {
         string userName = "user1";
+        string session1 = "1";
+        string token1;
         string userName2 = "user2";
+        string session2 = "2";
+        string token2;
         string userPassword = "pass1";
         string pass2 = "pass2";
         string email1 = "printz@post.bgu.ac.il";
@@ -55,14 +60,14 @@ namespace MarketBackend.Tests.AT
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
             proxy.InitiateSystemAdmin();
-            proxy.EnterAsGuest(userId);
-            proxy.Register(userId, userName, userPassword, email1, userAge);
-            proxy.Login(userId, userName, userPassword);
+            proxy.EnterAsGuest(session1);
+            proxy.Register(userName, userPassword, email1, userAge);
+            token1 = proxy.LoginWithToken(userName, userPassword);
             userId = proxy.GetMembeIDrByUserName(userName);
             int userId2 = proxy.GetUserId();
-            proxy.EnterAsGuest(userId2);
-            proxy.Register(userId2, userName2, pass2, email2, userAge);
-            proxy.Login(userId2, userName2, pass2);
+            proxy.EnterAsGuest(session2);
+            proxy.Register(userName2, pass2, email2, userAge);
+            token2 = proxy.LoginWithToken(userName2, pass2);
             userId2 = proxy.GetMembeIDrByUserName(userName2);
         }
 
@@ -74,13 +79,13 @@ namespace MarketBackend.Tests.AT
 
         [TestMethod]
         public void LogOutSuccess(){
-            Assert.IsTrue(proxy.LogOut(userId));
+            Assert.IsTrue(proxy.LogOut(token1));
         }
 
         [TestMethod]
         public void LogOutFail_NotLoggedIn(){
-            proxy.LogOut(userId);
-            Assert.IsFalse(proxy.LogOut(userId));
+            proxy.LogOut(token1);
+            Assert.IsFalse(proxy.LogOut(token1));
         }
 
         [TestMethod]
@@ -91,30 +96,30 @@ namespace MarketBackend.Tests.AT
         [TestMethod]
         public void CreateShopSuccess()
         {
-           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
+           Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum));
         }
 
         [TestMethod]
         public void CreateShopFail_NotLoggedIn()
         {
-           proxy.LogOut(userId);
-           Assert.IsFalse(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
+           proxy.LogOut(token1);
+           Assert.IsFalse(proxy.CreateStore(token1, storeName, storeEmail, phoneNum));
         }
 
         [TestMethod]
         public void GetInfoSuccess()
         {
            int shopID = 1;
-           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
+           Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.GetInfo(shopID));
         }
 
         [TestMethod]
         public void SearchByKeyWords(){
            int shopID = 1;
-           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
-           Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
-           Assert.IsTrue(proxy.AddKeyWord(userId, "nice", shopID, 11));
+           Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum));
+           Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false));
+           Assert.IsTrue(proxy.AddKeyWord(token1, "nice", shopID, 11));
            Assert.IsTrue(proxy.SearchByKeywords("nice"));
         }
 
@@ -122,132 +127,132 @@ namespace MarketBackend.Tests.AT
         public void AddToCartSuccess()
         {
            int shopID = 1;
-           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
-           Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
+           Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum));
+           Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false));
            userId2 = proxy.GetMembeIDrByUserName(userName2);
-           Assert.IsTrue(proxy.AddToCart(userId2, shopID, productID1, quantity1));
+           Assert.IsTrue(proxy.AddToCart(token2, shopID, productID1, quantity1));
         }
 
         [TestMethod]
         public void AddToCartFail_NoProduct()
         {
            int shopID = 1;
-           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
+           Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum));
            userId2 = proxy.GetMembeIDrByUserName(userName2);
-           Assert.IsFalse(proxy.AddToCart(userId2, shopID, productID1, quantity1));
+           Assert.IsFalse(proxy.AddToCart(token2, shopID, productID1, quantity1));
         }
 
         [TestMethod]
         public void RemoveFromCartSuccess()
         {
            int shopID = 1;
-           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
-           Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
+           Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum));
+           Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false));
            userId2 = proxy.GetMembeIDrByUserName(userName2);
-           Assert.IsTrue(proxy.AddToCart(userId2, shopID, productID1, 1));
-           Assert.IsTrue(proxy.RemoveFromCart(userId2, productID1, basketId, 1));
+           Assert.IsTrue(proxy.AddToCart(token2, shopID, productID1, 1));
+           Assert.IsTrue(proxy.RemoveFromCart(token2, productID1, basketId, 1));
         }
 
         [TestMethod]
         public void RemoveFromCartFail_NoProduct()
         {
            int shopID = 1;
-           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
-           Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
+           Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum));
+           Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false));
            userId2 = proxy.GetMembeIDrByUserName(userName2);
-           Assert.IsFalse(proxy.RemoveFromCart(userId2, productID1, basketId, 1));
+           Assert.IsFalse(proxy.RemoveFromCart(token2, productID1, basketId, 1));
         }
 
         [TestMethod]
         public void PurchaseCartSuccess()
         {
            int shopID = 1;
-           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
-           Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
+           Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum));
+           Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false));
            userId2 = proxy.GetMembeIDrByUserName(userName2);
-           Assert.IsTrue(proxy.AddToCart(userId2, shopID, productID1, quantity1));
+           Assert.IsTrue(proxy.AddToCart(token2, shopID, productID1, quantity1));
            PaymentDetails paymentDetails = new PaymentDetails("5326888878675678", "2027", "10", "101", "3190876789", "Hadas");
            ShippingDetails shippingDetails = new ShippingDetails("name",  "city",  "address",  "country",  "zipcode");
-           Assert.IsTrue(proxy.PurchaseCart(userId2, paymentDetails, shippingDetails));
+           Assert.IsTrue(proxy.PurchaseCart(token2, paymentDetails, shippingDetails));
         }
 
         [TestMethod]
         public void PurchaseCartFail_NoProduct()
         {
            int shopID = 1;
-           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
-           Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
+           Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum));
+           Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false));
            userId2 = proxy.GetMembeIDrByUserName(userName2);
-           Assert.IsTrue(proxy.AddToCart(userId2, shopID, productID1, quantity1));
+           Assert.IsTrue(proxy.AddToCart(token2, shopID, productID1, quantity1));
            PaymentDetails paymentDetails = new PaymentDetails("5326888878675678", "2027", "10", "101", "3190876789", "Hadas");
            ShippingDetails shippingDetails = new ShippingDetails("name",  "city",  "address",  "country",  "zipcode");
-           Assert.IsTrue(proxy.RemoveProduct(shopID, userId, 11));
-           Assert.IsFalse(proxy.PurchaseCart(userId2, paymentDetails, shippingDetails));
+           Assert.IsTrue(proxy.RemoveProduct(shopID, token1, 11));
+           Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails));
         }
 
         [TestMethod]
         public void PurchaseCartFail_EmptyCart()
         {
            int shopID = 1;
-           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
-           Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
+           Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum));
+           Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false));
            userId2 = proxy.GetMembeIDrByUserName(userName2);
-           Assert.IsFalse(proxy.PurchaseCart(userId2, paymentDetails, shippingDetails));
+           Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails));
         }
 
         [TestMethod]
         public void PurchaseCartFail_IlegalAge()
         {
            int shopID = 1;
-           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
-           Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, true));
+           Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum));
+           Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, true));
            userId2 = proxy.GetMembeIDrByUserName(userName2);
-           Assert.IsFalse(proxy.PurchaseCart(userId2, paymentDetails, shippingDetails));
+           Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails));
         }
 
         [TestMethod]
         public void PurchaseCartFail_Payment(){
             int shopID = 1;
-            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
-            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
+            Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum));
+            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false));
             userId2 = proxy.GetMembeIDrByUserName(userName2);
             mockPaymentSystem.SetReturnsDefault(false);
-            Assert.IsFalse(proxy.PurchaseCart(userId2, paymentDetails, shippingDetails));
+            Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails));
         }
 
         [TestMethod]
         public void PurchaseCartFail_Shipping(){
             int shopID = 1;
-            Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
-            Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
+            Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum));
+            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false));
             userId2 = proxy.GetMembeIDrByUserName(userName2);
             mockShippingSystem.SetReturnsDefault(false);
-            Assert.IsFalse(proxy.PurchaseCart(userId2, paymentDetails, shippingDetails));
+            Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails));
         }
 
         [TestMethod]
         public void GetPurchaseHistorySuccess_Permission()
         {
            int shopID = 1;
-           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
-           Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
+           Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum));
+           Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false));
            userId2 = proxy.GetMembeIDrByUserName(userName2);
-           Assert.IsTrue(proxy.AddToCart(userId2, shopID, productID1, quantity1));
-           Assert.IsTrue(proxy.PurchaseCart(userId2, paymentDetails, shippingDetails));
-           Assert.IsTrue(proxy.AddOwner(userId, 1, userId2));
-           Assert.IsTrue(proxy.GetPurchaseHistory(shopID, userId2));
+           Assert.IsTrue(proxy.AddToCart(token2, shopID, productID1, quantity1));
+           Assert.IsTrue(proxy.PurchaseCart(token2, paymentDetails, shippingDetails));
+           Assert.IsTrue(proxy.AddOwner(token1, 1, userName2));
+           Assert.IsTrue(proxy.GetPurchaseHistory(shopID, token2));
         }
 
         [TestMethod]
         public void GetPurchaseHistoryFail_Permission()
         {
            int shopID = 1;
-           Assert.IsTrue(proxy.CreateStore(userId, storeName, storeEmail, phoneNum));
-           Assert.IsTrue(proxy.AddProduct(shopID, userId, productName1, sellmethod, desc, price1, category1, quantity1, false));
+           Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum));
+           Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false));
            userId2 = proxy.GetMembeIDrByUserName(userName2);
-           Assert.IsTrue(proxy.AddToCart(userId2, shopID, productID1, quantity1));
-           Assert.IsTrue(proxy.PurchaseCart(userId2, paymentDetails, shippingDetails));
-           Assert.IsFalse(proxy.GetPurchaseHistory(shopID, userId2));
+           Assert.IsTrue(proxy.AddToCart(token2, shopID, productID1, quantity1));
+           Assert.IsTrue(proxy.PurchaseCart(token2, paymentDetails, shippingDetails));
+           Assert.IsFalse(proxy.GetPurchaseHistory(shopID, token2));
         }
 
 

@@ -63,51 +63,53 @@ namespace MarketBackend.Domain.Market_Client
             _clientManager.RegisterAsSystemAdmin("system_admin", "system_admin", "system.admin@mail.com", 30);            
         }
         
-        public void AddManger(int activeId, int storeId, int toAddId)
+        public void AddManger(string identifier, int storeId, string toAddUserName)
         {
             Store store = _storeRepository.GetById(storeId);
-            if (store != null && _clientManager.CheckMemberIsLoggedIn(activeId))
+            if (store != null && _clientManager.CheckMemberIsLoggedIn(identifier))
             {
-                Member activeMember = (Member)_clientManager.GetClientById(activeId);
-                Role role = new Role(new StoreManagerRole(RoleName.Manager), activeMember, storeId, toAddId);
-                store.AddStaffMember(toAddId, role, activeId);
+                Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
+                Role role = new Role(new StoreManagerRole(RoleName.Manager), activeMember, storeId, toAddUserName);
+                store.AddStaffMember(toAddUserName, role, activeMember.UserName);
             }
             else
                 throw new Exception("Store doesn't exist!");
 
         }
 
-        public void AddOwner(int activeId, int storeId, int toAddId)
+        public void AddOwner(string identifier, int storeId, string userName)
         {
             Store store = _storeRepository.GetById(storeId);
-            if (store != null && _clientManager.CheckMemberIsLoggedIn(activeId))
+            if (store != null && _clientManager.CheckMemberIsLoggedIn(identifier))
             {
-                Member activeMember = (Member)_clientManager.GetClientById(activeId);
-                Role role = new Role(new Owner(RoleName.Owner), activeMember, storeId, toAddId);
-                store.AddStaffMember(toAddId, role, activeId);
+                Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
+                Role role = new Role(new Owner(RoleName.Owner), activeMember, storeId, userName);
+                store.AddStaffMember(userName, role, activeMember.UserName);
             }
             else
                 throw new Exception("Store doesn't exist!");
 
         }
 
-        public void AddPermission(int activeId, int storeId, int toAddId, Permission permission)
+        public void AddPermission(string identifier, int storeId, string toAddUserName, Permission permission)
         {
             Store store = _storeRepository.GetById(storeId);
-            if (store != null && _clientManager.CheckMemberIsLoggedIn(activeId))
+            if (store != null && _clientManager.CheckMemberIsLoggedIn(identifier))
             {
-                store.AddPermission(activeId, toAddId, permission);
+                Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
+                store.AddPermission(activeMember.UserName, toAddUserName, permission);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
 
-        public void RemovePermission(int activeId, int storeId, int toRemoveId, Permission permission)
+        public void RemovePermission(string identifier, int storeId, string toRemoveUserName, Permission permission)
         {
             Store store = _storeRepository.GetById(storeId);
-            if (store != null && _clientManager.CheckMemberIsLoggedIn(activeId))
+            if (store != null && _clientManager.CheckMemberIsLoggedIn(identifier))
             {
-                store.RemovePermission(activeId, toRemoveId, permission);
+                Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
+                store.RemovePermission(activeMember.UserName, toRemoveUserName, permission);
             }
             else
                 throw new Exception("Store doesn't exist!");
@@ -115,19 +117,22 @@ namespace MarketBackend.Domain.Market_Client
         }
 
 
-        public Product AddProduct(int storeId, int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
+        public Product AddProduct(int storeId, string identifier, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
         {
             Store store = _storeRepository.GetById(storeId);
-            if (store == null && _clientManager.CheckMemberIsLoggedIn(userId)){
-                throw new Exception("Store doesn't exists");
+            if (store != null && _clientManager.CheckMemberIsLoggedIn(identifier))
+            {
+                Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
+                return store.AddProduct(activeMember.UserName, name, sellMethod, description, price, category, quantity, ageLimit);
             }
-            return store.AddProduct(userId, name, sellMethod, description, price, category, quantity, ageLimit);
+            else
+                throw new Exception("Store doesn't exist!");
 
         }
 
-        public void AddToCart(int clientId, int storeId, int productId, int quantity)
+        public void AddToCart(string identifier, int storeId, int productId, int quantity)
         {
-            ClientManager.CheckClientId(clientId);
+            ClientManager.CheckClientIdentifier(identifier);
             Store store = _storeRepository.GetById(storeId);
             bool found = false;
             if (store != null){
@@ -138,7 +143,7 @@ namespace MarketBackend.Domain.Market_Client
                     }
                 }
                 if (found) 
-                    _clientManager.AddToCart(clientId, storeId, productId, quantity);
+                    _clientManager.AddToCart(identifier, storeId, productId, quantity);
                 else
                     throw new Exception($"No productid {productId}");
             }
@@ -147,11 +152,12 @@ namespace MarketBackend.Domain.Market_Client
             
         }
 
-        public void CloseStore(int userId, int storeId)
+        public void CloseStore(string identifier, int storeId)
         {
             Store store = _storeRepository.GetById(storeId);
-            if (store != null && _clientManager.CheckMemberIsLoggedIn(userId)){
-                store.CloseStore(userId);
+            if (store != null && _clientManager.CheckMemberIsLoggedIn(identifier)){
+                Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
+                store.CloseStore(activeMember.UserName);
             }
             else{
                 throw new Exception("Store doesn't exists");
@@ -159,11 +165,11 @@ namespace MarketBackend.Domain.Market_Client
         }
 
     
-        public int CreateStore(int id, string storeName, string email, string phoneNum)
+        public int CreateStore(string identifier, string storeName, string email, string phoneNum)
         {
             int storeId=-1;
-            Client store_founder = _clientManager.GetClientById(id);
-            if(store_founder != null && _clientManager.CheckMemberIsLoggedIn(id))
+            Client store_founder = _clientManager.GetClientByIdentifier(identifier);
+            if(store_founder != null && _clientManager.CheckMemberIsLoggedIn(identifier))
             {
                 storeId = _storeCounter++;
                 if (_storeRepository.GetById(storeId) != null){
@@ -174,10 +180,10 @@ namespace MarketBackend.Domain.Market_Client
                     _active = true
                 };
                 _storeRepository.Add(store);
-                Member activeMember = (Member)_clientManager.GetClientById(id);
-                Role role = new Role(new Founder(RoleName.Founder), activeMember, storeId, id);
+                Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
+                Role role = new Role(new Founder(RoleName.Founder), activeMember, storeId, identifier);
 
-                store.AddStaffMember(id, role, id); 
+                store.AddStaffMember(activeMember.UserName, role, activeMember.UserName); //adds himself
                 store.SubscribeStoreOwner(activeMember);
             }
             else
@@ -192,14 +198,14 @@ namespace MarketBackend.Domain.Market_Client
             throw new NotImplementedException();
         }
 
-        public void EnterAsGuest(int id)
+        public void EnterAsGuest(string identifier)
         {
-            _clientManager.BrowseAsGuest(id);
+            _clientManager.BrowseAsGuest(identifier);
         }
 
-        public void ExitGuest(int id)
+        public void ExitGuest(string identifier)
         {
-            _clientManager.DeactivateGuest(id);
+            _clientManager.DeactivateGuest(identifier);
         }
 
         public Member GetFounder(int storeId)
@@ -207,9 +213,9 @@ namespace MarketBackend.Domain.Market_Client
             Store store = _storeRepository.GetById(storeId);
             if (store != null)
             {
-                int founderId = store.roles.FirstOrDefault(pair => pair.Value.getRoleName() == RoleName.Founder).Key;
-                if (_clientManager.IsMember(founderId))
-                    return (Member)_clientManager.GetClientById(founderId);
+                string founderUsername = store.roles.FirstOrDefault(pair => pair.Value.getRoleName() == RoleName.Founder).Key;
+                if (_clientManager.IsMember(founderUsername))
+                    return _clientManager.GetMemberByUserName(founderUsername);
                 else
                     throw new Exception("should not happen! founder is not a member");
             }
@@ -223,9 +229,9 @@ namespace MarketBackend.Domain.Market_Client
             if (store != null)
             {
 
-                List<int> managerIds = store.roles.Where(pair => pair.Value.getRoleName() == RoleName.Manager).Select(pair => pair.Key).ToList();
-                List<Member> managers = new List<Member>();
-                managerIds.ForEach(id => managers.Add((Member)_clientManager.GetClientById(id)));
+                List<string> usernames = store.roles.Where(pair => pair.Value.getRoleName() == RoleName.Manager).Select(pair => pair.Key).ToList();
+                List<Member> managers = new();
+                usernames.ForEach(username => managers.Add((Member)_clientManager.GetMemberByUserName(username)));
                 return managers;
             }
             else
@@ -239,9 +245,9 @@ namespace MarketBackend.Domain.Market_Client
             if (store != null)
             {
 
-                List<int> managerIds = store.roles.Where(pair => pair.Value.getRoleName() == RoleName.Owner).Select(pair => pair.Key).ToList();
+                List<string> usernames = store.roles.Where(pair => pair.Value.getRoleName() == RoleName.Owner).Select(pair => pair.Key).ToList();
                 List<Member> managers = new List<Member>();
-                managerIds.ForEach(id => managers.Add((Member)_clientManager.GetClientById(id)));
+                usernames.ForEach(useerName => managers.Add((Member)_clientManager.GetMemberByUserName(useerName)));
                 return managers;
             }
             else
@@ -265,16 +271,16 @@ namespace MarketBackend.Domain.Market_Client
             return store.getInfo();
         }
 
-        public List<ShoppingCartHistory> GetPurchaseHistoryByClient(int id)
+        public List<ShoppingCartHistory> GetPurchaseHistoryByClient(string userName)
         {
-            return _clientManager.GetPurchaseHistoryByClient(id);
+            return _clientManager.GetPurchaseHistoryByClient(userName);
         }
 
-        public List<Purchase> GetPurchaseHistoryByStore(int storeId, int userId)
+        public List<Purchase> GetPurchaseHistoryByStore(int storeId, string userName)
         {
             Store store = _storeRepository.GetById(storeId);
-            if (store != null && _clientManager.CheckMemberIsLoggedIn(userId)){
-                return store.getHistory(userId);
+            if (store != null){                
+                return store.getHistory(userName);
             }
             else{
                 throw new Exception("Store doesn't exists");
@@ -292,31 +298,32 @@ namespace MarketBackend.Domain.Market_Client
             }
         }
 
-        public void LoginClient(int id, string username, string password)
+        public string LoginClient(string username, string password)
         {
-            _clientManager.LoginClient(id, username, password);
+            return _clientManager.LoginClient(username, password);
         }
 
-        public void LogoutClient(int id)
+        public void LogoutClient(string identifier)
         {
-            _clientManager.LogoutClient(id);
+            _clientManager.LogoutClient(identifier);
         }
 
-        public void OpenStore(int clientId, int storeId)
+        public void OpenStore(string identifier, int storeId)
         {
             Store store = _storeRepository.GetById(storeId);
-            if (store != null && _clientManager.CheckMemberIsLoggedIn(clientId)){
-                store.OpenStore(clientId);
+            if (store != null && _clientManager.CheckMemberIsLoggedIn(identifier)){
+                Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
+                store.OpenStore(activeMember.UserName);
             }
             else{
                 throw new Exception("Store doesn't exists");
             }
         }
 
-        public void PurchaseCart(int id, PaymentDetails paymentDetails, ShippingDetails shippingDetails) //clientId
+        public void PurchaseCart(string identifier, PaymentDetails paymentDetails, ShippingDetails shippingDetails) //clientId
         {
-            ClientManager.CheckClientId(id);
-            var client = _clientManager.GetClientById(id);
+            ClientManager.CheckClientIdentifier(identifier);
+            var client = _clientManager.GetClientByIdentifier(identifier);
             var baskets = client.Cart.GetBaskets();
             if (baskets.IsNullOrEmpty()){
                 throw new Exception("Empty cart.");
@@ -332,8 +339,8 @@ namespace MarketBackend.Domain.Market_Client
                 var totalPrice = store.CalculateBasketPrice(baskets[store.StoreId]);
                 if(_paymentSystem.Pay(paymentDetails, totalPrice) > 0) {
                     if(_shippingSystemFacade.OrderShippment(shippingDetails) > 0){
-                        store.PurchaseBasket(id, baskets[store.StoreId]);
-                        client.PurchaseBasket(id, baskets[store.StoreId]);
+                        store.PurchaseBasket(identifier, baskets[store.StoreId]);
+                        _clientManager.PurchaseBasket(identifier, baskets[store.StoreId]);
                     }
                     else{
                         throw new Exception("shippment failed.");
@@ -345,57 +352,54 @@ namespace MarketBackend.Domain.Market_Client
 
         }
 
-        public void Register(int id, string username, string password, string email, int age)
+        public void Register(string username, string password, string email, int age)
         {
-            _clientManager.Register(id, username, password, email, age);
+            _clientManager.Register(username, password, email, age);
         }
 
-        public void RemoveFromCart(int clientId, int productId, int basketId, int quantity)
+        public void RemoveFromCart(string identifier, int productId, int basketId, int quantity)
         {
-            _clientManager.RemoveFromCart(clientId, productId, basketId, quantity);
+            _clientManager.RemoveFromCart(identifier, productId, basketId, quantity);
         }
 
-        public void RemoveManger(int activeId, int storeId, int toRemoveId)
+        public void RemoveManger(string identifier, int storeId, string toRemoveUserName)
         {
-            RemoveStaffMember(storeId, activeId, null, toRemoveId);
+            RemoveStaffMember(storeId, identifier, null, toRemoveUserName);
         }
 
-        public void RemoveOwner(int activeId, int storeId, int toRemoveId)
+        public void RemoveOwner(string identifier, int storeId, string toRemoveUserName)
         {
-            RemoveStaffMember(storeId, activeId, null ,toRemoveId);
+            RemoveStaffMember(storeId, identifier, null ,toRemoveUserName);
         }
 
-        public void RemovePermission(int activeId, int storeId, int toRemoveId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RemoveProduct(int storeId,int userId, int productId)
+        public void RemoveProduct(int storeId, string identifier, int productId)
         {
             Store store = _storeRepository.GetById(storeId);
             if (store == null){
                 throw new Exception("Store doesn't exists");
             }
-            store.RemoveProduct(userId, productId);
+            Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
+            store.RemoveProduct(activeMember.UserName, productId);
         }
 
-        public void RemoveStaffMember(int storeId, int activeId, Role role, int toRemoveId)
+        public void RemoveStaffMember(int storeId, string identifier, Role role, string toRemoveUserName)
         {
             Store store = _storeRepository.GetById(storeId);
             if (store != null)
             {
-                store.RemoveStaffMember(toRemoveId, activeId);
+                Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
+                store.RemoveStaffMember(toRemoveUserName, activeMember.UserName);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
 
-        public bool ResToStoreManageReq(int id)
+        public bool ResToStoreManageReq(string identifier)
         {
             throw new NotImplementedException();
         }
 
-        public bool ResToStoreOwnershipReq(int id)
+        public bool ResToStoreOwnershipReq(string identifier)
         {
             throw new NotImplementedException();
         }
@@ -450,11 +454,12 @@ namespace MarketBackend.Domain.Market_Client
 
         // }
 
-        public void UpdateProductPrice(int storeId, int userId,  int productId, double price)
+        public void UpdateProductPrice(int storeId, string identifier,  int productId, double price)
         {
-            if (_storeRepository.GetById(storeId) != null && _clientManager.CheckMemberIsLoggedIn(userId))
+            if (_storeRepository.GetById(storeId) != null && _clientManager.CheckMemberIsLoggedIn(identifier))
             {
-                _storeRepository.GetById(storeId).UpdateProductPrice(userId, productId, price);
+                Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
+                _storeRepository.GetById(storeId).UpdateProductPrice(activeMember.UserName, productId, price);
             }
             else
             {
@@ -463,11 +468,12 @@ namespace MarketBackend.Domain.Market_Client
 
         }
 
-        public void UpdateProductQuantity(int storeId, int userId, int productId, int quantity)
+        public void UpdateProductQuantity(int storeId, string identifier, int productId, int quantity)
         {
-            if (_storeRepository.GetById(storeId) != null && _clientManager.CheckMemberIsLoggedIn(userId)) 
+            if (_storeRepository.GetById(storeId) != null && _clientManager.CheckMemberIsLoggedIn(identifier)) 
             {
-                _storeRepository.GetById(storeId).UpdateProductPrice(userId, productId, quantity);
+                Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
+                _storeRepository.GetById(storeId).UpdateProductQuantity(activeMember.UserName, productId, quantity);
             }
             else
             {
@@ -475,19 +481,19 @@ namespace MarketBackend.Domain.Market_Client
             }
         }
 
-        public ShoppingCart ViewCart(int id)
+        public ShoppingCart ViewCart(string identifier)
         {
-            ClientManager.CheckClientId(id);
-            return _clientManager.ViewCart(id);
+            ClientManager.CheckClientIdentifier(identifier);
+            return _clientManager.ViewCart(identifier);
         }
 
-        public void AddStaffMember(int storeId, int activeId, Role role, int toAddId){
+        public void AddStaffMember(int storeId, string identifier, Role role, string toAddUserName){
             Store store = _storeRepository.GetById(storeId);
-            if (store != null && _clientManager.CheckMemberIsLoggedIn(activeId))
+            if (store != null && _clientManager.CheckMemberIsLoggedIn(identifier))
             {
-                Member appoint = _clientManager.GetMemberById(activeId);
-                Member appointe = _clientManager.GetMemberById(toAddId);
-                store.AddStaffMember(toAddId, role, activeId);
+                Member appoint = _clientManager.GetMemberByIdentifier(identifier);
+                Member appointe = _clientManager.GetMemberByUserName(toAddUserName);
+                store.AddStaffMember(toAddUserName, role, appoint.UserName);
                 store.SubscribeStaffMember(appoint, appointe);
             }
             else
@@ -514,136 +520,149 @@ namespace MarketBackend.Domain.Market_Client
         }
 
         // policies ------------------------------------------------
-        public void RemovePolicy(int clientId, int storeId, int policyID,string type)
+        public void RemovePolicy(string identifier, int storeId, int policyID,string type)
         {
-            _clientManager.CheckMemberIsLoggedIn(clientId);
+            _clientManager.CheckMemberIsLoggedIn(identifier);
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
-                store.RemovePolicy(clientId, policyID, type);
+                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
+                store.RemovePolicy(activeMember.UserName, policyID, type);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public int AddSimpleRule(int clientId, int storeId,string subject)
+        public int AddSimpleRule(string identifier, int storeId,string subject)
         {
-            _clientManager.CheckMemberIsLoggedIn(clientId);
+            _clientManager.CheckMemberIsLoggedIn(identifier);
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
-                return store.AddSimpleRule(clientId, subject);
+                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
+                return store.AddSimpleRule(activeMember.UserName, subject);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public int AddQuantityRule(int clientId, int storeId, string subject, int minQuantity, int maxQuantity)
+        public int AddQuantityRule(string identifier, int storeId, string subject, int minQuantity, int maxQuantity)
         {
-            _clientManager.CheckMemberIsLoggedIn(clientId);
+            _clientManager.CheckMemberIsLoggedIn(identifier);
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
-                return store.AddQuantityRule(clientId, subject, minQuantity, maxQuantity);
+                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
+                return store.AddQuantityRule(activeMember.UserName, subject, minQuantity, maxQuantity);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public int AddTotalPriceRule(int clientId, int storeId, string subject, int targetPrice)
+        public int AddTotalPriceRule(string identifier, int storeId, string subject, int targetPrice)
         {
-            _clientManager.CheckMemberIsLoggedIn(clientId);
+            _clientManager.CheckMemberIsLoggedIn(identifier);
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
-                return store.AddTotalPriceRule(clientId, subject, targetPrice);
+                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
+                return store.AddTotalPriceRule(activeMember.UserName, subject, targetPrice);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public int AddCompositeRule(int clientId, int storeId, int Operator, List<int> rules)
+        public int AddCompositeRule(string identifier, int storeId, int Operator, List<int> rules)
         {
-            _clientManager.CheckMemberIsLoggedIn(clientId);
+            _clientManager.CheckMemberIsLoggedIn(identifier);
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
+                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
                 LogicalOperator op = (LogicalOperator)Enum.ToObject(typeof(LogicalOperator), Operator);
-                return store.AddCompositeRule(clientId, op, rules);
+                return store.AddCompositeRule(activeMember.UserName, op, rules);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public void UpdateRuleSubject(int clientId, int storeId, int ruleId, string subject)
+        public void UpdateRuleSubject(string identifier, int storeId, int ruleId, string subject)
         {
-            _clientManager.CheckMemberIsLoggedIn(clientId);
+            _clientManager.CheckMemberIsLoggedIn(identifier);
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
-                store.UpdateRuleSubject(clientId, ruleId, subject);
+                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
+                store.UpdateRuleSubject(activeMember.UserName, ruleId, subject);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public void UpdateRuleQuantity(int clientId, int storeId, int ruleId, int minQuantity, int maxQuantity)
+        public void UpdateRuleQuantity(string identifier, int storeId, int ruleId, int minQuantity, int maxQuantity)
         {
-            _clientManager.CheckMemberIsLoggedIn(clientId);
+            _clientManager.CheckMemberIsLoggedIn(identifier);
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
-                store.UpdateRuleQuantity(clientId, ruleId, minQuantity, maxQuantity);
+                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
+                store.UpdateRuleQuantity(activeMember.UserName, ruleId, minQuantity, maxQuantity);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public void UpdateRuleTargetPrice(int clientId, int storeId, int ruleId, int targetPrice)
+        public void UpdateRuleTargetPrice(string identifier, int storeId, int ruleId, int targetPrice)
         {
-            _clientManager.CheckMemberIsLoggedIn(clientId);
+            _clientManager.CheckMemberIsLoggedIn(identifier);
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
-                store.UpdateRuleTargetPrice(clientId, ruleId, targetPrice);
+                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
+                store.UpdateRuleTargetPrice(activeMember.UserName, ruleId, targetPrice);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public void UpdateCompositeOperator(int clientId, int storeId, int ruleId, int Operator)
+        public void UpdateCompositeOperator(string identifier, int storeId, int ruleId, int Operator)
         {
-            _clientManager.CheckMemberIsLoggedIn(clientId);
+            _clientManager.CheckMemberIsLoggedIn(identifier);
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
+                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
                 LogicalOperator op = (LogicalOperator)Enum.ToObject(typeof(LogicalOperator), Operator);
-                store.UpdateCompositeOperator(clientId, ruleId, op);
+                store.UpdateCompositeOperator(activeMember.UserName, ruleId, op);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public void UpdateCompositeRules(int clientId, int storeId, int ruleId, List<int> rules)
+        public void UpdateCompositeRules(string identifier, int storeId, int ruleId, List<int> rules)
         {
-            _clientManager.CheckMemberIsLoggedIn(clientId);
+            _clientManager.CheckMemberIsLoggedIn(identifier);
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
-                store.UpdateCompositeRules(clientId, ruleId, rules);
+                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
+                store.UpdateCompositeRules(activeMember.UserName, ruleId, rules);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
 
-        public void AddPurchasePolicy(int clientId, int storeId, DateTime expirationDate, string subject, int ruleId)
+        public void AddPurchasePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int ruleId)
         {
-            _clientManager.CheckMemberIsLoggedIn(clientId);
+            _clientManager.CheckMemberIsLoggedIn(identifier);
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
-                store.AddPurchasePolicy(clientId, expirationDate, subject, ruleId);
+                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
+                store.AddPurchasePolicy(activeMember.UserName, expirationDate, subject, ruleId);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public int AddDiscountPolicy(int clientId, int storeId, DateTime expirationDate, string subject, int ruleId, double precentage)
+        public int AddDiscountPolicy(string identifier, int storeId, DateTime expirationDate, string subject, int ruleId, double precentage)
         {
-            _clientManager.CheckMemberIsLoggedIn(clientId);
+            _clientManager.CheckMemberIsLoggedIn(identifier);
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
-                return store.AddDiscountPolicy(clientId, expirationDate, subject, ruleId, precentage);
+                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
+                return store.AddDiscountPolicy(activeMember.UserName, expirationDate, subject, ruleId, precentage);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public void AddCompositePolicy(int clientId, int storeId, DateTime expirationDate, string subject, int Operator, List<int> policies)
+        public void AddCompositePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int Operator, List<int> policies)
         {
-            _clientManager.CheckMemberIsLoggedIn(clientId);
+            _clientManager.CheckMemberIsLoggedIn(identifier);
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
+                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
                 NumericOperator op = (NumericOperator)Enum.ToObject(typeof(NumericOperator), Operator);
-                store.AddCompositePolicy(clientId, expirationDate, subject, op, policies);
+                store.AddCompositePolicy(activeMember.UserName, expirationDate, subject, op, policies);
             }
             else
                 throw new Exception("Store doesn't exist!");

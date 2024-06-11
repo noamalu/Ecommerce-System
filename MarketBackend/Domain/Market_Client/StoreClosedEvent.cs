@@ -3,12 +3,12 @@ namespace MarketBackend.Domain.Market_Client
 {
     public class StoreClosedEvent : Event
     {
-        private int _member;
+        private string _member;
         private Store _store;
 
-        public StoreClosedEvent(Store store, int member) : base("Store Closed Event")
+        public StoreClosedEvent(Store store, string userName) : base("Store Closed Event")
         {
-            _member = member;
+            _member = userName;
             _store = store;
         }
 

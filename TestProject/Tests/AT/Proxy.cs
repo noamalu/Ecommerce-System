@@ -40,23 +40,30 @@ namespace MarketBackend.Tests.AT
             return userId;
         }
 
-        public bool Login(int userId, string userName, string password){
-            Response res = clientService.LoginClient(userId, userName, password);
+        public bool Login(string userName, string password){
+            Response res = clientService.LoginClient(userName, password);
+            return !res.ErrorOccured;
+        }
+        public string LoginWithToken(string userName, string password){
+            Response<string> res = clientService.LoginClient(userName, password);
+             if(res.ErrorOccured){
+                throw new Exception(res.ErrorMessage);
+             }
+            return res.Value;
+        }
+
+        public bool EnterAsGuest(string identifier){
+            Response res = clientService.EnterAsGuest(identifier);
             return !res.ErrorOccured;
         }
 
-        public bool EnterAsGuest(int userId){
-            Response res = clientService.EnterAsGuest(userId);
+        public bool Register(string userName, string password, string email, int age){
+            Response res = clientService.Register(userName, password, email, age);
             return !res.ErrorOccured;
         }
 
-        public bool Register(int id, string userName, string password, string email, int age){
-            Response res = clientService.Register(id, userName, password, email, age);
-            return !res.ErrorOccured;
-        }
-
-        public bool LogOut(int userId){
-            Response res = clientService.LogoutClient(userId);
+        public bool LogOut(string identifier){
+            Response res = clientService.LogoutClient(identifier);
             return !res.ErrorOccured;
         }
 
@@ -72,13 +79,13 @@ namespace MarketBackend.Tests.AT
             Response res = marketService.SearchByCategory(category);
             return !res.ErrorOccured;
         }
-        public bool OpenStore(int clientId, int storeId){
-            Response res = marketService.OpenStore(clientId, storeId);
+        public bool OpenStore(string identifier, int storeId){
+            Response res = marketService.OpenStore(identifier, storeId);
             return !res.ErrorOccured;
         }
 
-        public bool CloseStore(int clientId, int storeId){
-            Response res = marketService.CloseStore(clientId, storeId);
+        public bool CloseStore(string identifier, int storeId){
+            Response res = marketService.CloseStore(identifier, storeId);
             return !res.ErrorOccured;
         }
 
@@ -87,30 +94,30 @@ namespace MarketBackend.Tests.AT
             return !res.ErrorOccured;
         }
 
-        public bool AddProduct(int storeId, int userId, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
+        public bool AddProduct(int storeId, string identifier, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
         {
-            Response res = marketService.AddProduct(storeId, userId, name, sellMethod, description, price, category, quantity, ageLimit);
+            Response res = marketService.AddProduct(storeId, identifier, name, sellMethod, description, price, category, quantity, ageLimit);
             return !res.ErrorOccured;
         }
 
-        public bool RemoveProduct(int storeId,int userId, int productId)
+        public bool RemoveProduct(int storeId,string identifier, int productId)
         {
-            Response res = marketService.RemoveProduct(storeId, userId, productId);
+            Response res = marketService.RemoveProduct(storeId, identifier, productId);
             return !res.ErrorOccured;
         }
 
-        public bool AddToCart(int clientId, int storeId, int productId, int quantity){
-            Response res = clientService.AddToCart(clientId, storeId, productId, quantity);
+        public bool AddToCart(string identifier, int storeId, int productId, int quantity){
+            Response res = clientService.AddToCart(identifier, storeId, productId, quantity);
             return !res.ErrorOccured;
         }
 
-        public bool RemoveFromCart(int clientId, int productId, int basketId, int quantity){
-            Response res = clientService.RemoveFromCart(clientId, productId, basketId, quantity);
+        public bool RemoveFromCart(string identifier, int productId, int basketId, int quantity){
+            Response res = clientService.RemoveFromCart(identifier, productId, basketId, quantity);
             return !res.ErrorOccured;
         }
 
-        public bool PurchaseCart(int clientId, PaymentDetails paymentDetails, ShippingDetails shippingDetails){
-            Response res = marketService.PurchaseCart(clientId, paymentDetails, shippingDetails);
+        public bool PurchaseCart(string identifier, PaymentDetails paymentDetails, ShippingDetails shippingDetails){
+            Response res = marketService.PurchaseCart(identifier, paymentDetails, shippingDetails);
             return !res.ErrorOccured;
         }
 
@@ -120,38 +127,38 @@ namespace MarketBackend.Tests.AT
         //     return !res.ErrorOccured;
         // }
 
-        public bool UpdateProductPrice(int storeId, int userId, int productId, double price)
+        public bool UpdateProductPrice(int storeId, string identifier, int productId, double price)
         {
-            Response res = marketService.UpdateProductPrice(storeId, userId, productId, price);
+            Response res = marketService.UpdateProductPrice(storeId, identifier, productId, price);
             return !res.ErrorOccured;        
         }
 
-        public bool UpdateProductQuantity(int storeId, int userId, int productId, int quantity)
+        public bool UpdateProductQuantity(int storeId, string identifier, int productId, int quantity)
         {
-            Response res = marketService.UpdateProductQuantity(storeId, userId, productId, quantity);
+            Response res = marketService.UpdateProductQuantity(storeId, identifier, productId, quantity);
             return !res.ErrorOccured;
         }
 
-        public bool GetPurchaseHistory(int storeId, int clientId)
+        public bool GetPurchaseHistory(int storeId, string identifier)
         {
-            Response res = marketService.GetPurchaseHistory(storeId, clientId);
+            Response res = marketService.GetPurchaseHistoryByStore(storeId, identifier);
             return !res.ErrorOccured;
         }
 
-        public bool RemoveStaffMember(int storeId, int activeId, Role role, int toRemoveId)
+        public bool RemoveStaffMember(int storeId, string identifier, Role role, string toRemoveUserName)
         {
-            Response res = marketService.RemoveStaffMember(storeId, activeId, role, toRemoveId);
+            Response res = marketService.RemoveStaffMember(storeId, identifier, role, toRemoveUserName);
             return !res.ErrorOccured;
         }
 
-        public bool AddStaffMember(int storeId, int activeId, Role role, int toAddId)
+        public bool AddStaffMember(int storeId, string identifier, Role role, string toAddUserName)
         {
-            Response res = marketService.AddStaffMember(storeId, activeId, role, toAddId);
+            Response res = marketService.AddStaffMember(storeId, identifier, role, toAddUserName);
             return !res.ErrorOccured;
         }
 
-        public bool CreateStore(int id, string storeName, string email, string phoneNum){
-            Response res = clientService.CreateStore(id, storeName, email, phoneNum);
+        public bool CreateStore(string identifier, string storeName, string email, string phoneNum){
+            Response res = clientService.CreateStore(identifier, storeName, email, phoneNum);
             return !res.ErrorOccured;
         }
         
@@ -159,13 +166,13 @@ namespace MarketBackend.Tests.AT
             clientService.InitiateSystemAdmin();
         }
 
-        public bool ExitGuest(int id){
-            Response res = clientService.ExitGuest(id);
+        public bool ExitGuest(string identifier){
+            Response res = clientService.ExitGuest(identifier);
             return !res.ErrorOccured;
         }
 
-        public bool AddOwner(int activeId, int storeId, int toAddId){
-            Response res = marketService.AddOwner(activeId, storeId, toAddId);
+        public bool AddOwner(string identifier, int storeId, string toAddUserName){
+            Response res = marketService.AddOwner(identifier, storeId, toAddUserName);
             return !res.ErrorOccured;
         }
 
@@ -175,28 +182,24 @@ namespace MarketBackend.Tests.AT
             // return res.ErrorOccured ? -1 : int.Parse(res.ErrorMessage);
         }
 
-        public bool AddKeyWord(int id, string keyWord, int storeId, int productId){
-            Response res = marketService.AddKeyWord(id, keyWord, storeId, productId);
+        public bool AddKeyWord(string identifier, string keyWord, int storeId, int productId){
+            Response res = marketService.AddKeyWord(identifier, keyWord, storeId, productId);
             return !res.ErrorOccured;
         }
 
-        public bool AddSimpleRule(int clientId, int storeId,string subject){
-            Response res = marketService.AddSimpleRule(clientId, storeId, subject);
+        public bool AddSimpleRule(string identifier, int storeId,string subject){
+            Response res = marketService.AddSimpleRule(identifier, storeId, subject);
             return !res.ErrorOccured;
         }
 
-        public bool AddQuantityRule(int clientId, int storeId, string subject, int minQuantity, int maxQuantity){
-            Response res = marketService.AddQuantityRule(clientId, storeId, subject, minQuantity, maxQuantity);
+        public bool AddQuantityRule(string identifier, int storeId, string subject, int minQuantity, int maxQuantity){
+            Response res = marketService.AddQuantityRule(identifier, storeId, subject, minQuantity, maxQuantity);
             return !res.ErrorOccured;
         }
 
-        public bool AddTotalPriceRule(int clientId, int storeId, string subject, int targetPrice){
-            Response res = marketService.AddTotalPriceRule(clientId, storeId, subject, targetPrice);
+        public bool AddTotalPriceRule(string identifier, int storeId, string subject, int targetPrice){
+            Response res = marketService.AddTotalPriceRule(identifier, storeId, subject, targetPrice);
             return !res.ErrorOccured;
         }
-
-
-
-
     }
 }

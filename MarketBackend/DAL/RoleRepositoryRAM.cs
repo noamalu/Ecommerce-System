@@ -12,13 +12,13 @@ namespace MarketBackend.DAL
 {
     public class RoleRepositoryRAM : IRoleRepository
     {
-        public ConcurrentDictionary<int, ConcurrentDictionary<int, Role>> roles; //<storeId, <memberId, Role>>
+        public ConcurrentDictionary<int, ConcurrentDictionary<string, Role>> roles; //<storeId, <memberId, Role>>
         private static RoleRepositoryRAM roleRepositoryRAM = null;
         
 
         private RoleRepositoryRAM()
         {
-            roles = new ConcurrentDictionary<int, ConcurrentDictionary<int, Role>>();
+            roles = new ConcurrentDictionary<int, ConcurrentDictionary<string, Role>>();
         }
 
         public static RoleRepositoryRAM GetInstance()
@@ -40,22 +40,22 @@ namespace MarketBackend.DAL
             return roles[storeId].Values.First(role => role.getRoleName() == RoleName.Founder);
         }
 
-        public Role GetById(int storeId, int memberId)
+        public Role GetById(int storeId, string userName)
         {
-            if (!roles.ContainsKey(storeId) && roles[storeId].ContainsKey(memberId))
-                throw new KeyNotFoundException($"member with ID {memberId} at store with ID {storeId} not found.");
+            if (!roles.ContainsKey(storeId) && roles[storeId].ContainsKey(userName))
+                throw new KeyNotFoundException($"member with ID {userName} at store with ID {storeId} not found.");
 
-            return roles[storeId][memberId];
+            return roles[storeId][userName];
         }
         public void Add(Role entity)
         {
             if (!roles.ContainsKey(entity.storeId))
             {
-                roles[entity.storeId] = new ConcurrentDictionary<int, Role>();
-                roles[entity.storeId][entity.memberId] = entity;
+                roles[entity.storeId] = new ConcurrentDictionary<string, Role>();
+                roles[entity.storeId][entity.userName] = entity;
             }
             else
-                roles[entity.storeId].TryAdd(entity.memberId, entity);
+                roles[entity.storeId].TryAdd(entity.userName, entity);
         }
         public IEnumerable<Role> getAll()
         {
@@ -63,23 +63,23 @@ namespace MarketBackend.DAL
         }
         public void Update(Role entity)
         {
-            if(!roles.ContainsKey(entity.storeId) && roles[entity.storeId].ContainsKey(entity.memberId))
-                throw new KeyNotFoundException($"member with ID {entity.memberId} at store with ID {entity.storeId} not found.");
+            if(!roles.ContainsKey(entity.storeId) && roles[entity.storeId].ContainsKey(entity.userName))
+                throw new KeyNotFoundException($"member with ID {entity.userName} at store with ID {entity.storeId} not found.");
             
-            roles[entity.storeId][entity.memberId] = entity;
+            roles[entity.storeId][entity.userName] = entity;
         }
         public void Delete(Role entity)
         {
-            if (!roles.ContainsKey(entity.storeId) && roles[entity.storeId].ContainsKey(entity.memberId))
-                throw new KeyNotFoundException($"member with ID {entity.memberId} at store with ID {entity.storeId} not found.");
-            roles[entity.storeId].TryRemove(new KeyValuePair<int, Role>(entity.memberId, entity));
+            if (!roles.ContainsKey(entity.storeId) && roles[entity.storeId].ContainsKey(entity.userName))
+                throw new KeyNotFoundException($"member with ID {entity.userName} at store with ID {entity.storeId} not found.");
+            roles[entity.storeId].TryRemove(new KeyValuePair<string, Role>(entity.userName, entity));
         }
 
-        public ConcurrentDictionary<int, Role> getShopRoles(int storeId)
+        public ConcurrentDictionary<string, Role> getShopRoles(int storeId)
         {
             if (!roles.ContainsKey(storeId))
                 // throw new KeyNotFoundException($"store with ID {storeId} not found.");
-                return new ConcurrentDictionary<int, Role>();
+                return new ConcurrentDictionary<string, Role>();
             return roles[storeId];
         }
     }
