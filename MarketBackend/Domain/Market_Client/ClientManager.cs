@@ -20,7 +20,12 @@ namespace MarketBackend.Domain.Market_Client
         private static ConcurrentDictionary<string, Guest> GuestBySession {get; set;}        
         private readonly IClientRepository _clientRepository;
         private readonly SecurityManager _security;
-        private int UserCounter {get; set;}
+        public ClientManager(int userCounter) 
+        {
+            this.UserCounter = userCounter;
+   
+        }
+                private int UserCounter {get; set;}
         private object _lock = new object();
     
         private ClientManager()
@@ -66,7 +71,7 @@ namespace MarketBackend.Domain.Market_Client
 
             return null;
         }
-        public Guest GetGuestById(string identiifer)
+        public Guest GetGuestByIdentifier(string identiifer)
         {
             if (GuestBySession.TryGetValue(identiifer, out var guest))
             {
@@ -244,7 +249,7 @@ namespace MarketBackend.Domain.Market_Client
 
         public void DeactivateGuest(string identifier)
         {
-            var client = GetGuestById(identifier);
+            var client = GetGuestByIdentifier(identifier);
             GuestBySession.TryRemove(identifier, out client);
         }
 

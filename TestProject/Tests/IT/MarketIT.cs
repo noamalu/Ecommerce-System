@@ -4,6 +4,7 @@ using MarketBackend.Domain.Models;
 using MarketBackend.Domain.Payment;
 using MarketBackend.Domain.Shipping;
 using MarketBackend.Services;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NLog;
@@ -15,7 +16,11 @@ namespace MarketBackend.Tests.IT
     public class MarketIT
     {
         string userName = "user1";
+        string session1 = "1";
+        string token1;
         string userName2 = "user2";
+         string session2 = "2";
+        string token2;
         string userPassword = "pass1";
         string pass2 = "pass2";
         string email1 = "printz@post.bgu.ac.il";
@@ -62,12 +67,12 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             clientManager = ClientManager.GetInstance();
             marketManagerFacade.InitiateSystemAdmin();
-            marketManagerFacade.EnterAsGuest(userId);
-            marketManagerFacade.Register(userId, userName, userPassword, email1, userAge);
-            marketManagerFacade.LoginClient(userId, userName, userPassword);
+            marketManagerFacade.EnterAsGuest(session1);
+            marketManagerFacade.Register(userName, userPassword, email1, userAge);
+            token1 = marketManagerFacade.LoginClient(userName, userPassword);
             userId = marketManagerFacade.GetMemberIDrByUserName(userName);
-            marketManagerFacade.CreateStore(userId, storeName, email1, phoneNum);
-            marketManagerFacade.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, quantity1, false);
+            marketManagerFacade.CreateStore(token1, storeName, email1, phoneNum);
+            marketManagerFacade.AddProduct(1, token1, productName1, sellmethod, desc, price1, category1, quantity1, false);
 
         }
         [TestCleanup]
@@ -89,7 +94,7 @@ namespace MarketBackend.Tests.IT
             Store store = marketManagerFacade.GetStore(1);
             Assert.IsTrue(!(store.Products.Count() == 0));
             int prodId = 11;
-            marketManagerFacade.RemoveProduct(1, userId, prodId);
+            marketManagerFacade.RemoveProduct(1, token1, prodId);
             store = marketManagerFacade.GetStore(1);
             Assert.IsTrue(store.Products.Count == 0);
         }
@@ -98,8 +103,8 @@ namespace MarketBackend.Tests.IT
 
         public void AddProductToBasket()
         {
-            marketManagerFacade.AddToCart(userId, 1, 11, 1);
-            Client client = clientManager.GetClientById(userId);
+            marketManagerFacade.AddToCart(token1, 1, 11, 1);
+            Client client = clientManager.GetClientByIdentifier(token1);
             Dictionary<int, Basket> baskets = client.Cart.GetBaskets();
             Basket relevantBasket = baskets[1];
             Assert.IsTrue(relevantBasket.products[productID1] == 1);
@@ -109,9 +114,9 @@ namespace MarketBackend.Tests.IT
 
         public void RemoveProductFromBasket()
         {
-            marketManagerFacade.AddToCart(userId, 1, 11, 1);
-            marketManagerFacade.RemoveFromCart(userId, 11, 1, 1);
-            Client client = clientManager.GetClientById(userId);
+            marketManagerFacade.AddToCart(token1, 1, 11, 1);
+            marketManagerFacade.RemoveFromCart(token1, 11, 1, 1);
+            Client client = clientManager.GetClientByIdentifier(token1);
             Dictionary<int, Basket> baskets = client.Cart.GetBaskets();
             Basket relevantBasket = baskets[1];
             Assert.IsFalse(relevantBasket.products[productID1] == 1);
@@ -121,14 +126,14 @@ namespace MarketBackend.Tests.IT
 
         public void AddProductToBasketAndLogout()
         {
-            marketManagerFacade.AddToCart(userId, 1, 11, 1);
-            Client client = clientManager.GetClientById(userId);
+            marketManagerFacade.AddToCart(token1, 1, 11, 1);
+            Client client = clientManager.GetClientByIdentifier(token1);
             Dictionary<int, Basket> baskets = client.Cart.GetBaskets();
             Basket relevantBasket = baskets[1];
             Assert.IsTrue(relevantBasket.products[productID1] == 1);
-            marketManagerFacade.LogoutClient(userId);
-            marketManagerFacade.LoginClient(userId, userName, userPassword);
-            client = clientManager.GetClientById(userId);
+            marketManagerFacade.LogoutClient(token1);
+            token1 = marketManagerFacade.LoginClient(userName, userPassword);
+            client = clientManager.GetClientByIdentifier(token1);
             baskets = client.Cart.GetBaskets();
             relevantBasket = baskets[1];
             Assert.IsTrue(relevantBasket.products[productID1] == 1);
@@ -137,10 +142,11 @@ namespace MarketBackend.Tests.IT
         [TestMethod]
         public void PurchaseCartFail_Payment_OrderCancel()
         {
-            marketManagerFacade.AddToCart(userId, 1, 11, 1);
+            marketManagerFacade.AddToCart(token1, 1, 11, 1);
             mockPaymentSystem.Setup(pay =>pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(-1);
-            Assert.ThrowsException<Exception>(() => marketManagerFacade.PurchaseCart(userId, paymentDetails, shippingDetails));
-            Member client = clientManager.GetMemberById(userId);
+            Assert.ThrowsException<Exception>(() => marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails));
+            
+            Member client = clientManager.GetMemberByIdentifier(token1);
             Store store = marketManagerFacade.GetStore(1);
             Assert.IsTrue(client.OrderHistory.IsEmpty);
             Assert.IsTrue(client.Cart.GetBaskets()[1].products.ContainsKey(productID1));
@@ -150,10 +156,10 @@ namespace MarketBackend.Tests.IT
         [TestMethod]
         public void PurchaseCartFail_Shipping_OrderCancel()
         {
-            marketManagerFacade.AddToCart(userId, 1, 11, 1);
+            marketManagerFacade.AddToCart(token1, 1, 11, 1);
             mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(-1);
-            Assert.ThrowsException<Exception>(() => marketManagerFacade.PurchaseCart(userId, paymentDetails, shippingDetails));
-            Member client = clientManager.GetMemberById(userId);
+            Assert.ThrowsException<Exception>(() => marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails));
+            Member client = clientManager.GetMemberByIdentifier(token1);
             Store store = marketManagerFacade.GetStore(1);
             Assert.IsTrue(client.OrderHistory.IsEmpty);
             Assert.IsTrue(client.Cart.GetBaskets()[1].products.ContainsKey(productID1));

@@ -12,7 +12,11 @@ namespace MarketBackend.Tests.AT
     public class PoliciesAT
     {
         string userName = "user1";
+        string session1 = "1";
+        string token1;
         string userName2 = "user2";
+        string session2 = "2";
+        string token2;
         string userPassword = "pass1";
         string pass2 = "pass2";
         string email1 = "printz@post.bgu.ac.il";
@@ -56,17 +60,17 @@ namespace MarketBackend.Tests.AT
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
             proxy.InitiateSystemAdmin();
-            proxy.EnterAsGuest(userId);
-            proxy.Register(userId, userName, userPassword, email1, userAge);
-            proxy.Login(userId, userName, userPassword);
+            proxy.EnterAsGuest(session1);
+            proxy.Register(userName, userPassword, email1, userAge);
+            token1 = proxy.LoginWithToken(userName, userPassword);
             userId = proxy.GetMembeIDrByUserName(userName);
             int userId2 = proxy.GetUserId();
-            proxy.EnterAsGuest(userId2);
-            proxy.Register(userId2, userName2, pass2, email2, userAge);
-            proxy.Login(userId2, userName2, pass2);
+            proxy.EnterAsGuest(session2);
+            proxy.Register(userName2, pass2, email2, userAge);
+            token2 = proxy.LoginWithToken(userName2, pass2);
             userId2 = proxy.GetMembeIDrByUserName(userName2);
-            proxy.CreateStore(userId, storeName, storeEmail, phoneNum);
-            proxy.AddProduct(1, userId, productName1, sellmethod, desc, price1, category1, quantity1, false);
+            proxy.CreateStore(token1, storeName, storeEmail, phoneNum);
+            proxy.AddProduct(1, token1, productName1, sellmethod, desc, price1, category1, quantity1, false);
         }
 
         [TestCleanup]
@@ -76,37 +80,37 @@ namespace MarketBackend.Tests.AT
 
         [TestMethod]
         public void AddSimpleRuleStoreName_Success(){
-            Assert.IsTrue(proxy.AddSimpleRule(userId, 1, storeName));
+            Assert.IsTrue(proxy.AddSimpleRule(token1, 1, storeName));
         }
 
         [TestMethod]
         public void AddSimpleRuleStoreName_FailNoStoreOrProductName(){
-            Assert.IsFalse(proxy.AddSimpleRule(userId, 1, "bread"));
+            Assert.IsFalse(proxy.AddSimpleRule(token1, 1, "bread"));
         }
 
         [TestMethod]
         public void AddSimpleRuleProduct_Success(){
-            Assert.IsTrue(proxy.AddSimpleRule(userId, 1, productName1));
+            Assert.IsTrue(proxy.AddSimpleRule(token1, 1, productName1));
         }
 
         [TestMethod]
         public void AddQuantityRuleProduct_Success(){
-            Assert.IsTrue(proxy.AddQuantityRule(userId, 1, productName1, 1, 10));
+            Assert.IsTrue(proxy.AddQuantityRule(token1, 1, productName1, 1, 10));
         }
 
         [TestMethod]
         public void AddQuantityRuleProduct_FailNegativeQuantity(){
-            Assert.IsFalse(proxy.AddQuantityRule(userId, 1, productName1, 1, -10));
+            Assert.IsFalse(proxy.AddQuantityRule(token1, 1, productName1, 1, -10));
         }
 
         [TestMethod]
         public void AddTotalPriceRuleProduct_Success(){
-            Assert.IsTrue(proxy.AddTotalPriceRule(userId, 1, productName1, 10));
+            Assert.IsTrue(proxy.AddTotalPriceRule(token1, 1, productName1, 10));
         }
 
         [TestMethod]
         public void AddTotalPriceRuleProduct_FailNegativePrice(){
-            Assert.IsFalse(proxy.AddTotalPriceRule(userId, 1, productName1, -10));
+            Assert.IsFalse(proxy.AddTotalPriceRule(token1, 1, productName1, -10));
         }
     }
 }

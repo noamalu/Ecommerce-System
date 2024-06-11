@@ -13,7 +13,11 @@ namespace MarketBackend.Tests.AT
     public class CorrectnessAT
     {
         string userName = "user1";
+        string session1 = "1";
+        string token1;
         string userName2 = "user2";
+        string session2 = "2";
+        string token2;
         string userPassword = "pass1";
         string pass2 = "pass2";
         string email1 = "printz@post.bgu.ac.il";
@@ -50,9 +54,9 @@ namespace MarketBackend.Tests.AT
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
             proxy.InitiateSystemAdmin();
-            proxy.EnterAsGuest(userId);
-            proxy.Register(userId, userName, userPassword, email1, userAge);
-            proxy.Login(userId, userName, userPassword);
+            proxy.EnterAsGuest(session1);
+            proxy.Register(userName, userPassword, email1, userAge);
+            this.token1 = proxy.LoginWithToken(userName, userPassword);
         }
 
         [TestCleanup]
@@ -64,8 +68,8 @@ namespace MarketBackend.Tests.AT
         public void UniqueUsername_GoodCase()
         {
             int userId2 = proxy.GetUserId();
-            Assert.IsTrue(proxy.EnterAsGuest(userId2));
-            Assert.IsTrue(proxy.Register(userId2, userName2, pass2, email2, userAge2));
+            Assert.IsTrue(proxy.EnterAsGuest(session2));
+            Assert.IsTrue(proxy.Register(userName2, pass2, email2, userAge2));
 
         }
 
@@ -73,8 +77,8 @@ namespace MarketBackend.Tests.AT
         public void UniqueUsername_BadCase()
         {
             int userId2 = proxy.GetUserId();
-            Assert.IsTrue(proxy.EnterAsGuest(userId2));
-            Assert.IsFalse(proxy.Register(userId2, userName, userPassword, email1, userAge));
+            Assert.IsTrue(proxy.EnterAsGuest(session2));
+            Assert.IsFalse(proxy.Register(userName, userPassword, email1, userAge));
         }
     }
 }
