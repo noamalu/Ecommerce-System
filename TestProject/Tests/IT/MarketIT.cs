@@ -165,5 +165,22 @@ namespace MarketBackend.Tests.IT
             Assert.IsTrue(client.Cart.GetBaskets()[1].products.ContainsKey(productID1));
             Assert.IsTrue(store.Products.Count == 1);
         }
+
+        [TestMethod]
+        public void Offline_Notifications_Success(){
+            marketManagerFacade.AddToCart(token1, 1, productID1, 1);
+            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            Member client = clientManager.GetMemberByIdentifier(token1);
+            Assert.IsTrue(client.alerts.Count == 1);
+        }
+
+        [TestMethod]
+        public void Offline_Notifications_Fail_NotOffine(){
+            marketManagerFacade.NotificationOn(token1);
+            marketManagerFacade.AddToCart(token1, 1, productID1, 1);
+            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            Member client = clientManager.GetMemberByIdentifier(token1);
+            Assert.IsTrue(client.alerts.Count == 0);
+        }
     }
 }

@@ -667,6 +667,11 @@ namespace MarketBackend.Domain.Market_Client
             else
                 throw new Exception("Store doesn't exist!");
         }
+
+        public void NotificationOn(string identifier){
+            _clientManager.CheckMemberIsLoggedIn(identifier);
+            _clientManager.NotificationOn(identifier);
+        }
         // ---------------------------------------------------------
 
     }
