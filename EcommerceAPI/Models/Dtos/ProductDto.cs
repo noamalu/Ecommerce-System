@@ -23,7 +23,7 @@ namespace EcommerceAPI.Models.Dtos
         }
         public bool IsValidForCart()
         {
-            return IsValidCreate() && Id is not null;
+            return StoreId != 0 && Id is not null  && Quantity != 0;
         }
 
 

@@ -631,6 +631,19 @@ namespace MarketBackend.Services
             }
         }
 
-
+        public Response<string> GetStoreById(int storeId)
+        {
+            try
+            {
+                var store = marketManagerFacade.GetStore(storeId);
+                logger.Info($"Get store {storeId} succeed.");
+                return Response<string>.FromValue(store.Name);
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in fetching store {storeId}. Error message: {e.Message}");
+                return Response<string>.FromError(e.Message);
+            }
+        }
     }
 }

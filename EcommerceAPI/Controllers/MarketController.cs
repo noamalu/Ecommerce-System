@@ -335,6 +335,29 @@ namespace EcommerceAPI.Controllers
             return Ok(ServerResponse<List<ProductResultDto>>.OkResponse(products));
         }
 
+        [HttpGet]
+        [Route("Store/Name")]
+        public ActionResult<Response<string>> GetStoreById([Required][FromQuery]string identifier, [FromQuery] int storeId)
+        {            
+            Response<string> response = _marketService.GetStoreById(storeId);
+            if (response.ErrorOccured)
+            {
+                var addProductResponse = new ServerResponse<string>
+                {
+                    ErrorMessage = response.ErrorMessage,
+                };
+                return BadRequest(addProductResponse);
+            }
+            else
+            {
+                var addProductResponse = new ServerResponse<string>
+                {
+                    Value = response.Value,
+                };
+                return Ok(addProductResponse);
+            }
+        }
+
 
         [HttpPost]
         [Route("Store/{storeId}/PurchuseHistory")]
