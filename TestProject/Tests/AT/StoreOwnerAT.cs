@@ -146,7 +146,7 @@ namespace MarketBackend.Tests.AT
            PaymentDetails paymentDetails = new PaymentDetails("5326888878675678", "2027", "10", "101", "3190876789", "Hadas");
            ShippingDetails shippingDetails = new ShippingDetails("name",  "city",  "address",  "country",  "zipcode");
            Assert.IsTrue(proxy.PurchaseCart(token2, paymentDetails, shippingDetails));
-           Assert.IsTrue(proxy.GetPurchaseHistory(shopID, token2));
+           Assert.IsTrue(proxy.GetPurchaseHistoryByClient(userName2));
         }
 
         [TestMethod]
@@ -168,7 +168,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.Register(userName2, pass2, email2, userAge));
            userId2 = proxy.GetMembeIDrByUserName(userName2);
            token2 = proxy.LoginWithToken(userName2, pass2);
-           Assert.IsTrue(proxy.AddOwner(token2, shopID, userName2));
+           Assert.IsTrue(proxy.AddOwner(token1, shopID, userName2));
            Assert.IsTrue(proxy.RemoveStaffMember(shopID, token1, null, userName2));
         }
 
