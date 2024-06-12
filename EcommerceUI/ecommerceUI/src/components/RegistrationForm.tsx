@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import { useNavigate } from 'react-router-dom';
 
 interface FormData {
   username: string;
@@ -25,7 +26,7 @@ const RegistrationForm: React.FC = () => {
   });
 
   const [errors, setErrors] = useState<Errors>({});
-
+  const navigate = useNavigate();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
@@ -70,6 +71,7 @@ const RegistrationForm: React.FC = () => {
           alert('Registered successfully');
           // Reset form data if needed
           setFormData({ username: '', email: '', password: '', age: '' });
+          navigate('/Login');
         } else {
           // Handle error response
           const responseData = await response.json();
