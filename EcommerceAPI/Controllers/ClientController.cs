@@ -250,5 +250,20 @@ namespace EcommerceAPI.Controllers
                 return Ok(ServerResponse<List<StoreResultDto>>.OkResponse(response.Value));
             }
         }   
+
+        [HttpGet]
+        [Route("Client/Stores/{storeId}")]
+        public async Task<ObjectResult> GetMemberStore([Required][FromQuery]string identifier, [FromRoute] int storeId)
+        {
+            Response<List<StoreResultDto>> response = await Task.Run(() => _clientService.GetMemberStore(identifier, storeId));
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<List<StoreResultDto>>.OkResponse(response.Value));
+            }
+        }   
     }
 }

@@ -254,6 +254,20 @@ namespace MarketBackend.Services
                 return Response<List<StoreResultDto>>.FromError(e.Message);
             }
         }
+
+        public Response<StoreResultDto> GetMemberStore(string identifier, int storeId)
+        {
+            try
+            {
+                var store = marketManagerFacade.GetMemberStore(identifier, storeId);
+                logger.Info($"fetched client {identifier} stores successfuly.");
+                return Response<StoreResultDto>.FromValue(new(store));
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in fetching client {identifier} stores. Error message: {e.Message}");
+                return Response<StoreResultDto>.FromError(e.Message);
+            }        }
     }
 
 
