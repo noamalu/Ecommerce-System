@@ -31,7 +31,6 @@ function App() {
           <Route path="/search" element={<Search/>}/>
           <Route path="/profile" element={<Profile/>}/>
           <Route path="/cart" element={<Cart/>}/>
-          <Route path="/Store Permission" element={<ProfileStoreNav/>}/>  
           
         </Routes>
       </BrowserRouter>

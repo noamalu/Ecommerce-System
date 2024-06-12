@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { CreateStore } from './CreateStore';
 import ProfileStoreStuff from "./ProfileStoreStuff";
 import ProfileStoreInfo from "./ProfileStoreInfo";
+import {ProfileUpdateInventory} from "./ProfileUpdateInventory";
 import { getToken } from "../services/SessionService";
 
 export interface Role {
@@ -12,6 +13,20 @@ export interface Role {
     appointer: string;
     appointees: string[];
     permissions: string[];
+}
+
+export interface Product {
+    productId: number;             
+    storeId: number;               
+    productName: string;           
+    productPrice: number;          
+    productQuantity: number;       
+    productCategory: string;       
+    productDescription: string;    
+    productKeywords: string[];     
+    productRating: number;         
+    ageLimit: boolean;             
+    sellMethod: string;           
 }
 
 
@@ -30,16 +45,21 @@ export const ProfileStoreNav = () => {
     const [stores, setStores] = useState<number[]>([]);
     const [num, setNum] = useState<number>(-1); // Initialize num to -1
     const [showCreateStoreModal, setShowCreateStoreModal] = useState(false);
-    const [view, setView] = useState<'ProfileStoreStuff' | 'ProfileStoreInfo'| 'Update Inventory' | 'Policies'>('ProfileStoreInfo');
+    const [view, setView] = useState<'ProfileStoreStuff' | 'ProfileStoreInfo'| 'ProfileUpdateInventory' | 'Policies'>('ProfileStoreInfo');
     const [storeInfo, setStoreInfo] = useState<Store | null>(null);
+    const mappedProducts: Product[] = [];
 
     const handleClose = () => setShowCreateStoreModal(false);
     const handleSuccess = () => {
         window.location.reload();
 
     };
-    const handleViewChange = (newView: 'ProfileStoreStuff' | 'ProfileStoreInfo'| 'Update Inventory' | 'Policies') => {
-        setView(newView);
+    const handleViewChange = (newView: 'ProfileStoreStuff' | 'ProfileStoreInfo'| 'ProfileUpdateInventory' | 'Policies') => {
+         setView(newView);
+        // Fetch store info whenever the view changes
+        if (num !== -1) {
+            fetchStoreInfo(num);
+        }
     };
 
     useEffect(() => {
@@ -52,7 +72,21 @@ export const ProfileStoreNav = () => {
             const response = await fetch(`https://localhost:7163/api/Client/Client/Stores/${num}/?identifier=${getToken()}`);
             if (response.ok) {
                 const { value } = await response.json(); // Destructure value from the response
-                const { storeName, storeId, active: storeActive, storeEmailAdd, storePhoneNum, rating: storeRaiting, roles } = value;
+                const { storeName, storeId, active: storeActive, storeEmailAdd, storePhoneNum, rating: storeRaiting, roles, products } = value;
+                
+                const mappedProducts: Product[] = products.map((product: any) => ({
+                    productId: product._productid,
+                    storeId: product._storeId,
+                    productName: product._name,
+                    productPrice: product._price,
+                    productDescription: product._description,
+                    productQuantity: product._quantity,
+                    productCategory: product._category,
+                    productKeywords: [...product._keywords], // Assuming _keywords is an array of strings
+                    productRating: product._productRating,
+                    ageLimit: product._ageLimit,
+                    sellMethod: product._sellMethod // Assuming _sellMethod is represented as a string
+                }));
                 setStoreInfo({ storeName, storeId, storeActive, storeEmailAdd, storePhoneNum, storeRaiting, roles });
             } else {
                 throw new Error('Failed to fetch store information');
@@ -97,7 +131,7 @@ export const ProfileStoreNav = () => {
                         <Dropdown.Menu>
                             <Dropdown.Item onClick={() => handleViewChange('ProfileStoreInfo')}>Store Info</Dropdown.Item>
                             <Dropdown.Item onClick={() => handleViewChange('ProfileStoreStuff')}>Store Permission</Dropdown.Item>
-                            <Dropdown.Item onClick={() => handleViewChange('Update Inventory')}>Update Inventory</Dropdown.Item>
+                            <Dropdown.Item onClick={() => handleViewChange('ProfileUpdateInventory')}>Update Inventory</Dropdown.Item>
                             <Dropdown.Item onClick={() => handleViewChange('Policies')}>Policies</Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>
@@ -123,6 +157,9 @@ export const ProfileStoreNav = () => {
                 )} 
                 {view === 'ProfileStoreStuff' && (
                     <ProfileStoreStuff roles={storeInfo.roles} />
+                )}
+                 {view === 'ProfileUpdateInventory' && (
+                    <ProfileUpdateInventory products={mappedProducts} />
                 )}
             </>
         )}
