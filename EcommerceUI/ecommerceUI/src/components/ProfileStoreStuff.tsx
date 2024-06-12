@@ -150,7 +150,6 @@ const MyTable: React.FC<MyTableProps> = ({ roles }) => {
                     //     setPermission([...permissions, checkedPermission]);
                     // }
                 }}
-                // className="black-checkbox" // Add this line to set the background color to black
             />
         ))}
             </Form.Group>
