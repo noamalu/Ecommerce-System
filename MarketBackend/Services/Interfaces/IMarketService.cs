@@ -48,11 +48,13 @@ namespace MarketBackend.Services.Interfaces
         public Response UpdateRuleTargetPrice(string identifier, int storeId, int ruleId, int targetPrice);
         public Response UpdateCompositeOperator(string identifier, int storeId, int ruleId, int Operator);
         public Response UpdateCompositeRules(string identifier, int storeId, int ruleId, List<int> rules);
-        public Response AddPurchasePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int ruleId);
+        public Response<int> AddPurchasePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int ruleId);
         public Response<int> AddDiscountPolicy(string identifier, int storeId, DateTime expirationDate, string subject, int ruleId, double precentage);
-        public Response AddCompositePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int Operator, List<int> policies);
+        public Response<int> AddCompositePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int Operator, List<int> policies);
         public Response<string> GetStoreById(int storeId);
         public Response<List<RuleResultDto>> GetStoreRules(int storeId, string identifier);
+        public Response<List<DiscountPolicyResultDto>> GetStoreDiscountPolicies(int storeId, string identifier);
+        public Response<List<PolicyResultDto>> GetStorePurchacePolicies(int storeId, string identifier);
         public Response AddKeyWord(string identifier, string keyWord, int storeId, int productId);
     }
 }
