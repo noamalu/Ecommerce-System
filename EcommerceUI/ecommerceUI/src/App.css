@@ -9,6 +9,7 @@ body {
   padding-top: 6vh;
   display:block !important;
   text-align: center;
+  font-family: 'Trebuchet MS', sans-serif;
 }
 
 .flex {
@@ -20,8 +21,9 @@ body {
 }
 
 .full-height-row {
-  height: 92vh;
+  height: 94vh;
   width: 100vw;
+  margin: 0 auto;
 }
 
 .full-height {
@@ -51,4 +53,15 @@ body {
   padding-top: 5vh;
   width: 20vw; /* or any other width */
   margin: 0 auto;
+}
+
+.store-details {
+  text-align: center;
+}
+
+.store-details-table {
+  margin: 0 auto;
+  font-size: larger;
+  text-align: left;
+  width: 25vw
 }
