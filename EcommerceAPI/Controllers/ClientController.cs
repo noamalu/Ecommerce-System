@@ -290,7 +290,7 @@ namespace EcommerceAPI.Controllers
         }
 
         [HttpPost]
-        [Route("Client/ResManager")]
+        [Route("Client/Respond/Manager")]
         public async Task<ObjectResult> ResToStoreManageReq([Required][FromQuery]string identifier)
         {
             Response<bool> response = await Task.Run(() => _clientService.ResToStoreManageReq(identifier));
@@ -305,7 +305,7 @@ namespace EcommerceAPI.Controllers
         }
 
         [HttpPost]
-        [Route("Client/ResOwner")]
+        [Route("Client/Respond/Owner")]
         public async Task<ObjectResult> ResToStoreOwnershipReq([Required][FromQuery]string identifier)
         {
             Response<bool> response = await Task.Run(() => _clientService.ResToStoreOwnershipReq(identifier));
