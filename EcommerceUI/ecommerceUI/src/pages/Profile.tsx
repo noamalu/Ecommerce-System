@@ -1,20 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Image, Col, Row, Button, Stack } from "react-bootstrap";
 import avatar from '../assets/avatar.jpg';
 import PurchaseHistory from "../components/PurchaseHistory";
 import ProfileStoreNav from "../components/ProfileStoreNav";
 import LogoutButton from "../components/LogoutButton";
-import { getUserName } from '../services/SessionService';
+import { getLoggedIn, getUserName } from '../services/SessionService';
+import { useNavigate } from "react-router-dom";
 
 interface ProfileProps {}
 
 export const Profile: React.FC<ProfileProps> = () => {
+    const navigate = useNavigate();
     const userDataString = getUserName();
     const [view, setView] = useState<'profileStoreNav' | 'purchaseHistory'>('profileStoreNav');
 
     const handleViewChange = (newView: 'profileStoreNav' | 'purchaseHistory') => {
         setView(newView);
     };
+
+    useEffect(() => {
+        const loggedIn = getLoggedIn();
+        if(!loggedIn){
+            navigate("/Login");
+        }
+    }, []);
+
 
     return (
         <>
