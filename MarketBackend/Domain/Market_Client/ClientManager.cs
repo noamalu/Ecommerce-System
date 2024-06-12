@@ -289,6 +289,16 @@ namespace MarketBackend.Domain.Market_Client
             else
                 GetClientByIdentifier(identifier)?.PurchaseBasket(basket);
         }
+
+        public void NotificationOn(string identifier)
+        {
+            if(GetMemberByIdentifier(identifier) is not null)
+                GetMemberByIdentifier(identifier)?.NotificationOn();
+            else
+                {
+                    throw new Exception($"{identifier} not logged in");
+                }
+        }
     }
    
 }

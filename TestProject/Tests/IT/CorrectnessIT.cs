@@ -163,8 +163,8 @@ namespace MarketBackend.Tests.IT
         {
             Client mem1 = clientManager.GetClientByIdentifier(token1);
             Product product = marketManagerFacade.AddProduct(1, token1, productName1, sellmethod, desc, price1, category1, 1, false);
-            Client mem2 = clientManager.GetClientByIdentifier(token1);
-            marketManagerFacade.AddToCart(token1, storeId, productID1, 1);
+            Client mem2 = clientManager.GetClientByIdentifier(token2);
+            marketManagerFacade.AddToCart(token2, storeId, productID1, 1);
             bool thorwnExeptionStore  = false;
             bool thorwnExeptionClient = false;
 
@@ -206,7 +206,7 @@ namespace MarketBackend.Tests.IT
         public void TwoStoreOwnerAppointThirdToManagerTogether()
         {
             Client mem1 = clientManager.GetClientByIdentifier(token1);
-            Client mem2 = clientManager.GetClientByIdentifier(token1);
+            Client mem2 = clientManager.GetClientByIdentifier(token2);
             marketManagerFacade.AddManger(token1, storeId, userName2);
             Permission permission = Permission.all;
             marketManagerFacade.AddPermission(token1, storeId, userName2, permission);

@@ -20,7 +20,7 @@ namespace MarketBackend.Domain.Market_Client
         public bool IsNotification {get; set;}
         object _lock = new Object();
 
-        private SynchronizedCollection<Message> alerts;
+        public SynchronizedCollection<Message> alerts;
         public NotificationManager _alertManager = NotificationManager.GetInstance();
 
         public Member(int id, string userName, MailAddress mailAddress, string password) : base(id)
