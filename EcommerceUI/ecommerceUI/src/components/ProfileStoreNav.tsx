@@ -16,6 +16,7 @@ interface StoreDetailsProps {
     storeRaiting: number;
     // rules: { [key: number]: IRule };
     // roles: { [key: string]: Role };
+
 }
 
 export const ProfileStoreNav = () => {
@@ -39,10 +40,11 @@ export const ProfileStoreNav = () => {
 
     const fetchStoreInfo = async () => {
         try {
-            const response = await fetch(`https://localhost:7163/api/Client/Client/Stores?identifier=${getToken()}`);
+            const response = await fetch(`https://localhost:7163/api/Client/Client/Stores/${num}?/identifier=${getToken()}`);
             if (response.ok) {
                 const data = await response.json();
-                setStoreInfo(data);
+                const { storeName, storeId, storeActive, storeEmailAdd, storePhoneNum, storeRaiting } = data;
+                setStoreInfo({ storeName, storeId, storeActive, storeEmailAdd, storePhoneNum, storeRaiting });
             } else {
                 throw new Error('Failed to fetch store information');
             }
