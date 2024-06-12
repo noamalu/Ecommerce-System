@@ -155,7 +155,7 @@ const MyTable: React.FC<MyTableProps> = ({ roles , storeId}) => {
             </Form.Group>
             <Form.Group>
                 <Form.Label></Form.Label>
-                {Object.keys(Permission).map((perm: string) => (
+                {/* {Object.keys(Permission).map((perm: string) => (
                     <Form.Check
                         key={perm}
                         type="checkbox"
@@ -181,7 +181,7 @@ const MyTable: React.FC<MyTableProps> = ({ roles , storeId}) => {
                         }}
                         className="black-checkbox" // Add this line to apply the black-checkbox class
             />
-        ))}
+        ))} */}
             </Form.Group>
         </Form>
     </Modal.Body>
