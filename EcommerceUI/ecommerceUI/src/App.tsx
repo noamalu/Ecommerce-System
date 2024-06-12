@@ -10,7 +10,7 @@ import { Profile } from './pages/Profile';
 import { initSession } from './services/SessionService';
 import { Search } from './pages/Search';
 import { Cart } from './pages/Cart';
-import { ProfileStoreNav } from './components/ProfileStoreNav';
+import { Purchase } from './pages/Purchase';
 
 
 
@@ -31,6 +31,7 @@ function App() {
           <Route path="/search" element={<Search/>}/>
           <Route path="/profile" element={<Profile/>}/>
           <Route path="/cart" element={<Cart/>}/>
+          <Route path="/Purchase" element={<Purchase/>}/>
         </Routes>
       </BrowserRouter>
     </div>
