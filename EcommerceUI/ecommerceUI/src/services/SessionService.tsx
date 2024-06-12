@@ -6,7 +6,7 @@ interface Iuser {
   username: string;
 }
 
-export const storage = localStorage;
+export const storage = sessionStorage;
 const isInitOccured = "isInitOccured";
 const userName = "userName";
 const isGuest = "isGuest";
