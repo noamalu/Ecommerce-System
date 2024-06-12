@@ -193,7 +193,7 @@ namespace EcommerceAPI.Controllers
                     Value = "open-shop-success",
                 };
                 return Ok(openShopResponse);
-            }clientser
+            }
         }
 
         [HttpPost]

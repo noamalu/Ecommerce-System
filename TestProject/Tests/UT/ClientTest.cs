@@ -30,7 +30,7 @@ namespace UnitTests
         [TestMethod]
         public void TestRemoveFromCart()
         {
-            var client = new Guest(1);
+            var client = new Guest(2);
             client.AddToCart(0, 11, 10);
             var basket = BasketRepositoryRAM.GetInstance().getBasketsByCartId(client.Cart._shoppingCartId).Where(basket => basket._storeId == 0).FirstOrDefault();
             client.RemoveFromCart(0, 11, 10);
