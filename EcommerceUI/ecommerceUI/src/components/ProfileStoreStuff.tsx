@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Table, Dropdown, Form, Button, Container, Modal } from 'react-bootstrap';
 import { Role } from './ProfileStoreNav';
 import { RiLockLine } from 'react-icons/ri'; // Importing lock icon
+import { getToken } from '../services/SessionService';
 
 // Enum for possible permissions
 enum Permission {
@@ -73,15 +74,15 @@ const TableRow: React.FC<TableRowProps> = ({ role, index }) => {
 
 interface MyTableProps {
     roles: Role[];
+    storeId : number;
 }
 
-const MyTable: React.FC<MyTableProps> = ({ roles }) => {
+const MyTable: React.FC<MyTableProps> = ({ roles , storeId}) => {
     const [showAppointeeModal, setShowAppointeeModal] = useState(false);
-    const [username, setName] = useState('');
-    const [role, setRole] = useState('');
+    const [memberUserName, setName] = useState('');
+    const [roleName, setRole] = useState('');
     const [appointer, setAppionter] = useState('');
-    const [permissions, setPermission] = useState('');
-
+    const [permission, setPermission] = useState<string[]>([]);
     
     const handleAddAppointeeClick = () => {
         setShowAppointeeModal(true);
@@ -89,6 +90,28 @@ const MyTable: React.FC<MyTableProps> = ({ roles }) => {
 
     const handleCloseAppointeeModal = () => {
         setShowAppointeeModal(false);
+    };
+
+    const handleAddAppointeeSubmit = () => {
+        fetch(`https://localhost:7163/api/Market/Store/${storeId}/Staff?identifier=${getToken()}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+            body: JSON.stringify({memberUserName ,permission, roleName}),
+        }).then((r) => {
+            if (r.ok) {
+                return r.json();
+            } else {
+                throw new Error('Failed to add appointee');
+            }
+        }).then((data) => {
+            console.log('Appointee added successfully:', data);
+            handleCloseAppointeeModal();
+        }
+        ).catch((error) => {
+            console.error('Error adding appointee:', error);
+        });
     };
 
 
@@ -121,35 +144,42 @@ const MyTable: React.FC<MyTableProps> = ({ roles }) => {
         <Form>
             <Form.Group controlId="formUsername">
                 <Form.Label>Username</Form.Label>
-                <Form.Control type="text" placeholder="Enter username" value={username} onChange={(e) => setName(e.target.value)} />
+                <Form.Control type="text" placeholder="Enter username" value={memberUserName} onChange={(e) => setName(e.target.value)} />
             </Form.Group>
             <Form.Group controlId="formRole">
                 <Form.Label>Role</Form.Label>
-                <Form.Select value={role} onChange={(e) => setRole(e.target.value)}>
+                <Form.Select value={roleName} onChange={(e) => setRole(e.target.value)}>
                 <option value="Owner">Owner</option>
                 <option value="Manager">Manager</option>
-            </Form.Select>            
-            </Form.Group>
-            <Form.Group controlId="formAppointer">
-                <Form.Label>Appointer</Form.Label>
-                <Form.Control type="text" placeholder="Enter appointer" value={appointer} onChange={(e) => setAppionter(e.target.value)} />
+            </Form.Select>      
             </Form.Group>
             <Form.Group>
                 <Form.Label></Form.Label>
                 {Object.keys(Permission).map((perm: string) => (
-            <Form.Check
-                key={perm}
-                type="checkbox"
-                label={(Permission as Record<string, string>)[perm]}
-                checked={permissions.includes(perm)}
-                onChange={(e) => {
-                    const checkedPermission = perm;
-                    // if (permissions.includes(checkedPermission)) {
-                    //     setPermission(permissions.filter((p) => p !== checkedPermission));
-                    // } else {
-                    //     setPermission([...permissions, checkedPermission]);
-                    // }
-                }}
+                    <Form.Check
+                        key={perm}
+                        type="checkbox"
+                        label={(permission.includes(perm) ? '✓ ' : '') + (Permission as Record<string, string>)[perm]} // Add a checkmark to the label if the permission is included in the state
+                        checked={permission.includes(perm)}
+                        onChange={(e) => {
+                            const checkedPermission = perm;
+                            let updatedPermissions = [...permission]; // Create a copy of the permissions array
+                            
+                            // Check if the permission is already included in the permissions array
+                            const permissionIndex = updatedPermissions.indexOf(checkedPermission);
+                            
+                            // If the permission is already checked, remove it from the array
+                            if (permissionIndex !== -1) {
+                                updatedPermissions.splice(permissionIndex, 1);
+                            } else {
+                                // If the permission is not checked, add it to the array
+                                updatedPermissions.push(checkedPermission);
+                            }
+                            
+                            // Update the permissions state with the new array
+                            setPermission(updatedPermissions);
+                        }}
+                        className="black-checkbox" // Add this line to apply the black-checkbox class
             />
         ))}
             </Form.Group>
@@ -157,8 +187,8 @@ const MyTable: React.FC<MyTableProps> = ({ roles }) => {
     </Modal.Body>
     <Modal.Footer>
         <Button variant="secondary" onClick={handleCloseAppointeeModal}>Close</Button>
-        {/* Add any additional buttons as needed */}
-    </Modal.Footer>
+        <Button variant="primary" type="submit" onClick={handleAddAppointeeSubmit}>Submit</Button>
+        </Modal.Footer>
 </Modal>
         </>
     );
