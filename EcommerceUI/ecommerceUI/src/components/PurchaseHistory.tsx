@@ -6,6 +6,27 @@ interface PurchaseHistoryProps {
     view: 'profileStoreNav' | 'purchaseHistory';
 }
 
+const getStoreName = async (storeId: number): Promise<string> => {
+    try {
+        const response = await fetch(`https://localhost:7163/api/Market/Store/Name?identifier=${getToken()}&storeId=${storeId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Error occurred in getting store name');
+        }
+
+        const data = await response.json();
+        return data.value;
+    } catch (error) {
+        console.error('Error:', error);
+        return "undefined";
+    }
+};
+
 const PurchaseHistory: React.FC<PurchaseHistoryProps> = ({ view }) => {
     const [purchases, setPurchases] = useState<any[]>([]);
 
@@ -21,7 +42,10 @@ const PurchaseHistory: React.FC<PurchaseHistoryProps> = ({ view }) => {
                     });
                     const data = await response.json();
                     if (response.ok) {
-                        setPurchases(data.Value);
+                        console.log(data.value[0].baskets);
+                        const newPurchases = data.value[0].baskets.flatMap((basket: any) => basket.products);
+                console.log(newPurchases);
+                setPurchases(newPurchases);
                     } else {
                         console.error('Error fetching purchase history:', data.ErrorMessage);
                     }
@@ -34,6 +58,7 @@ const PurchaseHistory: React.FC<PurchaseHistoryProps> = ({ view }) => {
         }
     }, [view]); // Adding view as a dependency
 
+    console.log(purchases);
     return (
         <Container className="my-3">
             <h2>Purchase History</h2>
@@ -44,7 +69,7 @@ const PurchaseHistory: React.FC<PurchaseHistoryProps> = ({ view }) => {
                         <th>Item Name</th>
                         <th>Description</th>
                         <th>Price</th>
-                        <th>Date Purchased</th>
+                        {/* <th>Date Purchased</th> */}
                         <th>Quantity</th>
                     </tr>
                 </thead>
@@ -52,10 +77,10 @@ const PurchaseHistory: React.FC<PurchaseHistoryProps> = ({ view }) => {
                     {purchases.map((purchase, index) => (
                         <tr key={index}>
                             <td>{index + 1}</td>
-                            <td>{purchase.itemName}</td>
+                            <td>{purchase.name}</td>
                             <td>{purchase.description}</td>
                             <td>{purchase.price}</td>
-                            <td>{new Date(purchase.datePurchased).toLocaleDateString()}</td>
+                            {/* <td>{new Date(purchase.datePurchased).toLocaleDateString()}</td> */}
                             <td>{purchase.quantity}</td>
                         </tr>
                     ))}

@@ -86,7 +86,6 @@ export const Cart = () => {
                 }
 
                 const data = await response.json();
-                console.log(data);
                 setPrice(data.value.price);
                 const newProducts = data.value.baskets.flatMap((basket: any) => basket.products);
                 const updatedDataValue = await Promise.all(newProducts.map(async (item: any) => {
