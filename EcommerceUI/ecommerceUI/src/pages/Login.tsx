@@ -74,7 +74,8 @@ export const Login = () => {
 
 
   return (
-    <>
+    
+    <div className="login-form" >
     <Form.Group className="mb-3">
       <Form.Label>Username</Form.Label>
       <Form.Control type="text"
@@ -97,7 +98,7 @@ export const Login = () => {
     <Button variant="primary" type="submit" onClick={onButtonClick}>
       Login 
     </Button>
-     </> 
+    </div>
     );
 }
 
