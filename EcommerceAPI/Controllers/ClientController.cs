@@ -118,10 +118,10 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Guest")]
-        public async Task<ActionResult<ServerResponse<string>>> EnterAsGuest([Required][FromQuery]string identifier)
+        public async Task<ActionResult<ServerResponse<string>>> EnterAsGuest()
         {
             string session = HttpContext.Session.Id;
-            Response response = await Task.Run(() => _clientService.EnterAsGuest(identifier));
+            Response response = await Task.Run(() => _clientService.EnterAsGuest(session));
             if (response.ErrorOccured)
             {
                 var enterAsGuestResponse = new ServerResponse<string>
