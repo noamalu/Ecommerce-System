@@ -156,17 +156,17 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response RemoveFromCart(string identifier, int productId, int basketId, int quantity)
+        public Response RemoveFromCart(string identifier, int productId, int storeId, int quantity)
         {
             try
             {
-                marketManagerFacade.RemoveFromCart(identifier, productId, basketId, quantity);
-                logger.Info($"Client {identifier} removed {quantity} products {productId} from basket {basketId}.");
+                marketManagerFacade.RemoveFromCart(identifier, productId, storeId, quantity);
+                logger.Info($"Client {identifier} removed {quantity} products {productId} from basket {storeId}.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in removing {quantity} products {productId} from basket {basketId} for client {identifier}. Error message: {e.Message}");
+                logger.Error($"Error in removing {quantity} products {productId} from basket {storeId} for client {identifier}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }

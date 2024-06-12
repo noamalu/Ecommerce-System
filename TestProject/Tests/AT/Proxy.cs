@@ -111,8 +111,8 @@ namespace MarketBackend.Tests.AT
             return !res.ErrorOccured;
         }
 
-        public bool RemoveFromCart(string identifier, int productId, int basketId, int quantity){
-            Response res = clientService.RemoveFromCart(identifier, productId, basketId, quantity);
+        public bool RemoveFromCart(string identifier, int productId, int storeId, int quantity){
+            Response res = clientService.RemoveFromCart(identifier, productId, storeId, quantity);
             return !res.ErrorOccured;
         }
 

@@ -172,7 +172,7 @@ namespace EcommerceAPI.Controllers
 
             Response response = product.Quantity > 0 ? 
                 await Task.Run(() => _clientService.AddToCart(identifier, product.StoreId, (int)product.Id, product.Quantity)) : 
-                await Task.Run(() => _clientService.RemoveFromCart(identifier, product.StoreId, (int)product.Id, Math.Abs(product.Quantity)));
+                await Task.Run(() => _clientService.RemoveFromCart(identifier, (int)product.Id, product.StoreId, Math.Abs(product.Quantity)));
             if (response.ErrorOccured)
             {
                 var addToCartResponse = new ServerResponse<string>
