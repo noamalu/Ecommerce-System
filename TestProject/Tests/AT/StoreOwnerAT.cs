@@ -169,7 +169,7 @@ namespace MarketBackend.Tests.AT
            userId2 = proxy.GetMembeIDrByUserName(userName2);
            token2 = proxy.LoginWithToken(userName2, pass2);
            Assert.IsTrue(proxy.AddOwner(token1, shopID, userName2));
-           Assert.IsTrue(proxy.RemoveStaffMember(shopID, token1, null, userName2));
+           Assert.IsTrue(proxy.RemoveStaffMember(shopID, token1, userName2));
         }
 
         

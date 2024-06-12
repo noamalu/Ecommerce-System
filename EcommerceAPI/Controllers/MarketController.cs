@@ -126,11 +126,11 @@ namespace EcommerceAPI.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("Store/{storeId}/Permisions")]
-        public async Task<ObjectResult> AddPermission([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] StaffMemberDto staffMember)
+        [HttpDelete]
+        [Route("Store/{storeId}/Staff")]
+        public async Task<ObjectResult> RemoveStaff([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] StaffMemberDto staffMember)
         {
-            Response response = await Task.Run(() => _marketService.AddPermission(identifier, storeId, staffMember.MemberUserName, staffMember.Permission));
+            Response response = await Task.Run(() => _marketService.RemoveStaffMember(storeId, identifier, staffMember.MemberUserName));
             if (response.ErrorOccured)
             {
                 var removeAppointResponse = new ServerResponse<string>
@@ -143,34 +143,57 @@ namespace EcommerceAPI.Controllers
             {
                 var removeAppointResponse = new ServerResponse<string>
                 {
-                    Value = "remove Appoint success",
+                    Value = "add Appoint success",
                 };
                 return Ok(removeAppointResponse);
             }
+        }
+
+        [HttpPost]
+        [Route("Store/{storeId}/Permisions")]
+        public async Task<ObjectResult> AddPermission([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] StaffMemberDto staffMember)
+        {            
+            var permissionTasks = new List<Task<Response>>();
+            foreach(var permission in staffMember.Permission){
+                permissionTasks.Add(Task.Run(() => _marketService.AddPermission(identifier, storeId, staffMember.MemberUserName, permission)));
+            }
+            await Task.WhenAll(permissionTasks.ToArray());
+            var responses = permissionTasks.Select(task => task.Result);
+            
+            foreach(var response in responses){
+                    if(response.ErrorOccured)
+                        return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+           
+            var addPermissionResponse = new ServerResponse<string>
+            {
+                Value = "add permission success",
+            };
+            return Ok(addPermissionResponse);
         }
         
         [HttpDelete]
         [Route("Store/{storeId}/Permisions")]
         public async Task<ObjectResult> RemovePermission([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] StaffMemberDto staffMember)
         {
-            //MarketBackend.Services.Response IMarketService.RemovePermission(string identifier, int storeId, string toRemoveUserName, Permission permission)
-            Response response = await Task.Run(() => _marketService.RemovePermission(identifier, storeId, staffMember.MemberUserName, staffMember.Permission));
-            if (response.ErrorOccured)
-            {
-                var removeAppointResponse = new ServerResponse<string>
-                {
-                    ErrorMessage = response.ErrorMessage,
-                };
-                return BadRequest(removeAppointResponse);
+
+            var permissionTasks = new List<Task<Response>>();
+            foreach(var permission in staffMember.Permission){
+                permissionTasks.Add(Task.Run(() => _marketService.RemovePermission(identifier, storeId, staffMember.MemberUserName, permission)));
             }
-            else
-            {
-                var removeAppointResponse = new ServerResponse<string>
-                {
-                    Value = "remove Appoint success",
-                };
-                return Ok(removeAppointResponse);
+            await Task.WhenAll(permissionTasks.ToArray());
+            var responses = permissionTasks.Select(task => task.Result);
+            
+            foreach(var response in responses){
+                    if(response.ErrorOccured)
+                        return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
             }
+           
+            var removePermissionResponse = new ServerResponse<string>
+            {
+                Value = "remove permission success",
+            };
+            return Ok(removePermissionResponse);
         }
 
         [HttpPost]

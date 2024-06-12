@@ -366,12 +366,12 @@ namespace MarketBackend.Domain.Market_Client
 
         public void RemoveManger(string identifier, int storeId, string toRemoveUserName)
         {
-            RemoveStaffMember(storeId, identifier, null, toRemoveUserName);
+            RemoveStaffMember(storeId, identifier, toRemoveUserName);
         }
 
         public void RemoveOwner(string identifier, int storeId, string toRemoveUserName)
         {
-            RemoveStaffMember(storeId, identifier, null ,toRemoveUserName);
+            RemoveStaffMember(storeId, identifier, toRemoveUserName);
         }
 
         public void RemoveProduct(int storeId, string identifier, int productId)
@@ -384,7 +384,7 @@ namespace MarketBackend.Domain.Market_Client
             store.RemoveProduct(activeMember.UserName, productId);
         }
 
-        public void RemoveStaffMember(int storeId, string identifier, Role role, string toRemoveUserName)
+        public void RemoveStaffMember(int storeId, string identifier, string toRemoveUserName)
         {
             Store store = _storeRepository.GetById(storeId);
             if (store != null)
