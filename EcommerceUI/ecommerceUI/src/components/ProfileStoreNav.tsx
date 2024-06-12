@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Modal, Nav, Dropdown, Button, Col } from "react-bootstrap";
+import { Container, Modal, Nav, Dropdown, Button, Col, Stack } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 import { CreateStore } from './CreateStore';
 import ProfileStoreStuff from "./ProfileStoreStuff";
@@ -88,7 +88,7 @@ export const ProfileStoreNav = () => {
     </Nav.Item>
                 ))}
             </Nav>
-                <div>
+                <Stack direction="horizontal" gap={3}>
                     <Button variant="primary" onClick={() => setShowCreateStoreModal(true)}>Create Store</Button>
                     <Dropdown className="ml-2">
                         <Dropdown.Toggle variant="secondary" id="dropdown-basic">
@@ -101,13 +101,14 @@ export const ProfileStoreNav = () => {
                             <Dropdown.Item onClick={() => handleViewChange('Policies')}>Policies</Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>
-                </div>
+                </Stack>
+                
             </Container>
-            {num !== -1 && ( // Render the following only if num is not -1
+            {/* {num !== -1 && ( // Render the following only if num is not -1
                 <Container className="d-flex justify-content-between align-items-center my-3">
                     <p className="mb-0">Store {num}</p>
                 </Container>
-            )}
+            )} */}
             <Col className="profile-right">
             {storeInfo && (
             <>

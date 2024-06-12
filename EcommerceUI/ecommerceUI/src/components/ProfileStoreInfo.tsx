@@ -37,7 +37,8 @@ const ProfileStoreInfo: React.FC<ProfileStoreInfoProps> = ({
   return (
     <div className="store-details">
       <h2>Store Details</h2>
-      <table>
+      <br></br>
+      <table className="store-details-table">
         <tbody>
           <tr>
             <td>Store Name:</td>
