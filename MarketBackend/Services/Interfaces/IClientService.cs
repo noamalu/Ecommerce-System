@@ -25,5 +25,6 @@ namespace MarketBackend.Services.Interfaces
         public Response ExitGuest(string identifier);
         public Response<List<ShoppingCartResultDto>> GetPurchaseHistoryByClient(string userName);
         public Response EditPurchasePolicy(int storeId);
+        public Response<List<StoreResultDto>> GetMemberStores(string identifier);
     }
 }

@@ -672,6 +672,15 @@ namespace MarketBackend.Domain.Market_Client
             _clientManager.CheckMemberIsLoggedIn(identifier);
             _clientManager.NotificationOn(identifier);
         }
+
+        public List<Store> GetMemberStores(string identifier)
+        {
+            var member = _clientManager.GetMemberByIdentifier(identifier);
+
+            return _storeRepository.getAll()
+                .Where(store => store.roles.Values.Any(role => role.userName == member.UserName))
+                .ToList(); 
+        }
         // ---------------------------------------------------------
 
     }
