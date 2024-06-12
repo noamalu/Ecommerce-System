@@ -21,12 +21,12 @@ export interface Product {
     productName: string;           
     productPrice: number;          
     productQuantity: number;       
-    productCategory: string;       
+    // productCategory: string;       
     productDescription: string;    
-    productKeywords: string[];     
-    productRating: number;         
-    ageLimit: boolean;             
-    sellMethod: string;           
+    // productKeywords: string[];     
+    // productRating: number;         
+    // ageLimit: boolean;             
+    // sellMethod: string;           
 }
 
 
@@ -38,6 +38,7 @@ interface Store {
     storePhoneNum: string | undefined;
     storeRaiting: number | undefined;
     roles: Role[]; // Add the roles property here
+    products: Product[];
 }
 
 
@@ -73,21 +74,15 @@ export const ProfileStoreNav = () => {
             if (response.ok) {
                 const { value } = await response.json(); // Destructure value from the response
                 const { storeName, storeId, active: storeActive, storeEmailAdd, storePhoneNum, rating: storeRaiting, roles, products } = value;
-                
                 const mappedProducts: Product[] = products.map((product: any) => ({
-                    productId: product._productid,
-                    storeId: product._storeId,
-                    productName: product._name,
-                    productPrice: product._price,
-                    productDescription: product._description,
-                    productQuantity: product._quantity,
-                    productCategory: product._category,
-                    productKeywords: [...product._keywords], // Assuming _keywords is an array of strings
-                    productRating: product._productRating,
-                    ageLimit: product._ageLimit,
-                    sellMethod: product._sellMethod // Assuming _sellMethod is represented as a string
+                    productId: product.id,
+                    storeId: product.storeId,
+                    productName: product.name,
+                    productPrice: product.price,
+                    productDescription: product.description,
+                    productQuantity: product.quantity,
                 }));
-                setStoreInfo({ storeName, storeId, storeActive, storeEmailAdd, storePhoneNum, storeRaiting, roles });
+                setStoreInfo({ storeName, storeId, storeActive, storeEmailAdd, storePhoneNum, storeRaiting, roles, products: mappedProducts});
             } else {
                 throw new Error('Failed to fetch store information');
             }
@@ -110,7 +105,6 @@ export const ProfileStoreNav = () => {
             console.error('Error fetching store information:', error);
         }
     };
-    
     
     return (
         <>
@@ -160,7 +154,7 @@ export const ProfileStoreNav = () => {
                     <ProfileStoreStuff roles={storeInfo.roles} />
                 )}
                  {view === 'ProfileUpdateInventory' && (
-                    <ProfileUpdateInventory products={mappedProducts} />
+                    <ProfileUpdateInventory products={storeInfo.products} />
                 )}
             </>
         )}

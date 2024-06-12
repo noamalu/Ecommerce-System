@@ -1,19 +1,31 @@
 import React, { useState } from 'react';
-import { Table, Dropdown, Form } from 'react-bootstrap';
-import { Product } from './ProfileStoreNav';
+import { Table, Dropdown, Form, Stack, Button, Card, Row, Col, Container } from 'react-bootstrap';
+import { Product } from './ProfileStoreNav'
+import { RiSave2Fill } from 'react-icons/ri'; // Importing the shopping cart icon
+import { getToken } from '../services/SessionService';
+
 
 interface ProfileUpdateInventoryProps {
     products: Product[];
 }
 
 export const ProfileUpdateInventory: React.FC<ProfileUpdateInventoryProps> = ({ products }) => {
+    console.log(products);
     return (
-        <div>
+        <>
             <h2>Update Inventory</h2>
-            {products.map((product, index) => (
-                <ProductDetails key={index} product={product} />
-            ))}
-        </div>
+            <Container className="flex small-padding">
+            { <Row  md={Math.min(products.length, 3)} className="vertical-center">
+                
+                {products.map((product, index) => (
+                    <Col>
+                        <ProductDetails key={index} product={product} />
+                    </Col>
+                ))}
+                
+            </Row> }
+            </Container>
+        </>
     );
 };
 
@@ -22,59 +34,78 @@ interface ProductDetailsProps {
 }
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
-    const [productName, setProductName] = useState(product.productName);
     const [productPrice, setProductPrice] = useState(product.productPrice);
     const [productQuantity, setProductQuantity] = useState(product.productQuantity);
-    const [productCategory, setProductCategory] = useState(product.productCategory);
-    const [productDescription, setProductDescription] = useState(product.productDescription);
-    const [productKeywords, setProductKeywords] = useState(product.productKeywords);
-    const [productRating, setProductRating] = useState(product.productRating);
-    const [ageLimit, setAgeLimit] = useState(product.ageLimit);
-    const [sellMethod, setSellMethod] = useState(product.sellMethod);
 
-    // Function to handle changes in product details
-    const handleProductChange = (fieldName: string, value: any) => {
-        switch (fieldName) {
-            case 'productName':
-                setProductName(value);
-                break;
-            case 'productPrice':
-                setProductPrice(value);
-                break;
-            // Add cases for other fields as needed
-            default:
-                break;
-        }
-    };
+    const handlePriceChange = (e : any) => {
+        setProductPrice(e.target.value);
+    }
+
+    const handleQuantityChange = (e : any) => {
+        setProductQuantity(e.target.value);
+    }
+
+    const updateProduct = async () => {
+        const response= await fetch(`https://localhost:7163/api/Market/Store/${product.storeId}/Products/${product.productId}?identifier=${getToken()}`, {
+           method: 'PUT',
+           headers: {
+               'Content-Type': 'application/json',
+           },
+           body: JSON.stringify(
+            {   storeId: product.storeId,
+                id: product.productId,
+                productName: product.productName,
+                productDescription: product.productDescription,
+                price: productPrice,
+                quantity: productQuantity,
+           })  
+       })
+       if (response.ok) {
+           alert('Item updated successfully');
+       } else {
+           const responseData = await response.json();
+           console.error('Failed to update item:', responseData);
+           alert('Failed to update item. Please try again later.');
+       }
+   };
+
 
     return (
-        <div className="product-details">
-            <h3>Product Details</h3>
-            <table>
-                <tbody>
-                    <tr>
-                        <td>Product Name:</td>
-                        <td>
-                            <input
-                                type="text"
-                                value={productName}
-                                onChange={(e) => handleProductChange('productName', e.target.value)}
-                            />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Product Price:</td>
-                        <td>
-                            <input
-                                type="number"
-                                value={productPrice}
-                                onChange={(e) => handleProductChange('productPrice', parseFloat(e.target.value))}
-                            />
-                        </td>
-                    </tr>
-                    {/* Add similar input fields for other product details */}
-                </tbody>
-            </table>
-        </div>
+        <>
+            <Card style={{ width: '23rem' }}>
+            <Card.Body>
+            <Card.Title><b>{product.productName} </b></Card.Title>
+            <Card.Text> {product.productDescription} </Card.Text>
+            <Stack direction="horizontal" gap={3}>
+                <Container>
+                    <Row>
+                        <Col> Price </Col>
+                        <Col> <Form.Control
+                                        type="number"
+                                        className="mx-2"
+                                        value={productPrice}
+                                        onChange={handlePriceChange}
+                                        min="0"
+                                        style={{ width: '7vw', textAlign: 'center' }}
+                            /> </Col>
+                    </Row>
+                    <Row>
+                        <Col> Quantity </Col>
+                        <Col>                     <Form.Control
+                                        type="number"
+                                        className="mx-2"
+                                        value={productQuantity}
+                                        onChange={handleQuantityChange}
+                                        min="0"
+                                        style={{ width: '7vw', textAlign: 'center' }}
+                            /> </Col>
+                    </Row>
+                </Container>
+                <Button variant="outline-info" onClick={updateProduct}> <RiSave2Fill size={20} /></Button>
+
+            </Stack>
+            </Card.Body>
+            </Card>
+        </>
     );
 };
