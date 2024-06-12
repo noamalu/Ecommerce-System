@@ -1,5 +1,5 @@
-import React from 'react';
-import { Table, Dropdown, Form } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Table, Dropdown, Form, Button, Container, Modal } from 'react-bootstrap';
 import { Role } from './ProfileStoreNav';
 import { RiLockLine } from 'react-icons/ri'; // Importing lock icon
 
@@ -76,23 +76,92 @@ interface MyTableProps {
 }
 
 const MyTable: React.FC<MyTableProps> = ({ roles }) => {
+    const [showAppointeeModal, setShowAppointeeModal] = useState(false);
+    const [username, setName] = useState('');
+    const [role, setRole] = useState('');
+    const [appointer, setAppionter] = useState('');
+    const [permissions, setPermission] = useState('');
+
+    
+    const handleAddAppointeeClick = () => {
+        setShowAppointeeModal(true);
+    };
+
+    const handleCloseAppointeeModal = () => {
+        setShowAppointeeModal(false);
+    };
+
+
     return (
-        <Table striped bordered hover className="my-3">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Role</th>
-                    <th>Appointer</th>
-                    <th>Permissions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {roles.map((role, index) => (
-                    <TableRow key={`role-${index}`} role={role} index={index} />
-                ))}
-            </tbody>
-        </Table>
+        <>
+            <Container className="d-flex justify-content-end my-3">
+                <Button variant="primary" onClick={handleAddAppointeeClick}>Add Appointee</Button>
+            </Container>
+            <Table striped bordered hover className="my-3">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Appointer</th>
+                        <th>Permissions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {roles.map((role, index) => (
+                        <TableRow key={`role-${index}`} role={role} index={index} />
+                    ))}
+                </tbody>
+            </Table>
+            <Modal show={showAppointeeModal} onHide={handleCloseAppointeeModal}>
+    <Modal.Header closeButton>
+        <Modal.Title>Add Appointee</Modal.Title>
+    </Modal.Header>
+    <Modal.Body>
+        <Form>
+            <Form.Group controlId="formUsername">
+                <Form.Label>Username</Form.Label>
+                <Form.Control type="text" placeholder="Enter username" value={username} onChange={(e) => setName(e.target.value)} />
+            </Form.Group>
+            <Form.Group controlId="formRole">
+                <Form.Label>Role</Form.Label>
+                <Form.Select value={role} onChange={(e) => setRole(e.target.value)}>
+                <option value="Owner">Owner</option>
+                <option value="Manager">Manager</option>
+            </Form.Select>            
+            </Form.Group>
+            <Form.Group controlId="formAppointer">
+                <Form.Label>Appointer</Form.Label>
+                <Form.Control type="text" placeholder="Enter appointer" value={appointer} onChange={(e) => setAppionter(e.target.value)} />
+            </Form.Group>
+            <Form.Group>
+                <Form.Label></Form.Label>
+                {Object.keys(Permission).map((perm: string) => (
+            <Form.Check
+                key={perm}
+                type="checkbox"
+                label={(Permission as Record<string, string>)[perm]}
+                checked={permissions.includes(perm)}
+                onChange={(e) => {
+                    const checkedPermission = perm;
+                    // if (permissions.includes(checkedPermission)) {
+                    //     setPermission(permissions.filter((p) => p !== checkedPermission));
+                    // } else {
+                    //     setPermission([...permissions, checkedPermission]);
+                    // }
+                }}
+                // className="black-checkbox" // Add this line to set the background color to black
+            />
+        ))}
+            </Form.Group>
+        </Form>
+    </Modal.Body>
+    <Modal.Footer>
+        <Button variant="secondary" onClick={handleCloseAppointeeModal}>Close</Button>
+        {/* Add any additional buttons as needed */}
+    </Modal.Footer>
+</Modal>
+        </>
     );
 };
 
