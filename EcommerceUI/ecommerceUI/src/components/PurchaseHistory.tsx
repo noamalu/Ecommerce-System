@@ -6,27 +6,6 @@ interface PurchaseHistoryProps {
     view: 'profileStoreNav' | 'purchaseHistory';
 }
 
-const getStoreName = async (storeId: number): Promise<string> => {
-    try {
-        const response = await fetch(`https://localhost:7163/api/Market/Store/Name?identifier=${getToken()}&storeId=${storeId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error('Error occurred in getting store name');
-        }
-
-        const data = await response.json();
-        return data.value;
-    } catch (error) {
-        console.error('Error:', error);
-        return "undefined";
-    }
-};
-
 const PurchaseHistory: React.FC<PurchaseHistoryProps> = ({ view }) => {
     const [purchases, setPurchases] = useState<any[]>([]);
 
