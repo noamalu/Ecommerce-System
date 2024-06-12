@@ -181,7 +181,7 @@ namespace MarketBackend.Domain.Market_Client
                 };
                 _storeRepository.Add(store);
                 Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
-                Role role = new Role(new Founder(RoleName.Founder), activeMember, storeId, identifier);
+                Role role = new Role(new Founder(RoleName.Founder), activeMember, storeId, activeMember.UserName);
 
                 store.SubscribeStoreOwner(activeMember);
                 store.AddStaffMember(activeMember.UserName, role, activeMember.UserName); //adds himself
