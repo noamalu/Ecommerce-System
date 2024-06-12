@@ -83,7 +83,7 @@ export const NavBar: React.FC<NavBarProps> = (props:{loggedIn : boolean, setLogg
               {!getLoggedIn() && (
               <Button variant="outline-info" onClick={() => navigate('/register')}>Register</Button> )}
               {/* show if logged in */}
-              {!getLoggedIn() && (
+              {getLoggedIn() && (
               <Button variant="outline-info" onClick={() => navigate('/profile')}><RiUserLine size={20} /></Button>)}
             </Navbar.Collapse>
           </Container>

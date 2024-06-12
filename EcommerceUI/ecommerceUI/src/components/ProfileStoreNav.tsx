@@ -4,12 +4,25 @@ import { useNavigate } from 'react-router-dom';
 import { CreateStore } from './CreateStore';
 import ProfileStoreStuff from "./ProfileStoreStuff";
 import ProfileStoreInfo from "./ProfileStoreInfo";
+import { getToken } from "../services/SessionService";
+
+
+interface StoreDetailsProps {
+    storeName: string;
+    storeId: number;
+    storeActive: boolean;
+    storeEmailAdd: string;
+    storePhoneNum: string;
+    storeRaiting: number;
+    // rules: { [key: number]: IRule };
+    // roles: { [key: string]: Role };
+}
 
 export const ProfileStoreNav = () => {
     const [num, setNum] = useState(1);
     const [showCreateStoreModal, setShowCreateStoreModal] = useState(false);
     const [view, setView] = useState<'ProfileStoreStuff' | 'ProfileStoreInfo'| 'Update Inventory' | 'Policies'>('ProfileStoreInfo');
-    const [storeInfo, setStoreInfo] = useState<any>(null); // State to store the fetched store information
+    const [storeInfo, setStoreInfo] = useState<StoreDetailsProps | null>(null);
 
     const handleClose = () => setShowCreateStoreModal(false);
     const handleSuccess = () => {
@@ -26,7 +39,7 @@ export const ProfileStoreNav = () => {
 
     const fetchStoreInfo = async () => {
         try {
-            const response = await fetch(`https://localhost:7163/api/Market/Store/Name?storeId=${num}`);
+            const response = await fetch(`https://localhost:7163/api/Client/Client/Stores?identifier=${getToken()}`);
             if (response.ok) {
                 const data = await response.json();
                 setStoreInfo(data);
@@ -56,6 +69,7 @@ export const ProfileStoreNav = () => {
                             Options
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
+                            <Dropdown.Item onClick={() => handleViewChange('ProfileStoreInfo')}>Store Info</Dropdown.Item>
                             <Dropdown.Item onClick={() => handleViewChange('ProfileStoreStuff')}>Store Permission</Dropdown.Item>
                             <Dropdown.Item onClick={() => handleViewChange('Update Inventory')}>Update Inventory</Dropdown.Item>
                             <Dropdown.Item onClick={() => handleViewChange('Policies')}>Policies</Dropdown.Item>
@@ -67,7 +81,16 @@ export const ProfileStoreNav = () => {
                 <p className="mb-0">Store {num}</p>
             </Container>
             <Col className="profile-right">
-                {view === 'ProfileStoreInfo' && <ProfileStoreInfo storeDetails={storeInfo} />} 
+                {view === 'ProfileStoreInfo' && storeInfo && (
+                    <ProfileStoreInfo 
+                        storeName={storeInfo.storeName}
+                        storeId={storeInfo.storeId}
+                        storeActive={storeInfo.storeActive}
+                        storeEmailAdd={storeInfo.storeEmailAdd}
+                        storePhoneNum={storeInfo.storePhoneNum}
+                        storeRaiting={storeInfo.storeRaiting}
+                    />
+                )} 
                 {view === 'ProfileStoreStuff' && <ProfileStoreStuff />}
             </Col>
             <Modal show={showCreateStoreModal} onHide={handleClose}>
