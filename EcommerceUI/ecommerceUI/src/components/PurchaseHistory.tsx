@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Table } from 'react-bootstrap';
-import { getToken } from '../services/SessionService';
+import { getToken, getUserName } from '../services/SessionService';
 
 interface PurchaseHistoryProps {
     view: 'profileStoreNav' | 'purchaseHistory';
@@ -13,16 +13,10 @@ const PurchaseHistory: React.FC<PurchaseHistoryProps> = ({ view }) => {
         if (view === 'purchaseHistory') {
             // Fetch purchase history data from the API
             const fetchPurchaseHistory = async () => {
-                const tokenId = localStorage.getItem('tokenId'); // Retrieve the tokenId from localStorage
-                //
-                if (!tokenId) {
-                    console.error('No tokenId found in localStorage');
-                    return;
-                }
 
                 try {
                     //TODO change the url token id
-                    const response = await fetch(`https://localhost:7163/api/Client/Member/PurchaseHistory?identifier=${getToken()}`, {
+                    const response = await fetch(`https://localhost:7163/api/Client/Member/PurchaseHistory?username=${getUserName()}`, {
                         method: 'GET'
                     });
                     const data = await response.json();
