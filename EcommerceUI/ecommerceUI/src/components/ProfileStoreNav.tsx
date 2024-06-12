@@ -6,28 +6,37 @@ import ProfileStoreStuff from "./ProfileStoreStuff";
 import ProfileStoreInfo from "./ProfileStoreInfo";
 import { getToken } from "../services/SessionService";
 
-
-interface StoreDetailsProps {
-    storeName: string;
-    storeId: number;
-    storeActive: boolean;
-    storeEmailAdd: string;
-    storePhoneNum: string;
-    storeRaiting: number;
-    // rules: { [key: number]: IRule };
-    // roles: { [key: string]: Role };
-
+export interface Role {
+    role: string;
+    username: string;
+    appointer: string;
+    appointees: string[];
+    permissions: string[];
 }
 
+
+interface Store {
+    storeName: string | undefined;
+    storeId: number | undefined;
+    storeActive: boolean | undefined;
+    storeEmailAdd: string | undefined;
+    storePhoneNum: string | undefined;
+    storeRaiting: number | undefined;
+    roles: Role[]; // Add the roles property here
+}
+
+
 export const ProfileStoreNav = () => {
-    const [num, setNum] = useState(1);
+    const [stores, setStores] = useState<number[]>([]);
+    const [num, setNum] = useState<number>(-1); // Initialize num to -1
     const [showCreateStoreModal, setShowCreateStoreModal] = useState(false);
     const [view, setView] = useState<'ProfileStoreStuff' | 'ProfileStoreInfo'| 'Update Inventory' | 'Policies'>('ProfileStoreInfo');
-    const [storeInfo, setStoreInfo] = useState<StoreDetailsProps | null>(null);
+    const [storeInfo, setStoreInfo] = useState<Store | null>(null);
 
     const handleClose = () => setShowCreateStoreModal(false);
     const handleSuccess = () => {
-        // handle success logic
+        window.location.reload();
+
     };
     const handleViewChange = (newView: 'ProfileStoreStuff' | 'ProfileStoreInfo'| 'Update Inventory' | 'Policies') => {
         setView(newView);
@@ -35,16 +44,31 @@ export const ProfileStoreNav = () => {
 
     useEffect(() => {
         // Fetch store information when the component mounts or when the store ID changes
-        fetchStoreInfo();
+        fetchStores();
     }, [num]);
 
-    const fetchStoreInfo = async () => {
+    const fetchStoreInfo = async (num : number) => {
         try {
             const response = await fetch(`https://localhost:7163/api/Client/Client/Stores/${num}/?identifier=${getToken()}`);
             if (response.ok) {
                 const { value } = await response.json(); // Destructure value from the response
-                const { storeName, storeId, active: storeActive, storeEmailAdd, storePhoneNum, rating: storeRaiting } = value;
-                setStoreInfo({ storeName, storeId, storeActive, storeEmailAdd, storePhoneNum, storeRaiting });
+                const { storeName, storeId, active: storeActive, storeEmailAdd, storePhoneNum, rating: storeRaiting, roles } = value;
+                setStoreInfo({ storeName, storeId, storeActive, storeEmailAdd, storePhoneNum, storeRaiting, roles });
+            } else {
+                throw new Error('Failed to fetch store information');
+            }
+        } catch (error) {
+            console.error('Error fetching store information:', error);
+        }
+    };
+
+    const fetchStores = async () => {
+        try {
+            const response = await fetch(`https://localhost:7163/api/Client/Client/Stores/?identifier=${getToken()}`);
+            if (response.ok) {
+                const { value } = await response.json();
+                const storeIds = value.map((store : Store) => store.storeId); // Extracting store IDs from the response
+                setStores(storeIds);
             } else {
                 throw new Error('Failed to fetch store information');
             }
@@ -53,17 +77,17 @@ export const ProfileStoreNav = () => {
         }
     };
     
+    
     return (
         <>
             <Container className="d-flex justify-content-between align-items-center my-3">
-                <Nav variant="tabs" defaultActiveKey="/home">
-                    <Nav.Item>
-                        <Nav.Link href="" onClick={() => setNum(1)}>Store 1</Nav.Link>
-                    </Nav.Item>
-                    <Nav.Item>
-                        <Nav.Link onClick={() => setNum(2)}>Store 2</Nav.Link>
-                    </Nav.Item>
-                </Nav>
+            <Nav variant="tabs" defaultActiveKey="/home">
+                {stores.map(storeId => (
+                    <Nav.Item key={storeId}>
+                    <Nav.Link onClick={() => { setNum(storeId); fetchStoreInfo(storeId); }}>Store {storeId}</Nav.Link> 
+    </Nav.Item>
+                ))}
+            </Nav>
                 <div>
                     <Button variant="primary" onClick={() => setShowCreateStoreModal(true)}>Create Store</Button>
                     <Dropdown className="ml-2">
@@ -79,11 +103,15 @@ export const ProfileStoreNav = () => {
                     </Dropdown>
                 </div>
             </Container>
-            <Container className="d-flex justify-content-between align-items-center my-3">
-                <p className="mb-0">Store {num}</p>
-            </Container>
+            {num !== -1 && ( // Render the following only if num is not -1
+                <Container className="d-flex justify-content-between align-items-center my-3">
+                    <p className="mb-0">Store {num}</p>
+                </Container>
+            )}
             <Col className="profile-right">
-                {view === 'ProfileStoreInfo' && storeInfo && (
+            {storeInfo && (
+            <>
+                {view === 'ProfileStoreInfo' && (
                     <ProfileStoreInfo 
                         storeName={storeInfo.storeName}
                         storeId={storeInfo.storeId}
@@ -93,7 +121,11 @@ export const ProfileStoreNav = () => {
                         storeRaiting={storeInfo.storeRaiting}
                     />
                 )} 
-                {view === 'ProfileStoreStuff' && <ProfileStoreStuff />}
+                {view === 'ProfileStoreStuff' && (
+                    <ProfileStoreStuff roles={storeInfo.roles} />
+                )}
+            </>
+        )}
             </Col>
             <Modal show={showCreateStoreModal} onHide={handleClose}>
                 <Modal.Header closeButton>
@@ -113,3 +145,7 @@ export const ProfileStoreNav = () => {
 };
 
 export default ProfileStoreNav;
+function setStores(storeIds: any) {
+    throw new Error("Function not implemented.");
+}
+

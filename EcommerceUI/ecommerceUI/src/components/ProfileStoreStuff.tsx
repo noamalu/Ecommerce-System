@@ -1,14 +1,18 @@
 import React from 'react';
 import { Table, Dropdown, Form } from 'react-bootstrap';
+import { Role } from './ProfileStoreNav';
 
-const TableRow = () => {
+
+interface TableRowProps {
+    role: Role;
+}
+
+const TableRow: React.FC<TableRowProps> = ({ role }) => {
     return (
         <tr>
-            <td>1</td>
-            <td>Mark</td>
-            <td>+972 52-123-4567</td>
-            <td>Founder</td>
-            <td></td>
+            <td>{role.username}</td>
+            <td>{role.appointer}</td>
+            <td>{role.appointer}</td>
             <td>
                 <Dropdown>
                     <Dropdown.Toggle variant="success" id="dropdown-basic">
@@ -17,23 +21,15 @@ const TableRow = () => {
                     <Dropdown.Menu>
                         <Dropdown.Item href="#/action-1">
                             <Form>
-                                <div key="default-checkbox" className="mb-3">
-                                    <Form.Check
-                                        type="checkbox"
-                                        id="default-checkbox-1"
-                                        label="Permission 1"
-                                    />
-                                    <Form.Check
-                                        type="checkbox"
-                                        id="default-checkbox-2"
-                                        label="Permission 2"
-                                    />
-                                    <Form.Check
-                                        type="checkbox"
-                                        id="default-checkbox-3"
-                                        label="Permission 3"
-                                    />
-                                </div>
+                                {role.permissions.map((permission, index) => (
+                                    <div key={`permission-${index}`} className="mb-3">
+                                        <Form.Check
+                                            type="checkbox"
+                                            id={`permission-checkbox-${index}`}
+                                            label={permission}
+                                        />
+                                    </div>
+                                ))}
                             </Form>
                         </Dropdown.Item>
                     </Dropdown.Menu>
@@ -43,7 +39,11 @@ const TableRow = () => {
     );
 };
 
-const MyTable = () => {
+interface MyTableProps {
+    roles: Role[];
+}
+
+const MyTable: React.FC<MyTableProps> = ({ roles }) => {
     return (
         <Table striped bordered hover className="my-3">
             <thead>
@@ -57,7 +57,9 @@ const MyTable = () => {
                 </tr>
             </thead>
             <tbody>
-                <TableRow />
+                {roles.map((role, index) => (
+                    <TableRow key={`role-${index}`} role={role} />
+                ))}
             </tbody>
         </Table>
     );
