@@ -1,5 +1,5 @@
 import React from 'react';
-import {setLoggedIn} from '../services/SessionService';
+import {clearSession, getToken} from '../services/SessionService';
 
 interface LogoutButtonProps {
 }
@@ -8,8 +8,7 @@ const LogoutButton: React.FC<LogoutButtonProps> = () => {
 
     const handleLogout = async () => {
       try {
-        const tokenId = 123; //need to chnage token id
-        const response = await fetch(`https://localhost:7163/api/Client/Member/Logout?tokenId=${tokenId}`, 
+        const response = await fetch(`https://localhost:7163/api/Client/Member/Logout?identifier=${getToken()}`, 
         {
           method: 'POST',
           headers: {
@@ -20,8 +19,7 @@ const LogoutButton: React.FC<LogoutButtonProps> = () => {
         if (response.ok) {
           console.log('Logout successful');
           alert("Logout successfully");
-          setLoggedIn(false); // Move setLoggedIn inside the success block
-        //   window.location.href = '/home';  //TODO uncomment this line
+          clearSession()
         } else {
           // Handle error response
           const responseData = await response.json();

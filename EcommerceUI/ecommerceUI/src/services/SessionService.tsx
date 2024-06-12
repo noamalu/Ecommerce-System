@@ -13,6 +13,7 @@ const isGuest = "isGuest";
 const sessionId = "sessionId";
 const isAdmin = "isAdmin";
 const isLogged = "isLoggedIn";
+const token = "token"
 
 export async function initSession() {
   if (storage.getItem(isInitOccured) === null) {
@@ -122,10 +123,15 @@ export function setLoggedIn(value: boolean) {
   storage.setItem(isLogged, value.toString());
 }
 
-
-
 export function getLoggedIn(): boolean {
   const value = storage.getItem(isLogged);
   return value === "true";
 }
 
+export function setToken(value: string) {
+  storage.setItem(token, value.toString());
+}
+
+export function getToken(): string | null {
+  return storage.getItem(token);
+}

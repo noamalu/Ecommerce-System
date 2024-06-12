@@ -2,8 +2,9 @@ import React, {Component, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import { setUsername } from "../services/SessionService";
+import { getToken, setToken, setUsername } from "../services/SessionService";
 import { setLoggedIn } from "../services/SessionService";
+import { initWebSocket } from "../services/NotificationsService";
 
 
 
@@ -44,8 +45,7 @@ export const Login = () => {
   }
   
   const logIn = () => {
-    var tokenId = 123;
-    fetch(`https://localhost:7163/api/Client/Guest/Login?tokenId=${tokenId}`, {
+    fetch(`https://localhost:7163/api/Client/Guest/Login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -53,6 +53,8 @@ export const Login = () => {
       body: JSON.stringify({username, password }),
     }).then((r) => {
       if (r.ok) {
+        const address = `ws://127.0.0.1:4560/${username}-alerts`;
+        initWebSocket(address);
         setLoggedIn(true)
         return r.json(); 
       } else {
@@ -61,6 +63,7 @@ export const Login = () => {
     })
     .then((data) => {
       // `data` is the parsed JSON object
+      setToken(data.value)
       setUsername(username);
       navigate('/');
     })

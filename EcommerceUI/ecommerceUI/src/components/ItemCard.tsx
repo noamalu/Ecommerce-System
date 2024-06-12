@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import placeholder from '../assets/placeholder.jpg';
+import { getToken } from "../services/SessionService";
 
 interface ItemCard {
     itemName: string;
@@ -32,8 +33,7 @@ export const ItemCard: React.FC<ItemCard> = ({storeId, productId,itemName, descr
 }
 
 const addToCart =  (storeid: number, productId: number) => { 
-  const tokenId = 123;
-  fetch(`https://localhost:7163/api/Client/Cart?tokenId=${tokenId}`, {
+  fetch(`https://localhost:7163/api/Client/Cart?identifier=${getToken()}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -41,8 +41,6 @@ const addToCart =  (storeid: number, productId: number) => {
     body: JSON.stringify({
                 storeId: storeid,
                 id: productId,
-                productName: "string", //should not be neccessary
-                price: 0, //should not be neccessary
                 quantity: 1,
               })
   }).then((r) => {

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
+import { getToken } from '../services/SessionService';
 
 export const CreateStore = ({ onClose, onSuccess }: { onClose: any, onSuccess: any }) => {
     const [name, setName] = useState('');
@@ -37,8 +38,7 @@ export const CreateStore = ({ onClose, onSuccess }: { onClose: any, onSuccess: a
     };
 
     const createStore = async () => {
-        const tokenId = 1234; // This should be changed to the actual token ID
-         const response= await fetch(`https://localhost:7163/api/Client/Client/CreateStore?tokenId=${tokenId}`, {
+         const response= await fetch(`https://localhost:7163/api/Client/Client/CreateStore?identifier=${getToken()}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

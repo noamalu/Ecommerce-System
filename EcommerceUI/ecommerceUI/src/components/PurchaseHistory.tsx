@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Table } from 'react-bootstrap';
+import { getToken } from '../services/SessionService';
 
 interface PurchaseHistoryProps {
     view: 'profileStoreNav' | 'purchaseHistory';
@@ -21,7 +22,7 @@ const PurchaseHistory: React.FC<PurchaseHistoryProps> = ({ view }) => {
 
                 try {
                     //TODO change the url token id
-                    const response = await fetch(`https://localhost:7163/api/Client/Member/PurchaseHistory?tokenId=${123}`, {
+                    const response = await fetch(`https://localhost:7163/api/Client/Member/PurchaseHistory?identifier=${getToken()}`, {
                         method: 'GET'
                     });
                     const data = await response.json();

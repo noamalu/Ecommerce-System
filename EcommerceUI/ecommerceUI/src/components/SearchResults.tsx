@@ -3,6 +3,7 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import  Container  from "react-bootstrap/Container";
 import ItemCard from "./ItemCard";
+import { getToken } from "../services/SessionService";
 
 
 interface SearchResults {
@@ -10,14 +11,13 @@ interface SearchResults {
     filter: string;
 }
 
-export const SearchResults = ({query, filter}) => {
+export const SearchResults = ({query, filter} : {query :string,  filter: string}) => {
     const [dataValue, setDataValue] = useState<any[]>([]); // Declare a state to store data.value
-    var tokenId = 123;
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`https://localhost:7163/api/Market/Search/${filter}?tokenId=${tokenId}&${filter}=${query}`, {
+                const response = await fetch(`https://localhost:7163/api/Market/Search/${filter}?identifier=${getToken()}&${filter}=${query}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
