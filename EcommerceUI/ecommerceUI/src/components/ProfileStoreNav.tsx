@@ -40,10 +40,10 @@ export const ProfileStoreNav = () => {
 
     const fetchStoreInfo = async () => {
         try {
-            const response = await fetch(`https://localhost:7163/api/Client/Client/Stores/${num}?/identifier=${getToken()}`);
+            const response = await fetch(`https://localhost:7163/api/Client/Client/Stores/${num}/?identifier=${getToken()}`);
             if (response.ok) {
-                const data = await response.json();
-                const { storeName, storeId, storeActive, storeEmailAdd, storePhoneNum, storeRaiting } = data;
+                const { value } = await response.json(); // Destructure value from the response
+                const { storeName, storeId, active: storeActive, storeEmailAdd, storePhoneNum, rating: storeRaiting } = value;
                 setStoreInfo({ storeName, storeId, storeActive, storeEmailAdd, storePhoneNum, storeRaiting });
             } else {
                 throw new Error('Failed to fetch store information');
@@ -52,7 +52,7 @@ export const ProfileStoreNav = () => {
             console.error('Error fetching store information:', error);
         }
     };
-
+    
     return (
         <>
             <Container className="d-flex justify-content-between align-items-center my-3">

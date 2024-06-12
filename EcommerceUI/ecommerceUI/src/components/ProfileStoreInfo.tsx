@@ -1,17 +1,31 @@
 import React from "react";
 
 interface ProfileStoreInfoProps {
-    storeName: string | undefined;
-    storeId: number | undefined;
-    storeActive: boolean | undefined;
-    storeEmailAdd: string | undefined;
-    storePhoneNum: string | undefined;
-    storeRaiting: number | undefined;
+  storeName: string | undefined;
+  storeId: number | undefined;
+  storeActive: boolean | undefined;
+  storeEmailAdd: string | undefined;
+  storePhoneNum: string | undefined;
+  storeRaiting: number | undefined;
 }
 
-const ProfileStoreInfo: React.FC<ProfileStoreInfoProps> = ({ storeName, storeId, storeActive, storeEmailAdd, storePhoneNum, storeRaiting }) => {
+const ProfileStoreInfo: React.FC<ProfileStoreInfoProps> = ({
+  storeName,
+  storeId,
+  storeActive,
+  storeEmailAdd,
+  storePhoneNum,
+  storeRaiting,
+}) => {
   // Check if any of the props are null or undefined
-  if (!storeName || !storeId || storeActive === undefined || !storeEmailAdd || !storePhoneNum || storeRaiting === undefined) {
+  if (
+    !storeName ||
+    !storeId ||
+    storeActive === undefined ||
+    !storeEmailAdd ||
+    !storePhoneNum ||
+    storeRaiting === undefined
+  ) {
     return (
       <div className="store-details">
         <h2>Store Details</h2>
@@ -26,7 +40,7 @@ const ProfileStoreInfo: React.FC<ProfileStoreInfoProps> = ({ storeName, storeId,
       <table>
         <tbody>
           <tr>
-            <td>Name:</td>
+            <td>Store Name:</td>
             <td>{storeName}</td>
           </tr>
           <tr>
@@ -34,19 +48,19 @@ const ProfileStoreInfo: React.FC<ProfileStoreInfoProps> = ({ storeName, storeId,
             <td>{storeId}</td>
           </tr>
           <tr>
-            <td>Active:</td>
-            <td>{storeActive ? 'Yes' : 'No'}</td>
+            <td>Store is Active?:</td>
+            <td>{storeActive ? "Yes" : "No"}</td>
           </tr>
           <tr>
-            <td>Email:</td>
+            <td>Store's Email:</td>
             <td>{storeEmailAdd}</td>
           </tr>
           <tr>
-            <td>Phone Number:</td>
+            <td>Store's Phone Number:</td>
             <td>{storePhoneNum}</td>
           </tr>
           <tr>
-            <td>Rating:</td>
+            <td>Store Rating:</td>
             <td>{storeRaiting}</td>
           </tr>
         </tbody>
