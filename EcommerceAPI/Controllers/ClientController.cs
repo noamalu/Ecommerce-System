@@ -208,9 +208,9 @@ namespace EcommerceAPI.Controllers
 
         [HttpGet]
         [Route("Member/PurchaseHistory")]
-        public ActionResult<Response<List<ShoppingCartResultDto>>> GetMemberPurchaseHistory([Required][FromQuery]string identifier)
+        public ActionResult<Response<List<ShoppingCartResultDto>>> GetMemberPurchaseHistory([Required][FromQuery]string userName)
         {
-            Response<List<ShoppingCartResultDto>> response = _clientService.GetPurchaseHistoryByClient(identifier);
+            Response<List<ShoppingCartResultDto>> response = _clientService.GetPurchaseHistoryByClient(userName);
             if (response.ErrorOccured)
             {
                 return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));

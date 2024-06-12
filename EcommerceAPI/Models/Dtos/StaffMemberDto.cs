@@ -9,13 +9,11 @@ namespace EcommerceAPI.Models.Dtos
 {
     public class StaffMemberDto
     {
-        public int Id { get; set; }
-        public int StoreId { get; set; }
         public string? MemberUserName { get; set; }
-        public string? Role { get; set; }
+        public string? Permission { get; set; }
         public bool IsValid()
         {
-            return Id != 0 && StoreId != 0 && MemberUserName is not null && Role is not null;
+            return MemberUserName is not null && Permission is not null;
         }
 
     }

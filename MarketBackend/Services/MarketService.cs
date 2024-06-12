@@ -59,11 +59,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response AddPermission(string identifier, int storeId, string toAddUserName, Permission permission)
+        public Response AddPermission(string identifier, int storeId, string toAddUserName, string permission)
         {
             try
             {
-                marketManagerFacade.AddPermission(identifier, storeId, toAddUserName, permission);
+                marketManagerFacade.AddPermission(identifier, storeId, toAddUserName, permission.StringToPermission());
                 logger.Info($"Client {identifier} added permission {permission} to client {toAddUserName} in store {storeId}.");
                 return new Response();
             }
@@ -224,11 +224,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response RemovePermission(string identifier, int storeId, string toRemoveUserName, Permission permission)
+        public Response RemovePermission(string identifier, int storeId, string toRemoveUserName, string permission)
         {
             try
             {
-                marketManagerFacade.RemovePermission(identifier, storeId, toRemoveUserName, permission);
+                marketManagerFacade.RemovePermission(identifier, storeId, toRemoveUserName, permission.StringToPermission());
                 //log
                 return new Response();
             }
