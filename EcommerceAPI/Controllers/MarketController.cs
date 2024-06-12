@@ -104,6 +104,29 @@ namespace EcommerceAPI.Controllers
         }
 
         [HttpPost]
+        [Route("Store/{storeId}/Staff")]
+        public async Task<ObjectResult> AddStaff([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] StaffMemberDto staffMember)
+        {
+            Response response = await Task.Run(() => _marketService.AddStaffMember(storeId, identifier, staffMember.RoleName, staffMember.MemberUserName));
+            if (response.ErrorOccured)
+            {
+                var removeAppointResponse = new ServerResponse<string>
+                {
+                    ErrorMessage = response.ErrorMessage,
+                };
+                return BadRequest(removeAppointResponse);
+            }
+            else
+            {
+                var removeAppointResponse = new ServerResponse<string>
+                {
+                    Value = "add Appoint success",
+                };
+                return Ok(removeAppointResponse);
+            }
+        }
+
+        [HttpPost]
         [Route("Store/{storeId}/Permisions")]
         public async Task<ObjectResult> AddPermission([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] StaffMemberDto staffMember)
         {

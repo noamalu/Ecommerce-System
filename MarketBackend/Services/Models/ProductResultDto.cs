@@ -20,7 +20,8 @@ namespace MarketBackend.Services.Models
             StoreId = product.StoreId;
             Price = product._price;
             Name = product.Name;
-            Description = product.Description;            
+            Description = product.Description;    
+            Quantity = product.Quantity;        
         }        
     }
 }

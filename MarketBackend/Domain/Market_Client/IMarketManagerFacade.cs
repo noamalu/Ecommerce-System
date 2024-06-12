@@ -22,7 +22,6 @@ namespace MarketBackend.Domain.Market_Client
         void RemoveFromCart(string identifier, int productId, int basketId, int quantity);
         ShoppingCart ViewCart(string identifier);
         void AddToCart(string identifier, int storeId, int productId, int quantity);
-
         string LoginClient(string username, string password);
         void ExitGuest(string identifier);
         // void UpdateProductDiscount(int productId, double discount);
@@ -55,7 +54,7 @@ namespace MarketBackend.Domain.Market_Client
         HashSet<Product> SearchByNameWithStore(int storeId, string name);
         void Filter (HashSet<Product> products, string category, double lowPrice, double highPrice, double lowProductRate, double highProductRate, double lowStoreRate, double highStoreRate);
         string GetProductInfo(int storId, int productId);
-        public void AddStaffMember(int storeId, string identifier, Role role, string toAddUserName);   
+        public void AddStaffMember(int storeId, string identifier, string roleName, string toAddUserName);   
         public string GetInfo(int storeId);    
         public void RemovePolicy(string identifier, int storeId, int policyID,string type);
         public int AddSimpleRule(string identifier, int storeId,string subject);
