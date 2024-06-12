@@ -33,6 +33,7 @@ function App() {
           <Route path="/cart" element={<Cart/>}/>
           <Route path="/Purchase" element={<Purchase/>}/>
 
+
         </Routes>
       </BrowserRouter>
     </div>
