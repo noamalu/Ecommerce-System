@@ -373,5 +373,84 @@ namespace EcommerceAPI.Controllers
                 return Ok(ServerResponse<List<PurchaseResultDto>>.OkResponse(response.Value));
             }
         }        
+
+        [HttpGet]
+        [Route("Store/{storeId}/GetRules")]
+        public ActionResult<Response<List<RuleResultDto>>> GetStoreRules([Required][FromQuery]string identifier, [FromRoute] int storeId)
+        {
+            Response<List<RuleResultDto>> response = _marketService.GetStoreRules(storeId, identifier);
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<List<RuleResultDto>>.OkResponse(response.Value));
+            }
+        }        
+
+        [HttpPost]
+        [Route("Store/{storeId}/AddRule")]
+        public ActionResult<Response<int>> CreateStoreRule([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] RuleDto rule)
+        {
+            if(!rule.IsValid()) return BadRequest("rule must have a subject");
+            Response<int> response = _marketService.AddSimpleRule(identifier, storeId, rule.Subject);
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<int>.OkResponse(response.Value));
+            }
+        }   
+        
+        [HttpPost]
+        [Route("Store/{storeId}/AddRule/Quantity")]
+        public ActionResult<Response<int>> CreateStoreQuantityRule([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] QuantityRuleDto rule)
+        {
+            if(!rule.IsValid()) return BadRequest("rule must have a subject");
+            Response<int> response = _marketService.AddQuantityRule(identifier, storeId, rule.Subject, rule.MinQuantity, rule.MaxQuantity);
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<int>.OkResponse(response.Value));
+            }
+        }         
+
+        [HttpPost]
+        [Route("Store/{storeId}/AddRule/TotalPrice")]
+        public ActionResult<Response<int>> CreateStoreTotalPriceRule([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] TotalPriceRuleDto rule)
+        {
+            if(!rule.IsValid()) return BadRequest("rule must have a subject");
+            Response<int> response = _marketService.AddTotalPriceRule(identifier, storeId, rule.Subject, rule.TargetPrice);
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<int>.OkResponse(response.Value));
+            }
+        } 
+
+        [HttpPost]
+        [Route("Store/{storeId}/AddRule/CompositeRule")]
+        public ActionResult<Response<int>> CreateStoreCompositeRule([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] CompositeRuleDto rule)
+        {
+            if(!rule.IsValid()) return BadRequest("composite rule must have rules");
+            Response<int> response = _marketService.AddCompositeRule(identifier, storeId, rule.Operator, rule.Rules);
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<int>.OkResponse(response.Value));
+            }
+        }   
     }
 }

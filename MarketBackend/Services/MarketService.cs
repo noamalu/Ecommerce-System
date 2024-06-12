@@ -646,5 +646,20 @@ namespace MarketBackend.Services
                 return Response<string>.FromError(e.Message);
             }
         }
+
+        public Response<List<RuleResultDto>> GetStoreRules(int storeId, string identifier)
+        {
+            try
+            {
+                var store = marketManagerFacade.GetStore(storeId);
+                logger.Info($"Get store {storeId} succeed.");
+                return Response<List<RuleResultDto>>.FromValue(store._rules.Values.Select(rule => new RuleResultDto(rule)).ToList());
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in fetching store {storeId}. Error message: {e.Message}");
+                return Response<List<RuleResultDto>>.FromError(e.Message);
+            }
+        }
     }
 }

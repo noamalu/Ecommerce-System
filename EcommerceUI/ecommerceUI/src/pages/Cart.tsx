@@ -5,9 +5,11 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import { getToken } from "../services/SessionService";
 import { Stack } from 'react-bootstrap';
+import { useNavigate } from "react-router-dom";
 
 
-const handleChange = (e: any, product: {storeId: number, id: number, productName: string, quantity: number}) => {
+
+const handleQuantityChange = (e: any, product: {storeId: number, id: number, productName: string, quantity: number}) => {
     const newQuantity = e.target.value;
     console.log(product.quantity);
     console.log(newQuantity);
@@ -62,10 +64,11 @@ const getStoreName = async (storeId: number): Promise<string> => {
 };
 
 
-
 export const Cart = () => {
     const [dataValue, setDataValue] = useState<any[]>([]);
     const [price, setPrice] = useState<number>(0);
+    const navigate = useNavigate();
+
 
     //get cart information
     useEffect(() => {
@@ -100,6 +103,9 @@ export const Cart = () => {
         fetchData();
     }, []);
 
+    const onPurchaseClick = () => {
+        navigate('/Purchase');
+    }
 
     return (
         <div className="small-padding">
@@ -107,7 +113,7 @@ export const Cart = () => {
                 <div className="p-2"> Total: {price}₪</div>
                 <div className="p-2 ms-auto"></div>
                 <div className="p-2">
-                    <Button className="align-right" onClick={() => alert("clicked on purchase cart")}> Purchase cart </Button>
+                    <Button className="align-right" onClick={onPurchaseClick}> Purchase cart </Button>
                 </div>
             </Stack>
             <Table striped bordered hover className="my-3 full-width">
@@ -129,7 +135,7 @@ export const Cart = () => {
                         type="number"
                         className="mx-2"
                         value={product.quantity}
-                        onChange={(e) => handleChange(e, {storeId: product.storeId, id: product.id, productName: product.name, quantity: product.quantity})}
+                        onChange={(e) => handleQuantityChange(e, {storeId: product.storeId, id: product.id, productName: product.name, quantity: product.quantity})}
                         min="0"
                         style={{ width: '60px', textAlign: 'center' }}
                     /> </td>
