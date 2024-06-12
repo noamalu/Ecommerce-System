@@ -78,3 +78,9 @@ body {
   background-color: #EBEBEB;
   padding-top: 5vh;
 }
+
+.login-form {
+  padding-top: 5vh;
+  width: 20vw; /* or any other width */
+  margin: 0 auto;
+}
