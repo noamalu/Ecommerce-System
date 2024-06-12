@@ -4,9 +4,10 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import { getToken } from "../services/SessionService";
+import { Stack } from 'react-bootstrap';
 
 
-const handleChange = (e, product: {storeId: number, id: number, productName: string, quantity: number}) => {
+const handleChange = (e: any, product: {storeId: number, id: number, productName: string, quantity: number}) => {
     const newQuantity = e.target.value;
     console.log(product.quantity);
     console.log(newQuantity);
@@ -27,22 +28,44 @@ const handleChange = (e, product: {storeId: number, id: number, productName: str
                   })
       }).then((r) => {
         if (r.ok) {
-          alert("incrementing quantity worked")
-          return;
+          console.log("incrementing quantity worked");
+          window.location.reload(); //refresh the page to show updated items and quantities
         } else {
           throw new Error('incrementing quantity didnt work');
         }
       })
-      .catch((error) => {
-        window.alert(error.message);
-      });
+    //   .catch((error) => {
+    //     window.alert(error.message);
+    //   });
 
-      window.location.reload(); //refresh the page to show updated items and quantities
 };
+
+const getStoreName = async (storeId: number): Promise<string> => {
+    try {
+        const response = await fetch(`https://localhost:7163/api/Market/Store/Name?identifier=${getToken()}&storeId=${storeId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Error occurred in getting store name');
+        }
+
+        const data = await response.json();
+        return data.value;
+    } catch (error) {
+        console.error('Error:', error);
+        return "undefined";
+    }
+};
+
 
 
 export const Cart = () => {
     const [dataValue, setDataValue] = useState<any[]>([]);
+    const [price, setPrice] = useState<number>(0);
 
     //get cart information
     useEffect(() => {
@@ -60,25 +83,38 @@ export const Cart = () => {
                 }
 
                 const data = await response.json();
-                setDataValue(data.value);
-                console.log(dataValue);
+                console.log(data);
+                setPrice(data.value.price);
+                const newProducts = data.value.baskets.flatMap((basket: any) => basket.products);
+                const updatedDataValue = await Promise.all(newProducts.map(async (item: any) => {
+                    const storeName = await getStoreName(item.storeId);
+                    return { ...item, storeName }; // Add storeName to each item
+                }));
+
+                setDataValue(updatedDataValue);
             } catch (error) {
                 console.error('Error:', error);
             }
         };
 
         fetchData();
-    });
+    }, []);
 
 
     return (
         <div className="small-padding">
-            <Button className="align-right" onClick={() => alert("clicked on purchase cart")}> Purchase cart </Button>
+            <Stack direction="horizontal" gap={3} className="half-width">
+                <div className="p-2"> Total: {price}₪</div>
+                <div className="p-2 ms-auto"></div>
+                <div className="p-2">
+                    <Button className="align-right" onClick={() => alert("clicked on purchase cart")}> Purchase cart </Button>
+                </div>
+            </Stack>
             <Table striped bordered hover className="my-3 full-width">
                 <thead>
                     <tr>
-                        <th>Store Name</th>
                         <th>Product Name</th>
+                        <th>Store Name</th>
                         <th>Price</th>
                         <th>Quantity</th>
                     </tr>
@@ -86,9 +122,9 @@ export const Cart = () => {
                 <tbody>                
                     {dataValue.map((product) => (
                     <tr>
-                    <td>{product.storeName}</td>
                     <td>{product.name}</td>
-                    <td></td>
+                    <td>{product.storeName}</td>
+                    <td>{product.price}₪</td>
                     <td> <Form.Control
                         type="number"
                         className="mx-2"

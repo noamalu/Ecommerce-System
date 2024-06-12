@@ -15,7 +15,6 @@ interface ItemCard {
 
 export const ItemCard: React.FC<ItemCard> = ({storeId, productId,itemName, description, price}) => {
         return (
-            // <h1> card</h1>
             <Card style={{ width: '18rem' }}>
             <Card.Img variant="top" src={placeholder} />
             <Card.Body>
@@ -24,7 +23,7 @@ export const ItemCard: React.FC<ItemCard> = ({storeId, productId,itemName, descr
                 {description}
                 </Card.Text>
                 <Card.Text>
-                    {price}
+                    {price}₪
                 </Card.Text>
                 <Button variant="primary" onClick={() => addToCart(storeId, productId)}>Add to cart</Button>
             </Card.Body>
@@ -45,7 +44,7 @@ const addToCart =  (storeid: number, productId: number) => {
               })
   }).then((r) => {
     if (r.ok) {
-      console.log("put in cart worked")
+      alert("item added ")
       return;
     } else {
       throw new Error('put in cart didnt work');
