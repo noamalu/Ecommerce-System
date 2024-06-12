@@ -16,4 +16,29 @@ namespace MarketBackend.Domain.Market_Client
         editPermissions,
         all = addProduct | removeProduct | updateProductPrice | updateProductDiscount | updateProductQuantity | editPermissions
     }
+
+    public static class PermissionExtensions
+    {
+        // Converts enum to string (utilizing the default ToString())
+        public static string PermissionToString(this Permission permission)
+        {
+            return permission.ToString();
+        }
+
+        // Converts a string to the corresponding Permission enum
+        public static Permission StringToPermission(this string permissionString)
+        {
+            if (string.IsNullOrEmpty(permissionString))
+                throw new ArgumentException("Input string is null or empty", nameof(permissionString));
+
+            if (Enum.TryParse<Permission>(permissionString, true, out Permission result))
+            {
+                return result;
+            }
+            else
+            {
+                throw new ArgumentException($"Invalid permission: {permissionString}");
+            }
+        }
+    }
 }
