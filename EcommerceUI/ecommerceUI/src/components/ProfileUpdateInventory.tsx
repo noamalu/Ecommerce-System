@@ -15,12 +15,14 @@ export const ProfileUpdateInventory: React.FC<ProfileUpdateInventoryProps> = ({ 
         <>
             <h2>Update Inventory</h2>
             <Container className="flex small-padding">
-            { <Row xs={1} md={Math.min(products.length, 4)} className="g-4">
-                <Col>
+            { <Row  md={Math.min(products.length, 3)} className="vertical-center">
+                
                 {products.map((product, index) => (
-                    <ProductDetails key={index} product={product} />
+                    <Col>
+                        <ProductDetails key={index} product={product} />
+                    </Col>
                 ))}
-                </Col>
+                
             </Row> }
             </Container>
         </>
