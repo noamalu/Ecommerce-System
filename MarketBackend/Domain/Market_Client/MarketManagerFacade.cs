@@ -277,11 +277,12 @@ namespace MarketBackend.Domain.Market_Client
             return _clientManager.GetPurchaseHistoryByClient(userName);
         }
 
-        public List<Purchase> GetPurchaseHistoryByStore(int storeId, string userName)
+        public List<Purchase> GetPurchaseHistoryByStore(int storeId, string identifier)
         {
             Store store = _storeRepository.GetById(storeId);
-            if (store != null){                
-                return store.getHistory(userName);
+            if (store != null){           
+                var member  = _clientManager.GetMemberByIdentifier(identifier);
+                return store.getHistory(member.UserName);
             }
             else{
                 throw new Exception("Store doesn't exists");
