@@ -682,6 +682,11 @@ namespace MarketBackend.Domain.Market_Client
                 .Where(store => store.roles.Values.Any(role => role.userName == member.UserName))
                 .ToList(); 
         }
+
+        public Store GetMemberStore(string identifier, int storeId)
+        {
+            return GetMemberStores(identifier).Where(store => store.StoreId == storeId).FirstOrDefault();
+        }
         // ---------------------------------------------------------
 
     }
