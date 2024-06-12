@@ -143,60 +143,57 @@ namespace MarketBackend.Domain.Market_Client
         public int AddDiscountPolicy(string userName, DateTime expirationDate, string subject, int ruledId, double precantage)
         {
            
-             if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
-                {
-                    IRule rule = GetRule(ruledId);
-                    _discountPolicyManager.AddPolicy(_policyIdFactory++, expirationDate, CastProductOrCategory(subject), rule, precantage);
-                    return rule.Id;
-                }
-                else throw new Exception($"Permission exception for userName: {userName}");
-            
-            
+            if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
+            {
+                IRule rule = GetRule(ruledId);                    
+                return _discountPolicyManager.AddPolicy(_policyIdFactory++, expirationDate, CastProductOrCategory(subject), rule, precantage);
+            }
+            else throw new Exception($"Permission exception for userName: {userName}");                        
         }
 
-        public void AddCompositePolicy(string userName, DateTime expirationDate, string subject, NumericOperator Operator, List<int> policies)
+        public int AddCompositePolicy(string userName, DateTime expirationDate, string subject, NumericOperator Operator, List<int> policies)
         {
             
-                 if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
-                {
-                    _discountPolicyManager.AddCompositePolicy(_policyIdFactory, expirationDate, CastProductOrCategory(subject), Operator, policies);
-                }
-                else throw new Exception($"Permission exception for userName: {userName}");
+            if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
+            {
+                return _discountPolicyManager.AddCompositePolicy(_policyIdFactory, expirationDate, CastProductOrCategory(subject), Operator, policies);
+            }
+            else throw new Exception($"Permission exception for userName: {userName}");
            
         }
 
         public void RemovePolicy(string userName, int policyId, string type)
         {
             
-                if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
+            if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
+            {
+                switch (type)
                 {
-                    switch (type)
-                    {
-                        case "DiscountPolicy": _discountPolicyManager.RemovePolicy(policyId); break;
-                        case "PurchasePolicy": _purchasePolicyManager.RemovePolicy(policyId); break;
-                    }
+                    case "DiscountPolicy": _discountPolicyManager.RemovePolicy(policyId); break;
+                    case "PurchasePolicy": _purchasePolicyManager.RemovePolicy(policyId); break;
                 }
-                else throw new Exception($"Permission exception for userName: {userName}");
+            }
+            else throw new Exception($"Permission exception for userName: {userName}");
             
         }
 
         public void RemoveDiscountPolicy(string userName, int policyId)
         {
            
-                if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
-                {
-                    _discountPolicyManager.RemovePolicy(policyId);
-                }
-                else throw new Exception($"Permission exception for userName: {userName}");
+            if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
+            {
+                _discountPolicyManager.RemovePolicy(policyId);
+            }
+            else throw new Exception($"Permission exception for userName: {userName}");
             
         }
 
-        public void AddPurchasePolicy(string userName, DateTime expirationDate, string subject, int ruledId)
+        public int AddPurchasePolicy(string userName, DateTime expirationDate, string subject, int ruledId)
         {
              if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
-                IRule rule = GetRule(ruledId);
-                _purchasePolicyManager.AddPolicy(_policyIdFactory++, expirationDate, CastProductOrCategory(subject), rule);
+                IRule rule = GetRule(ruledId);               
+                return  _purchasePolicyManager.AddPolicy(_policyIdFactory++, expirationDate, CastProductOrCategory(subject), rule);
             }
             else throw new Exception($"Permission exception for userName: {userName}");
         }

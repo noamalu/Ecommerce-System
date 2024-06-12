@@ -637,13 +637,13 @@ namespace MarketBackend.Domain.Market_Client
                 throw new Exception("Store doesn't exist!");
         }
 
-        public void AddPurchasePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int ruleId)
+        public int AddPurchasePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int ruleId)
         {
             _clientManager.CheckMemberIsLoggedIn(identifier);
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
                 Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
-                store.AddPurchasePolicy(activeMember.UserName, expirationDate, subject, ruleId);
+                return store.AddPurchasePolicy(activeMember.UserName, expirationDate, subject, ruleId);
             }
             else
                 throw new Exception("Store doesn't exist!");
@@ -659,14 +659,14 @@ namespace MarketBackend.Domain.Market_Client
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public void AddCompositePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int Operator, List<int> policies)
+        public int AddCompositePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int Operator, List<int> policies)
         {
             _clientManager.CheckMemberIsLoggedIn(identifier);
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
                 Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
                 NumericOperator op = (NumericOperator)Enum.ToObject(typeof(NumericOperator), Operator);
-                store.AddCompositePolicy(activeMember.UserName, expirationDate, subject, op, policies);
+                return store.AddCompositePolicy(activeMember.UserName, expirationDate, subject, op, policies);
             }
             else
                 throw new Exception("Store doesn't exist!");

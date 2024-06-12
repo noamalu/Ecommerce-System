@@ -589,18 +589,18 @@ namespace MarketBackend.Services
                 return new Response(e.Message);
             }
         }
-        public Response AddPurchasePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int ruleId)
+        public Response<int> AddPurchasePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int ruleId)
         {
             try
             {
-                marketManagerFacade.AddPurchasePolicy(identifier, storeId, expirationDate, subject, ruleId);
+                int policy = marketManagerFacade.AddPurchasePolicy(identifier, storeId, expirationDate, subject, ruleId);
                 logger.Info($"Add purchase policy for store {storeId} succeed.");
-                return new Response();
+                return Response<int>.FromValue(policy);
             }
             catch (Exception e)
             {
                 logger.Error($"Error in adding purchase policy for store {storeId}. Error message: {e.Message}");
-                return new Response(e.Message);
+                return Response<int>.FromError(e.Message);
             }
         }
         public Response<int> AddDiscountPolicy(string identifier, int storeId, DateTime expirationDate, string subject, int ruleId, double precentage)
@@ -617,18 +617,18 @@ namespace MarketBackend.Services
                 return Response<int>.FromError(e.Message);
             }
         }
-        public Response AddCompositePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int Operator, List<int> policies)
+        public Response<int> AddCompositePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int Operator, List<int> policies)
         {
             try
             {
-                marketManagerFacade.AddCompositePolicy(identifier, storeId, expirationDate, subject, Operator, policies);
+                var policy = marketManagerFacade.AddCompositePolicy(identifier, storeId, expirationDate, subject, Operator, policies);
                 logger.Info($"Add composite policy for store {storeId} succeed.");
-                return new Response();
+                return Response<int>.FromValue(policy);
             }
             catch (Exception e)
             {
                 logger.Error($"Error in adding composite policy for store {storeId}. Error message: {e.Message}");
-                return new Response(e.Message);
+                return Response<int>.FromError(e.Message);
             }
         }
 
@@ -659,6 +659,36 @@ namespace MarketBackend.Services
             {
                 logger.Error($"Error in fetching store {storeId}. Error message: {e.Message}");
                 return Response<List<RuleResultDto>>.FromError(e.Message);
+            }
+        }
+
+        public Response<List<DiscountPolicyResultDto>> GetStoreDiscountPolicies(int storeId, string identifier)
+        {
+            try
+            {
+                var store = marketManagerFacade.GetStore(storeId);
+                logger.Info($"Get store {storeId} succeed.");
+                return Response<List<DiscountPolicyResultDto>>.FromValue(store._discountPolicyManager.Policies.Values.Select(policy => new DiscountPolicyResultDto((DiscountPolicy)policy)).ToList());
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in fetching store {storeId}. Error message: {e.Message}");
+                return Response<List<DiscountPolicyResultDto>>.FromError(e.Message);
+            }
+        }
+
+        public Response<List<PolicyResultDto>> GetStorePurchacePolicies(int storeId, string identifier)
+        {
+            try
+            {
+                var store = marketManagerFacade.GetStore(storeId);
+                logger.Info($"Get store {storeId} succeed.");
+                return Response<List<PolicyResultDto>>.FromValue(store._purchasePolicyManager.Policies.Values.Select(policy => new PolicyResultDto(policy)).ToList());
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in fetching store {storeId}. Error message: {e.Message}");
+                return Response<List<PolicyResultDto>>.FromError(e.Message);
             }
         }
     }
