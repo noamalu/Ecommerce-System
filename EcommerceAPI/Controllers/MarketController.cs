@@ -453,6 +453,76 @@ namespace EcommerceAPI.Controllers
             {
                 return Ok(ServerResponse<int>.OkResponse(response.Value));
             }
-        }   
+        }
+
+        [HttpGet]
+        [Route("Store/{storeId}/Info")]
+        public ActionResult<Response<string>> GetInfo([Required][FromRoute] int storeId)
+        {            
+            Response<string> response = _marketService.GetInfo(storeId);
+            if (response.ErrorOccured)
+            {
+                var getinforesponse = new ServerResponse<string>
+                {
+                    ErrorMessage = response.ErrorMessage,
+                };
+                return BadRequest(getinforesponse);
+            }
+            else
+            {
+                var getinforesponse = new ServerResponse<string>
+                {
+                    Value = response.Value,
+                };
+                return Ok(getinforesponse);
+            }
+        }
+
+        [HttpGet]
+        [Route("Store/{storeId}/Product/{productId}")]
+        public ActionResult<Response<string>> GetProductInfo([Required][FromRoute] int storeId, [FromRoute] int productId)
+        {            
+            Response<string> response = _marketService.GetProductInfo(storeId, productId);
+            if (response.ErrorOccured)
+            {
+                var getinforesponse = new ServerResponse<string>
+                {
+                    ErrorMessage = response.ErrorMessage,
+                };
+                return BadRequest(getinforesponse);
+            }
+            else
+            {
+                var getinforesponse = new ServerResponse<string>
+                {
+                    Value = response.Value,
+                };
+                return Ok(getinforesponse);
+            }
+        }
+
+        [HttpPost]
+        [Route("Store/{storeId}/Product/{productId}/KeyWord")]
+        public async Task<ObjectResult> AddKeyWord([Required][FromQuery]string identifier, [FromQuery] string keyWord, [FromRoute] int storeId, [FromRoute] int productId)
+        {
+            Response response = await Task.Run(() => _marketService.AddKeyWord(identifier, keyWord, storeId, productId));
+            if (response.ErrorOccured)
+            {
+                var addKeyWordResponse = new ServerResponse<string>
+                {
+                    ErrorMessage = response.ErrorMessage,
+                };
+                return BadRequest(addKeyWordResponse);
+            }
+            else
+            {
+                var addKeyWordResponse = new ServerResponse<string>
+                {
+                    Value = "add ket word success",
+                };
+                return Ok(addKeyWordResponse);
+            }
+        }
+   
     }
 }
