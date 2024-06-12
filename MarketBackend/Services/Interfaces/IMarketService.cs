@@ -28,8 +28,8 @@ namespace MarketBackend.Services.Interfaces
         public Response CloseStore(string identifier, int storeId);
         public Response OpenStore(string identifier, int storeId);
         public Response<bool> IsAvailable(int productId);
-        public Response RemovePermission(string identifier, int storeId, string toRemoveUserName, Permission permission);
-        public Response AddPermission(string identifier, int storeId, string toAddUserName, Permission permission);
+        public Response RemovePermission(string identifier, int storeId, string toRemoveUserName, string permission);
+        public Response AddPermission(string identifier, int storeId, string toAddUserName, string permission);
         public Response EditPurchasePolicy(int storeId);
         public Response<List<ProductResultDto>> SearchByKeywords(string keywords);
         public Response<List<ProductResultDto>> SearchByName(string name);

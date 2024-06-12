@@ -102,51 +102,53 @@ namespace EcommerceAPI.Controllers
             }
             return default;
         }
-        // [HttpPost]
-        // [Route("remove-appoint")]
-        // public async Task<ObjectResult> RemoveAppoint([Required][FromQuery]string identifier, [FromBody] StaffMemberDto staffMember)
-        // {
-        //     Response response = await Task.Run(() => _marketService.RemoveStaffMember(staffMember.StoreId, identifier, staffMember.Id));
-        //     if (response.ErrorOccured)
-        //     {
-        //         var removeAppointResponse = new ServerResponse<string>
-        //         {
-        //             ErrorMessage = response.ErrorMessage,
-        //         };
-        //         return BadRequest(removeAppointResponse);
-        //     }
-        //     else
-        //     {
-        //         var removeAppointResponse = new ServerResponse<string>
-        //         {
-        //             Value = "remove Appoint success",
-        //         };
-        //         return Ok(removeAppointResponse);
-        //     }
-        // }
 
-        // [HttpPost]
-        // [Route("Store/Permision")]
-        // public async Task<ObjectResult> AddPermission([FromBody] ChangePermisionRequest request)
-        // {
-        //     Response response = await Task.Run(() => _marketService.AddPermission(request.SessionId, request.AppointeeUserName, request.ShopId, request.Permission));
-        //     if (response.ErrorOccured)
-        //     {
-        //         var changePermissionResponse = new ServerResponse<string>
-        //         {
-        //             ErrorMessage = response.ErrorMessage,
-        //         };
-        //         return BadRequest(changePermissionResponse);
-        //     }
-        //     else
-        //     {
-        //         var changePermissionResponse = new ServerResponse<string>
-        //         {
-        //             Value = "change-permission-success",
-        //         };
-        //         return Ok(changePermissionResponse);
-        //     }
-        // }
+        [HttpPost]
+        [Route("Store/{storeId}/Permisions")]
+        public async Task<ObjectResult> AddPermission([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] StaffMemberDto staffMember)
+        {
+            Response response = await Task.Run(() => _marketService.AddPermission(identifier, storeId, staffMember.MemberUserName, staffMember.Permission));
+            if (response.ErrorOccured)
+            {
+                var removeAppointResponse = new ServerResponse<string>
+                {
+                    ErrorMessage = response.ErrorMessage,
+                };
+                return BadRequest(removeAppointResponse);
+            }
+            else
+            {
+                var removeAppointResponse = new ServerResponse<string>
+                {
+                    Value = "remove Appoint success",
+                };
+                return Ok(removeAppointResponse);
+            }
+        }
+        
+        [HttpDelete]
+        [Route("Store/{storeId}/Permisions")]
+        public async Task<ObjectResult> RemovePermission([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] StaffMemberDto staffMember)
+        {
+            //MarketBackend.Services.Response IMarketService.RemovePermission(string identifier, int storeId, string toRemoveUserName, Permission permission)
+            Response response = await Task.Run(() => _marketService.RemovePermission(identifier, storeId, staffMember.MemberUserName, staffMember.Permission));
+            if (response.ErrorOccured)
+            {
+                var removeAppointResponse = new ServerResponse<string>
+                {
+                    ErrorMessage = response.ErrorMessage,
+                };
+                return BadRequest(removeAppointResponse);
+            }
+            else
+            {
+                var removeAppointResponse = new ServerResponse<string>
+                {
+                    Value = "remove Appoint success",
+                };
+                return Ok(removeAppointResponse);
+            }
+        }
 
         [HttpPost]
         [Route("Store/{storeId}/Close")]
@@ -191,7 +193,7 @@ namespace EcommerceAPI.Controllers
                     Value = "open-shop-success",
                 };
                 return Ok(openShopResponse);
-            }
+            }clientser
         }
 
         [HttpPost]
