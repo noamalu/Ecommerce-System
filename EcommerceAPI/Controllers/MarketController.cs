@@ -496,6 +496,36 @@ namespace EcommerceAPI.Controllers
             {
                 return Ok(ServerResponse<int>.OkResponse(response.Value));
             }
+        } 
+        
+        [HttpDelete]
+        [Route("Store/{storeId}/Policies/Purchace")]
+        public ActionResult<Response> RemoveStorePolicy([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromQuery] int policyId)
+        {
+            Response response = _marketService.RemovePolicy(identifier, storeId, policyId, "PurchasePolicy");
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<string>.OkResponse("remove policy success"));
+            }
+        }         
+
+        [HttpDelete]
+        [Route("Store/{storeId}/Policies/Discount")]
+        public ActionResult<Response> RemoveStoreDiscountPolicy([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromQuery] int policyId)
+        {
+            Response response = _marketService.RemovePolicy(identifier, storeId, policyId, "DiscountPolicy");
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<string>.OkResponse("remove policy success"));
+            }
         }
        
 
