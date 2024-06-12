@@ -264,59 +264,6 @@ namespace EcommerceAPI.Controllers
             {
                 return Ok(ServerResponse<StoreResultDto>.OkResponse(response.Value));
             }
-        }
-
-        [HttpPost]
-        [Route("Guest/exit")]
-        public async Task<ActionResult<ServerResponse<string>>> ExitGuest([Required][FromQuery]string identifier)
-        {
-            Response response = await Task.Run(() => _clientService.ExitGuest(identifier));
-            if (response.ErrorOccured)
-            {
-                var exitGuestResponse = new ServerResponse<string>
-                {
-                    ErrorMessage = response.ErrorMessage,
-                };
-                return BadRequest(exitGuestResponse);
-            }
-            else
-            {
-                var exitGuestResponse = new ServerResponse<string>
-                {
-                    Value = "exit success",
-                };
-                return Ok(exitGuestResponse);
-            }
-        }
-
-        [HttpPost]
-        [Route("Client/ResManager")]
-        public async Task<ObjectResult> ResToStoreManageReq([Required][FromQuery]string identifier)
-        {
-            Response<bool> response = await Task.Run(() => _clientService.ResToStoreManageReq(identifier));
-            if (response.ErrorOccured)
-            {
-                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
-            }
-            else
-            {
-                return Ok(ServerResponse<bool>.OkResponse(response.Value));
-            }
-        }
-
-        [HttpPost]
-        [Route("Client/ResOwner")]
-        public async Task<ObjectResult> ResToStoreOwnershipReq([Required][FromQuery]string identifier)
-        {
-            Response<bool> response = await Task.Run(() => _clientService.ResToStoreOwnershipReq(identifier));
-            if (response.ErrorOccured)
-            {
-                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
-            }
-            else
-            {
-                return Ok(ServerResponse<bool>.OkResponse(response.Value));
-            }
-        }               
+        }   
     }
 }
