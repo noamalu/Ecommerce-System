@@ -71,5 +71,6 @@ namespace MarketBackend.Domain.Market_Client
         public int AddDiscountPolicy(string identifier, int storeId, DateTime expirationDate, string subject, int ruleId, double precentage);
         public void AddCompositePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int Operator, List<int> policies);
         public void NotificationOn(string identifier);
+        public void NotificationOff(string identifier);
     }
 }
