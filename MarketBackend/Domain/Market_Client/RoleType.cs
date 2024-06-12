@@ -69,6 +69,22 @@ namespace MarketBackend.Domain.Market_Client
             return permissions;
         }
 
+        public static RoleType GetRoleTypeFromDescription(string description) {
+            foreach (RoleName roleName in Enum.GetValues(typeof(RoleName))) {
+                if (roleName.GetDescription().Equals(description, StringComparison.OrdinalIgnoreCase)) {
+                    switch (roleName) {
+                        case RoleName.Founder:
+                            return new Founder(roleName);
+                        case RoleName.Owner:
+                            return new Owner(roleName);
+                        case RoleName.Manager:
+                            return new StoreManagerRole(roleName);
+                    }
+                }
+            }
+            return null;  // or throw an exception if appropriate
+        }
+
         
     }
 }

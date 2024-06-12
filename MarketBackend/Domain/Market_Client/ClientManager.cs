@@ -299,6 +299,16 @@ namespace MarketBackend.Domain.Market_Client
                     throw new Exception($"{identifier} not logged in");
                 }
         }
+
+        public void NotificationOff(string identifier)
+        {
+            if(GetMemberByIdentifier(identifier) is not null)
+                GetMemberByIdentifier(identifier)?.NotificationOff();
+            else
+                {
+                    throw new Exception($"{identifier} not logged in");
+                }
+        }
     }
    
 }

@@ -489,12 +489,14 @@ namespace MarketBackend.Domain.Market_Client
             return _clientManager.ViewCart(identifier);
         }
 
-        public void AddStaffMember(int storeId, string identifier, Role role, string toAddUserName){
+        public void AddStaffMember(int storeId, string identifier, string roleName, string toAddUserName){            
             Store store = _storeRepository.GetById(storeId);
             if (store != null && _clientManager.CheckMemberIsLoggedIn(identifier))
             {
                 Member appoint = _clientManager.GetMemberByIdentifier(identifier);
                 Member appointe = _clientManager.GetMemberByUserName(toAddUserName);
+                RoleType roleType = RoleType.GetRoleTypeFromDescription(roleName);
+                Role role = new(roleType, appoint, storeId, toAddUserName);
                 store.AddStaffMember(toAddUserName, role, appoint.UserName);
                 store.SubscribeStaffMember(appoint, appointe);
             }
@@ -673,6 +675,11 @@ namespace MarketBackend.Domain.Market_Client
         public void NotificationOn(string identifier){
             _clientManager.CheckMemberIsLoggedIn(identifier);
             _clientManager.NotificationOn(identifier);
+        }
+
+        public void NotificationOff(string identifier){
+            _clientManager.CheckMemberIsLoggedIn(identifier);
+            _clientManager.NotificationOff(identifier);
         }
 
         public List<Store> GetMemberStores(string identifier)

@@ -14,8 +14,8 @@ namespace MarketBackend.Services.Interfaces
     {
         public Response<int> AddProduct(int storeId, string identifier, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit);
         public Response RemoveProduct(int storeId,string identifier, int productId);
-        public Response RemoveStaffMember(int storeId, string identifier, Role role, string toRemoveUserName);
-        public Response AddStaffMember(int storeId, string identifier, Role role, string toAddUserName);   
+        public Response RemoveStaffMember(int storeId, string identifier, Role role, string toRemoveUserName);            
+        public Response AddStaffMember(int storeId, string identifier, string roleName, string toAddUserName);   
         public Response AddManger(string identifier, int storeId, string toAddUserName);
         public Response RemoveManger(string identifier, int storeId, string toRemoveUserName);
         public Response AddOwner(string identifier, int storeId, string toAddUserName);
@@ -28,8 +28,8 @@ namespace MarketBackend.Services.Interfaces
         public Response CloseStore(string identifier, int storeId);
         public Response OpenStore(string identifier, int storeId);
         public Response<bool> IsAvailable(int productId);
-        public Response RemovePermission(string identifier, int storeId, string toRemoveUserName, Permission permission);
-        public Response AddPermission(string identifier, int storeId, string toAddUserName, Permission permission);
+        public Response RemovePermission(string identifier, int storeId, string toRemoveUserName, string permission);
+        public Response AddPermission(string identifier, int storeId, string toAddUserName, string permission);
         public Response EditPurchasePolicy(int storeId);
         public Response<List<ProductResultDto>> SearchByKeywords(string keywords);
         public Response<List<ProductResultDto>> SearchByName(string name);

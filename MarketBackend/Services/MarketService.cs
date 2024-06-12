@@ -59,11 +59,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response AddPermission(string identifier, int storeId, string toAddUserName, Permission permission)
+        public Response AddPermission(string identifier, int storeId, string toAddUserName, string permission)
         {
             try
             {
-                marketManagerFacade.AddPermission(identifier, storeId, toAddUserName, permission);
+                marketManagerFacade.AddPermission(identifier, storeId, toAddUserName, permission.StringToPermission());
                 logger.Info($"Client {identifier} added permission {permission} to client {toAddUserName} in store {storeId}.");
                 return new Response();
             }
@@ -224,11 +224,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response RemovePermission(string identifier, int storeId, string toRemoveUserName, Permission permission)
+        public Response RemovePermission(string identifier, int storeId, string toRemoveUserName, string permission)
         {
             try
             {
-                marketManagerFacade.RemovePermission(identifier, storeId, toRemoveUserName, permission);
+                marketManagerFacade.RemovePermission(identifier, storeId, toRemoveUserName, permission.StringToPermission());
                 //log
                 return new Response();
             }
@@ -269,17 +269,17 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response AddStaffMember(int storeId, string identifier, Role role, string toAddUserName)
+        public Response AddStaffMember(int storeId, string identifier, string roleName, string toAddUserName)
         {
             try
             {
-                marketManagerFacade.AddStaffMember(storeId, identifier, role, toAddUserName);
-                logger.Info($"client {identifier} added role {role} for client {toAddUserName} in store {storeId}");
+                marketManagerFacade.AddStaffMember(storeId, identifier, roleName, toAddUserName);
+                logger.Info($"client {identifier} added role {roleName} for client {toAddUserName} in store {storeId}");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in adding role {role} for client {toAddUserName} by client {identifier} in store {storeId}. Error message: {e.Message}");
+                logger.Error($"Error in adding role {roleName} for client {toAddUserName} by client {identifier} in store {storeId}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }

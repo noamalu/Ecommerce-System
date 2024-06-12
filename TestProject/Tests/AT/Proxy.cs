@@ -153,7 +153,7 @@ namespace MarketBackend.Tests.AT
 
         public bool AddStaffMember(int storeId, string identifier, Role role, string toAddUserName)
         {
-            Response res = marketService.AddStaffMember(storeId, identifier, role, toAddUserName);
+            Response res = marketService.AddStaffMember(storeId, identifier, role.role.roleName.GetDescription(), toAddUserName);
             return !res.ErrorOccured;
         }
 
