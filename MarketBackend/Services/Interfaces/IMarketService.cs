@@ -51,7 +51,6 @@ namespace MarketBackend.Services.Interfaces
         public Response AddPurchasePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int ruleId);
         public Response<int> AddDiscountPolicy(string identifier, int storeId, DateTime expirationDate, string subject, int ruleId, double precentage);
         public Response AddCompositePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int Operator, List<int> policies);
-
-
+        public Response<string> GetStoreById(int storeId);
     }
 }
