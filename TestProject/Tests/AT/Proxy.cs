@@ -145,9 +145,9 @@ namespace MarketBackend.Tests.AT
             return !res.ErrorOccured;
         }
 
-        public bool RemoveStaffMember(int storeId, string identifier, Role role, string toRemoveUserName)
+        public bool RemoveStaffMember(int storeId, string identifier, string toRemoveUserName)
         {
-            Response res = marketService.RemoveStaffMember(storeId, identifier, role, toRemoveUserName);
+            Response res = marketService.RemoveStaffMember(storeId, identifier, toRemoveUserName);
             return !res.ErrorOccured;
         }
 

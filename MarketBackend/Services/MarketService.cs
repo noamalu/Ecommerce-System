@@ -254,17 +254,17 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response RemoveStaffMember(int storeId, string identifier, Role role, string toRemoveUserName)
+        public Response RemoveStaffMember(int storeId, string identifier, string toRemoveUserName)
         {
             try
             {
-                marketManagerFacade.RemoveStaffMember(storeId, identifier, role, toRemoveUserName);
-                logger.Info($"client {identifier} removed role {role} for client {toRemoveUserName} in store {storeId}");
+                marketManagerFacade.RemoveStaffMember(storeId, identifier, toRemoveUserName);
+                logger.Info($"client {identifier} removed client {toRemoveUserName} from store {storeId} staff");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in removing role {role} for client {toRemoveUserName} by client {identifier} in store {storeId}. Error message: {e.Message}");
+                logger.Error($"Error in removing client {toRemoveUserName} by client {identifier} from store {storeId} staff. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }

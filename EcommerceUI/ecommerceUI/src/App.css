@@ -34,6 +34,8 @@ body {
   width: 100vw;
 }
 
+
+
 .half-width{
   width: 50vw;
   margin: 0 auto;
@@ -66,6 +68,6 @@ body {
   width: 25vw
 }
 
-.black-checkbox input[type="checkbox"] {
-  background-color: black;
-}
+ .vertical-center {
+  margin: 0 auto;
+} 

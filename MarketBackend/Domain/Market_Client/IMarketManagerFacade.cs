@@ -29,7 +29,7 @@ namespace MarketBackend.Domain.Market_Client
         List<Purchase> GetPurchaseHistoryByStore(int storeId, string userName);
         Product AddProduct(int storeId, string identifier, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit);
         void RemoveProduct(int storeId,string identifier, int productId);
-        void RemoveStaffMember(int storeId, string identifier, Role role, string toRemoveUserName);
+        void RemoveStaffMember(int storeId, string identifier, string toRemoveUserName);
         void AddManger(string identifier, int storeId, string toAddUserName);
         void RemoveManger(string identifier, int storeId, string toRemoveUserName);
         void AddOwner(string identifier, int storeId, string toAddUserName);
