@@ -359,9 +359,9 @@ namespace MarketBackend.Domain.Market_Client
             _clientManager.Register(username, password, email, age);
         }
 
-        public void RemoveFromCart(string identifier, int productId, int basketId, int quantity)
+        public void RemoveFromCart(string identifier, int productId, int storeId, int quantity)
         {
-            _clientManager.RemoveFromCart(identifier, productId, basketId, quantity);
+            _clientManager.RemoveFromCart(identifier, productId, storeId, quantity);
         }
 
         public void RemoveManger(string identifier, int storeId, string toRemoveUserName)

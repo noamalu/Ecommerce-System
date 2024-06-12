@@ -150,7 +150,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false));
            userId2 = proxy.GetMembeIDrByUserName(userName2);
            Assert.IsTrue(proxy.AddToCart(token2, shopID, productID1, 1));
-           Assert.IsTrue(proxy.RemoveFromCart(token2, productID1, basketId, 1));
+           Assert.IsTrue(proxy.RemoveFromCart(token2, productID1, shopID, 1));
         }
 
         [TestMethod]
@@ -160,7 +160,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum));
            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false));
            userId2 = proxy.GetMembeIDrByUserName(userName2);
-           Assert.IsFalse(proxy.RemoveFromCart(token2, productID1, basketId, 1));
+           Assert.IsFalse(proxy.RemoveFromCart(token2, productID1, shopID, 1));
         }
 
         [TestMethod]
