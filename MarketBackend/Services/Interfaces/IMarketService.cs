@@ -53,5 +53,6 @@ namespace MarketBackend.Services.Interfaces
         public Response AddCompositePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int Operator, List<int> policies);
         public Response<string> GetStoreById(int storeId);
         public Response<List<RuleResultDto>> GetStoreRules(int storeId, string identifier);
+        public Response AddKeyWord(string identifier, string keyWord, int storeId, int productId);
     }
 }
