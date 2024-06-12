@@ -438,6 +438,7 @@ namespace MarketBackend.Services
         {
              try
             {
+                
                 List<Purchase> purchases = marketManagerFacade.GetPurchaseHistoryByStore(storeId, identifier);
                 //log
                 return Response<List<PurchaseResultDto>>.FromValue(purchases.Select(purchase => new PurchaseResultDto(purchase)).ToList());
@@ -643,6 +644,21 @@ namespace MarketBackend.Services
             {
                 logger.Error($"Error in fetching store {storeId}. Error message: {e.Message}");
                 return Response<string>.FromError(e.Message);
+            }
+        }
+
+        public Response<List<RuleResultDto>> GetStoreRules(int storeId, string identifier)
+        {
+            try
+            {
+                var store = marketManagerFacade.GetStore(storeId);
+                logger.Info($"Get store {storeId} succeed.");
+                return Response<List<RuleResultDto>>.FromValue(store._rules.Values.Select(rule => new RuleResultDto(rule)).ToList());
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in fetching store {storeId}. Error message: {e.Message}");
+                return Response<List<RuleResultDto>>.FromError(e.Message);
             }
         }
     }

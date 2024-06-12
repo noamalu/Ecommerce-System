@@ -14,12 +14,15 @@ namespace MarketBackend.Services.Models
         public string Appointer { get; set; }
         public List<string> Appointees { get; set; }
 
+        public List<string> Permissions { get; set; }
+
         public RoleResultDto(Role role)
         {
             Role = role.getRoleName().ToString(); 
             Username = role.userName; 
             Appointer = role.getAppointer()?.UserName; 
             Appointees = role.getAppointees().Select(appointee => appointee.UserName).ToList(); 
+            Permissions = role.getPermissions().Select(permission => permission.PermissionToString()).ToList();
         }
     }
 }
