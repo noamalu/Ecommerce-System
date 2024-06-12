@@ -154,14 +154,14 @@ export const ProfileStoreNav = () => {
                     <ProfileStoreStuff roles={storeInfo.roles} />
                 )}
                  {view === 'ProfileUpdateInventory' && (
-                    <ProfileUpdateInventory products={storeInfo.products} />
+                    <ProfileUpdateInventory storeId={storeInfo.storeId} products={storeInfo.products} />
                 )}
             </>
         )}
             </Col>
             <Modal show={showCreateStoreModal} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Create Store</Modal.Title>
+                    <Modal.Title>Add Product</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <CreateStore onClose={handleClose} onSuccess={handleSuccess} />
