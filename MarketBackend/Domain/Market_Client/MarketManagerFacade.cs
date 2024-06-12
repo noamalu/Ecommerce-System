@@ -183,8 +183,9 @@ namespace MarketBackend.Domain.Market_Client
                 Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
                 Role role = new Role(new Founder(RoleName.Founder), activeMember, storeId, identifier);
 
-                store.AddStaffMember(activeMember.UserName, role, activeMember.UserName); //adds himself
                 store.SubscribeStoreOwner(activeMember);
+                store.AddStaffMember(activeMember.UserName, role, activeMember.UserName); //adds himself
+                
             }
             else
             {
@@ -671,6 +672,15 @@ namespace MarketBackend.Domain.Market_Client
         public void NotificationOn(string identifier){
             _clientManager.CheckMemberIsLoggedIn(identifier);
             _clientManager.NotificationOn(identifier);
+        }
+
+        public List<Store> GetMemberStores(string identifier)
+        {
+            var member = _clientManager.GetMemberByIdentifier(identifier);
+
+            return _storeRepository.getAll()
+                .Where(store => store.roles.Values.Any(role => role.userName == member.UserName))
+                .ToList(); 
         }
         // ---------------------------------------------------------
 

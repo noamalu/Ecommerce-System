@@ -225,23 +225,30 @@ namespace EcommerceAPI.Controllers
         [Route("Client/CreateStore")]
         public async Task<ObjectResult> CreateStore([Required][FromQuery]string identifier, [Required][FromBody] StoreDto storeInfo)
         {
-            Response response = await Task.Run(() => _clientService.CreateStore(identifier, storeInfo.Name, storeInfo.Email, storeInfo.PhoneNum));
+            Response<int> response = await Task.Run(() => _clientService.CreateStore(identifier, storeInfo.Name, storeInfo.Email, storeInfo.PhoneNum));
             if (response.ErrorOccured)
             {
-                var openShopResponse = new ServerResponse<string>
-                {
-                    ErrorMessage = response.ErrorMessage,
-                };
-                return BadRequest(openShopResponse);
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
             }
             else
             {
-                var openShopResponse = new ServerResponse<string>
-                {
-                    Value = "create-shop-success",
-                };
-                return Ok(openShopResponse);
+                return Ok(ServerResponse<int>.OkResponse(response.Value));
             }
         }             
+
+        [HttpGet]
+        [Route("Client/Stores")]
+        public async Task<ObjectResult> GetMemberStores([Required][FromQuery]string identifier)
+        {
+            Response<List<StoreResultDto>> response = await Task.Run(() => _clientService.GetMemberStores(identifier));
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<List<StoreResultDto>>.OkResponse(response.Value));
+            }
+        }   
     }
 }

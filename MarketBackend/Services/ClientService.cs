@@ -51,18 +51,18 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response CreateStore(string identifier, string storeName, string email, string phoneNum)
+        public Response<int> CreateStore(string identifier, string storeName, string email, string phoneNum)
         {
             try
             {
-                marketManagerFacade.CreateStore(identifier, storeName, email, phoneNum);
+                var storeId = marketManagerFacade.CreateStore(identifier, storeName, email, phoneNum);
                 logger.Info($"client {identifier} created store '{storeName}'");
-                return new Response();
+                return Response<int>.FromValue(storeId);
             }
             catch (Exception e)
             {
                 logger.Error($"Error in creating store of client {identifier}. Error message: {e.Message}");
-                return new Response(e.Message);
+                return Response<int>.FromError(e.Message);
             }
         }
 
@@ -238,6 +238,21 @@ namespace MarketBackend.Services
         public int GetMemberIDByUserName(string username)
         {
             return marketManagerFacade.GetMemberIDrByUserName(username);
+        }
+
+        public Response<List<StoreResultDto>> GetMemberStores(string identifier)
+        {
+            try
+            {
+                var stores = marketManagerFacade.GetMemberStores(identifier);
+                logger.Info($"fetched client {identifier} stores successfuly.");
+                return Response<List<StoreResultDto>>.FromValue(stores.Select(store => new StoreResultDto(store)).ToList());
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in fetching client {identifier} stores. Error message: {e.Message}");
+                return Response<List<StoreResultDto>>.FromError(e.Message);
+            }
         }
     }
 

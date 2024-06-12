@@ -14,7 +14,7 @@ namespace MarketBackend.Services.Interfaces
     {
         public Response Register(string username, string password, string email, int age);
         public Response<string> EnterAsGuest(string identifier);
-        public Response CreateStore(string identifier, string storeName, string email, string phoneNum);
+        public Response<int> CreateStore(string identifier, string storeName, string email, string phoneNum);
         public Response<bool> ResToStoreManageReq(string identifier);
         public Response<bool> ResToStoreOwnershipReq(string identifier); //respond to store ownership request
         public Response LogoutClient(string identifier);
@@ -25,5 +25,6 @@ namespace MarketBackend.Services.Interfaces
         public Response ExitGuest(string identifier);
         public Response<List<ShoppingCartResultDto>> GetPurchaseHistoryByClient(string userName);
         public Response EditPurchasePolicy(int storeId);
+        public Response<List<StoreResultDto>> GetMemberStores(string identifier);
     }
 }
