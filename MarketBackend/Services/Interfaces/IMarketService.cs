@@ -14,8 +14,8 @@ namespace MarketBackend.Services.Interfaces
     {
         public Response<int> AddProduct(int storeId, string identifier, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit);
         public Response RemoveProduct(int storeId,string identifier, int productId);
-        public Response RemoveStaffMember(int storeId, string identifier, Role role, string toRemoveUserName);
-        public Response AddStaffMember(int storeId, string identifier, Role role, string toAddUserName);   
+        public Response RemoveStaffMember(int storeId, string identifier, Role role, string toRemoveUserName);            
+        public Response AddStaffMember(int storeId, string identifier, string roleName, string toAddUserName);   
         public Response AddManger(string identifier, int storeId, string toAddUserName);
         public Response RemoveManger(string identifier, int storeId, string toRemoveUserName);
         public Response AddOwner(string identifier, int storeId, string toAddUserName);
