@@ -3,6 +3,7 @@ import Table from 'react-bootstrap/Table';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
+import { getToken } from "../services/SessionService";
 
 
 const handleChange = (e, product: {storeId: number, id: number, productName: string, quantity: number}) => {
@@ -13,9 +14,8 @@ const handleChange = (e, product: {storeId: number, id: number, productName: str
     if (newQuantity < product.quantity)
         multiplier = -1;
 
-    var tokenId = 123;
 
-    fetch(`https://localhost:7163/api/Client/Cart?tokenId=${tokenId}`, {
+    fetch(`https://localhost:7163/api/Client/Cart?identifier=${getToken()}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -23,8 +23,6 @@ const handleChange = (e, product: {storeId: number, id: number, productName: str
         body: JSON.stringify({
                     storeId: product.storeId,
                     id: product.id,
-                    productName: product.productName, //should not be neccessary
-                    price: 0, //should not be neccessary
                     quantity: multiplier,
                   })
       }).then((r) => {
@@ -45,13 +43,12 @@ const handleChange = (e, product: {storeId: number, id: number, productName: str
 
 export const Cart = () => {
     const [dataValue, setDataValue] = useState<any[]>([]);
-    var tokenId = 123;
 
     //get cart information
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`https://localhost:7163/api/Client/Cart?tokenId=${tokenId}`, {
+                const response = await fetch(`https://localhost:7163/api/Client/Cart?identifier=${getToken()}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

@@ -54,9 +54,8 @@ const RegistrationForm: React.FC = () => {
     const formErrors = validate();
     if (Object.keys(formErrors).length === 0) {
       try {
-        const tokenId = 123; //need to change token id
         const response = await fetch(
-          `https://localhost:7163/api/Client/Guest/Register?tokenId=${tokenId}`,
+          `https://localhost:7163/api/Client/Guest/Register`,
           {
             method: 'POST',
             headers: {
