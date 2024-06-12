@@ -18,7 +18,7 @@ namespace MarketBackend.Services.Interfaces
         public Response<bool> ResToStoreManageReq(string identifier);
         public Response<bool> ResToStoreOwnershipReq(string identifier); //respond to store ownership request
         public Response LogoutClient(string identifier);
-        public Response RemoveFromCart(string identifier, int productId, int basketId, int quantity);
+        public Response RemoveFromCart(string identifier, int productId, int storeId, int quantity);
         public Response<ShoppingCartResultDto> ViewCart(string identifier);
         public Response AddToCart(string identifier, int storeId, int productId, int quantity);
         public Response<string> LoginClient(string username, string password);

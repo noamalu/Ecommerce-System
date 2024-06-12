@@ -20,12 +20,12 @@ namespace MarketBackend.Domain.Market_Client
             IsAbove18 = false;
         }
 
-        public virtual void AddToCart(int basket, int productId, int quantity){
-            Cart.addToCart(basket, productId, quantity);
+        public virtual void AddToCart(int storeId, int productId, int quantity){
+            Cart.addToCart(storeId, productId, quantity);
         }
 
-        public virtual void RemoveFromCart(int basket, int productId, int quantity){
-            Cart.removeFromCart(basket, productId, quantity);
+        public virtual void RemoveFromCart(int storeId, int productId, int quantity){
+            Cart.removeFromCart(storeId, productId, quantity);
         }
 
         public virtual bool ResToStoreManagerReq(){

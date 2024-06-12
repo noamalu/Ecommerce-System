@@ -152,10 +152,10 @@ namespace MarketBackend.Domain.Market_Client
             return true;            
         }
 
-        public void RemoveFromCart(string identifier, int productId, int basketId, int quantity)
+        public void RemoveFromCart(string identifier, int productId, int storeId, int quantity)
         {
             var client = GetClientByIdentifier(identifier);
-            client.RemoveFromCart(basketId, productId, quantity);
+            client.RemoveFromCart(storeId, productId, quantity);
         }
 
         public ShoppingCart ViewCart(string identifier)
