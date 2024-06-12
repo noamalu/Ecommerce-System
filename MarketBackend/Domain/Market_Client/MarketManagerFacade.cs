@@ -675,6 +675,11 @@ namespace MarketBackend.Domain.Market_Client
             _clientManager.NotificationOn(identifier);
         }
 
+        public void NotificationOff(string identifier){
+            _clientManager.CheckMemberIsLoggedIn(identifier);
+            _clientManager.NotificationOff(identifier);
+        }
+
         public List<Store> GetMemberStores(string identifier)
         {
             var member = _clientManager.GetMemberByIdentifier(identifier);

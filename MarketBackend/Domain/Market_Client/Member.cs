@@ -60,7 +60,9 @@ namespace MarketBackend.Domain.Market_Client
                 _alertManager.SendNotification(msg, UserName);
                 message.Seen = true;
             }
-            alerts.Add(message);            
+            else{
+                alerts.Add(message);            
+            }
 
         }
 
@@ -71,6 +73,15 @@ namespace MarketBackend.Domain.Market_Client
                 IsNotification = true;
             }
             else throw new Exception("Notification On");
+        }
+
+        public void NotificationOff()
+        {
+            if (IsNotification)
+            {
+                IsNotification = false;
+            }
+            else throw new Exception("Notification Off");
         }
 
         public List<Message> GetMessages()

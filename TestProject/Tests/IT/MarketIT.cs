@@ -168,6 +168,7 @@ namespace MarketBackend.Tests.IT
 
         [TestMethod]
         public void Offline_Notifications_Success(){
+            marketManagerFacade.NotificationOff(token1);
             marketManagerFacade.AddToCart(token1, 1, productID1, 1);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Member client = clientManager.GetMemberByIdentifier(token1);
@@ -175,8 +176,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public void Offline_Notifications_Fail_NotOffine(){
-            marketManagerFacade.NotificationOn(token1);
+        public void Offline_Notifications_Fail_NotOffline(){
             marketManagerFacade.AddToCart(token1, 1, productID1, 1);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Member client = clientManager.GetMemberByIdentifier(token1);
