@@ -156,17 +156,17 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response RemoveFromCart(string identifier, int productId, int basketId, int quantity)
+        public Response RemoveFromCart(string identifier, int productId, int storeId, int quantity)
         {
             try
             {
-                marketManagerFacade.RemoveFromCart(identifier, productId, basketId, quantity);
-                logger.Info($"Client {identifier} removed {quantity} products {productId} from basket {basketId}.");
+                marketManagerFacade.RemoveFromCart(identifier, productId, storeId, quantity);
+                logger.Info($"Client {identifier} removed {quantity} products {productId} from basket {storeId}.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in removing {quantity} products {productId} from basket {basketId} for client {identifier}. Error message: {e.Message}");
+                logger.Error($"Error in removing {quantity} products {productId} from basket {storeId} for client {identifier}. Error message: {e.Message}");
                 return new Response(e.Message);
             }
         }
@@ -254,6 +254,20 @@ namespace MarketBackend.Services
                 return Response<List<StoreResultDto>>.FromError(e.Message);
             }
         }
+
+        public Response<StoreResultDto> GetMemberStore(string identifier, int storeId)
+        {
+            try
+            {
+                var store = marketManagerFacade.GetMemberStore(identifier, storeId);
+                logger.Info($"fetched client {identifier} stores successfuly.");
+                return Response<StoreResultDto>.FromValue(new(store));
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in fetching client {identifier} stores. Error message: {e.Message}");
+                return Response<StoreResultDto>.FromError(e.Message);
+            }        }
     }
 
 

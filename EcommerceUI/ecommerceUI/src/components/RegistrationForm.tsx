@@ -90,59 +90,61 @@ const RegistrationForm: React.FC = () => {
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <Form.Group className="mb-3">
-        <Form.Label>Username</Form.Label>
-        <Form.Control
-          type="text"
-          name="username"
-          value={formData.username}
-          onChange={handleChange}
-          placeholder="username"
-        />
-        {errors.username && <p>{errors.username}</p>}
-      </Form.Group>
+    <div className="login-form">
+      <Form onSubmit={handleSubmit}>
+        <Form.Group className="mb-3">
+          <Form.Label>Username</Form.Label>
+          <Form.Control
+            type="text"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            placeholder="username"
+          />
+          {errors.username && <p>{errors.username}</p>}
+        </Form.Group>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Email</Form.Label>
-        <Form.Control
-          type="text"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          placeholder="email"
-        />
-        {errors.email && <p>{errors.email}</p>}
-      </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Email</Form.Label>
+          <Form.Control
+            type="text"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="email"
+          />
+          {errors.email && <p>{errors.email}</p>}
+        </Form.Group>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Password</Form.Label>
-        <Form.Control
-          type="password"
-          placeholder="Password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-        />
-        {errors.password && <p>{errors.password}</p>}
-      </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+          />
+          {errors.password && <p>{errors.password}</p>}
+        </Form.Group>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Age</Form.Label>
-        <Form.Control
-          type="text"
-          name="age"
-          value={formData.age}
-          onChange={handleChange}
-          placeholder="age"
-        />
-        {errors.age && <p>{errors.age}</p>}
-      </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Age</Form.Label>
+          <Form.Control
+            type="text"
+            name="age"
+            value={formData.age}
+            onChange={handleChange}
+            placeholder="age"
+          />
+          {errors.age && <p>{errors.age}</p>}
+        </Form.Group>
 
-      <Button variant="primary" type="submit">
-        Register
-      </Button>
-    </Form>
+        <Button variant="primary" type="submit">
+          Register
+        </Button>
+      </Form>
+    </div>
   );
 };
 

@@ -18,18 +18,13 @@ namespace MarketBackend.Domain.Models
             _basketRepository = BasketRepositoryRAM.GetInstance();
         }
 
-        public void addToCart(int basketId, int productId, int quantity){
-            Basket? basket = _basketRepository.TryGetById(basketId) ?? _basketRepository.CreateBasket(basketId, _shoppingCartId);
+        public void addToCart(int storeId, int productId, int quantity){
+            Basket? basket = GetBaskets().Values.Where(basket => basket._storeId == storeId).FirstOrDefault() ?? _basketRepository.CreateBasket(storeId, _shoppingCartId);
             basket.addToBasket(productId, quantity);
         }
 
-        public void AddBasketToCart(int basketId, int productId, int quantity){
-            Basket? basket = _basketRepository.TryGetById(basketId) ?? _basketRepository.CreateBasket(basketId, _shoppingCartId);
-            basket.addToBasket(productId, quantity);
-        }
-
-        public void removeFromCart(int basketId, int productId, int quantity){
-            Basket basket = _basketRepository.GetById(basketId);
+        public void removeFromCart(int storeId, int productId, int quantity){
+            var basket = GetBaskets().Values.Where(basket => basket._storeId == storeId).FirstOrDefault();
             basket.RemoveFromBasket(productId, quantity);
         }
 

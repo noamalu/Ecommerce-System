@@ -358,9 +358,9 @@ namespace MarketBackend.Domain.Market_Client
             _clientManager.Register(username, password, email, age);
         }
 
-        public void RemoveFromCart(string identifier, int productId, int basketId, int quantity)
+        public void RemoveFromCart(string identifier, int productId, int storeId, int quantity)
         {
-            _clientManager.RemoveFromCart(identifier, productId, basketId, quantity);
+            _clientManager.RemoveFromCart(identifier, productId, storeId, quantity);
         }
 
         public void RemoveManger(string identifier, int storeId, string toRemoveUserName)
@@ -681,6 +681,11 @@ namespace MarketBackend.Domain.Market_Client
             return _storeRepository.getAll()
                 .Where(store => store.roles.Values.Any(role => role.userName == member.UserName))
                 .ToList(); 
+        }
+
+        public Store GetMemberStore(string identifier, int storeId)
+        {
+            return GetMemberStores(identifier).Where(store => store.StoreId == storeId).FirstOrDefault();
         }
         // ---------------------------------------------------------
 
