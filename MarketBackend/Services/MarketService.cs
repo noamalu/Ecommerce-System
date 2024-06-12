@@ -438,6 +438,7 @@ namespace MarketBackend.Services
         {
              try
             {
+                
                 List<Purchase> purchases = marketManagerFacade.GetPurchaseHistoryByStore(storeId, identifier);
                 //log
                 return Response<List<PurchaseResultDto>>.FromValue(purchases.Select(purchase => new PurchaseResultDto(purchase)).ToList());

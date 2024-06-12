@@ -66,7 +66,7 @@ namespace UnitTests
         [TestMethod()]
         public void AddProductSuccess()
         {
-            _Store.AddProduct(token1, "Shampo", "" , "Shampo", 4784, "hair", 21, false);
+            _Store.AddProduct(username1, "Shampo", "" , "Shampo", 4784, "hair", 21, false);
             Assert.IsTrue(_Store.Products.ToList().Find((p) => p.Name == "Shampo") != null);
         }
 
@@ -190,7 +190,7 @@ namespace UnitTests
         [TestMethod()]
         public void UpdateProductQuantitySuccess()
         {
-            _Store.UpdateProductQuantity(username2, _p1.ProductId, 45555);
+            _Store.UpdateProductQuantity(username1, _p1.ProductId, 45555);
             Assert.IsTrue(_p1.Quantity == 45555);
         }
 

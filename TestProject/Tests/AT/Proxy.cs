@@ -201,5 +201,10 @@ namespace MarketBackend.Tests.AT
             Response res = marketService.AddTotalPriceRule(identifier, storeId, subject, targetPrice);
             return !res.ErrorOccured;
         }
+
+        public bool GetPurchaseHistoryByClient(string userName){
+            Response res = clientService.GetPurchaseHistoryByClient(userName);
+            return !res.ErrorOccured;
+        }
     }
 }
