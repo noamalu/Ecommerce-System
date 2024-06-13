@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { CreateStore } from './CreateStore';
 import ProfileStoreStuff from "./ProfileStoreStuff";
 import ProfileStoreInfo from "./ProfileStoreInfo";
+import ProfileStoreRules from "./ProfileStoreRules";
 import {ProfileUpdateInventory} from "./ProfileUpdateInventory";
 import { getToken } from "../services/SessionService";
 
@@ -156,12 +157,15 @@ export const ProfileStoreNav = () => {
                  {view === 'ProfileUpdateInventory' && (
                     <ProfileUpdateInventory storeId={storeInfo.storeId} products={storeInfo.products} />
                 )}
+                {view === 'Policies' && (
+                    <ProfileStoreRules storeId={storeInfo.storeId} />
+                )}
             </>
         )}
             </Col>
             <Modal show={showCreateStoreModal} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Add Product</Modal.Title>
+                    <Modal.Title>Add Store</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <CreateStore onClose={handleClose} onSuccess={handleSuccess} />

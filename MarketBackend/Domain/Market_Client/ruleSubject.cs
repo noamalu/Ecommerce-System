@@ -18,9 +18,9 @@ namespace MarketBackend.Domain.Market_Client{
         {
             _category = category;
         }
-        public RuleSubject(string stpreName, int storId)
+        public RuleSubject(string storeName, int storId)
         {
-            
+            _category = storeName;
         }
         public bool IsProduct()
         {
@@ -28,8 +28,8 @@ namespace MarketBackend.Domain.Market_Client{
         }
         public string GetInfo()
         {
-            if (IsProduct()) { return _product.ToString(); }
-            else { return _category.ToString(); }
+            if (IsProduct()) { return _product?.ToString(); }
+            else { return _category?.ToString(); }
         }
     }
 }
