@@ -103,6 +103,8 @@ const TableRow: React.FC<TableRowProps> = ({ role, index, storeId, onRemoveAppoi
             }
         });
         role.permissions = updatedPermissions;
+        console.log('Permissions updated:', role.permissions);
+
     };
 
     return (
@@ -128,7 +130,7 @@ const TableRow: React.FC<TableRowProps> = ({ role, index, storeId, onRemoveAppoi
                 )}
                 {!isOwner && !isFounder && (
                     <>
-                        <Form>
+                       <Form>
                             {Object.keys(Permission).map((permission: string) => (
                                 <div key={`permission-${permission}`} className="mb-3">
                                     <Form.Check
