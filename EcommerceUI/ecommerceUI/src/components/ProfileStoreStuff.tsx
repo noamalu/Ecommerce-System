@@ -62,6 +62,10 @@ const TableRow: React.FC<TableRowProps> = ({ role, index, storeId, onRemoveAppoi
                     if (!response.ok) {
                         throw new Error('Failed to add permission');
                     }
+                    else {
+                        console.log('Permission added successfully');
+                        alert('Permission added successfully');
+                    }
                 })
                 .catch(error => {
                     console.error('Error adding permission:', error);
@@ -79,6 +83,10 @@ const TableRow: React.FC<TableRowProps> = ({ role, index, storeId, onRemoveAppoi
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Failed to remove permission');
+                    }
+                    else {
+                        console.log('Permission removed successfully');
+                        alert('Permission removed successfully');
                     }
                 })
                 .catch(error => {
@@ -112,20 +120,20 @@ const TableRow: React.FC<TableRowProps> = ({ role, index, storeId, onRemoveAppoi
             <td>{index + 1}</td>
             <td>{role.username}</td>
             <td>{role.role}</td>
-            <td>{role.appointer}</td>
+            <td>{ role.appointer}</td> {/* Possible to add the option {isFounder? '' : role.appointer} */}
             <td>
                 {isOwner && (
                     <div className="text-success">
-                        Have full permission except close Store
                         <RiLockLine size={30} /> {/* RiLockLine icon */}
                         <i className="fas fa-lock ml-2"></i> {/* Lock icon */}
+                        Full permission (except Close Store)
                     </div>
                 )}
                 {isFounder && (
                     <div className="text-success">
-                        Have full permission
                         <RiLockLine size={30} /> {/* RiLockLine icon */}
                         <i className="fas fa-lock ml-2"></i> {/* Lock icon */}
+                        Full permission
                     </div>
                 )}
                 {!isOwner && !isFounder && (
@@ -169,7 +177,7 @@ interface MyTableProps {
 const MyTable: React.FC<MyTableProps> = ({ roles, storeId }) => {
     const [showAppointeeModal, setShowAppointeeModal] = useState(false);
     const [memberUserName, setName] = useState('');
-    const [roleName, setRole] = useState('');
+    const [roleName, setRole] = useState('Owner');
     const [appointer, setAppionter] = useState('');
     const [permission, setPermissions] = useState<string[]>([]);
 
@@ -183,6 +191,7 @@ const MyTable: React.FC<MyTableProps> = ({ roles, storeId }) => {
     };
 
     const handleAddAppointeeSubmit = () => {
+        console.log('Adding appointee:',  roleName);
         fetch(`https://localhost:7163/api/Market/Store/${storeId}/Staff?identifier=${getToken()}`, {
             method: 'POST',
             headers: {
