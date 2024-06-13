@@ -112,6 +112,8 @@ export const Purchase = () => {
               // Reset form data if needed
             //   setFormData({ username: '', email: '', password: '', age: '' });
             //   navigate('/Login');
+            navigate('/');
+
             } else {
               // Handle error response
               const responseData = await response.json();

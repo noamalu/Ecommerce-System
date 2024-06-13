@@ -12,7 +12,7 @@ interface ProfileProps {}
 export const Profile: React.FC<ProfileProps> = () => {
     const navigate = useNavigate();
     const userDataString = getUserName();
-    const [view, setView] = useState<'profileStoreNav' | 'purchaseHistory'>('profileStoreNav');
+    const [view, setView] = useState<'profileStoreNav' | 'purchaseHistory'>('purchaseHistory');
 
     const handleViewChange = (newView: 'profileStoreNav' | 'purchaseHistory') => {
         setView(newView);
@@ -33,10 +33,8 @@ export const Profile: React.FC<ProfileProps> = () => {
                     <Stack gap={2}>
                         <Image src={avatar} roundedCircle className="w-25 mx-auto" />
                         <p>{userDataString}</p>
-                        {/* <Button variant="outline-secondary" onClick={() => handleViewChange('profileStoreNav')}>Permissions</Button>
-                        <Button variant="outline-secondary">Profile option 2</Button> */}
-                        <Button variant="outline-secondary" onClick={() => handleViewChange('purchaseHistory')}>Purchase History</Button>
-                        <Button variant="outline-secondary">Personal Details</Button>
+                        <Button variant="outline-secondary" onClick={() => handleViewChange('purchaseHistory')}> Purchase History </Button>
+                        <Button variant="outline-secondary" onClick={() => handleViewChange('profileStoreNav')}> Store details</Button>
                         <LogoutButton />
                     </Stack>
                 </Col>

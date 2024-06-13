@@ -39,7 +39,7 @@ export const ProfileUpdateInventory: React.FC<ProfileUpdateInventoryProps> = ({ 
 
             <Modal show={showAddProductModal} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Create Store</Modal.Title>
+                    <Modal.Title>Add Product</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <CreateProduct onClose={handleClose} onSuccess={handleSuccess} storeId={storeId}/>
