@@ -66,9 +66,9 @@ namespace MarketBackend.Domain.Market_Client
         public void UpdateRuleTargetPrice(string identifier, int storeId, int ruleId, int targetPrice);
         public void UpdateCompositeOperator(string identifier, int storeId, int ruleId, int Operator);
         public void UpdateCompositeRules(string identifier, int storeId, int ruleId, List<int> rules);
-        public void AddPurchasePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int ruleId);
+        public int AddPurchasePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int ruleId);
         public int AddDiscountPolicy(string identifier, int storeId, DateTime expirationDate, string subject, int ruleId, double precentage);
-        public void AddCompositePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int Operator, List<int> policies);
+        public int AddCompositePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int Operator, List<int> policies);
         public void NotificationOn(string identifier);
         public void NotificationOff(string identifier);
     }

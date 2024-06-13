@@ -420,7 +420,114 @@ namespace EcommerceAPI.Controllers
             {
                 return Ok(ServerResponse<List<PurchaseResultDto>>.OkResponse(response.Value));
             }
-        }        
+        }   
+
+        [HttpGet]
+        [Route("Store/{storeId}/Policies/Discount")]
+        public ActionResult<Response<List<DiscountPolicyResultDto>>> GetStoreDiscountPolicies([Required][FromQuery]string identifier, [FromRoute] int storeId)
+        {
+            Response<List<DiscountPolicyResultDto>> response = _marketService.GetStoreDiscountPolicies(storeId, identifier);
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<List<DiscountPolicyResultDto>>.OkResponse(response.Value));
+            }
+        }      
+        
+        [HttpGet]
+        [Route("Store/{storeId}/Policies/Purchace")]
+        public ActionResult<Response<List<PolicyResultDto>>> GetStorePurchacePolicy([Required][FromQuery]string identifier, [FromRoute] int storeId)
+        {
+            Response<List<PolicyResultDto>> response = _marketService.GetStorePurchacePolicies(storeId, identifier);
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<List<PolicyResultDto>>.OkResponse(response.Value));
+            }
+        }      
+
+
+        [HttpPost]
+        [Route("Store/{storeId}/Policies/Discount")]
+        public ActionResult<Response<int>> CreateStoreDiscountPolicy([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] DiscountPolicyDto policy)
+        {
+            Response<int> response = _marketService.AddDiscountPolicy(identifier, storeId, policy.ExpirationDate, policy.Subject, policy.RuleId, policy.Precantage);
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<int>.OkResponse(response.Value));
+            }
+        }   
+        
+        [HttpPost]
+        [Route("Store/{storeId}/Policies/Purchace")]
+        public ActionResult<Response> CreateStorePolicy([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] PolicyDto policy)
+        {
+            Response<int> response = _marketService.AddPurchasePolicy(identifier, storeId, policy.ExpirationDate, policy.Subject, policy.RuleId);
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<int>.OkResponse(response.Value));
+            }
+        }         
+
+        [HttpPost]
+        [Route("Store/{storeId}/Policies/Composite")]
+        public ActionResult<Response<int>> CreateStoreCompositePolicy([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] CompositePolicyDto policy)
+        {
+            Response<int> response = _marketService.AddCompositePolicy(identifier, storeId, policy.ExpirationDate, policy.Subject, policy.Operator, policy.Policies);
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<int>.OkResponse(response.Value));
+            }
+        } 
+        
+        [HttpDelete]
+        [Route("Store/{storeId}/Policies/Purchace")]
+        public ActionResult<Response> RemoveStorePolicy([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromQuery] int policyId)
+        {
+            Response response = _marketService.RemovePolicy(identifier, storeId, policyId, "PurchasePolicy");
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<string>.OkResponse("remove policy success"));
+            }
+        }         
+
+        [HttpDelete]
+        [Route("Store/{storeId}/Policies/Discount")]
+        public ActionResult<Response> RemoveStoreDiscountPolicy([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromQuery] int policyId)
+        {
+            Response response = _marketService.RemovePolicy(identifier, storeId, policyId, "DiscountPolicy");
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<string>.OkResponse("remove policy success"));
+            }
+        }
+       
 
         [HttpGet]
         [Route("Store/{storeId}/GetRules")]
@@ -498,6 +605,75 @@ namespace EcommerceAPI.Controllers
             else
             {
                 return Ok(ServerResponse<int>.OkResponse(response.Value));
+            }
+        }
+
+        [HttpGet]
+        [Route("Store/{storeId}/Info")]
+        public ActionResult<Response<string>> GetInfo([Required][FromRoute] int storeId)
+        {            
+            Response<string> response = _marketService.GetInfo(storeId);
+            if (response.ErrorOccured)
+            {
+                var getinforesponse = new ServerResponse<string>
+                {
+                    ErrorMessage = response.ErrorMessage,
+                };
+                return BadRequest(getinforesponse);
+            }
+            else
+            {
+                var getinforesponse = new ServerResponse<string>
+                {
+                    Value = response.Value,
+                };
+                return Ok(getinforesponse);
+            }
+        }
+
+        [HttpGet]
+        [Route("Store/{storeId}/Product/{productId}")]
+        public ActionResult<Response<string>> GetProductInfo([Required][FromRoute] int storeId, [FromRoute] int productId)
+        {            
+            Response<string> response = _marketService.GetProductInfo(storeId, productId);
+            if (response.ErrorOccured)
+            {
+                var getinforesponse = new ServerResponse<string>
+                {
+                    ErrorMessage = response.ErrorMessage,
+                };
+                return BadRequest(getinforesponse);
+            }
+            else
+            {
+                var getinforesponse = new ServerResponse<string>
+                {
+                    Value = response.Value,
+                };
+                return Ok(getinforesponse);
+            }
+        }
+
+        [HttpPost]
+        [Route("Store/{storeId}/Product/{productId}/KeyWord")]
+        public async Task<ObjectResult> AddKeyWord([Required][FromQuery]string identifier, [FromQuery] string keyWord, [FromRoute] int storeId, [FromRoute] int productId)
+        {
+            Response response = await Task.Run(() => _marketService.AddKeyWord(identifier, keyWord, storeId, productId));
+            if (response.ErrorOccured)
+            {
+                var addKeyWordResponse = new ServerResponse<string>
+                {
+                    ErrorMessage = response.ErrorMessage,
+                };
+                return BadRequest(addKeyWordResponse);
+            }
+            else
+            {
+                var addKeyWordResponse = new ServerResponse<string>
+                {
+                    Value = "add ket word success",
+                };
+                return Ok(addKeyWordResponse);
             }
         }   
     }
