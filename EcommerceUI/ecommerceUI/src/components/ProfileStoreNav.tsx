@@ -151,7 +151,7 @@ export const ProfileStoreNav = () => {
                     />
                 )} 
                 {view === 'ProfileStoreStuff' && (
-                    <ProfileStoreStuff roles={storeInfo.roles} />
+                    <ProfileStoreStuff roles={storeInfo.roles} storeId={num} />
                 )}
                  {view === 'ProfileUpdateInventory' && (
                     <ProfileUpdateInventory storeId={storeInfo.storeId} products={storeInfo.products} />

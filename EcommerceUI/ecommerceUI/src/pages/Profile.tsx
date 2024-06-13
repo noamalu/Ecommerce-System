@@ -33,10 +33,10 @@ export const Profile: React.FC<ProfileProps> = () => {
                     <Stack gap={2}>
                         <Image src={avatar} roundedCircle className="w-25 mx-auto" />
                         <p>{userDataString}</p>
-                        <Button variant="outline-secondary" onClick={() => handleViewChange('profileStoreNav')}>Permissions</Button>
+                        {/* <Button variant="outline-secondary" onClick={() => handleViewChange('profileStoreNav')}>Permissions</Button>
+                        <Button variant="outline-secondary">Profile option 2</Button> */}
                         <Button variant="outline-secondary" onClick={() => handleViewChange('purchaseHistory')}>Purchase History</Button>
-                        <Button variant="outline-secondary">Profile option 2</Button>
-                        <Button variant="outline-secondary">Profile option 3</Button>
+                        <Button variant="outline-secondary">Personal Details</Button>
                         <LogoutButton />
                     </Stack>
                 </Col>

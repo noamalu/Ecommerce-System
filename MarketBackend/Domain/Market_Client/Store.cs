@@ -479,7 +479,7 @@ namespace MarketBackend.Domain.Market_Client
         {
             if (getRole(userName) != null && getRole(userName).canEditPermissions())
             {
-                getRole(toRemoveUserName).addPermission(permission);
+                getRole(toRemoveUserName).removePermission(permission);
             }
             else throw new Exception($"Permission exception for userName: {userName}");
 
