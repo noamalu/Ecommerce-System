@@ -25,7 +25,6 @@ namespace MarketBackend.Tests.IT
         string session3 = "3";
         string token3;
 
-
         string userPassword = "pass1";
         string pass2 = "pass2";
         string email1 = "printz@post.bgu.ac.il";
@@ -55,12 +54,11 @@ namespace MarketBackend.Tests.IT
         int productCounter = 0;
         int storeId = 1;
         int userId2;
-        
 
         [TestInitialize]
         public void Setup()
         {
-            // Initialize the managers
+            // Initialize the managers and mock systems
             MarketManagerFacade.Dispose();
             var mockShippingSystem = new Mock<IShippingSystemFacade>();
             var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
@@ -84,6 +82,7 @@ namespace MarketBackend.Tests.IT
             token2 = marketManagerFacade.LoginClient(userName2, userPassword);
             userId2 = marketManagerFacade.GetMemberIDrByUserName(userName2);
         }
+
         [TestCleanup]
         public void Cleanup()
         {
@@ -114,7 +113,7 @@ namespace MarketBackend.Tests.IT
             threads.ForEach(t => t.Join());
 
             // Assert that the shop has the correct number of products
-            Assert.AreEqual(0, marketManagerFacade.GetStore(storeId)._products.Count);
+            Assert.AreEqual(0, marketManagerFacade.GetStore(storeId)._products.Count, "Expected the store to have zero products after concurrent add/remove operations.");
         }
 
         [TestMethod]
@@ -126,7 +125,8 @@ namespace MarketBackend.Tests.IT
             Client mem2 = clientManager.GetClientByIdentifier(token2);
             marketManagerFacade.AddToCart(token1, storeId, product._productid, 1);
             marketManagerFacade.AddToCart(token2, storeId, product._productid, 1);
-            // Create multiple threads that add and remove products from the shop
+
+            // Create multiple threads that attempt to purchase the product
             var threads = new List<Thread>();
             foreach (int userId in new int[]{userId, userId2})
             {
@@ -154,8 +154,7 @@ namespace MarketBackend.Tests.IT
             Dictionary<int, Basket> basket1 = mem1.Cart.GetBaskets();
             Dictionary<int, Basket> basket2 = mem2.Cart.GetBaskets();
 
-            Assert.IsTrue(basket1.Count == 0 || basket2.Count == 0);
-
+            Assert.IsTrue(basket1.Count == 0 || basket2.Count == 0, "Expected that one of the clients has an empty cart, indicating only one successful purchase.");
         }
 
         [TestMethod]
@@ -168,9 +167,9 @@ namespace MarketBackend.Tests.IT
             bool thorwnExeptionStore  = false;
             bool thorwnExeptionClient = false;
 
+            // Create threads for removing product and purchasing product concurrently
             var threads = new List<Thread>
             {
-
                 new Thread(() =>
                 {
                     try
@@ -179,27 +178,25 @@ namespace MarketBackend.Tests.IT
                     }catch{
                         thorwnExeptionStore = true;
                     }
-                        
                 }),
                 new Thread(() =>
                 {
                     try{
                         marketManagerFacade.PurchaseCart(token2, paymentDetails, shippingDetails);
-
                     }catch{
                         thorwnExeptionClient = true;
                     }
-                    }),
+                }),
             };
 
+            // Start the threads and wait for them to finish
             threads.ForEach(t => t.Start());
             threads.ForEach(t => t.Join());
 
-            Assert.IsTrue(thorwnExeptionStore || thorwnExeptionClient);
-            Assert.IsFalse(thorwnExeptionStore && thorwnExeptionClient);
+            Assert.IsTrue(thorwnExeptionStore || thorwnExeptionClient, "Expected at least one exception to be thrown, either in removing product or purchasing product.");
+            Assert.IsFalse(thorwnExeptionStore && thorwnExeptionClient, "Expected only one of the operations to throw an exception, not both.");
             Dictionary<int, Basket> basket = mem2.Cart.GetBaskets();
-            Assert.IsTrue((basket.Count == 1 && thorwnExeptionClient) || (basket.Count == 0 && thorwnExeptionStore));
-            
+            Assert.IsTrue((basket.Count == 1 && thorwnExeptionClient) || (basket.Count == 0 && thorwnExeptionStore), "Expected the cart to be consistent with the operations.");
         }
 
         [TestMethod]
@@ -217,6 +214,8 @@ namespace MarketBackend.Tests.IT
             userId3 = marketManagerFacade.GetMemberIDrByUserName(userName);
             bool thorwnExeption  = false;
             ConcurrentBag<bool> results = new ConcurrentBag<bool>();
+
+            // Create threads to appoint the third user as a manager
             var threads = new List<Thread>()
             {
                 new Thread(() =>
@@ -246,13 +245,15 @@ namespace MarketBackend.Tests.IT
             };
             threads.ForEach(t => t.Start());
             threads.ForEach(t => t.Join());
+
             int successCount = results.Count(r => r == true);
             int exceptionCount = results.Count(r => r == false);
             Store store = marketManagerFacade.GetStore(storeId);
-            Assert.AreEqual(true, thorwnExeption);
+
+            Assert.AreEqual(true, thorwnExeption, "Expected one of the threads to throw an exception.");
             Assert.AreEqual(1, successCount, "Exactly one thread should succeed in adding the manager.");
             Assert.AreEqual(1, exceptionCount, "Exactly one thread should throw an exception.");
-            Assert.IsTrue(store.roles.ContainsKey(userName));
+            Assert.IsTrue(store.roles.ContainsKey(userName), "Expected the new manager to be added to the store roles.");
         }
     }
 }
