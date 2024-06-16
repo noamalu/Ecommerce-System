@@ -56,7 +56,7 @@ namespace MarketBackend.Tests.AT
             proxy.InitiateSystemAdmin();
             proxy.EnterAsGuest(session1);
             proxy.Register(userName, userPassword, email1, userAge);
-            this.token1 = proxy.LoginWithToken(userName, userPassword);
+            token1 = proxy.LoginWithToken(userName, userPassword);
         }
 
         [TestCleanup]
@@ -67,10 +67,8 @@ namespace MarketBackend.Tests.AT
         [TestMethod]
         public void UniqueUsername_GoodCase()
         {
-            int userId2 = proxy.GetUserId();
             Assert.IsTrue(proxy.EnterAsGuest(session2));
             Assert.IsTrue(proxy.Register(userName2, pass2, email2, userAge2));
-
         }
 
         [TestMethod]

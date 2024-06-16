@@ -264,6 +264,15 @@ namespace MarketBackend.Domain.Market_Client
             return store.getProductInfo(productId);
         }
 
+        public Product GetProduct(int storeId, int productId)
+        {
+            Store store = _storeRepository.GetById(storeId);
+            if (store == null){
+                throw new Exception("Store doesn't exists");
+            }
+            return store.GetProduct(productId);
+        }
+
         public string GetInfo(int storeId){
             Store store = _storeRepository.GetById(storeId);
             if (store == null){
@@ -511,6 +520,11 @@ namespace MarketBackend.Domain.Market_Client
         public int GetMemberIDrByUserName(string userName)
         {
             return _clientManager.GetMemberIDrByUserName(userName); 
+        }
+
+        public Member GetMember(string userName)
+        {
+            return _clientManager.GetMember(userName); 
         }
 
         public void AddKeyWord(string keyWord, int storeId, int productId)

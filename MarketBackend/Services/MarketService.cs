@@ -404,6 +404,20 @@ namespace MarketBackend.Services
             }
         }
 
+        public Response<Product> GetProduct(int storeId, int productId){
+            try
+            {
+                Product product = marketManagerFacade.GetProduct(storeId, productId);
+                logger.Info($"Product {productId} in store {storeId} got");
+                return Response<Product>.FromValue(product);
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in getting product {productId} in store {storeId}. Error message: {e.Message}");
+                return Response<Product>.FromError(e.Message);
+            }
+        }
+
         public Response PurchaseCart(string identifier, PaymentDetails paymentDetails, ShippingDetails shippingDetails)
         {
              try

@@ -40,6 +40,7 @@ namespace MarketBackend.Domain.Market_Client
             if (products.ContainsKey(productId)){
                 products[productId] = Math.Max(products[productId]-quantity,0);
                 _basketItems.Remove(FindBasketItem(productId));
+                products.Remove(productId);
             }
             else{
                 throw new ArgumentException($"Product id={productId} not in the {_basketId}!");

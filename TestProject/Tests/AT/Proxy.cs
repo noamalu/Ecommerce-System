@@ -4,6 +4,7 @@ using MarketBackend.Domain.Payment;
 using NLog;
 using MarketBackend.Domain.Shipping;
 using Moq;
+using MarketBackend.Services.Models;
 
 namespace MarketBackend.Tests.AT
 {
@@ -71,6 +72,12 @@ namespace MarketBackend.Tests.AT
             Response res = marketService.SearchByKeywords(keywords);
             return !res.ErrorOccured;
         }
+
+        public List<ProductResultDto> SearchByKey(string key){
+            Response<List<ProductResultDto>> res = marketService.SearchByKeywords(key);
+            return res.Value;
+        }
+
         public bool SearchByName(string name){
             Response res = marketService.SearchByName(name);
             return !res.ErrorOccured;
@@ -205,6 +212,35 @@ namespace MarketBackend.Tests.AT
         public bool GetPurchaseHistoryByClient(string userName){
             Response res = clientService.GetPurchaseHistoryByClient(userName);
             return !res.ErrorOccured;
+        }
+
+        public List<ShoppingCartResultDto> GetPurchaseHistory(string userName){
+            Response<List<ShoppingCartResultDto>> res = clientService.GetPurchaseHistoryByClient(userName);
+            return res.Value;
+        }
+
+        public bool GetProductInfo(int storeId, int productId){
+            Response res = marketService.GetProductInfo(storeId, productId);
+            return !res.ErrorOccured;
+        }
+
+        public Product GetProduct(int storeId, int productId){
+            Response<Product> res = marketService.GetProduct(storeId, productId);
+            return res.Value;
+        }
+
+        public List<Member> GetOwners(int storeId){
+            Response<List<Member>> res = marketService.GetOwners(storeId);
+            return res.Value;
+        }
+
+        public string GetStoreById(int storeId){
+            Response<string> res = marketService.GetStoreById(storeId);
+            return res.Value;
+        }
+
+        public Member GetMember(string userName){
+            return clientService.GetMember(userName);
         }
     }
 }

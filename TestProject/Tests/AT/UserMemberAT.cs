@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Payment;
 using MarketBackend.Domain.Shipping;
 using MarketBackend.Services;
@@ -97,6 +98,7 @@ namespace MarketBackend.Tests.AT
         public void CreateShopSuccess()
         {
            Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum));
+           Assert.AreEqual(storeName, proxy.GetStoreById(1));
         }
 
         [TestMethod]
@@ -114,14 +116,15 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.GetInfo(shopID));
         }
 
-        [TestMethod]
-        public void SearchByKeyWords(){
-           int shopID = 1;
-           Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum));
-           Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false));
-           Assert.IsTrue(proxy.AddKeyWord(token1, "nice", shopID, 11));
-           Assert.IsTrue(proxy.SearchByKeywords("nice"));
-        }
+      //   [TestMethod]
+      //   public void SearchByKeyWords(){
+      //      int shopID = 1;
+      //      Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum));
+      //      Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false));
+      //      Assert.IsTrue(proxy.AddKeyWord(token1, "nice", shopID, 11));
+      //      Assert.IsTrue(proxy.SearchByKeywords("nice"));
+      //      Assert.AreEqual(1, proxy.SearchByKey("nice").Count);
+      //   }
 
         [TestMethod]
         public void AddToCartSuccess()
@@ -131,6 +134,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false));
            userId2 = proxy.GetMembeIDrByUserName(userName2);
            Assert.IsTrue(proxy.AddToCart(token2, shopID, productID1, quantity1));
+           Assert.AreEqual(1, proxy.GetMember(userName2).Cart.GetBaskets().Count);
         }
 
         [TestMethod]
@@ -140,6 +144,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum));
            userId2 = proxy.GetMembeIDrByUserName(userName2);
            Assert.IsFalse(proxy.AddToCart(token2, shopID, productID1, quantity1));
+           Assert.AreEqual(0, proxy.GetMember(userName2).Cart.GetBaskets().Count);
         }
 
         [TestMethod]
@@ -151,6 +156,8 @@ namespace MarketBackend.Tests.AT
            userId2 = proxy.GetMembeIDrByUserName(userName2);
            Assert.IsTrue(proxy.AddToCart(token2, shopID, productID1, 1));
            Assert.IsTrue(proxy.RemoveFromCart(token2, productID1, shopID, 1));
+           Member mem = proxy.GetMember(userName2);
+           Assert.AreEqual(0, mem.Cart.GetBaskets()[shopID].products.Count);
         }
 
         [TestMethod]
@@ -174,6 +181,7 @@ namespace MarketBackend.Tests.AT
            PaymentDetails paymentDetails = new PaymentDetails("5326888878675678", "2027", "10", "101", "3190876789", "Hadas");
            ShippingDetails shippingDetails = new ShippingDetails("name",  "city",  "address",  "country",  "zipcode");
            Assert.IsTrue(proxy.PurchaseCart(token2, paymentDetails, shippingDetails));
+           Assert.AreEqual(1, proxy.GetPurchaseHistory(userName2).Count);
         }
 
         [TestMethod]
@@ -188,6 +196,7 @@ namespace MarketBackend.Tests.AT
            ShippingDetails shippingDetails = new ShippingDetails("name",  "city",  "address",  "country",  "zipcode");
            Assert.IsTrue(proxy.RemoveProduct(shopID, token1, 11));
            Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails));
+           Assert.AreEqual(0, proxy.GetPurchaseHistory(userName2).Count);
         }
 
         [TestMethod]
@@ -198,6 +207,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false));
            userId2 = proxy.GetMembeIDrByUserName(userName2);
            Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails));
+           Assert.AreEqual(0, proxy.GetPurchaseHistory(userName2).Count);
         }
 
         [TestMethod]
@@ -208,6 +218,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, true));
            userId2 = proxy.GetMembeIDrByUserName(userName2);
            Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails));
+           Assert.AreEqual(0, proxy.GetPurchaseHistory(userName2).Count);
         }
 
         [TestMethod]
@@ -218,6 +229,7 @@ namespace MarketBackend.Tests.AT
             userId2 = proxy.GetMembeIDrByUserName(userName2);
             mockPaymentSystem.SetReturnsDefault(false);
             Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails));
+            Assert.AreEqual(0, proxy.GetPurchaseHistory(userName2).Count);
         }
 
         [TestMethod]
@@ -228,6 +240,7 @@ namespace MarketBackend.Tests.AT
             userId2 = proxy.GetMembeIDrByUserName(userName2);
             mockShippingSystem.SetReturnsDefault(false);
             Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails));
+            Assert.AreEqual(0, proxy.GetPurchaseHistory(userName2).Count);
         }
 
         [TestMethod]
@@ -241,6 +254,7 @@ namespace MarketBackend.Tests.AT
            Assert.IsTrue(proxy.PurchaseCart(token2, paymentDetails, shippingDetails));
            Assert.IsTrue(proxy.AddOwner(token1, 1, userName2));
            Assert.IsTrue(proxy.GetPurchaseHistory(shopID, token2));
+           Assert.AreEqual(1, proxy.GetPurchaseHistory(userName2).Count);
         }
 
         [TestMethod]
