@@ -263,6 +263,15 @@ namespace MarketBackend.Domain.Market_Client
             return -1;       
         }
 
+        public Member GetMember(string userName)
+        {
+            if(_clientRepository.ContainsUserName(userName))
+            {
+                return _clientRepository.GetByUserName(userName);
+            }
+            return null;       
+        }
+
         public Member GetMemberByUserName(string userName)
         {
             return _clientRepository.GetByUserName(userName);    

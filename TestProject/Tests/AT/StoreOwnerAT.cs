@@ -77,6 +77,7 @@ namespace MarketBackend.Tests.AT
         public void AddProductSuccess()
         {
            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false));
+           Assert.IsTrue(proxy.GetProductInfo(shopID, 11));
         }
 
         [TestMethod]
@@ -84,6 +85,7 @@ namespace MarketBackend.Tests.AT
         {
            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false));
            Assert.IsTrue(proxy.RemoveProduct(shopID, token1, 11));
+           Assert.IsFalse(proxy.GetProductInfo(shopID, 11));
         }
 
         [TestMethod]
@@ -96,14 +98,16 @@ namespace MarketBackend.Tests.AT
         public void UpdateProductPriceSuccess()
         {
            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false)); 
-           Assert.IsTrue(proxy.UpdateProductPrice(shopID, token1, productID1, price2));     
+           Assert.IsTrue(proxy.UpdateProductPrice(shopID, token1, productID1, price2));
+           Assert.AreEqual(price2, proxy.GetProduct(shopID, productID1)._price);     
         }
 
         [TestMethod]
         public void UpdateProductPriceFail_NegativePrice()
         {
            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false)); 
-           Assert.IsFalse(proxy.UpdateProductPrice(shopID, token1, productID1, negPrice));     
+           Assert.IsFalse(proxy.UpdateProductPrice(shopID, token1, productID1, negPrice));
+           Assert.AreEqual(price1, proxy.GetProduct(shopID, productID1)._price);     
         }
 
         [TestMethod]
@@ -116,14 +120,16 @@ namespace MarketBackend.Tests.AT
         public void UpdateProductQuantitySuccess()
         {
            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false)); 
-           Assert.IsTrue(proxy.UpdateProductQuantity(shopID, token1, productID1, quantity2));     
+           Assert.IsTrue(proxy.UpdateProductQuantity(shopID, token1, productID1, quantity2));
+           Assert.AreEqual(quantity2, proxy.GetProduct(shopID, productID1)._quantity);      
         }
 
         [TestMethod]
         public void UpdateProductQuantityFail_NegativeQuantity()
         {
            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false)); 
-           Assert.IsFalse(proxy.UpdateProductQuantity(shopID, token1, productID1, negQuantity));     
+           Assert.IsFalse(proxy.UpdateProductQuantity(shopID, token1, productID1, negQuantity));
+           Assert.AreEqual(quantity1, proxy.GetProduct(shopID, productID1)._quantity);     
         }
 
         [TestMethod]
@@ -147,6 +153,8 @@ namespace MarketBackend.Tests.AT
            ShippingDetails shippingDetails = new ShippingDetails("name",  "city",  "address",  "country",  "zipcode");
            Assert.IsTrue(proxy.PurchaseCart(token2, paymentDetails, shippingDetails));
            Assert.IsTrue(proxy.GetPurchaseHistoryByClient(userName2));
+           Assert.AreEqual(1, proxy.GetPurchaseHistory(userName2).Count);
+
         }
 
         [TestMethod]
@@ -158,6 +166,7 @@ namespace MarketBackend.Tests.AT
            userId2 = proxy.GetMembeIDrByUserName(userName2);
            token2 = proxy.LoginWithToken(userName2, pass2);
            Assert.IsTrue(proxy.AddOwner(token1, shopID, userName2));
+           Assert.AreEqual(1, proxy.GetOwners(shopID).Count);
         }
 
         [TestMethod]
@@ -170,6 +179,7 @@ namespace MarketBackend.Tests.AT
            token2 = proxy.LoginWithToken(userName2, pass2);
            Assert.IsTrue(proxy.AddOwner(token1, shopID, userName2));
            Assert.IsTrue(proxy.RemoveStaffMember(shopID, token1, userName2));
+           Assert.AreEqual(0, proxy.GetOwners(shopID).Count);
         }
 
         

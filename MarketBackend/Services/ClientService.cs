@@ -240,6 +240,11 @@ namespace MarketBackend.Services
             return marketManagerFacade.GetMemberIDrByUserName(username);
         }
 
+        public Member GetMember(string username)
+        {
+            return marketManagerFacade.GetMember(username);
+        }
+
         public Response<List<StoreResultDto>> GetMemberStores(string identifier)
         {
             try
