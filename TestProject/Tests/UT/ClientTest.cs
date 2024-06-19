@@ -35,7 +35,7 @@ namespace UnitTests
             var basket = BasketRepositoryRAM.GetInstance().getBasketsByCartId(client.Cart._shoppingCartId).Where(basket => basket._storeId == 0).FirstOrDefault();
             client.RemoveFromCart(0, 11, 10);
             var productsInBasket = basket.products;
-            Assert.AreEqual(0, productsInBasket?[11]);
+            Assert.AreEqual(0, productsInBasket.Count);
         }
     }
 

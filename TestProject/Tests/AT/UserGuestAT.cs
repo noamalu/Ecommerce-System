@@ -40,70 +40,96 @@ namespace MarketBackend.Tests.AT
 
         [TestMethod]
         public void EnterAsGuestSuccess(){
-            Assert.IsFalse(proxy.Login(userName, userPassword));
-            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge));
+            Assert.IsFalse(proxy.Login(userName, userPassword), 
+                "Expected login to fail for unregistered user.");
+            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge), 
+                "Expected registration to succeed.");
         }
 
         [TestMethod]
         public void RegisterSuccess(){
-            Assert.IsTrue(proxy.EnterAsGuest(session1));
-            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge));
+            Assert.IsTrue(proxy.EnterAsGuest(session1), 
+                "Expected to enter as guest successfully.");
+            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge), 
+                "Expected registration to succeed.");
         }
 
         [TestMethod]
         public void RegisterFail_RegisterTwice(){
-            Assert.IsTrue(proxy.EnterAsGuest(session1));
-            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge));
-            Assert.IsFalse(proxy.Register(userName, userPassword, email1, userAge));
+            Assert.IsTrue(proxy.EnterAsGuest(session1), 
+                "Expected to enter as guest successfully.");
+            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge), 
+                "Expected first registration to succeed.");
+            Assert.IsFalse(proxy.Register(userName, userPassword, email1, userAge), 
+                "Expected second registration attempt to fail.");
         }
 
         [TestMethod]
         public void RegisterFail_WrongEmail(){
-            Assert.IsTrue(proxy.EnterAsGuest(session1));
-            Assert.IsFalse(proxy.Register(userName, userPassword, wrongEmail, userAge));
+            Assert.IsTrue(proxy.EnterAsGuest(session1), 
+                "Expected to enter as guest successfully.");
+            Assert.IsFalse(proxy.Register(userName, userPassword, wrongEmail, userAge), 
+                "Expected registration to fail with wrong email format.");
         }
 
         [TestMethod]
         public void LoginSuccess(){
-            Assert.IsTrue(proxy.EnterAsGuest(session1));
-            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge));
-            Assert.IsTrue(proxy.Login(userName, userPassword));
+            Assert.IsTrue(proxy.EnterAsGuest(session1), 
+                "Expected to enter as guest successfully.");
+            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge), 
+                "Expected registration to succeed.");
+            Assert.IsTrue(proxy.Login(userName, userPassword), 
+                "Expected login to succeed with correct credentials.");
         }
 
         [TestMethod]
         public void LoginFail_NotRegister(){
-            Assert.IsTrue(proxy.EnterAsGuest(session1));
-            Assert.IsFalse(proxy.Login(userName, userPassword));
+            Assert.IsTrue(proxy.EnterAsGuest(session1), 
+                "Expected to enter as guest successfully.");
+            Assert.IsFalse(proxy.Login(userName, userPassword), 
+                "Expected login to fail for unregistered user.");
         }
 
         [TestMethod]
         public void LoginFail_WrongUserName(){
-            Assert.IsTrue(proxy.EnterAsGuest(session1));
-            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge));
-            Assert.IsFalse(proxy.Login(userName2, userPassword));
+            Assert.IsTrue(proxy.EnterAsGuest(session1), 
+                "Expected to enter as guest successfully.");
+            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge), 
+                "Expected registration to succeed.");
+            Assert.IsFalse(proxy.Login(userName2, userPassword), 
+                "Expected login to fail with wrong username.");
         }
 
         [TestMethod]
         public void LoginFail_WrongPassword(){
-            Assert.IsTrue(proxy.EnterAsGuest(session1));
-            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge));
-            Assert.IsFalse(proxy.Login(userName, pass2));
+            Assert.IsTrue(proxy.EnterAsGuest(session1), 
+                "Expected to enter as guest successfully.");
+            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge), 
+                "Expected registration to succeed.");
+            Assert.IsFalse(proxy.Login(userName, pass2), 
+                "Expected login to fail with wrong password.");
         }
 
         [TestMethod]
         public void LogOutSuccess(){
-            Assert.IsTrue(proxy.EnterAsGuest(session1));
-            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge));
+            Assert.IsTrue(proxy.EnterAsGuest(session1), 
+                "Expected to enter as guest successfully.");
+            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge), 
+                "Expected registration to succeed.");
             string token1 = proxy.LoginWithToken(userName, userPassword);
             proxy.GetMembeIDrByUserName(userName);
-            Assert.IsTrue(proxy.LogOut(token1));
+            Assert.IsTrue(proxy.LogOut(token1), 
+                "Expected logout to succeed for logged-in user.");
         }
 
         [TestMethod]
         public void LogOutFail_NotLoggedIn(){
-            Assert.IsTrue(proxy.EnterAsGuest(session1));
-            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge));
-            Assert.IsFalse(proxy.LogOut(session1));
+            Assert.IsTrue(proxy.EnterAsGuest(session1), 
+                "Expected to enter as guest successfully.");
+            Assert.IsTrue(proxy.Register(userName, userPassword, email1, userAge), 
+                "Expected registration to succeed.");
+            Assert.IsFalse(proxy.LogOut(session1), 
+                "Expected logout to fail for user not logged in.");
         }
     }
 }

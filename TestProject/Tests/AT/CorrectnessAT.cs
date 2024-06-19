@@ -68,7 +68,8 @@ namespace MarketBackend.Tests.AT
         public void UniqueUsername_GoodCase()
         {
             Assert.IsTrue(proxy.EnterAsGuest(session2));
-            Assert.IsTrue(proxy.Register(userName2, pass2, email2, userAge2));
+            Assert.IsTrue(proxy.Register(userName2, pass2, email2, userAge2), 
+            "Fail in regiter, should not throw exception.");
         }
 
         [TestMethod]
@@ -76,7 +77,8 @@ namespace MarketBackend.Tests.AT
         {
             int userId2 = proxy.GetUserId();
             Assert.IsTrue(proxy.EnterAsGuest(session2));
-            Assert.IsFalse(proxy.Register(userName, userPassword, email1, userAge));
+            Assert.IsFalse(proxy.Register(userName, userPassword, email1, userAge), 
+            "Fail in regiter, should throw exception- not unique username.");
         }
     }
 }

@@ -242,5 +242,10 @@ namespace MarketBackend.Tests.AT
         public Member GetMember(string userName){
             return clientService.GetMember(userName);
         }
+
+        public List<RuleResultDto> GetStoreRules(int storeId, string identifier){
+            Response<List<RuleResultDto>> res = marketService.GetStoreRules(storeId, identifier);
+            return res.Value;
+        }
     }
 }

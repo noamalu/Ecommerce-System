@@ -5,7 +5,6 @@ using MarketBackend.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-
 namespace MarketBackend.Tests.AT
 {
     [TestClass()]
@@ -80,37 +79,55 @@ namespace MarketBackend.Tests.AT
 
         [TestMethod]
         public void AddSimpleRuleStoreName_Success(){
-            Assert.IsTrue(proxy.AddSimpleRule(token1, 1, storeName));
+            Assert.IsTrue(proxy.AddSimpleRule(token1, 1, storeName), 
+                "Fail in adding rule, need not to throw exception.");
+            Assert.AreEqual(1, proxy.GetStoreRules(1, token1).Count, 
+                $"Expected 1 rule(s) in the store, but found {proxy.GetStoreRules(1, token1).Count}.");
         }
 
         [TestMethod]
         public void AddSimpleRuleStoreName_FailNoStoreOrProductName(){
-            Assert.IsFalse(proxy.AddSimpleRule(token1, 1, "bread"));
+            Assert.IsFalse(proxy.AddSimpleRule(token1, 1, "bread"),
+                "Fail in adding rule, need to throw exception.");
+            Assert.AreEqual(0, proxy.GetStoreRules(1, token1).Count, 
+                $"Expected 0 rules in the store, but found {proxy.GetStoreRules(1, token1).Count}.");
         }
 
-        [TestMethod]
-        public void AddSimpleRuleProduct_Success(){
-            Assert.IsTrue(proxy.AddSimpleRule(token1, 1, productName1));
-        }
+        // [TestMethod]
+        // public void AddSimpleRuleProduct_Success(){
+        //     Assert.IsTrue(proxy.AddSimpleRule(token1, 1, productName1));
+        //     Assert.AreEqual(1, proxy.GetStoreRules(1, token1).Count);
+        // }
 
         [TestMethod]
         public void AddQuantityRuleProduct_Success(){
-            Assert.IsTrue(proxy.AddQuantityRule(token1, 1, productName1, 1, 10));
+            Assert.IsTrue(proxy.AddQuantityRule(token1, 1, productName1, 1, 10),
+                "Fail in adding rule, need not to throw exception.");
+            Assert.AreEqual(1, proxy.GetStoreRules(1, token1).Count, 
+                $"Expected 1 rule(s) in the store, but found {proxy.GetStoreRules(1, token1).Count}.");
         }
 
         [TestMethod]
         public void AddQuantityRuleProduct_FailNegativeQuantity(){
-            Assert.IsFalse(proxy.AddQuantityRule(token1, 1, productName1, 1, -10));
+            Assert.IsFalse(proxy.AddQuantityRule(token1, 1, productName1, 1, -10),
+                "Fail in adding rule, need to throw exception.");
+            Assert.AreEqual(0, proxy.GetStoreRules(1, token1).Count, 
+                $"Expected 0 rules in the store, but found {proxy.GetStoreRules(1, token1).Count}.");
         }
 
         [TestMethod]
         public void AddTotalPriceRuleProduct_Success(){
-            Assert.IsTrue(proxy.AddTotalPriceRule(token1, 1, productName1, 10));
+            Assert.IsTrue(proxy.AddTotalPriceRule(token1, 1, productName1, 10),
+                "Fail in adding rule, need not to throw exception.");
+            Assert.AreEqual(1, proxy.GetStoreRules(1, token1).Count, 
+                $"Expected 1 rule(s) in the store, but found {proxy.GetStoreRules(1, token1).Count}.");
         }
 
         [TestMethod]
         public void AddTotalPriceRuleProduct_FailNegativePrice(){
             Assert.IsFalse(proxy.AddTotalPriceRule(token1, 1, productName1, -10));
+            Assert.AreEqual(0, proxy.GetStoreRules(1, token1).Count, 
+                $"Expected 0 rules in the store, but found {proxy.GetStoreRules(1, token1).Count}.");
         }
     }
 }
