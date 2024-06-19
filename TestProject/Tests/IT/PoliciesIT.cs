@@ -95,7 +95,8 @@ namespace MarketBackend.Tests.IT
             DateTime expirationDate = DateTime.Now.AddDays(2);
             marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, storeName, rule1);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
-            Assert.IsTrue(store._history._purchases.Count == 1);
+            Assert.AreEqual(1, store._history._purchases.Count,
+            $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
@@ -111,7 +112,8 @@ namespace MarketBackend.Tests.IT
             DateTime expirationDate = DateTime.Now.AddDays(2);
             marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, rule1, 0.5);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
-            Assert.IsTrue(store._history._purchases[0].Price == 2.5);
+            Assert.AreEqual(2.5, store._history._purchases[0].Price,
+            $"Expected price to be 2.5 but got {store._history._purchases[0].Price}");
         }
 
         [TestMethod]
@@ -124,7 +126,8 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 12, 10);
             Assert.ThrowsException<Exception>(() => marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails));
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 0);
+            Assert.AreEqual(0, store._history._purchases.Count,
+            $"Expected puchase history count to be 0 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
@@ -137,7 +140,8 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 12, 2);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 1);
+            Assert.AreEqual(1, store._history._purchases.Count,
+            $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
@@ -151,7 +155,8 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 5);
             Assert.ThrowsException<Exception>(() => marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails));
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 0);
+            Assert.AreEqual(0, store._history._purchases.Count,
+            $"Expected puchase history count to be 0 but got {store._history._purchases.Count}");
         }
 
         //to do: need to fix role by store name
@@ -180,7 +185,8 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 2);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 1);
+            Assert.AreEqual(1, store._history._purchases.Count,
+            $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
@@ -194,7 +200,8 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 5);
             Assert.ThrowsException<Exception>(() => marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails));
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 0);
+            Assert.AreEqual(0, store._history._purchases.Count,
+            $"Expected puchase history count to be 0 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
@@ -211,7 +218,8 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 2);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 1);
+            Assert.AreEqual(1, store._history._purchases.Count,
+            $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
@@ -228,7 +236,8 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 5);
             Assert.ThrowsException<Exception>(() => marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails));
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 0);
+            Assert.AreEqual(0, store._history._purchases.Count,
+            $"Expected puchase history count to be 0 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
@@ -245,7 +254,8 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 2);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 1);
+            Assert.AreEqual(1, store._history._purchases.Count,
+            $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
@@ -262,7 +272,8 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 5);
             Assert.ThrowsException<Exception>(() => marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails));
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 0);
+            Assert.AreEqual(0, store._history._purchases.Count,
+            $"Expected puchase history count to be 0 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
@@ -279,7 +290,8 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 5);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 1);
+            Assert.AreEqual(1, store._history._purchases.Count,
+            $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
@@ -296,7 +308,8 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 2);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 1);
+            Assert.AreEqual(1, store._history._purchases.Count,
+            $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
@@ -313,7 +326,8 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 2);
             Assert.ThrowsException<Exception>(() => marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails));
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 0);
+            Assert.AreEqual(0, store._history._purchases.Count,
+            $"Expected puchase history count to be 0 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
@@ -327,8 +341,10 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 2);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 1);
-            Assert.IsTrue(store._history._purchases[0].Price == 10);
+            Assert.AreEqual(1, store._history._purchases.Count,
+            $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
+            Assert.AreEqual(10, store._history._purchases[0].Price,
+            $"Expected purchase price to be 10, but got {store._history._purchases[0].Price}");
         }
 
         [TestMethod]
@@ -342,8 +358,10 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 5);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 1);
-            Assert.IsTrue(store._history._purchases[0].Price == 35);
+            Assert.AreEqual(1, store._history._purchases.Count,
+            $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
+            Assert.AreEqual(35, store._history._purchases[0].Price,
+            $"Expected purchase price to be 35, but got {store._history._purchases[0].Price}");
         }
 
         [TestMethod]
@@ -360,8 +378,10 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 2);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 1);
-            Assert.IsTrue(store._history._purchases[0].Price == 20);
+            Assert.AreEqual(1, store._history._purchases.Count,
+            $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
+            Assert.AreEqual(20, store._history._purchases[0].Price,
+            $"Expected purchase price to be 20, but got {store._history._purchases[0].Price}");
         }
 
         [TestMethod]
@@ -378,8 +398,10 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 5);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 1);
-            Assert.IsTrue(store._history._purchases[0].Price == 35);
+            Assert.AreEqual(1, store._history._purchases.Count,
+            $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
+            Assert.AreEqual(35, store._history._purchases[0].Price,
+            $"Expected purchase price to be 35, but got {store._history._purchases[0].Price}");
         }
 
         [TestMethod]
@@ -396,8 +418,10 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 2);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 1);
-            Assert.IsTrue(store._history._purchases[0].Price == 10);
+            Assert.AreEqual(1, store._history._purchases.Count,
+            $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
+            Assert.AreEqual(10, store._history._purchases[0].Price,
+            $"Expected purchase price to be 10, but got {store._history._purchases[0].Price}");
         }
 
         [TestMethod]
@@ -414,8 +438,10 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 5);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 1);
-            Assert.IsTrue(store._history._purchases[0].Price == 35);
+            Assert.AreEqual(1, store._history._purchases.Count,
+            $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
+            Assert.AreEqual(35, store._history._purchases[0].Price,
+            $"Expected purchase price to be 35, but got {store._history._purchases[0].Price}");
         }
 
         [TestMethod]
@@ -432,8 +458,10 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 5);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 1);
-            Assert.IsTrue(store._history._purchases[0].Price == 17.5);
+            Assert.AreEqual(1, store._history._purchases.Count,
+            $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
+            Assert.AreEqual(17.5, store._history._purchases[0].Price,
+            $"Expected purchase price to be 17.5, but got {store._history._purchases[0].Price}");
         }
 
         [TestMethod]
@@ -450,8 +478,10 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 2);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 1);
-            Assert.IsTrue(store._history._purchases[0].Price == 10);
+            Assert.AreEqual(1, store._history._purchases.Count,
+            $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
+            Assert.AreEqual(10, store._history._purchases[0].Price,
+            $"Expected purchase price to be 10, but got {store._history._purchases[0].Price}");
         }
 
         [TestMethod]
@@ -468,8 +498,10 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 2);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 1);
-            Assert.IsTrue(store._history._purchases[0].Price == 20);
+            Assert.AreEqual(1, store._history._purchases.Count,
+            $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
+            Assert.AreEqual(20, store._history._purchases[0].Price,
+            $"Expected purchase price to be 20, but got {store._history._purchases[0].Price}");
         }
 
         [TestMethod]
@@ -485,7 +517,8 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 5);
             Assert.ThrowsException<Exception>(() => marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails));
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 0);
+            Assert.AreEqual(0, store._history._purchases.Count,
+            $"Expected puchase history count to be 0 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
@@ -501,8 +534,10 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 5);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 1);
-            Assert.IsTrue(store._history._purchases[0].Price == 35);
+            Assert.AreEqual(1, store._history._purchases.Count,
+            $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
+            Assert.AreEqual(35, store._history._purchases[0].Price,
+            $"Expected purchase price to be 35, but got {store._history._purchases[0].Price}");
         }
 
         [TestMethod]
@@ -517,8 +552,10 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 5);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 1);
-            Assert.IsTrue(store._history._purchases[0].Price == 17.5);
+            Assert.AreEqual(1, store._history._purchases.Count,
+            $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
+            Assert.AreEqual(17.5, store._history._purchases[0].Price,
+            $"Expected purchase price to be 17.5, but got {store._history._purchases[0].Price}");
         }
 
         [TestMethod]
@@ -536,8 +573,10 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 2);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 1);
-            Assert.IsTrue(store._history._purchases[0].Price == 8);
+            Assert.AreEqual(1, store._history._purchases.Count,
+            $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
+            Assert.AreEqual(8, store._history._purchases[0].Price,
+            $"Expected purchase price to be 8, but got {store._history._purchases[0].Price}");
         }
 
         [TestMethod]
@@ -555,8 +594,10 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.AddToCart(token1, 1, 11, 2);
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Store store = marketManagerFacade.GetStore(1);
-            Assert.IsTrue(store._history._purchases.Count == 1);
-            Assert.IsTrue(store._history._purchases[0].Price == 10);
+            Assert.AreEqual(1, store._history._purchases.Count,
+            $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
+            Assert.AreEqual(10, store._history._purchases[0].Price,
+            $"Expected purchase price to be 10, but got {store._history._purchases[0].Price}");
         }
     }
 }

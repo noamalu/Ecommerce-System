@@ -99,7 +99,7 @@ namespace MarketBackend.Tests.AT
             Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
                 "Expected store creation to succeed.");
             Assert.AreEqual(storeName, proxy.GetStoreById(1), 
-                "Expected store name to match the created store name.");
+                $"Expected store name to be {storeName} but got {proxy.GetStoreById(1)}.");
         }
 
         [TestMethod]
@@ -132,7 +132,7 @@ namespace MarketBackend.Tests.AT
             Assert.IsTrue(proxy.AddToCart(token2, shopID, productID1, quantity1), 
                 "Expected product to be added to the cart successfully.");
             Assert.AreEqual(1, proxy.GetMember(userName2).Cart.GetBaskets().Count, 
-                "Expected cart to contain one basket.");
+                $"Expected cart to contain one basket but got {proxy.GetMember(userName2).Cart.GetBaskets().Count}.");
         }
 
         [TestMethod]
@@ -145,7 +145,7 @@ namespace MarketBackend.Tests.AT
             Assert.IsFalse(proxy.AddToCart(token2, shopID, productID1, quantity1), 
                 "Expected adding product to cart to fail as product does not exist.");
             Assert.AreEqual(0, proxy.GetMember(userName2).Cart.GetBaskets().Count, 
-                "Expected cart to be empty.");
+                $"Expected cart to be empty but got basket count: {proxy.GetMember(userName2).Cart.GetBaskets().Count}.");
         }
 
         [TestMethod]
@@ -163,7 +163,7 @@ namespace MarketBackend.Tests.AT
                 "Expected product to be removed from the cart successfully.");
             Member mem = proxy.GetMember(userName2);
             Assert.AreEqual(0, mem.Cart.GetBaskets()[shopID].products.Count, 
-                "Expected cart to be empty after removing the product.");
+                $"Expected cart to be empty after removing the product but got {mem.Cart.GetBaskets()[shopID].products.Count}.");
         }
 
         [TestMethod]
@@ -193,7 +193,7 @@ namespace MarketBackend.Tests.AT
             Assert.IsTrue(proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
                 "Expected cart purchase to succeed.");
             Assert.AreEqual(1, proxy.GetPurchaseHistory(userName2).Count, 
-                "Expected purchase history to contain one entry.");
+                $"Expected purchase history to contain one entry but got {proxy.GetPurchaseHistory(userName2).Count}.");
         }
 
         [TestMethod]
@@ -212,7 +212,7 @@ namespace MarketBackend.Tests.AT
             Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
                 "Expected cart purchase to fail as product does not exist in the store.");
             Assert.AreEqual(0, proxy.GetPurchaseHistory(userName2).Count, 
-                "Expected purchase history to be empty.");
+                $"Expected purchase history to be empty but got {proxy.GetPurchaseHistory(userName2).Count}.");
         }
 
         [TestMethod]
@@ -227,7 +227,7 @@ namespace MarketBackend.Tests.AT
             Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
                 "Expected cart purchase to fail as cart is empty.");
             Assert.AreEqual(0, proxy.GetPurchaseHistory(userName2).Count, 
-                "Expected purchase history to be empty.");
+                $"Expected purchase history to be empty but got {proxy.GetPurchaseHistory(userName2).Count}.");
         }
 
         [TestMethod]
@@ -242,7 +242,7 @@ namespace MarketBackend.Tests.AT
             Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
                 "Expected cart purchase to fail due to illegal age for purchasing the product.");
             Assert.AreEqual(0, proxy.GetPurchaseHistory(userName2).Count, 
-                "Expected purchase history to be empty.");
+                $"Expected purchase history to be empty but got {proxy.GetPurchaseHistory(userName2).Count}.");
         }
 
         [TestMethod]
@@ -257,7 +257,7 @@ namespace MarketBackend.Tests.AT
             Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
                 "Expected cart purchase to fail due to payment failure.");
             Assert.AreEqual(0, proxy.GetPurchaseHistory(userName2).Count, 
-                "Expected purchase history to be empty.");
+                $"Expected purchase history to be empty but got {proxy.GetPurchaseHistory(userName2).Count}.");
         }
 
         [TestMethod]
@@ -272,7 +272,7 @@ namespace MarketBackend.Tests.AT
             Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
                 "Expected cart purchase to fail due to shipping failure.");
             Assert.AreEqual(0, proxy.GetPurchaseHistory(userName2).Count, 
-                "Expected purchase history to be empty.");
+                $"Expected purchase history to be empty but got {proxy.GetPurchaseHistory(userName2).Count}.");
         }
 
         [TestMethod]
@@ -293,7 +293,7 @@ namespace MarketBackend.Tests.AT
             Assert.IsTrue(proxy.GetPurchaseHistory(shopID, token2), 
                 "Expected to retrieve purchase history with valid permission.");
             Assert.AreEqual(1, proxy.GetPurchaseHistory(userName2).Count, 
-                "Expected purchase history to contain one entry.");
+                $"Expected purchase history to contain one entry but got {proxy.GetPurchaseHistory(userName2).Count}.");
         }
 
         [TestMethod]

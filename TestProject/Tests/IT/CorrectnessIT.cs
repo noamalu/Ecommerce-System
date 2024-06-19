@@ -113,7 +113,8 @@ namespace MarketBackend.Tests.IT
             threads.ForEach(t => t.Join());
 
             // Assert that the shop has the correct number of products
-            Assert.AreEqual(0, marketManagerFacade.GetStore(storeId)._products.Count, "Expected the store to have zero products after concurrent add/remove operations.");
+            Assert.AreEqual(0, marketManagerFacade.GetStore(storeId)._products.Count, 
+            $"Expected the store to have zero products but got: {marketManagerFacade.GetStore(storeId)._products.Count}.");
         }
 
         [TestMethod]
