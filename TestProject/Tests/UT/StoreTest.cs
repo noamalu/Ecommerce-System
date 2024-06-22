@@ -172,7 +172,8 @@ namespace UnitTests
          public void UpdateProductPriceSuccess()
         {
             _Store.UpdateProductPrice(username1, _p1.ProductId, 45555);
-            Assert.IsTrue(_p1.Price == 45555);
+            Assert.AreEqual(45555, _p1.Price,
+            $"Expected price of 45555 but got {_p1.Price}");
         }
 
         [TestMethod()]
@@ -191,7 +192,8 @@ namespace UnitTests
         public void UpdateProductQuantitySuccess()
         {
             _Store.UpdateProductQuantity(username1, _p1.ProductId, 45555);
-            Assert.IsTrue(_p1.Quantity == 45555);
+            Assert.AreEqual(45555, _p1.Quantity,
+            $"Expected quantity of 45555 but got {_p1.Quantity}");
         }
 
         [TestMethod()]
@@ -249,7 +251,8 @@ namespace UnitTests
             Purchase purchase = _Store.PurchaseBasket(username2,basket);
             Assert.IsTrue(_Store._history._purchases.Contains(purchase));
             Product product = _Store.GetProduct(11);
-            Assert.IsTrue(product._quantity == 11);
+            Assert.AreEqual(11, product._quantity,
+            $"Expected product quantity of 11 but got {product._quantity}");
         }
 
         [TestMethod()]
@@ -260,7 +263,8 @@ namespace UnitTests
             _Store._active=false;
             Assert.ThrowsException<Exception>(() => _Store.PurchaseBasket(username2,basket));
             Product product = _Store.GetProduct(11);
-            Assert.IsTrue(product._quantity == 21);
+            Assert.AreEqual(21, product._quantity,
+            $"Expected product quantity of 21 but got {product._quantity}");
             
         }
 
@@ -271,7 +275,8 @@ namespace UnitTests
             basket.addToBasket(11, 40);
             Assert.ThrowsException<Exception>(() => _Store.PurchaseBasket(username2,basket));
             Product product = _Store.GetProduct(11);
-             Assert.IsTrue(product._quantity == 21);
+             Assert.AreEqual(21, product._quantity,
+             $"Expected product quantity of 21 but got {product._quantity}");
             
         }
 

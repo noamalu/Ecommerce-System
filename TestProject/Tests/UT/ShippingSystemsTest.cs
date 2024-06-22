@@ -37,7 +37,8 @@ namespace UnitTests
         public void TestRequestShipmentSuccess()
         {
             int transactionId = shippingSystem.OrderShippment(shippingDetails);
-            Assert.AreNotEqual(1, transactionId);
+            Assert.AreNotEqual(1, transactionId,
+            $"Expected id not to be 1 but got {transactionId}");
         }
 
         [TestMethod]
@@ -45,7 +46,8 @@ namespace UnitTests
         public void TestCancelShipmentSuccess()
         {
             int transactionId = shippingSystem.OrderShippment(shippingDetails);
-            Assert.AreEqual(1, shippingSystem.CancelShippment(transactionId));
+            Assert.AreEqual(1, shippingSystem.CancelShippment(transactionId),
+            $"Expected 1 but got {shippingSystem.CancelShippment(transactionId)}");
         }
 
         [TestMethod]
@@ -53,8 +55,10 @@ namespace UnitTests
         public void TestShippingWithoutConnection()
         {
             shippingSystem.Disconnect();
-            Assert.AreEqual(-1, shippingSystem.OrderShippment(shippingDetails));
-            Assert.AreEqual(-1, shippingSystem.CancelShippment(123));
+            Assert.AreEqual(-1, shippingSystem.OrderShippment(shippingDetails),
+            $"Expected -1 but got {shippingSystem.OrderShippment(shippingDetails)}");
+            Assert.AreEqual(-1, shippingSystem.CancelShippment(123),
+            $"Expected -1 but got {shippingSystem.CancelShippment(123)}");
             
         }
 
@@ -68,7 +72,8 @@ namespace UnitTests
             shippingSystem = new ShippingSystemProxy(mockShippingSystem.Object);
             int transactionId = shippingSystem.OrderShippment(shippingDetails);
 
-            Assert.AreEqual(-1, transactionId);
+            Assert.AreEqual(-1, transactionId,
+            $"Expected -1 but got {transactionId}");
         }
     
     }

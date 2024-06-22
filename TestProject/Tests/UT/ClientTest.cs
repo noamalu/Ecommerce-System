@@ -24,7 +24,8 @@ namespace UnitTests
 
             client.AddToCart(0, 11, 10); // basket, productId, quantity
             var productsInBasket = BasketRepositoryRAM.GetInstance().getBasketsByCartId(client.Cart._shoppingCartId).Where(basket => basket._storeId == 0).FirstOrDefault()?.products;
-            Assert.AreEqual(10, productsInBasket?[11]);
+            Assert.AreEqual(10, productsInBasket?[11],
+            $"Expected products in basket to be 10, but got {productsInBasket?[11]}");
         }
 
         [TestMethod]
@@ -35,7 +36,8 @@ namespace UnitTests
             var basket = BasketRepositoryRAM.GetInstance().getBasketsByCartId(client.Cart._shoppingCartId).Where(basket => basket._storeId == 0).FirstOrDefault();
             client.RemoveFromCart(0, 11, 10);
             var productsInBasket = basket.products;
-            Assert.AreEqual(0, productsInBasket.Count);
+            Assert.AreEqual(0, productsInBasket.Count,
+            $"Expected count of products to be 0 but got {productsInBasket.Count}");
         }
     }
 
@@ -66,7 +68,8 @@ namespace UnitTests
         public void GuestCreationTest()
         {
             var guest = new Guest(1);
-            Assert.AreEqual(1, guest.Id);
+            Assert.AreEqual(1, guest.Id,
+            $"Expected guest id to be 1 but got {guest.Id}");
         }
     }
 }
