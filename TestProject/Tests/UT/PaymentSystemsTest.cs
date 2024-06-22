@@ -50,7 +50,8 @@ namespace UnitTests
         public void TestRequestRefundSuccess()
         {
             int transactionId = paymentSystem.Pay(paymentDetails, totalAmount);
-            Assert.AreEqual(1, paymentSystem.CancelPayment(transactionId));
+            Assert.AreEqual(1, paymentSystem.CancelPayment(transactionId),
+            $"Expected 1 but got {paymentSystem.CancelPayment(transactionId)}");
         }
 
         [TestMethod]
@@ -58,8 +59,10 @@ namespace UnitTests
         public void TestPaymentWithoutConnection()
         {
             paymentSystem.Disconnect();
-            Assert.AreEqual(-1, paymentSystem.Pay(paymentDetails, totalAmount));
-            Assert.AreEqual(-1, paymentSystem.CancelPayment(123));
+            Assert.AreEqual(-1, paymentSystem.Pay(paymentDetails, totalAmount),
+            $"Expected fail with -1 but got {paymentSystem.Pay(paymentDetails, totalAmount)}");
+            Assert.AreEqual(-1, paymentSystem.CancelPayment(123),
+            $"Expected fail with -1 but got {paymentSystem.CancelPayment(123)}");
             
         }
 
@@ -72,7 +75,8 @@ namespace UnitTests
             paymentSystem = new PaymentSystemProxy(mockPaymentSystem.Object);
             int transactionId = paymentSystem.Pay(paymentDetails, totalAmount);
 
-            Assert.AreEqual(-1, transactionId);
+            Assert.AreEqual(-1, transactionId,
+            $"Expected fail with -1 but got {transactionId}");
         }
 
         [TestMethod]
@@ -80,7 +84,8 @@ namespace UnitTests
         public void TestPaymentWithWrongTotalAmount()
         {
             totalAmount = -100.00;
-            Assert.AreEqual(-1, paymentSystem.Pay(paymentDetails, totalAmount));
+            Assert.AreEqual(-1, paymentSystem.Pay(paymentDetails, totalAmount),
+            $"Expected fail with -1 but got {paymentSystem.Pay(paymentDetails, totalAmount)}");
         }
     }
 }

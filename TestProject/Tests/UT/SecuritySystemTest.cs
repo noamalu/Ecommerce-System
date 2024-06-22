@@ -38,7 +38,8 @@ namespace UnitTests
         [TestMethod]
         public void TestAttemptExtractUserId() 
         {
-            Assert.AreEqual(mockUsername, _securityManager.ExtractUsername(mockToken));
+            Assert.AreEqual(mockUsername, _securityManager.ExtractUsername(mockToken),
+            $"Expected name to be {mockUsername} but got {_securityManager.ExtractUsername(mockToken)}");
         }
 
 
