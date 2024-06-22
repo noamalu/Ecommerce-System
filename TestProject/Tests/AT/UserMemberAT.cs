@@ -312,5 +312,66 @@ namespace MarketBackend.Tests.AT
             Assert.IsFalse(proxy.GetPurchaseHistory(shopID, token2), 
                 "Expected retrieving purchase history to fail due to lack of permission.");
         }
+
+        [TestMethod]
+        public void RunMultyTimes()
+        {
+            for (int i=0; i<5; i++){
+                LogOutSuccess();
+                CleanUp();
+                Setup();
+                LogOutFail_NotLoggedIn();
+                CleanUp();
+                Setup();
+                CreateShopSuccess();
+                CleanUp();
+                Setup();
+                CreateShopFail_NotLoggedIn();
+                CleanUp();
+                Setup();
+                GetInfoSuccess();
+                CleanUp();
+                Setup();
+                AddToCartSuccess();
+                CleanUp();
+                Setup();
+                AddToCartFail_NoProduct();
+                CleanUp();
+                Setup();
+                RemoveFromCartSuccess();
+                CleanUp();
+                Setup();
+                RemoveFromCartFail_NoProduct();
+                CleanUp();
+                Setup();
+                PurchaseCartSuccess();
+                CleanUp();
+                Setup();
+                PurchaseCartFail_NoProduct();
+                CleanUp();
+                Setup();
+                PurchaseCartFail_EmptyCart();
+                CleanUp();
+                Setup();
+                PurchaseCartFail_IlegalAge();
+                CleanUp();
+                Setup();
+                PurchaseCartFail_IlegalAge();
+                CleanUp();
+                Setup();
+                PurchaseCartFail_Payment();
+                CleanUp();
+                Setup();
+                PurchaseCartFail_Shipping();
+                CleanUp();
+                Setup();
+                GetPurchaseHistorySuccess_Permission();
+                CleanUp();
+                Setup();
+                GetPurchaseHistoryFail_Permission();
+                CleanUp();
+                Setup();
+            }
+        }
     }
 }

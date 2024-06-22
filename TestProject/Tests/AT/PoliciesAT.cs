@@ -129,5 +129,30 @@ namespace MarketBackend.Tests.AT
             Assert.AreEqual(0, proxy.GetStoreRules(1, token1).Count, 
                 $"Expected 0 rules in the store, but found {proxy.GetStoreRules(1, token1).Count}.");
         }
+
+        [TestMethod]
+        public void RunMultyTimes()
+        {
+            for (int i = 0; i< 5; i++){
+                AddSimpleRuleStoreName_Success();
+                CleanUp();
+                Setup();
+                AddSimpleRuleStoreName_FailNoStoreOrProductName();
+                CleanUp();
+                Setup();
+                AddQuantityRuleProduct_Success();
+                CleanUp();
+                Setup();
+                AddQuantityRuleProduct_FailNegativeQuantity();
+                CleanUp();
+                Setup();
+                AddTotalPriceRuleProduct_Success();
+                CleanUp();
+                Setup();
+                AddTotalPriceRuleProduct_FailNegativePrice();
+                CleanUp();
+                Setup();
+            }
+        }
     }
 }

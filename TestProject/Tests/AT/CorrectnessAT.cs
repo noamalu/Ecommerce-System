@@ -80,5 +80,18 @@ namespace MarketBackend.Tests.AT
             Assert.IsFalse(proxy.Register(userName, userPassword, email1, userAge), 
             "Fail in regiter, should throw exception- not unique username.");
         }
+
+        [TestMethod]
+        public void RunMultyTimes()
+        {
+            for (int i = 0; i < 5; i ++){
+                UniqueUsername_GoodCase();
+                CleanUp();
+                Setup();
+                UniqueUsername_BadCase();
+                CleanUp();
+                Setup();
+            }
+        }
     }
 }
