@@ -48,10 +48,8 @@ namespace MarketBackend.Domain.Market_Client
             StoreRepositoryRAM.Dispose();
             BasketRepositoryRAM.Dispose();
             ClientRepositoryRAM.Dispose();
-            PaymentDetailsRepositoryRAM.Dispose();
             ProductRepositoryRAM.Dispose();
             RoleRepositoryRAM.Dispose();
-            ShippingDetailsRepositoryRAM.Dispose();
             StoreRepositoryRAM.Dispose();
             ClientManager.Dispose();
             PurchaseRepositoryRAM.Dispose();
