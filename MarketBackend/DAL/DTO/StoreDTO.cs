@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using MarketBackend.Domain.Models;
 using MarketBackend.Domain.Market_Client;
 
-namespace MarketBackend.DAL
+namespace MarketBackend.DAL.DTO
 {
   
     [Table("Stores")]
