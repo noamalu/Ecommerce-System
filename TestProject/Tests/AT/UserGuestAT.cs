@@ -131,5 +131,42 @@ namespace MarketBackend.Tests.AT
             Assert.IsFalse(proxy.LogOut(session1), 
                 "Expected logout to fail for user not logged in.");
         }
+
+        [TestMethod]
+        public void RunMultyTimes()
+        {
+            for (int i=0; i<5; i++){
+                EnterAsGuestSuccess();
+                CleanUp();
+                Setup();
+                RegisterSuccess();
+                CleanUp();
+                Setup();
+                RegisterFail_RegisterTwice();
+                CleanUp();
+                Setup();
+                RegisterFail_WrongEmail();
+                CleanUp();
+                Setup();
+                LoginSuccess();
+                CleanUp();
+                Setup();
+                LoginFail_NotRegister();
+                CleanUp();
+                Setup();
+                LoginFail_WrongUserName();
+                CleanUp();
+                Setup();
+                LoginFail_WrongPassword();
+                CleanUp();
+                Setup();
+                LogOutSuccess();
+                CleanUp();
+                Setup();
+                LogOutFail_NotLoggedIn();
+                CleanUp();
+                Setup();
+            }
+        }
     }
 }

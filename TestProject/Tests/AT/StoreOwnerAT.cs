@@ -183,5 +183,47 @@ namespace MarketBackend.Tests.AT
             Assert.AreEqual(0, proxy.GetOwners(shopID).Count, 
                 $"Expected owner count to be 0, but found {proxy.GetOwners(shopID).Count}.");
         }
+
+        [TestMethod]
+        public void RunMultyTimes(){
+            for (int i=0; i<5; i++){
+                AddProductSuccess();
+                CleanUp();
+                Setup();
+                RemoveProductSuccess();
+                CleanUp();
+                Setup();
+                RemoveProductFail_NoProduct();
+                CleanUp();
+                Setup();
+                UpdateProductPriceSuccess();
+                CleanUp();
+                Setup();
+                UpdateProductPriceFail_NegativePrice();
+                CleanUp();
+                Setup();
+                UpdateProductPriceFail_NoProduct();
+                CleanUp();
+                Setup();
+                UpdateProductQuantitySuccess();
+                CleanUp();
+                Setup();
+                UpdateProductQuantityFail_NegativeQuantity();
+                CleanUp();
+                Setup();
+                UpdateProductQuantityFail_NoProduct();
+                CleanUp();
+                Setup();
+                GetPurchaseHistorySuccess();
+                CleanUp();
+                Setup();
+                AddStaffMemberSuccess();
+                CleanUp();
+                Setup();
+                RemoveStaffMemberSuccess();
+                CleanUp();
+                Setup();
+            }
+        }
     }
 }

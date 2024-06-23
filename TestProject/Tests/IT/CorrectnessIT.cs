@@ -256,5 +256,24 @@ namespace MarketBackend.Tests.IT
             Assert.AreEqual(1, exceptionCount, "Exactly one thread should throw an exception.");
             Assert.IsTrue(store.roles.ContainsKey(userName), "Expected the new manager to be added to the store roles.");
         }
+
+        [TestMethod]
+        public void RunMultyTimes()
+        {
+            for (int i=0; i<5; i++){
+                TestConcurrentShopManager();
+                Cleanup();
+                Setup();
+                TwoClientsByLastProductTogether();
+                Cleanup();
+                Setup();
+                RemoveProductAndPurchaseProductTogether();
+                Cleanup();
+                Setup();
+                TwoStoreOwnerAppointThirdToManagerTogether();
+                Cleanup();
+                Setup();
+            }
+        }
     }
 }

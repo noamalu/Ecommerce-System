@@ -175,5 +175,39 @@ namespace MarketBackend.Tests.IT
             Member client = clientManager.GetMemberByIdentifier(token1);
             Assert.IsTrue(client.alerts.Count == 0, "Expected no notifications after purchase when offline notifications are disabled.");
         }
+
+        [TestMethod]
+        public void RunMultyTimes()
+        {
+            for (int i=0; i<5; i++){
+                AddProductToShop();
+                Cleanup();
+                Setup();
+                RemoveProductFromShop();
+                Cleanup();
+                Setup();
+                AddProductToBasket();
+                Cleanup();
+                Setup();
+                RemoveProductFromBasket();
+                Cleanup();
+                Setup();
+                AddProductToBasketAndLogout();
+                Cleanup();
+                Setup();
+                PurchaseCartFail_Payment_OrderCancel();
+                Cleanup();
+                Setup();
+                PurchaseCartFail_Shipping_OrderCancel();
+                Cleanup();
+                Setup();
+                Offline_Notifications_Success();
+                Cleanup();
+                Setup();
+                Offline_Notifications_Fail_NotOffline();
+                Cleanup();
+                Setup();
+            }
+        }
     }
 }
