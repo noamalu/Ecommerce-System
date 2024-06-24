@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using MarketBackend.Domain.Models;
+using MarketBackend.DAL.DTO;
 
 
 
@@ -62,6 +63,45 @@ namespace MarketBackend.Domain.Market_Client
             _storeRuleFactory = new StoreRuleFactory(_storeId);
 
         }
+
+
+         public Store(StoreDTO storeDTO)
+        {
+            _storeId = storeDTO.Id;
+            _storeName = storeDTO.Name;
+            _active = storeDTO.Active;
+            _products = new SynchronizedCollection<Product>();
+            roles = new ConcurrentDictionary<string, Role>();
+            _rules = new ConcurrentDictionary<int, IRule>();
+            _discountPolicyManager = new DiscountPolicyManager(storeDTO.Id);
+            _purchasePolicyManager = new PurchasePolicyManager(storeDTO.Id);
+            _rules = new ConcurrentDictionary<int, IRule>();
+            _raiting = storeDTO.Rating;
+            _lock = new object();
+            
+        }
+        public void Initialize(StoreDTO storeDTO)
+        {
+            //List<AppointmentDTO> appDtos = MarketContext.GetInstance().Appointments.Where((app) => app.ShopId == _id).ToList();
+            _products = ProductRepositoryRAM.GetInstance().GetShopProducts(_storeId);
+            _history = new History(_storeId);
+            _rules = RuleRepositoryRAM.GetInstance().GetShopRules(_storeId);
+            _eventManager = new EventManager(_storeId);
+            _purchaseIdCounter = 1;
+            _productIdCounter = 1;
+            _policyIdFactory = 1;
+            // foreach (AppointmentDTO appdto in appDtos)
+            //     _appointments.TryAdd(appdto.MemberId, AppointmentRepo.GetInstance()
+            //         .GetById(appdto.MemberId, appdto.ShopId));
+            if (_products.Count > 0)
+                _productIdCounter = storeDTO.Products.Max((p) => p.Id) + 1;
+            if (_history._purchases.Count > 0)
+                _purchaseIdCounter = storeDTO.History.Purchases.Max((p) => p.Id) + 1;
+            if (_discountPolicyManager.Policies.Count() > 0)
+                _policyIdFactory = storeDTO.Policies.Max((p) => p.Id) + 1;
+        }
+
+
 
          public int StoreId { get => _storeId; }
         public SynchronizedCollection<Product> Products { get => _products; set => _products = value; }

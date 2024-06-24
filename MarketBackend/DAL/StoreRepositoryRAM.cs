@@ -2,6 +2,7 @@ using MarketBackend.Domain.Models;
 using MarketBackend.Services.Interfaces;
 using MarketBackend.Domain.Market_Client;
 using System.Collections.Concurrent;
+using MarketBackend.DAL.DTO;
 
 namespace MarketBackend.DAL
 {
@@ -11,10 +12,12 @@ namespace MarketBackend.DAL
         private static StoreRepositoryRAM StoreRepository = null;
 
         public ConcurrentDictionary<int, Store> Stores { get => _stores; set => _stores = value; }
+        private object _lock ;
 
         private StoreRepositoryRAM()
         {
             _stores = new ConcurrentDictionary<int, Store>();
+            _lock = new object();
            
         }
         public static StoreRepositoryRAM GetInstance()
@@ -30,16 +33,42 @@ namespace MarketBackend.DAL
         public void Add(Store store)
         {
             _stores.TryAdd(store.StoreId, store);
+            DBcontext.GetInstance().Shops.Add(new StoreDTO(store));
+            DBcontext.GetInstance().SaveChanges();
         
         }
 
         public void Delete(Store store)
         {
+            
+        lock (_lock)
+            {
                 bool shopInDomain = _stores.TryRemove(store.StoreId, out _);
+                DBcontext context = DBcontext.GetInstance();
+                StoreDTO storeDTO = context.Stores.Find(store.StoreId);
+                if (shopInDomain)
+                {
+                    context.Shops.Remove(storeDTO);
+                    context.SaveChanges();
+                }
+                else if (storeDTO != null)
+                {
+                    context.Shops.Remove(storeDTO);
+                    context.SaveChanges();
+                }
+            }
         }
 
         public IEnumerable<Store> getAll()
         {
+            lock (_lock)
+            {
+                List<StoreDTO> storesList = DBcontext.GetInstance().Stores.ToList();
+                foreach (StoreDTO storeDTO in storesList)
+                {
+                    _stores.TryAdd(storeDTO.Id, new Store(storeDTO));
+                }
+            }
             
             return _stores.Values.ToList();
         }
@@ -51,13 +80,40 @@ namespace MarketBackend.DAL
                 return _stores[id];
             }
             else{
-                return null;
+                lock (_lock)
+                {
+                    StoreDTO storeDTO = DBcontext.GetInstance().Stores.Find(id);
+                    if (storeDTO != null)
+                    {
+                        Store store = new Store(storeDTO);
+                        _stores.TryAdd(id, store);
+                        store.Initialize(storeDTO);
+                        return store;
+                    }
+                    else
+                    {
+                        throw new Exception("Shop Id does not exist");
+                    }
+                }
             }
         }
 
         public void Update(Store store)
         {
-            _stores[store.StoreId] = store;
+             _stores[store._storeId] = store;
+            StoreDTO storeDTO = DBcontext.GetInstance().Stores.Find(store._storeId);
+            StoreDTO newStore = new StoreDTO(store);
+            if (storeDTO != null)
+            {
+                storeDTO.Active = newStore.Active;
+                storeDTO.Purchases = newStore.Purchases;
+                storeDTO.Products = newStore.Products;
+                storeDTO.Rules = newStore.Rules;
+                storeDTO.Name = newStore.Name;
+                storeDTO.Rating = newStore.Rating;
+            }
+            else DBcontext.GetInstance().Stores.Add(newStore);
+            DBcontext.GetInstance().SaveChanges();
         }
     }
 }
