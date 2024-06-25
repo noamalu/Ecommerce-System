@@ -1,5 +1,6 @@
 using System.Text;
 using MarketBackend.Domain.Models;
+using MarketBackend.DAL.DTO;
 namespace MarketBackend.Domain.Market_Client
 {
     public class Purchase{
@@ -21,6 +22,14 @@ namespace MarketBackend.Domain.Market_Client
             _identifier = identifierr;
             _basket = basket;
             _price = basketPrice;
+        }
+        public Purchase(PurchaseDTO purchaseDTO)
+        {
+            _purchaseId = purchaseDTO.Id;
+            _storeId = purchaseDTO.StoreId;
+            _identifier = purchaseDTO.Identifierr;
+            _basket = new Basket(purchaseDTO.Basket);
+            _price = purchaseDTO.Price;
         }
 
         public string GetInfo()

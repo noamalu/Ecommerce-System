@@ -96,7 +96,7 @@ namespace MarketBackend.Domain.Market_Client
             if (_products.Count > 0)
                 _productIdCounter = storeDTO.Products.Max((p) => p.Id) + 1;
             if (_history._purchases.Count > 0)
-                _purchaseIdCounter = storeDTO.History.Purchases.Max((p) => p.Id) + 1;
+                _purchaseIdCounter = storeDTO.Purchases.Max((p) => p.Id) + 1;
             if (_discountPolicyManager.Policies.Count() > 0)
                 _policyIdFactory = storeDTO.Policies.Max((p) => p.Id) + 1;
         }
