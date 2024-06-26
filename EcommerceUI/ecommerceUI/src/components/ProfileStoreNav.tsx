@@ -5,6 +5,7 @@ import { CreateStore } from './CreateStore';
 import ProfileStoreStuff from "./ProfileStoreStuff";
 import ProfileStoreInfo from "./ProfileStoreInfo";
 import ProfileStoreRules from "./ProfileStoreRules";
+import ProfileStorePurchasePolicy from "./ProfileStorePurchasePolicy";
 import {ProfileUpdateInventory} from "./ProfileUpdateInventory";
 import { getToken } from "../services/SessionService";
 
@@ -47,7 +48,7 @@ export const ProfileStoreNav = () => {
     const [stores, setStores] = useState<number[]>([]);
     const [num, setNum] = useState<number>(-1); // Initialize num to -1
     const [showCreateStoreModal, setShowCreateStoreModal] = useState(false);
-    const [view, setView] = useState<'ProfileStoreStuff' | 'ProfileStoreInfo'| 'ProfileUpdateInventory' | 'Policies'>('ProfileStoreInfo');
+    const [view, setView] = useState<'ProfileStoreStuff' | 'ProfileStoreInfo'| 'ProfileUpdateInventory' | 'Rules' | 'PPolicy' | 'DPolicy'>('ProfileStoreInfo');
     const [storeInfo, setStoreInfo] = useState<Store | null>(null);
     const mappedProducts: Product[] = [];
 
@@ -56,7 +57,7 @@ export const ProfileStoreNav = () => {
         window.location.reload();
 
     };
-    const handleViewChange = (newView: 'ProfileStoreStuff' | 'ProfileStoreInfo'| 'ProfileUpdateInventory' | 'Policies') => {
+    const handleViewChange = (newView: 'ProfileStoreStuff' | 'ProfileStoreInfo'| 'ProfileUpdateInventory' | 'Rules' | 'PPolicy' | 'DPolicy') => {
          setView(newView);
         // Fetch store info whenever the view changes
         if (num !== -1) {
@@ -127,7 +128,9 @@ export const ProfileStoreNav = () => {
                             <Dropdown.Item onClick={() => handleViewChange('ProfileStoreInfo')}>Store Info</Dropdown.Item>
                             <Dropdown.Item onClick={() => handleViewChange('ProfileStoreStuff')}>Store Permission</Dropdown.Item>
                             <Dropdown.Item onClick={() => handleViewChange('ProfileUpdateInventory')}>Update Inventory</Dropdown.Item>
-                            <Dropdown.Item onClick={() => handleViewChange('Policies')}>Policies</Dropdown.Item>
+                            <Dropdown.Item onClick={() => handleViewChange('Rules')}>Rules</Dropdown.Item>
+                            <Dropdown.Item onClick={() => handleViewChange('PPolicy')}>Purchase Policies</Dropdown.Item>
+                            <Dropdown.Item onClick={() => handleViewChange('DPolicy')}>Discount Policies</Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>
                 </Stack>
@@ -157,8 +160,14 @@ export const ProfileStoreNav = () => {
                  {view === 'ProfileUpdateInventory' && (
                     <ProfileUpdateInventory storeId={storeInfo.storeId} products={storeInfo.products} />
                 )}
-                {view === 'Policies' && (
+                {view === 'Rules' && (
                     <ProfileStoreRules storeId={storeInfo.storeId} />
+                )}
+                {view === 'PPolicy' && (
+                    <ProfileStorePurchasePolicy storeId={storeInfo.storeId} />
+                )}
+                {view === 'DPolicy' && (
+                    <ProfileStoreDiscountPolicy storeId={storeInfo.storeId} />
                 )}
             </>
         )}
