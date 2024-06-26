@@ -1,5 +1,9 @@
- namespace MarketBackend.Domain.Market_Client
-{
+using MarketBackend.DAL;
+using MarketBackend.DAL.DTO; 
+ 
+ 
+ 
+ namespace MarketBackend.Domain.Market_Client{
  public abstract class IPolicy
     {
         private int _id;
@@ -31,6 +35,31 @@
             _storeId = storeId;
         }
 
+        protected IPolicy(DiscountPolicyDTO discountPolicyDTO)
+        {
+            _id = discountPolicyDTO.Id;
+            _expirationDate = discountPolicyDTO.ExpirationDate;
+            _subject = new RuleSubject(discountPolicyDTO.PolicySubject);
+            _rule = RuleRepositoryRAM.GetInstance().GetById(discountPolicyDTO.RuleId);
+            if (_rule.Id == -1) _rule = null;
+            _storeId = DBContext.GetInstance().Stores
+                .Include(s => s.Rules)
+                .FirstOrDefault(s => s.Policies.Any(policy => policy.Id == policy.Id))
+                .Id;
+        }
+        protected IPolicy(PurchasePolicyDTO purchasePolicyDTO)
+        {
+            _id = purchasePolicyDTO.Id;
+            _expirationDate = purchasePolicyDTO.ExpirationDate;
+            _subject = new RuleSubject(purchasePolicyDTO.PolicySubject);
+            _rule = RuleRepositoryRAM.GetInstance().GetById(purchasePolicyDTO.RuleId);
+            _storeId = DBContext.GetInstance().Stores
+                .Include(s => s.Rules)
+                .FirstOrDefault(s => s.Policies.Any(policy => policy.Id == policy.Id))
+                .Id;
+        }
+
+
         public abstract void Apply(Basket basket);
         public abstract string GetInfo();
         public abstract bool IsValidForBasket(Basket basket);
@@ -39,6 +68,7 @@
             return _expirationDate < DateTime.Now;
         }
 
+        public abstract PolicyDTO CloneDTO();
 
     }
 }

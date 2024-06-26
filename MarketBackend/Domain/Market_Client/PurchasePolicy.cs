@@ -1,7 +1,12 @@
+using MarketBackend.DAL.DTO;
+
 namespace MarketBackend.Domain.Market_Client
 {
      public class PurchasePolicy : IPolicy{
         public PurchasePolicy(int id,int storeId, DateTime expirationDate, RuleSubject subject, IRule rule) : base(id,storeId, expirationDate, subject, rule)
+        {
+        }
+        public PurchasePolicy(PurchasePolicyDTO purchasePolicyDTO) : base(purchasePolicyDTO)
         {
         }
         public override void Apply(Basket basket)
@@ -20,6 +25,11 @@ namespace MarketBackend.Domain.Market_Client
         public override bool IsValidForBasket(Basket basket)
         {
             return Rule.Predicate(basket);
+        }
+
+        public override PurchasePolicyDTO CloneDTO()
+        {
+            return new PurchasePolicyDTO(this);
         }
     }
 
