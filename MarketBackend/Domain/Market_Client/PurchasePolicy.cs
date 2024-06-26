@@ -6,6 +6,9 @@ namespace MarketBackend.Domain.Market_Client
         public PurchasePolicy(int id,int storeId, DateTime expirationDate, RuleSubject subject, IRule rule) : base(id,storeId, expirationDate, subject, rule)
         {
         }
+        public PurchasePolicy(PurchasePolicyDTO purchasePolicyDTO) : base(purchasePolicyDTO)
+        {
+        }
         public override void Apply(Basket basket)
         {
             if (!IsExpired())

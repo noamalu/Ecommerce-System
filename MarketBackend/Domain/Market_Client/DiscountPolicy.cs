@@ -17,6 +17,11 @@ public class DiscountPolicy : IPolicy
         {
         }
 
+        public DiscountPolicy(DiscountPolicyDTO discountPolicyDTO):base(discountPolicyDTO)
+        {
+            _precentage = discountPolicyDTO.Precentage;
+        }
+
         
         public override void Apply(Basket basket)
         {
