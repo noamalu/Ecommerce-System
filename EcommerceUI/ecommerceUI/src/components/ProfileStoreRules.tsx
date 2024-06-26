@@ -65,7 +65,7 @@ export const ProfileStoreRules = ({storeId} : {storeId : any}) => {
                     <Modal.Title>Add Rule</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <CreateRule onClose={handleClose} onSuccess={handleSuccess} storeId={storeId}/>
+                    <CreateRule onClose={handleClose} onSuccess={handleSuccess} storeId={storeId} rules={rules}/>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>
