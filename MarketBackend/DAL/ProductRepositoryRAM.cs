@@ -33,7 +33,7 @@ namespace MarketBackend.DAL
 
         public void Add(Product item)
         {
-            _productById.TryAdd(item._productid, item);
+            _productById.TryAdd(item._productId, item);
             
         }
 
@@ -48,7 +48,7 @@ namespace MarketBackend.DAL
 
         public bool ContainsValue(Product item)
         {
-            if (_productById.ContainsKey(item._productid))
+            if (_productById.ContainsKey(item._productId))
             {
                 return true;
             }
@@ -57,7 +57,7 @@ namespace MarketBackend.DAL
 
         public void Delete(Product product)
         {
-            if (!_productById.TryRemove(new KeyValuePair<int, Product>(product._productid, product)))
+            if (!_productById.TryRemove(new KeyValuePair<int, Product>(product._productId, product)))
             {
                
             }

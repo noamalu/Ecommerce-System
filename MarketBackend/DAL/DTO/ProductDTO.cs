@@ -12,9 +12,6 @@ namespace Market.DataLayer.DTOs{
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int ProductId { get; set; }
-        [Required]
-        [ForeignKey("StoreDTO")]
-        public int StoreId { get; set; }
         public string Name { get; set; }
         public double Price { get; set; }
         public int Quantity { get; set; }
@@ -24,10 +21,9 @@ namespace Market.DataLayer.DTOs{
         public string SellMethod { get; set; }
         public double ProductRating { get; set; }
 
-        public ProductDTO(int id,int storeId, string name, double price, int quantity, string category, string description, string keywords, string sellMethod, double productRating)
+        public ProductDTO(int id, string name, double price, int quantity, string category, string description, string keywords, string sellMethod, double productRating)
         {
             ProductId = id;
-            StoreId = storeId;
             Name = name;
             Price = price;
             Quantity = quantity;
@@ -37,10 +33,9 @@ namespace Market.DataLayer.DTOs{
             SellMethod = sellMethod;
             ProductRating = productRating;
         }
-        public ProductDTO(int id, int storeId, string name, double price, int quantity, string category, string description, string keywords)
+        public ProductDTO(int id, string name, double price, int quantity, string category, string description, string keywords)
         {
             ProductId = id;
-            StoreId = storeId;
             Name = name;
             Price = price;
             Quantity = quantity;
@@ -53,7 +48,6 @@ namespace Market.DataLayer.DTOs{
         public ProductDTO() { }
         public ProductDTO(Product product) {
             ProductId = product.ProductId;
-            StoreId = product.StoreId;
             Name = product.Name;
             Price = product.Price;
             Quantity = product.Quantity;
