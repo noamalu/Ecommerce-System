@@ -50,7 +50,7 @@ namespace Market.DataLayer.DTOs{
             SellMethod = "RegularSell";
             ProductRating = 0;
         }
-
+        public ProductDTO() { }
         public ProductDTO(Product product) {
             ProductId = product.ProductId;
             StoreId = product.StoreId;
