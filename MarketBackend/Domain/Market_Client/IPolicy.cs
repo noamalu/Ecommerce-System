@@ -1,5 +1,8 @@
- namespace MarketBackend.Domain.Market_Client
-{
+ using MarketBackend.DAL.DTO; 
+ 
+ 
+ 
+ namespace MarketBackend.Domain.Market_Client{
  public abstract class IPolicy
     {
         private int _id;
@@ -39,6 +42,7 @@
             return _expirationDate < DateTime.Now;
         }
 
+        public abstract PolicyDTO CloneDTO();
 
     }
 }

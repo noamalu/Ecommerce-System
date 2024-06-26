@@ -1,3 +1,5 @@
+using MarketBackend.DAL.DTO;
+
 namespace MarketBackend.Domain.Market_Client
 {
 public class DiscountPolicy : IPolicy
@@ -88,6 +90,10 @@ public class DiscountPolicy : IPolicy
         private double CalculateDiscount(int quantity, double price)
         {
             return quantity * price * Precentage;
+        }
+        public override DiscountPolicyDTO CloneDTO()
+        {
+            return new DiscountPolicyDTO(this);
         }
     }
 }

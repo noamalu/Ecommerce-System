@@ -1,4 +1,5 @@
 using MarketBackend.DAL;
+using MarketBackend.DAL.DTO;
 namespace MarketBackend.Domain.Market_Client
 {
     
@@ -58,6 +59,10 @@ namespace MarketBackend.Domain.Market_Client
                 }
             }
             return (DiscountPolicy)Policies[bestDiscountIndex];
+        }
+        public override DiscountCompositePolicyDTO CloneDTO()
+        {
+            return new DiscountCompositePolicyDTO(this);
         }
 
     }
