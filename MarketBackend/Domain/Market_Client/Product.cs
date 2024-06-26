@@ -1,11 +1,13 @@
 using System.Collections.Concurrent;
 using System.Text;
+using Market.DataLayer.DTOs;
+using MarketBackend.DAL.DTO;
 
 namespace MarketBackend.Domain.Market_Client
 {
     public class Product
     {
-        public int _productid {get; set;}
+        public int _productId {get; set;}
         public int _storeId {get; set;}
         public string _name {get; set;}
         public double _price {get; set;}
@@ -18,7 +20,7 @@ namespace MarketBackend.Domain.Market_Client
         public bool _ageLimit {get; set;}
 
 
-        public int ProductId { get => _productid; }
+        public int ProductId { get => _productId; }
         public int StoreId { get => _storeId; }
         public string Name { get => _name; set => _name = value; }
         public double Price { get => _price; set => _price = value; }
@@ -33,7 +35,7 @@ namespace MarketBackend.Domain.Market_Client
 
         public Product(int id, int shopId, string name,string sellMethod, string description, double price, string category, int quantity,bool ageLimit)
         {
-            _productid = id;
+            _productId = id;
             _storeId = shopId;
             _name = name;
             _description = description;
@@ -44,6 +46,34 @@ namespace MarketBackend.Domain.Market_Client
             _sellMethod = SellMethodFactory.createSellMethod(sellMethod);
             _productRating = 0;
             _ageLimit = ageLimit;
+        }
+
+        public Product(ProductDTO pdto)
+        {
+
+            _productId = pdto.ProductId;
+            _description = pdto.Description;
+            _name = pdto.Name;
+            _price = pdto.Price;
+            _quantity = pdto.Quantity;
+            _category = pdto.Category;
+            _keywords = [.. pdto.Keywords.Split(" ,")];
+            _productRating = pdto.ProductRating;
+            DBContext context = DBContext.GetInstance();
+            List<StoreDTO> stores = context.Stores.AsNoTracking().Where(
+                (s) => s.Products.Where((p) => p.Id == _productId).Count() > 0).ToList();
+            if (pdto.ProductId == -1)
+                _storeId = -1;
+            else if (stores.Count() > 0)
+            {
+                _storeId = stores.First().Id;
+            }
+            else throw new Exception("Could not find shop that has this product");
+            if (pdto.SellMethod == "BidSell")
+            {
+                _sellMethod = new BidSell();
+            }
+            else _sellMethod = new RegularSell();
         }
 
 
@@ -69,7 +99,7 @@ namespace MarketBackend.Domain.Market_Client
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("---------------------------");
-            sb.AppendLine(string.Format("Product ID: %d", _productid));
+            sb.AppendLine(string.Format("Product ID: %d", _productId));
             sb.AppendLine(string.Format("Shop ID: %d", _storeId));
             sb.AppendLine(string.Format("Product Description: %s", _description));
             sb.AppendLine(string.Format("Quantity in stock: %d", _quantity));

@@ -124,7 +124,7 @@ namespace MarketBackend.Domain.Market_Client
         {
         lock (_lock)
             {
-            return _products.ToList().Find((p) => p._productid == productId);
+            return _products.ToList().Find((p) => p._productId == productId);
             }
         }
 
@@ -352,7 +352,7 @@ namespace MarketBackend.Domain.Market_Client
         {
             if (_products.Contains(product))
                 return quantity <= product.Quantity;
-            throw new Exception($"Product Name: \'{product.Name}\' Id: {product._productid} not exist in shop.");
+            throw new Exception($"Product Name: \'{product.Name}\' Id: {product._productId} not exist in shop.");
         }
 
         private void RemoveBasketProductsFromSupply(Basket basket)
