@@ -5,7 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import DatePicker from 'react-datepicker';
 
 
-export const CreatePurchasePolicy = ({ onClose, onSuccess, storeId }: { onClose: any, onSuccess: any, storeId: any }) => {
+export const CreateDiscountPolicy = ({ onClose, onSuccess, storeId }: { onClose: any, onSuccess: any, storeId: any }) => {
     const [rules, setRules] = useState<any[]>([]);
     
     const [ruleString, setRuleString] = useState('');
@@ -14,6 +14,7 @@ export const CreatePurchasePolicy = ({ onClose, onSuccess, storeId }: { onClose:
         "subjectInfo": ""
       });
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+    const [percentage, setPercentage] = useState(0);
 
     useEffect(() => {
         const fetchRulesList = async () => {
@@ -37,12 +38,12 @@ export const CreatePurchasePolicy = ({ onClose, onSuccess, storeId }: { onClose:
     }, []); 
 
     const addPolicy = async () => {
-        const response = await fetch(`https://localhost:7163/api/Market/Store/${storeId}/Policies/Purchace?identifier=${getToken()}`, {
+        const response = await fetch(`https://localhost:7163/api/Market/Store/${storeId}/Policies/Discount?identifier=${getToken()}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({expirationDate: selectedDate, subject: rule.subjectInfo, ruleId: rule.id})
+            body: JSON.stringify({expirationDate: selectedDate, subject: rule.subjectInfo, ruleId: rule.id, percentage: percentage})
         })
         if (response.ok) {
             alert('Policy added successfully');
@@ -57,7 +58,9 @@ export const CreatePurchasePolicy = ({ onClose, onSuccess, storeId }: { onClose:
                 
         return (
             <Form>
-                <Form.Group as={Col} controlId="">
+                <Row className="mb-3">
+                    <Col>
+                <Form.Group as={Col}>
                         <Form.Label>Rule</Form.Label>
                         <Form.Select name="ruleType" value={ruleString} onChange={(e) => {
                                 const [id, subjectInfo] = e.target.value.split(',');
@@ -69,15 +72,30 @@ export const CreatePurchasePolicy = ({ onClose, onSuccess, storeId }: { onClose:
                     ))}
                         </Form.Select>
                     </Form.Group>
-
+                    </Col>
+                    <Col>
                     <Form.Group>
-                        <Form.Label>Select Date</Form.Label>
+                        <Form.Label>Percentage</Form.Label>
+                        <Form.Control
+                            type="number"
+                            value={percentage}
+                            onChange={(e) => setPercentage(parseInt(e.target.value))}
+                            className="form-control"
+                        />
+                    </Form.Group>
+                    </Col>
+                    </Row>
+                    <Row className="mb-3">
+                    <Form.Group>
+                        <Form.Label>Select Date </Form.Label>
                         <DatePicker
                             selected={selectedDate}
                             onChange={(date) => setSelectedDate(date)}
                             className="form-control"
                         />
                     </Form.Group>
+                    </Row>
+                    
                 
                 <Button variant="primary" type="button" onClick={addPolicy}>
                     Add Policy

@@ -6,6 +6,7 @@ import ProfileStoreStuff from "./ProfileStoreStuff";
 import ProfileStoreInfo from "./ProfileStoreInfo";
 import ProfileStoreRules from "./ProfileStoreRules";
 import ProfileStorePurchasePolicy from "./ProfileStorePurchasePolicy";
+import ProfileStoreDiscountPolicy from "./ProfileStoreDiscountPolicy";
 import {ProfileUpdateInventory} from "./ProfileUpdateInventory";
 import { getToken } from "../services/SessionService";
 

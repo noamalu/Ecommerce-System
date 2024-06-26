@@ -2,11 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Table, Dropdown, Form, Stack, Button, Card, Row, Col, Container, Modal } from 'react-bootstrap';
 import { getToken } from '../services/SessionService';
 import { RiSave2Fill,  RiDeleteBin2Fill, RiAddBoxFill} from 'react-icons/ri'; // Importing the shopping cart icon
-import { CreateRule } from './CreateRule';
-import { CreatePurchasePolicy } from './CreatePurchasePolicy';
+import { CreateDiscountPolicy } from './CreateDiscountPolicy';
 
-
-export const ProfileStorePurchasePolicy = ({storeId} : {storeId : any}) => {
+//sorry for the duplicated code between the policy types.
+export const ProfileStoreDiscountPolicy = ({storeId} : {storeId : any}) => {
     const [policies, setPolicies] = useState<any[]>([]);
     const [showAddPolicyModal, setShowAddPolicyModal] = useState(false);
 
@@ -20,7 +19,7 @@ export const ProfileStorePurchasePolicy = ({storeId} : {storeId : any}) => {
         const fetchPolicies = async () => {
 
             try {
-                const response = await fetch(`https://localhost:7163/api/Market/Store/${storeId}/Policies/Purchace?identifier=${getToken()}`, {
+                const response = await fetch(`https://localhost:7163/api/Market/Store/${storeId}/Policies/Discount?identifier=${getToken()}`, {
                     method: 'GET'
                 });
                 const data = await response.json();
@@ -38,7 +37,7 @@ export const ProfileStorePurchasePolicy = ({storeId} : {storeId : any}) => {
     }, []); 
 
     const deletePolicy = async (policyId : any, storeId : any) => {
-        const response = await fetch(`https://localhost:7163/api/Market/Store/${storeId}/Policies/Purchace?identifier=${getToken()}&policyId=${policyId}&storeId=${storeId}`, {
+        const response = await fetch(`https://localhost:7163/api/Market/Store/${storeId}/Policies/Discount?identifier=${getToken()}&policyId=${policyId}&storeId=${storeId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -57,11 +56,12 @@ export const ProfileStorePurchasePolicy = ({storeId} : {storeId : any}) => {
     return (
         <>
         <Container className="my-3">
-            <h2>Store Purchase Policies</h2>
+            <h2>Store Discount Policies</h2>
             <Table striped bordered hover className="my-3">
                 <thead>
                     <tr>
                         <th>Policy ID</th>
+                        <th>Percentage</th>
                         <th>Expiration Date</th>
                         <th>Rule ID</th>
                         <th>Rule Subject</th>
@@ -72,6 +72,7 @@ export const ProfileStorePurchasePolicy = ({storeId} : {storeId : any}) => {
                     {policies.map((policy) => (
                         <tr>
                             <td>{policy.id}</td>
+                            <td>{policy.precentage}%</td>
                             <td>{policy.expirationDate}</td>
                             <td>{policy.rule.id}</td>
                             <td>{policy.rule.subjectInfo}</td>
@@ -86,10 +87,10 @@ export const ProfileStorePurchasePolicy = ({storeId} : {storeId : any}) => {
 
             <Modal show={showAddPolicyModal} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Add Purchase Policy</Modal.Title>
+                    <Modal.Title>Add Discount Policy</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <CreatePurchasePolicy onClose={handleClose} onSuccess={handleSuccess} storeId={storeId}/>
+                    <CreateDiscountPolicy onClose={handleClose} onSuccess={handleSuccess} storeId={storeId}/>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>
@@ -103,4 +104,4 @@ export const ProfileStorePurchasePolicy = ({storeId} : {storeId : any}) => {
     );
 };
 
-export default ProfileStorePurchasePolicy;
+export default ProfileStoreDiscountPolicy;
