@@ -373,5 +373,15 @@ namespace MarketBackend.Tests.AT
                 Setup();
             }
         }
+
+        // [TestMethod]
+        // public void SearchByKeyWords(){
+        //    int shopID = 1;
+        //    Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum));
+        //    Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false));
+        //    Assert.IsTrue(proxy.AddKeyWord(token1, "nice", shopID, 11));
+        //    Assert.IsTrue(proxy.SearchByKeywords("nice"));
+        //    Assert.AreEqual(1, proxy.SearchByKey("nice").Count);
+        // }
     }
 }
