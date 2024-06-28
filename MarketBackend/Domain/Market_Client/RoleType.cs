@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
+using MarketBackend.DAL.DTO;
 
 namespace MarketBackend.Domain.Market_Client
 {
@@ -84,7 +85,5 @@ namespace MarketBackend.Domain.Market_Client
             }
             return null;  // or throw an exception if appropriate
         }
-
-        
     }
 }

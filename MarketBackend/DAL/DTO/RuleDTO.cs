@@ -31,5 +31,4 @@ namespace MarketBackend.DAL.DTO
             Subject = new RuleSubjectDTO(rule.Subject);
         }
     }
-    }
 }

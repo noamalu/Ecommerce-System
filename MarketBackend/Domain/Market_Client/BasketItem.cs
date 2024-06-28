@@ -23,12 +23,12 @@ namespace MarketBackend.Domain.Market_Client{
             _quantity = quantity;
         }
 
-        public BasketItem(PurchasedItemDTO purchasedItemDTO)
-        {
-            _product = ProductRepositoryRAM.GetInstance().GetById(purchasedItemDTO.ProductId);
-            _priceAfterDiscount = purchasedItemDTO.PriceAfterDiscount;
-            _quantity = purchasedItemDTO.Quantity;
-        }
+        // public BasketItem(PurchasedItemDTO purchasedItemDTO)
+        // {
+        //     _product = ProductRepositoryRAM.GetInstance().GetById(purchasedItemDTO.ProductId);
+        //     _priceAfterDiscount = purchasedItemDTO.PriceAfterDiscount;
+        //     _quantity = purchasedItemDTO.Quantity;
+        // }
 
         public BasketItem(BasketItemDTO basketItemDTO)
         {

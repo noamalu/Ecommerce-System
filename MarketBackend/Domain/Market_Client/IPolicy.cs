@@ -1,9 +1,10 @@
 using MarketBackend.DAL;
-using MarketBackend.DAL.DTO; 
- 
- 
- 
- namespace MarketBackend.Domain.Market_Client{
+using MarketBackend.DAL.DTO;
+using Microsoft.EntityFrameworkCore;
+
+
+
+namespace MarketBackend.Domain.Market_Client{
  public abstract class IPolicy
     {
         private int _id;
@@ -42,7 +43,7 @@ using MarketBackend.DAL.DTO;
             _subject = new RuleSubject(discountPolicyDTO.PolicySubject);
             _rule = RuleRepositoryRAM.GetInstance().GetById(discountPolicyDTO.RuleId);
             if (_rule.Id == -1) _rule = null;
-            _storeId = DBContext.GetInstance().Stores
+            _storeId = DBcontext.GetInstance().Stores
                 .Include(s => s.Rules)
                 .FirstOrDefault(s => s.Policies.Any(policy => policy.Id == policy.Id))
                 .Id;
@@ -53,7 +54,7 @@ using MarketBackend.DAL.DTO;
             _expirationDate = purchasePolicyDTO.ExpirationDate;
             _subject = new RuleSubject(purchasePolicyDTO.PolicySubject);
             _rule = RuleRepositoryRAM.GetInstance().GetById(purchasePolicyDTO.RuleId);
-            _storeId = DBContext.GetInstance().Stores
+            _storeId = DBcontext.GetInstance().Stores
                 .Include(s => s.Rules)
                 .FirstOrDefault(s => s.Policies.Any(policy => policy.Id == policy.Id))
                 .Id;

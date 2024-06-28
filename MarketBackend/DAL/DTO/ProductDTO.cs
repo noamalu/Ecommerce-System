@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using MarketBackend.Domain.Market_Client;
-namespace Market.DataLayer.DTOs{
+namespace MarketBackend.DAL.DTO{
     [Table("Products")]
     public class ProductDTO
     {

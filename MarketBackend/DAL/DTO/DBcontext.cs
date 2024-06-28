@@ -8,13 +8,13 @@ namespace MarketBackend.DAL.DTO
 {
     public class DBcontext : DbContext
     {
-        private static DbContext _instance = null;
+        private static DBcontext _instance = null;
         public static string DbPath;
         public static string DbPathRemote;
         public static string DbPathLocal;
         public static bool LocalMode = true;
 
-        public virtual DbSet<ClientDTO> Clients { get; set; }
+        public virtual DbSet<MemberDTO> Clients { get; set; }
         public virtual DbSet<StoreDTO> Stores { get; set; }
         public virtual DbSet<RoleDTO> Roles { get; set; }
         public virtual DbSet<ShoppingCartDTO> ShoppingCarts { get; set; }
@@ -22,6 +22,7 @@ namespace MarketBackend.DAL.DTO
         public virtual DbSet<BasketItemDTO> BasketItems { get; set; }
         public virtual DbSet<ProductDTO> Products { get; set; }
         public virtual DbSet<PurchaseDTO> Purchases { get; set; }
+        public virtual DbSet<EventDTO> Events { get; set; }
 
         public override void Dispose()
         {
@@ -39,7 +40,7 @@ namespace MarketBackend.DAL.DTO
 
         private static object _lock = new object();
 
-        public static DbContext GetInstance()
+        public static DBcontext GetInstance()
         {
             if (_instance == null)
             {

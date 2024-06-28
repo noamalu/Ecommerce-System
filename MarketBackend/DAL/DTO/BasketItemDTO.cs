@@ -26,7 +26,7 @@ namespace MarketBackend.DAL.DTO{
         }
         public BasketItemDTO() { }
         public BasketItemDTO(BasketItem item) {
-            Product = DBContext.GetInstance().Products.Find(item.Product.ProductId);
+            Product = DBcontext.GetInstance().Products.Find(item.Product.ProductId);
             PriceBeforeDiscount = item.Product.Price;
             PriceAfterDiscount = item.PriceAfterDiscount;
             Quantity = item.Quantity;

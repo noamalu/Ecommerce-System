@@ -94,7 +94,7 @@ namespace MarketBackend.Domain.Market_Client
             //     _appointments.TryAdd(appdto.MemberId, AppointmentRepo.GetInstance()
             //         .GetById(appdto.MemberId, appdto.ShopId));
             if (_products.Count > 0)
-                _productIdCounter = storeDTO.Products.Max((p) => p.Id) + 1;
+                _productIdCounter = storeDTO.Products.Max((p) => p.ProductId) + 1;
             if (_history._purchases.Count > 0)
                 _purchaseIdCounter = storeDTO.Purchases.Max((p) => p.Id) + 1;
             if (_discountPolicyManager.Policies.Count() > 0)
