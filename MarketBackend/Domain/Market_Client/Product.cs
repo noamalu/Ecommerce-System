@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Text;
 using MarketBackend.DAL.DTO;
+using Microsoft.EntityFrameworkCore;
 
 namespace MarketBackend.Domain.Market_Client
 {
@@ -60,7 +61,7 @@ namespace MarketBackend.Domain.Market_Client
             _productRating = pdto.ProductRating;
             DBcontext context = DBcontext.GetInstance();
             List<StoreDTO> stores = context.Stores.AsNoTracking().Where(
-                (s) => s.Products.Where((p) => p.Id == _productId).Count() > 0).ToList();
+                (s) => s.Products.Where((p) => p.ProductId == _productId).Count() > 0).ToList();
             if (pdto.ProductId == -1)
                 _storeId = -1;
             else if (stores.Count() > 0)

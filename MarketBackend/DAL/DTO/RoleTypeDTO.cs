@@ -34,6 +34,11 @@ namespace MarketBackend.DAL.DTO
                 permissions.Add(permission.ToString());
         }
 
+        // todo: olga check
+        public RoleTypeDTO(RoleType role)
+        {
+        }
+
         public static RoleType ConvertToRoleType(RoleTypeDTO roleDto)
         {
             RoleType roleType = RoleType.GetRoleTypeFromDescription(roleDto.roleName);

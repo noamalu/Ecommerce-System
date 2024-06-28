@@ -1,3 +1,5 @@
+using MarketBackend.DAL.DTO;
+
 namespace MarketBackend.Domain.Market_Client{
     public abstract class IRule{
         private int _id;
@@ -22,5 +24,10 @@ namespace MarketBackend.Domain.Market_Client{
         public abstract string GetInfo();
         public abstract bool Predicate(Basket basket);
         public abstract void Update();
+
+        internal RuleDTO CloneDTO()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
