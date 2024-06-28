@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MarketBackend.DAL.DTO
 {
-    [Table("Baskets")]
+    [Table("Roles")]
     public class RoleDTO
     {
         [Key]
