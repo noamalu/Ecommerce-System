@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using System.Text;
-using Market.DataLayer.DTOs;
 using MarketBackend.DAL.DTO;
 
 namespace MarketBackend.Domain.Market_Client
@@ -59,7 +58,7 @@ namespace MarketBackend.Domain.Market_Client
             _category = pdto.Category;
             _keywords = [.. pdto.Keywords.Split(" ,")];
             _productRating = pdto.ProductRating;
-            DBContext context = DBContext.GetInstance();
+            DBcontext context = DBcontext.GetInstance();
             List<StoreDTO> stores = context.Stores.AsNoTracking().Where(
                 (s) => s.Products.Where((p) => p.Id == _productId).Count() > 0).ToList();
             if (pdto.ProductId == -1)

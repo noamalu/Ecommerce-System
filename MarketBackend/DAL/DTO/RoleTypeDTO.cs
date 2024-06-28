@@ -33,5 +33,35 @@ namespace MarketBackend.DAL.DTO
             foreach (Permission permission in roleType.getPermissions())
                 permissions.Add(permission.ToString());
         }
+
+        public static RoleType ConvertToRoleType(RoleTypeDTO roleDto)
+        {
+            RoleType roleType = RoleType.GetRoleTypeFromDescription(roleDto.roleName);
+            if (roleType == null)
+            {
+                throw new ArgumentException("Invalid role name.");
+            }
+
+            // Clear existing permissions if any (considering the logic here depends on your specific implementation)
+            foreach (var perm in roleType.getPermissions().ToList())
+            {
+                roleType.removePermission(perm);
+            }
+
+            // Add permissions from DTO
+            foreach (string permString in roleDto.permissions)
+            {
+                if (Enum.TryParse<Permission>(permString, out Permission perm))
+                {
+                    roleType.addPermission(perm);
+                }
+                else
+                {
+                    throw new ArgumentException($"Invalid permission: {permString}");
+                }
+            }
+
+            return roleType;
+        }
     }
 }

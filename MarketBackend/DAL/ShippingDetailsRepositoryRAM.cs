@@ -7,7 +7,7 @@ using MarketBackend.Services.Interfaces;
 
 namespace MarketBackend.DAL
 {
-    public class ShippingDetailsRepositoryRAM : IShippingDetailsRepository
+    public class ShippingDetailsRepositoryRAM
     {
         // Using a Tuple<int, string, string> as the composite key (ShippingID, Address, Name)
         private readonly ConcurrentDictionary<Tuple<int, string, string>, ShippingDetails> _shipments;

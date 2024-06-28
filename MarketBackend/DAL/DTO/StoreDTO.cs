@@ -6,7 +6,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using MarketBackend.Domain.Models;
 using MarketBackend.Domain.Market_Client;
-using Market.DataLayer.DTOs;
 
 namespace MarketBackend.DAL.DTO
 {
