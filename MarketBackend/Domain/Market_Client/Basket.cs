@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MarketBackend.DAL;
+using MarketBackend.DAL.DTO;
 using MarketBackend.Services.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 
@@ -17,12 +18,19 @@ namespace MarketBackend.Domain.Market_Client
         private SynchronizedCollection<BasketItem> _basketItems;
         public SynchronizedCollection<BasketItem> BasketItems { get => _basketItems; set => _basketItems = value; }
 
-
         public Basket(int basketId, int storeId){
             _basketId = basketId; 
             _storeId = storeId;
             products = new Dictionary<int, int>();
             _basketItems = new SynchronizedCollection<BasketItem>();
+        }
+
+        public Basket(BasketDTO other)
+        {
+            _basketId = other._basketId;
+            _storeId = other._storeId;
+            products = other.products;
+            _basketItems = new(other.BasketItems);            
         }
 
         public void addToBasket(int productId, int quantity){
