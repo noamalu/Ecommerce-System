@@ -45,7 +45,7 @@ namespace MarketBackend.DAL.DTO
             else
             {
                 //need to check nofar
-                dummyProductDTO = new ProductDTO(-1, "null", 1, 1, "None", "", "", new List<ReviewDTO>(), "RegularSell", new List<BidDTO>());
+                dummyProductDTO = new ProductDTO(-1, "null", 1, 1, "None", "","", "RegularSell", 0);
                 DBcontext.GetInstance().Products.Add(dummyProductDTO);
                 DBcontext.GetInstance().SaveChanges();
                 return dummyProductDTO;

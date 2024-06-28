@@ -17,6 +17,8 @@ namespace MarketBackend.DAL.DTO
         public virtual DbSet<MemberDTO> Clients { get; set; }
         public virtual DbSet<StoreDTO> Stores { get; set; }
         public virtual DbSet<RoleDTO> Roles { get; set; }
+
+        public virtual DbSet<RuleDTO> Rules { get; set; }
         public virtual DbSet<ShoppingCartDTO> ShoppingCarts { get; set; }
         public virtual DbSet<BasketDTO> Baskets { get; set; }
         public virtual DbSet<BasketItemDTO> BasketItems { get; set; }
@@ -34,6 +36,7 @@ namespace MarketBackend.DAL.DTO
             BasketItems.ExecuteDelete();
             Purchases.ExecuteDelete();
             Products.ExecuteDelete();
+            Rules.ExecuteDelete();
             SaveChanges();
             _instance = new DBcontext();
         }
