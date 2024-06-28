@@ -12,11 +12,11 @@ namespace MarketBackend.DAL.DTO
     [Table("Roles")]
     public class RoleDTO
     {
-        [Key]
+        [Key, Column(Order = 0)]
         [ForeignKey("StoreDTO")]
         public int storeId { get; }
         
-        [Key]
+        [Key, Column(Order = 1)]
         [ForeignKey("MemberDTO")]
         public string userName { get; }
 
@@ -34,6 +34,8 @@ namespace MarketBackend.DAL.DTO
             foreach (Member member in role.appointees)
                 appointees.Add(new MemberDTO(member));
         }
+
+        public RoleDTO(){}
 
         public static Role ConvertToRole(RoleDTO roleDto)
         {

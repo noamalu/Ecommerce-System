@@ -15,13 +15,13 @@ namespace MarketBackend.DAL.DTO
         [Key]
         public int _basketId { get; set; }
         [Required]
-        [ForeignKey("ShopDTO")]
+        [ForeignKey("Stores")]
         public int _storeId { get; set; }
         [Required]
-        [ForeignKey("CartDTO")]
+        [ForeignKey("ShoppingCart")]
         public int _cartId {get; set;}
         public List<BasketItemDTO> BasketItems { get; set; }
-        public Dictionary<int, int> products { get; set; }
+        public List<ProductDTO> Products { get; set; }
 
 
         public BasketDTO(int shopId, List<BasketItemDTO> basketItems)
@@ -37,10 +37,11 @@ namespace MarketBackend.DAL.DTO
             _storeId = basket._storeId;
             _cartId = basket._cartId;
             BasketItems = new List<BasketItemDTO>();
-            foreach (BasketItem item in basket.BasketItems)
+            Products = new List<ProductDTO>();
+            foreach (BasketItem item in basket.BasketItems){
                 BasketItems.Add(new BasketItemDTO(item));
-            products = basket.products.ToDictionary(entry => entry.Key,
-                                               entry => entry.Value);
+                Products.Add(new ProductDTO(item.Product));
+            } 
 
         }
 

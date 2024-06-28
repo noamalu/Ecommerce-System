@@ -20,13 +20,12 @@ namespace MarketBackend.DAL.DTO
 
         public string UserName {get; set;}
         public string Password {get; set;}
-        public MailAddress Email {get; set;}
-        public Dictionary<int, RoleDTO> Roles {get; set;}
-        public Dictionary<int, ShoppingCartHistoryDTO> OrderHistory {get; set;}
+        public List<RoleDTO> Roles {get; set;}
+        public List<ShoppingCartHistoryDTO> OrderHistory {get; set;}
         public bool IsNotification {get; set;}
 
         public MemberDTO() { }
-        public MemberDTO(int id, string userName, string password, List<MessageDTO> alerts, bool notification, Dictionary<int,ShoppingCartHistoryDTO> orderHistory, ShoppingCartDTO shoppingCart)
+        public MemberDTO(int id, string userName, string password, List<MessageDTO> alerts, bool notification, List<ShoppingCartHistoryDTO> orderHistory, ShoppingCartDTO shoppingCart)
         {
             Id = id;
             UserName = userName;
@@ -74,7 +73,7 @@ namespace MarketBackend.DAL.DTO
             ShoppingCart = new ShoppingCartDTO(member.Cart);
             OrderHistory = new ();
             foreach (var order in member.OrderHistory.Values.ToList())
-                OrderHistory.Add(order._shoppingCartId, new ShoppingCartHistoryDTO(order));
+                OrderHistory.Add(new ShoppingCartHistoryDTO(order));
             IsSystemAdmin = false;
         }
     }

@@ -55,7 +55,8 @@ namespace MarketBackend.Domain.Models
         public ShoppingCartHistory(ShoppingCartHistoryDTO other)
         {
             _shoppingCartId = other.ShoppingCartId;
-            _baskets = new(other._baskets.ToDictionary(pair => pair.Key, pair => new Basket(pair.Value)));
+            _baskets = new(other._baskets.Select(basket => new Basket(basket)).ToDictionary(basket => basket._storeId));
+            _products = new(other._products.Select(product => new Product(product)).ToDictionary(product => product.ProductId));
         }
 
         public void AddBasket(Basket basket)
