@@ -318,6 +318,15 @@ namespace MarketBackend.Domain.Market_Client
                     throw new Exception($"{identifier} not logged in");
                 }
         }
+
+        public void SetMemberNotifications(string identifier, bool on)
+        {
+            if(on){
+                NotificationOn(identifier);
+            }else{
+                NotificationOff(identifier);
+            }
+        }
     }
    
 }

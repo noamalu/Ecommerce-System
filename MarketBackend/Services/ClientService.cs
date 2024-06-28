@@ -272,7 +272,38 @@ namespace MarketBackend.Services
             {
                 logger.Error($"Error in fetching client {identifier} stores. Error message: {e.Message}");
                 return Response<StoreResultDto>.FromError(e.Message);
-            }        }
+            }        
+        }
+
+        public Response<List<MessageResultDto>> GetMemberNotifications(string identifier)
+        {
+           try
+            {
+                var notifications = marketManagerFacade.GetMemberNotifications(identifier);
+                logger.Info($"fetched client {identifier} notifications successfuly.");
+                return Response<List<MessageResultDto>>.FromValue(notifications.Select(notification => new MessageResultDto(notification)).ToList());
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in fetching client {identifier} notifications. Error message: {e.Message}");
+                return Response<List<MessageResultDto>>.FromError(e.Message);
+            }    
+        }
+
+        public Response SetMemberNotifications(string identifier, bool on)
+        {
+            try
+            {
+                marketManagerFacade.SetMemberNotifications(identifier, on);
+                logger.Info($"set client {identifier} notifications successfuly.");
+                return new Response();
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in setting client {identifier} notifications. Error message: {e.Message}");
+                return new Response(e.Message);
+            } 
+        }
     }
 
 

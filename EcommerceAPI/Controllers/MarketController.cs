@@ -676,5 +676,20 @@ namespace EcommerceAPI.Controllers
                 return Ok(addKeyWordResponse);
             }
         }   
+
+        [HttpGet]
+        [Route("Stores")]
+        public async Task<ObjectResult> GetStores()
+        {
+            Response<List<StoreResultDto>> response = await Task.Run(() => _marketService.GetStores());
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<List<StoreResultDto>>.OkResponse(response.Value));
+            }
+        }
     }
 }
