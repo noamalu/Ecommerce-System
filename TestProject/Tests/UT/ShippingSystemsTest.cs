@@ -20,7 +20,7 @@ namespace UnitTests
         [TestInitialize]
         public void SetUp()
         {
-            shippingSystem = new ShippingSystemProxy();
+            shippingSystem = new RealShippingSystem("https://damp-lynna-wsep-1984852e.koyeb.app/");
             shippingDetails = new ShippingDetails(name, city, address, country, zipcode);
             shippingSystem.Connect();
         }

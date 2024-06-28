@@ -34,7 +34,7 @@ namespace MarketBackend.Tests.IT
         double discount1 = 0.5;
         int userAge = 20;
         int userAge2 = 16;
-        PaymentDetails paymentDetails = new PaymentDetails("5326888878675678", "2027", "10", "101", "3190876789", "Hadas");
+        PaymentDetails paymentDetails = new PaymentDetails("ILS", "5326888878675678", "2027", "10", "101", "3190876789", "Hadas");
         ShippingDetails shippingDetails = new ShippingDetails("name", "city", "address", "country", "zipcode");
         private MarketManagerFacade marketManagerFacade;
         private ClientManager clientManager;

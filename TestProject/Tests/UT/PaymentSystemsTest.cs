@@ -9,6 +9,7 @@ namespace UnitTests
         string cardNumber = "1234567890123456";
         string exprYear = "2027";
 
+        string currency = "ILS";
         string exprMonth = "01";
         string cvv = "123";
         string cardID = "206971997";
@@ -22,8 +23,8 @@ namespace UnitTests
         [TestInitialize]
         public void SetUp()
         {
-            paymentSystem = new PaymentSystemProxy();
-            paymentDetails = new PaymentDetails(cardNumber, exprYear, exprMonth, cvv, cardID, name);
+            paymentSystem = new RealPaymentSystem("https://damp-lynna-wsep-1984852e.koyeb.app/");
+            paymentDetails = new PaymentDetails(currency, cardNumber, exprYear, exprMonth, cvv, cardID, name);
             paymentSystem.Connect();
             
         }
