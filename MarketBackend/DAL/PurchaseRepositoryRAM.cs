@@ -2,6 +2,7 @@ using MarketBackend.Domain.Models;
 using MarketBackend.Services.Interfaces;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.DAL.DTO;
+using Microsoft.EntityFrameworkCore;
 
 namespace MarketBackend.DAL
 {
@@ -32,7 +33,7 @@ namespace MarketBackend.DAL
         {
             _purchaseById.Add(purchase.PurchaseId, purchase);
             DBcontext context = DBcontext.GetInstance();
-            StoreDTO storeDTO = context.Shops.Include(s => s.Purchases).FirstOrDefault(s => s.Id == purchase.PurchaseId);
+            StoreDTO storeDTO = context.Stores.Include(s => s.Purchases).FirstOrDefault(s => s.Id == purchase.PurchaseId);
             storeDTO.Purchases.Add(new PurchaseDTO(purchase));
             DBcontext.GetInstance().SaveChanges();
         }
@@ -65,7 +66,7 @@ namespace MarketBackend.DAL
             {
                 foreach (PurchaseDTO purchaseDTO in DBcontext.GetInstance().Purchases)
                 {
-                    _purchaseById.TryAdd(purchaseDTO.Id, new DBcontext(purchaseDTO));
+                    _purchaseById.TryAdd(purchaseDTO.Id, new Purchase(purchaseDTO));
                 }
             }
             return _purchaseById.Values.ToList();
@@ -77,7 +78,7 @@ namespace MarketBackend.DAL
              lock (_lock)
             {
                 PurchaseDTO purchaseDTO = DBcontext.GetInstance().Purchases.Find(purchase.PurchaseId);
-                purchaseDTO.PurchaseStatus = purchase.PurchaseStatus.ToString();
+                // purchaseDTO.PurchaseStatus = purchase.PurchaseStatus.ToString();
                 purchaseDTO.Price = purchase.Price;
                 DBcontext.GetInstance().SaveChanges();
             }

@@ -33,7 +33,7 @@ namespace MarketBackend.DAL
         public void Add(Store store)
         {
             _stores.TryAdd(store.StoreId, store);
-            DBcontext.GetInstance().Shops.Add(new StoreDTO(store));
+            DBcontext.GetInstance().Stores.Add(new StoreDTO(store));
             DBcontext.GetInstance().SaveChanges();
         
         }
@@ -48,12 +48,12 @@ namespace MarketBackend.DAL
                 StoreDTO storeDTO = context.Stores.Find(store.StoreId);
                 if (shopInDomain)
                 {
-                    context.Shops.Remove(storeDTO);
+                    context.Stores.Remove(storeDTO);
                     context.SaveChanges();
                 }
                 else if (storeDTO != null)
                 {
-                    context.Shops.Remove(storeDTO);
+                    context.Stores.Remove(storeDTO);
                     context.SaveChanges();
                 }
             }

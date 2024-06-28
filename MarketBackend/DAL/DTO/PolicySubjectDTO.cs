@@ -25,7 +25,7 @@ namespace MarketBackend.DAL.DTO{
         {
             if (subject.Product != null)
             {
-                Product = DBContext.GetInstance().Products.Find(subject.Product.ProductId);
+                Product = DBcontext.GetInstance().Products.Find(subject.Product.ProductId);
             }
             else
             {
@@ -36,8 +36,8 @@ namespace MarketBackend.DAL.DTO{
         private ProductDTO GenerateDummyProduct()
         {
             if (ProductRepositoryRAM.GetInstance().ContainsID(-1))
-                return DBContext.GetInstance().Products.Find(-1);
-            return new ProductDTO(-1,-1, "null", 1, 1, "None", "", "");
+                return DBcontext.GetInstance().Products.Find(-1);
+            return new ProductDTO(-1,"null",-1,-1, "null", "None", "null");
         }
     }
 }

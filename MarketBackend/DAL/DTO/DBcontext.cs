@@ -22,6 +22,7 @@ namespace MarketBackend.DAL.DTO
         public virtual DbSet<BasketItemDTO> BasketItems { get; set; }
         public virtual DbSet<ProductDTO> Products { get; set; }
         public virtual DbSet<PurchaseDTO> Purchases { get; set; }
+        public virtual DbSet<EventDTO> Events { get; set; }
 
         public override void Dispose()
         {

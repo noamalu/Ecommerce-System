@@ -28,7 +28,7 @@ namespace MarketBackend.DAL.DTO
         {
             storeId = role.storeId;
             userName = role.userName;
-            role = new RoleTypeDTO(role.role);
+            this.role = new RoleTypeDTO(role.role);
             appointer = new MemberDTO(role.appointer);
             appointees = new List<MemberDTO>();
             foreach (Member member in role.appointees)
