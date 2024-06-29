@@ -18,13 +18,29 @@ namespace MarketBackend.DAL.DTO
         public virtual DbSet<StoreDTO> Stores { get; set; }
         public virtual DbSet<RoleDTO> Roles { get; set; }
 
-        public virtual DbSet<RuleDTO> Rules { get; set; }
         public virtual DbSet<ShoppingCartDTO> ShoppingCarts { get; set; }
         public virtual DbSet<BasketDTO> Baskets { get; set; }
         public virtual DbSet<BasketItemDTO> BasketItems { get; set; }
         public virtual DbSet<ProductDTO> Products { get; set; }
         public virtual DbSet<PurchaseDTO> Purchases { get; set; }
         public virtual DbSet<EventDTO> Events { get; set; }
+
+        //Policies
+        public virtual DbSet<PolicyDTO> Policies { get; set; }
+        public virtual DbSet<PolicySubjectDTO> PolicySubjects { get; set; }
+        public virtual DbSet<PurchasePolicyDTO> PurchasePolicies { get; set; }
+        public virtual DbSet<DiscountPolicyDTO> DiscountPolicies { get; set; }
+        public virtual DbSet<DiscountCompositePolicyDTO> DiscountCompositePolicies { get; set; }
+
+        //Rules
+        public virtual DbSet<RuleDTO> Rules { get; set; }
+        public virtual DbSet<RuleSubjectDTO> RuleSubjects { get; set; }
+        public virtual DbSet<CompositeRuleDTO> CompositeRules { get; set; }
+        public virtual DbSet<SimpleRuleDTO> SimplelRules { get; set; }
+        public virtual DbSet<TotalPriceRuleDTO> TotalPriceRules { get; set; }
+        public virtual DbSet<QuantityRuleDTO> QuantityRules { get; set; }
+
+
 
         public override void Dispose()
         {
@@ -36,7 +52,17 @@ namespace MarketBackend.DAL.DTO
             BasketItems.ExecuteDelete();
             Purchases.ExecuteDelete();
             Products.ExecuteDelete();
+            Policies.ExecuteDelete();
+            PolicySubjects.ExecuteDelete();
+            PurchasePolicies.ExecuteDelete();
+            DiscountPolicies.ExecuteDelete();
+            DiscountCompositePolicies.ExecuteDelete();
             Rules.ExecuteDelete();
+            RuleSubjects.ExecuteDelete();
+            CompositeRules.ExecuteDelete();
+            SimplelRules.ExecuteDelete();
+            TotalPriceRules.ExecuteDelete();
+            QuantityRules.ExecuteDelete();
             SaveChanges();
             _instance = new DBcontext();
         }
