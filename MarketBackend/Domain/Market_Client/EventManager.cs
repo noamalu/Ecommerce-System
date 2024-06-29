@@ -27,7 +27,7 @@ namespace MarketBackend.Domain.Market_Client
         private void UploadEventsFromContext()
         {
             DBcontext context = DBcontext.GetInstance();
-            List<EventDTO> events =  context.Events.Where((e) => e.ShopId == _shopId).ToList();
+            List<EventDTO> events =  context.Events.Where((e) => e.StoreId == _shopId).ToList();
             List<MemberDTO> members = context.Members.Where((m)=>m.IsSystemAdmin==true).ToList();
             foreach(EventDTO e in events)
             {
@@ -58,7 +58,7 @@ namespace MarketBackend.Domain.Market_Client
             {
                 _listeners[e.Name].Remove(member);
                 EventDTO eventDTO = DBcontext.GetInstance().Events
-                    .Where((e)=>e.Listener.Id == member.Id && e.ShopId==_shopId).FirstOrDefault();
+                    .Where((e)=>e.Listener.Id == member.Id && e.StoreId==_shopId).FirstOrDefault();
                 DBcontext.GetInstance().Events.Remove(eventDTO);
                 DBcontext.GetInstance().SaveChanges();
             }
@@ -84,7 +84,7 @@ namespace MarketBackend.Domain.Market_Client
                 {
                     _listeners[eventName].Remove(member);
                     EventDTO eventDTO = DBcontext.GetInstance().Events
-                        .Where((e) => e.Listener.Id == member.Id && e.ShopId == _shopId).FirstOrDefault();
+                        .Where((e) => e.Listener.Id == member.Id && e.StoreId == _shopId).FirstOrDefault();
                     DBcontext.GetInstance().Events.Remove(eventDTO);
                 }
             }

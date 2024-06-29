@@ -15,11 +15,7 @@ namespace MarketBackend.DAL.DTO
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int BasketId { get; set; }
-        // [Required]
-        // [ForeignKey("Stores")]
         public int StoreId { get; set; }
-        // [Required]
-        // [ForeignKey("ShoppingCart")]
         public int CartId {get; set;}
         public List<BasketItemDTO> BasketItems { get; set; }
         public List<ProductDTO> Products { get; set; }

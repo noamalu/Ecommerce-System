@@ -13,11 +13,11 @@ namespace MarketBackend.DAL.DTO
     public class RoleDTO
     {
         [Key, Column(Order = 0)]
-        [ForeignKey("StoreDTO")]
+        [ForeignKey("Stores")]
         public int storeId { get; }
         
         [Key, Column(Order = 1)]
-        [ForeignKey("MemberDTO")]
+        [ForeignKey("Members")]
         public string userName { get; }
 
         public RoleTypeDTO role { get; }

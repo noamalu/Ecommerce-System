@@ -14,15 +14,13 @@ namespace MarketBackend.DAL.DTO
         [Key]
         public int Id { get; set; }
         public string Name { get; set; }
-        
-        [ForeignKey("Stores")]
-        public int ShopId { get; set; }
+        public int StoreId { get; set; }
         public MemberDTO Listener { get; set; }
         public EventDTO() { }
-        public EventDTO(string name, int shopId, MemberDTO listener)
+        public EventDTO(string name, int storeId, MemberDTO listener)
         {
             Name = name;
-            ShopId = shopId;
+            StoreId = storeId;
             Listener = listener;
         }
     }

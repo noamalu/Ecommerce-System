@@ -17,10 +17,9 @@ namespace MarketBackend.DAL.DTO
         public List<MessageDTO> Alerts { get; set; } = new ();
         public ShoppingCartDTO ShoppingCart { get; set; }
         public bool IsSystemAdmin { get; set; }
-
         public string UserName {get; set;}
         public string Password {get; set;}
-        public List<RoleDTO> Roles {get; set;}
+        // public List<RoleDTO> Roles {get; set;}
         public List<ShoppingCartHistoryDTO> OrderHistory {get; set;}
         public bool IsNotification {get; set;}
 

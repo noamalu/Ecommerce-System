@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MarketBackend.Migrations
 {
     [DbContext(typeof(DBcontext))]
-    [Migration("20240628152329_InitialCreate")]
+    [Migration("20240629180416_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -27,32 +27,28 @@ namespace MarketBackend.Migrations
 
             modelBuilder.Entity("MarketBackend.DAL.DTO.BasketDTO", b =>
                 {
-                    b.Property<int>("_basketId")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("BasketId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("_basketId"));
-
-                    b.Property<int?>("ShoppingCartDTO_shoppingCartId")
+                    b.Property<int>("CartId")
                         .HasColumnType("int");
 
                     b.Property<int?>("ShoppingCartHistoryDTOShoppingCartId")
                         .HasColumnType("int");
 
+                    b.Property<int>("StoreId")
+                        .HasColumnType("int");
+
                     b.Property<double>("TotalPrice")
                         .HasColumnType("float");
 
-                    b.Property<int>("_cartId")
-                        .HasColumnType("int");
+                    b.HasKey("BasketId");
 
-                    b.Property<int>("_storeId")
-                        .HasColumnType("int");
-
-                    b.HasKey("_basketId");
-
-                    b.HasIndex("ShoppingCartDTO_shoppingCartId");
+                    b.HasIndex("CartId");
 
                     b.HasIndex("ShoppingCartHistoryDTOShoppingCartId");
+
+                    b.HasIndex("StoreId");
 
                     b.ToTable("Baskets");
                 });
@@ -65,7 +61,7 @@ namespace MarketBackend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("BasketDTO_basketId")
+                    b.Property<int?>("BasketDTOBasketId")
                         .HasColumnType("int");
 
                     b.Property<double>("PriceAfterDiscount")
@@ -82,7 +78,7 @@ namespace MarketBackend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BasketDTO_basketId");
+                    b.HasIndex("BasketDTOBasketId");
 
                     b.HasIndex("ProductId");
 
@@ -104,12 +100,14 @@ namespace MarketBackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ShopId")
+                    b.Property<int>("StoreId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ListenerId");
+
+                    b.HasIndex("StoreId");
 
                     b.ToTable("Events");
                 });
@@ -129,6 +127,12 @@ namespace MarketBackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("RoleDTOstoreId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RoleDTOuserName")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("ShoppingCart_shoppingCartId")
                         .HasColumnType("int");
 
@@ -139,6 +143,8 @@ namespace MarketBackend.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ShoppingCart_shoppingCartId");
+
+                    b.HasIndex("RoleDTOstoreId", "RoleDTOuserName");
 
                     b.ToTable("Members");
                 });
@@ -235,7 +241,7 @@ namespace MarketBackend.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("BasketDTO_basketId")
+                    b.Property<int?>("BasketDTOBasketId")
                         .HasColumnType("int");
 
                     b.Property<string>("Category")
@@ -275,7 +281,7 @@ namespace MarketBackend.Migrations
 
                     b.HasKey("ProductId");
 
-                    b.HasIndex("BasketDTO_basketId");
+                    b.HasIndex("BasketDTOBasketId");
 
                     b.HasIndex("ShoppingCartHistoryDTOShoppingCartId");
 
@@ -289,7 +295,7 @@ namespace MarketBackend.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
-                    b.Property<int>("BasketId")
+                    b.Property<int>("Baskets")
                         .HasColumnType("int");
 
                     b.Property<string>("Identifierr")
@@ -307,7 +313,7 @@ namespace MarketBackend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BasketId")
+                    b.HasIndex("Baskets")
                         .IsUnique();
 
                     b.HasIndex("StoreDTOId");
@@ -325,12 +331,12 @@ namespace MarketBackend.Migrations
                         .HasColumnType("nvarchar(450)")
                         .HasColumnOrder(1);
 
-                    b.Property<int?>("MemberDTOId")
+                    b.Property<int?>("appointerId")
                         .HasColumnType("int");
 
                     b.HasKey("storeId", "userName");
 
-                    b.HasIndex("MemberDTOId");
+                    b.HasIndex("appointerId");
 
                     b.ToTable("Roles");
                 });
@@ -531,26 +537,33 @@ namespace MarketBackend.Migrations
                 {
                     b.HasOne("MarketBackend.DAL.DTO.ShoppingCartDTO", null)
                         .WithMany("Baskets")
-                        .HasForeignKey("ShoppingCartDTO_shoppingCartId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("MarketBackend.DAL.DTO.ShoppingCartHistoryDTO", null)
                         .WithMany("_baskets")
                         .HasForeignKey("ShoppingCartHistoryDTOShoppingCartId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("MarketBackend.DAL.DTO.StoreDTO", null)
+                        .WithMany()
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MarketBackend.DAL.DTO.BasketItemDTO", b =>
                 {
                     b.HasOne("MarketBackend.DAL.DTO.BasketDTO", null)
                         .WithMany("BasketItems")
-                        .HasForeignKey("BasketDTO_basketId")
+                        .HasForeignKey("BasketDTOBasketId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("MarketBackend.DAL.DTO.ProductDTO", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Product");
@@ -561,7 +574,13 @@ namespace MarketBackend.Migrations
                     b.HasOne("MarketBackend.DAL.DTO.MemberDTO", "Listener")
                         .WithMany()
                         .HasForeignKey("ListenerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("MarketBackend.DAL.DTO.StoreDTO", null)
+                        .WithMany()
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Listener");
@@ -574,6 +593,11 @@ namespace MarketBackend.Migrations
                         .HasForeignKey("ShoppingCart_shoppingCartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("MarketBackend.DAL.DTO.RoleDTO", null)
+                        .WithMany("appointees")
+                        .HasForeignKey("RoleDTOstoreId", "RoleDTOuserName")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("ShoppingCart");
                 });
@@ -620,7 +644,7 @@ namespace MarketBackend.Migrations
                 {
                     b.HasOne("MarketBackend.DAL.DTO.BasketDTO", null)
                         .WithMany("Products")
-                        .HasForeignKey("BasketDTO_basketId");
+                        .HasForeignKey("BasketDTOBasketId");
 
                     b.HasOne("MarketBackend.DAL.DTO.ShoppingCartHistoryDTO", null)
                         .WithMany("_products")
@@ -636,7 +660,7 @@ namespace MarketBackend.Migrations
                 {
                     b.HasOne("MarketBackend.DAL.DTO.BasketDTO", "Basket")
                         .WithOne()
-                        .HasForeignKey("MarketBackend.DAL.DTO.PurchaseDTO", "BasketId")
+                        .HasForeignKey("MarketBackend.DAL.DTO.PurchaseDTO", "Baskets")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -649,10 +673,18 @@ namespace MarketBackend.Migrations
 
             modelBuilder.Entity("MarketBackend.DAL.DTO.RoleDTO", b =>
                 {
-                    b.HasOne("MarketBackend.DAL.DTO.MemberDTO", null)
-                        .WithMany("Roles")
-                        .HasForeignKey("MemberDTOId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                    b.HasOne("MarketBackend.DAL.DTO.MemberDTO", "appointer")
+                        .WithMany()
+                        .HasForeignKey("appointerId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("MarketBackend.DAL.DTO.StoreDTO", null)
+                        .WithMany()
+                        .HasForeignKey("storeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("appointer");
                 });
 
             modelBuilder.Entity("MarketBackend.DAL.DTO.RuleDTO", b =>
@@ -705,8 +737,11 @@ namespace MarketBackend.Migrations
                     b.Navigation("Alerts");
 
                     b.Navigation("OrderHistory");
+                });
 
-                    b.Navigation("Roles");
+            modelBuilder.Entity("MarketBackend.DAL.DTO.RoleDTO", b =>
+                {
+                    b.Navigation("appointees");
                 });
 
             modelBuilder.Entity("MarketBackend.DAL.DTO.ShoppingCartDTO", b =>
