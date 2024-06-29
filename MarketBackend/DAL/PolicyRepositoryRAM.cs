@@ -88,8 +88,9 @@ namespace MarketBackend.DAL
             _policyById[policy.Id] = policy;
         }
 
-
-
-
+        public void Dispose()
+        {
+           _policyRepo = null;
+        }
     }
 }

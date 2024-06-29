@@ -192,8 +192,10 @@ namespace MarketBackend.Domain.Market_Client
         {
              if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
-                IRule rule = GetRule(ruledId);               
-                return  _purchasePolicyManager.AddPolicy(_policyIdFactory++, expirationDate, CastProductOrCategory(subject), rule);
+                IRule rule = GetRule(ruledId);
+                if (rule != null)            
+                    return  _purchasePolicyManager.AddPolicy(_policyIdFactory++, expirationDate, CastProductOrCategory(subject), rule);
+                else throw new Exception("Rule not found");
             }
             else throw new Exception($"Permission exception for userName: {userName}");
         }
