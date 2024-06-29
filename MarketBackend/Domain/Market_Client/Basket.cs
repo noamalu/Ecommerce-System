@@ -27,8 +27,8 @@ namespace MarketBackend.Domain.Market_Client
 
         public Basket(BasketDTO other)
         {
-            _basketId = other._basketId;
-            _storeId = other._storeId;
+            _basketId = other.BasketId;
+            _storeId = other.StoreId;
             _basketItems = new(other.BasketItems);
             List<ProductDTO> productDTOs = other.Products;
             foreach (ProductDTO productDTO in productDTOs)

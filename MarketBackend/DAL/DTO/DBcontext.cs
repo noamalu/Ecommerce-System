@@ -44,25 +44,25 @@ namespace MarketBackend.DAL.DTO
 
         public override void Dispose()
         {
-            Members.ExecuteDelete();
             Stores.ExecuteDelete();
-            Roles.ExecuteDelete();
-            ShoppingCarts.ExecuteDelete();
-            Baskets.ExecuteDelete();
-            BasketItems.ExecuteDelete();
-            Purchases.ExecuteDelete();
-            Products.ExecuteDelete();
-            Policies.ExecuteDelete();
-            PolicySubjects.ExecuteDelete();
-            PurchasePolicies.ExecuteDelete();
-            DiscountPolicies.ExecuteDelete();
-            DiscountCompositePolicies.ExecuteDelete();
-            Rules.ExecuteDelete();
-            RuleSubjects.ExecuteDelete();
-            CompositeRules.ExecuteDelete();
-            SimplelRules.ExecuteDelete();
-            TotalPriceRules.ExecuteDelete();
-            QuantityRules.ExecuteDelete();
+            // Members.ExecuteDelete();
+            // Roles.ExecuteDelete();
+            // ShoppingCarts.ExecuteDelete();
+            // Baskets.ExecuteDelete();
+            // BasketItems.ExecuteDelete();
+            // Purchases.ExecuteDelete();
+            // Products.ExecuteDelete();
+            // Policies.ExecuteDelete();
+            // PolicySubjects.ExecuteDelete();
+            // PurchasePolicies.ExecuteDelete();
+            // DiscountPolicies.ExecuteDelete();
+            // DiscountCompositePolicies.ExecuteDelete();
+            // Rules.ExecuteDelete();
+            // RuleSubjects.ExecuteDelete();
+            // CompositeRules.ExecuteDelete();
+            // SimplelRules.ExecuteDelete();
+            // TotalPriceRules.ExecuteDelete();
+            // QuantityRules.ExecuteDelete();
             SaveChanges();
             _instance = new DBcontext();
         }
@@ -115,94 +115,94 @@ namespace MarketBackend.DAL.DTO
         protected override void OnModelCreating(ModelBuilder modelBuilder){
 
 
-            modelBuilder.Entity<RuleDTO>()
-                .HasDiscriminator<string>("Discriminator") // Specify the discriminator property name
-                .HasValue<CompositeRuleDTO>("CompositeRule"); // Set the default discriminator value for the base class
-            modelBuilder.Entity<RuleDTO>()
-                .HasDiscriminator<string>("Discriminator") // Specify the discriminator property name
-                .HasValue<SimpleRuleDTO>("SimpleRule"); // Set the default discriminator value for the base class
-            modelBuilder.Entity<RuleDTO>()
-                .HasDiscriminator<string>("Discriminator") // Specify the discriminator property name
-                .HasValue<QuantityRuleDTO>("QuantityRule");
-            modelBuilder.Entity<RuleDTO>()
-                .HasDiscriminator<string>("Discriminator") // Specify the discriminator property name
-                .HasValue<TotalPriceRuleDTO>("TotalPriceRule");
+            // modelBuilder.Entity<RuleDTO>()
+            //     .HasDiscriminator<string>("Discriminator") // Specify the discriminator property name
+            //     .HasValue<CompositeRuleDTO>("CompositeRule"); // Set the default discriminator value for the base class
+            // modelBuilder.Entity<RuleDTO>()
+            //     .HasDiscriminator<string>("Discriminator") // Specify the discriminator property name
+            //     .HasValue<SimpleRuleDTO>("SimpleRule"); // Set the default discriminator value for the base class
+            // modelBuilder.Entity<RuleDTO>()
+            //     .HasDiscriminator<string>("Discriminator") // Specify the discriminator property name
+            //     .HasValue<QuantityRuleDTO>("QuantityRule");
+            // modelBuilder.Entity<RuleDTO>()
+            //     .HasDiscriminator<string>("Discriminator") // Specify the discriminator property name
+            //     .HasValue<TotalPriceRuleDTO>("TotalPriceRule");
 
-            modelBuilder.Entity<PolicyDTO>()
-                .HasDiscriminator<string>("Discriminator") // Specify the discriminator property name
-                .HasValue<DiscountPolicyDTO>("DiscountPolicy"); // Set the default discriminator value for the base class
-            modelBuilder.Entity<PolicyDTO>()
-                .HasDiscriminator<string>("Discriminator") // Specify the discriminator property name
-                .HasValue<DiscountCompositePolicyDTO>("CompositeDiscountPolicy"); // Set the default discriminator value for the base class
-            modelBuilder.Entity<PolicyDTO>()
-                .HasDiscriminator<string>("Discriminator") // Specify the discriminator property name
-                .HasValue<PurchasePolicyDTO>("PurchasePolicy");
-
-
-            modelBuilder.Entity<PolicySubjectDTO>()
-                .HasOne<ProductDTO>(s => s.Product)
-                .WithMany()
-                .OnDelete(DeleteBehavior.Cascade);
+            // modelBuilder.Entity<PolicyDTO>()
+            //     .HasDiscriminator<string>("Discriminator") // Specify the discriminator property name
+            //     .HasValue<DiscountPolicyDTO>("DiscountPolicy"); // Set the default discriminator value for the base class
+            // modelBuilder.Entity<PolicyDTO>()
+            //     .HasDiscriminator<string>("Discriminator") // Specify the discriminator property name
+            //     .HasValue<DiscountCompositePolicyDTO>("CompositeDiscountPolicy"); // Set the default discriminator value for the base class
+            // modelBuilder.Entity<PolicyDTO>()
+            //     .HasDiscriminator<string>("Discriminator") // Specify the discriminator property name
+            //     .HasValue<PurchasePolicyDTO>("PurchasePolicy");
 
 
-            modelBuilder.Entity<RuleSubjectDTO>()
-                .HasOne<ProductDTO>(s => s.Product)
-                .WithMany()
-                .OnDelete(DeleteBehavior.Cascade);
+            // modelBuilder.Entity<PolicySubjectDTO>()
+            //     .HasOne<ProductDTO>(s => s.Product)
+            //     .WithMany()
+            //     .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<PolicyDTO>()
-                .HasOne<PolicySubjectDTO>(p => p.PolicySubject)
-                .WithMany()
-                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<RuleDTO>()
-                .HasOne<RuleSubjectDTO>(p => p.Subject)
-                .WithMany()
-                .OnDelete(DeleteBehavior.Cascade);
+            // modelBuilder.Entity<RuleSubjectDTO>()
+            //     .HasOne<ProductDTO>(s => s.Product)
+            //     .WithMany()
+            //     .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<MemberDTO>()
-                .HasMany<ShoppingCartHistoryDTO>(m => m.OrderHistory)
-                .WithOne()
-                .OnDelete(DeleteBehavior.Cascade);
+            // modelBuilder.Entity<PolicyDTO>()
+            //     .HasOne<PolicySubjectDTO>(p => p.PolicySubject)
+            //     .WithMany()
+            //     .OnDelete(DeleteBehavior.Cascade);
+
+            // modelBuilder.Entity<RuleDTO>()
+            //     .HasOne<RuleSubjectDTO>(p => p.Subject)
+            //     .WithMany()
+            //     .OnDelete(DeleteBehavior.Cascade);
+
+            // modelBuilder.Entity<MemberDTO>()
+            //     .HasMany<ShoppingCartHistoryDTO>(m => m.OrderHistory)
+            //     .WithOne()
+            //     .OnDelete(DeleteBehavior.Cascade);
             
-            modelBuilder.Entity<MemberDTO>()
-                .HasMany<RoleDTO>(m => m.Roles)
-                .WithOne()
-                .OnDelete(DeleteBehavior.Cascade);
+            // modelBuilder.Entity<MemberDTO>()
+            //     .HasMany<RoleDTO>(m => m.Roles)
+            //     .WithOne()
+            //     .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<MemberDTO>()
-                .HasMany<MessageDTO>(s => s.Alerts)
-                .WithOne()
-                .OnDelete(DeleteBehavior.Cascade);
+            // modelBuilder.Entity<MemberDTO>()
+            //     .HasMany<MessageDTO>(s => s.Alerts)
+            //     .WithOne()
+            //     .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<RoleDTO>()
                 .HasKey(r => new { r.storeId, r.userName });
 
-            modelBuilder.Entity<ShoppingCartHistoryDTO>()
-                .HasMany<BasketDTO>(s => s._baskets)
-                .WithOne()
-                .OnDelete(DeleteBehavior.Cascade);
+            // modelBuilder.Entity<ShoppingCartHistoryDTO>()
+            //     .HasMany<BasketDTO>(s => s._baskets)
+            //     .WithOne()
+            //     .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<ShoppingCartHistoryDTO>()
-                .HasMany<ProductDTO>(s => s._products)
-                .WithOne()
-                .OnDelete(DeleteBehavior.Cascade);
+            // modelBuilder.Entity<ShoppingCartHistoryDTO>()
+            //     .HasMany<ProductDTO>(s => s._products)
+            //     .WithOne()
+            //     .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<ShoppingCartDTO>()
-                .HasMany<BasketDTO>(s => s.Baskets)
-                .WithOne()
-                .OnDelete(DeleteBehavior.Cascade);
+            // modelBuilder.Entity<ShoppingCartDTO>()
+            //     .HasMany<BasketDTO>(s => s.Baskets)
+            //     .WithOne()
+            //     .OnDelete(DeleteBehavior.Cascade);
 
 
-            modelBuilder.Entity<BasketDTO>()
-                .HasMany<BasketItemDTO>(b => b.BasketItems)
-                .WithOne()
-                .OnDelete(DeleteBehavior.Cascade);
+            // modelBuilder.Entity<BasketDTO>()
+            //     .HasMany<BasketItemDTO>(b => b.BasketItems)
+            //     .WithOne()
+            //     .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<PurchaseDTO>()
-                .HasOne<BasketDTO>(p => p.Basket)
-                .WithOne()
-                .OnDelete(DeleteBehavior.Cascade);
+            // modelBuilder.Entity<PurchaseDTO>()
+            //     .HasOne<BasketDTO>(p => p.Basket)
+            //     .WithOne()
+            //     .OnDelete(DeleteBehavior.Cascade);
 
         } 
     }
