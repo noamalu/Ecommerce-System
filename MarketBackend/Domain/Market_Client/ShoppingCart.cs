@@ -64,7 +64,7 @@ namespace MarketBackend.Domain.Models
             _baskets.TryAdd(basket._basketId, Basket.Clone(basket));
             foreach(var product in basket.products)
             {
-                var storeProducts = ProductRepositoryRAM.GetInstance().GetShopProducts(basket._storeId);
+                var storeProducts = ProductRepositoryRAM.GetInstance().GetStoreProducts(basket._storeId);
                 var productDetailsFromStore = storeProducts.Where(p => p.ProductId == product.Key).FirstOrDefault().Clone();
                 if(productDetailsFromStore is not null) _products.TryAdd(product.Key, productDetailsFromStore);
             }

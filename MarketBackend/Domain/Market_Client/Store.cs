@@ -50,7 +50,7 @@ namespace MarketBackend.Domain.Market_Client
             _storeEmailAdd=email;
             _storePhoneNum=phoneNum;
             _active = true;
-            _products = ProductRepositoryRAM.GetInstance().GetShopProducts(_storeId);
+            _products = ProductRepositoryRAM.GetInstance().GetStoreProducts(_storeId);
             roles = RoleRepositoryRAM.GetInstance().getShopRoles(_storeId);
             _history = new History(_storeId);
             _discountPolicyManager = new DiscountPolicyManager(_storeId);
@@ -83,7 +83,7 @@ namespace MarketBackend.Domain.Market_Client
         public void Initialize(StoreDTO storeDTO)
         {
             //List<AppointmentDTO> appDtos = MarketContext.GetInstance().Appointments.Where((app) => app.ShopId == _id).ToList();
-            _products = ProductRepositoryRAM.GetInstance().GetShopProducts(_storeId);
+            _products = ProductRepositoryRAM.GetInstance().GetStoreProducts(_storeId);
             _history = new History(_storeId);
             _rules = RuleRepositoryRAM.GetInstance().GetShopRules(_storeId);
             _eventManager = new EventManager(_storeId);
