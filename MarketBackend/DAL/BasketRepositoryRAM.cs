@@ -38,6 +38,12 @@ namespace MarketBackend.DAL
                 _cartId = cartId
             };
             baskets.TryAdd(newBasket._basketId, newBasket);
+            DBcontext dbContext = DBcontext.GetInstance();
+            lock (Lock)
+            {
+                dbContext.Baskets.Add(new BasketDTO(newBasket));
+                dbContext.SaveChanges();
+            }
             BasketCounter ++;
             return newBasket;
         }
