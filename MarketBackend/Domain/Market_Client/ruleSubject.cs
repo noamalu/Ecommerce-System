@@ -1,3 +1,4 @@
+using MarketBackend.DAL;
 using MarketBackend.DAL.DTO;
 
 namespace MarketBackend.Domain.Market_Client{
@@ -26,9 +27,23 @@ namespace MarketBackend.Domain.Market_Client{
         }
 
         //todo: nofar
-        public RuleSubject(PolicySubjectDTO policySubject)
+        public RuleSubject(RuleSubjectDTO subject)
         {
+            if (subject.Category.Equals("None"))
+            {
+                _category = subject.Category;
+                if (subject.Product.ProductId != -1)
+                {
+                    _product = ProductRepositoryRAM.GetInstance().GetById(subject.Product.ProductId);
+                }
+                else _product = null;
+            }
+            else
+            {
+                _category = subject.Category;
+            }
         }
+
 
         public bool IsProduct()
         {
