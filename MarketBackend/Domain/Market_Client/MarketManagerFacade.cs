@@ -707,6 +707,23 @@ namespace MarketBackend.Domain.Market_Client
         {
             return GetMemberStores(identifier).Where(store => store.StoreId == storeId).FirstOrDefault();
         }
+
+        public List<Store> GetStores()
+        {
+            return _storeRepository.getAll().ToList();
+        }
+
+        public List<Message> GetMemberNotifications(string identifier)
+        {
+            var member = _clientManager.GetMemberByIdentifier(identifier);
+            return member.alerts.ToList();
+        }
+
+        public void SetMemberNotifications(string identifier, bool on)
+        {
+            _clientManager.SetMemberNotifications( identifier,  on);
+            
+        }
         // ---------------------------------------------------------
 
     }

@@ -705,5 +705,20 @@ namespace MarketBackend.Services
                 return Response<List<PolicyResultDto>>.FromError(e.Message);
             }
         }
+
+        public Response<List<StoreResultDto>> GetStores()
+        {
+            try
+            {
+                var stores = marketManagerFacade.GetStores();
+                logger.Info($"Get stores succeed.");
+                return Response<List<StoreResultDto>>.FromValue(stores.Select(store => new StoreResultDto(store)).ToList());
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error in fetching stores. Error message: {e.Message}");
+                return Response<List<StoreResultDto>>.FromError(e.Message);
+            }
+        }
     }
 }
