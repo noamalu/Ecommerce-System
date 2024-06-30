@@ -27,5 +27,6 @@ namespace MarketBackend.Services.Interfaces
         public Response EditPurchasePolicy(int storeId);
         public Response<List<StoreResultDto>> GetMemberStores(string identifier);
         public Response<StoreResultDto> GetMemberStore(string identifier, int storeId);
+        public Response<string> GetTokenByUserName(string userName);
     }
 }

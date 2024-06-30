@@ -707,6 +707,11 @@ namespace MarketBackend.Domain.Market_Client
         {
             return GetMemberStores(identifier).Where(store => store.StoreId == storeId).FirstOrDefault();
         }
+
+        public string GetTokenByUserName(string userName)
+        {
+            return _clientManager.GetTokenByUserName(userName);
+        }
         // ---------------------------------------------------------
 
     }

@@ -318,6 +318,11 @@ namespace MarketBackend.Domain.Market_Client
                     throw new Exception($"{identifier} not logged in");
                 }
         }
+
+        public string GetTokenByUserName(string userName)
+        {
+            return MemberByToken.Where(pair => pair.Value.UserName == userName).FirstOrDefault().Key;
+        }
     }
    
 }
