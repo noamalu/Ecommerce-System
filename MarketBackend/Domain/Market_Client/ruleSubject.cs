@@ -44,6 +44,23 @@ namespace MarketBackend.Domain.Market_Client{
             }
         }
 
+         public RuleSubject(PolicySubjectDTO policySubject)
+        {
+            if (policySubject.Category.Equals("None"))
+            {
+                _category = policySubject.Category;
+                if (policySubject.Product.ProductId != -1)
+                {
+                    _product = ProductRepositoryRAM.GetInstance().GetById(policySubject.Product.ProductId);
+                }
+                else _product = null;
+            }
+            else
+            {
+                _category = policySubject.Category;
+            }
+        }
+
 
         public bool IsProduct()
         {
