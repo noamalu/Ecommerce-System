@@ -73,7 +73,7 @@ namespace MarketBackend.DAL.DTO
             OrderHistory = new ();
             foreach (var order in member.OrderHistory.Values.ToList())
                 OrderHistory.Add(new ShoppingCartHistoryDTO(order));
-            IsSystemAdmin = false;
+            IsSystemAdmin = member.IsSystemAdmin;
         }
     }
 }
