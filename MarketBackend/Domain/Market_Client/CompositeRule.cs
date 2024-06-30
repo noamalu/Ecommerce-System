@@ -1,5 +1,6 @@
 using System.Text;
 using MarketBackend.DAL;
+using MarketBackend.DAL.DTO;
 
 namespace MarketBackend.Domain.Market_Client{
     public class CompositeRule : IRule{
@@ -13,6 +14,13 @@ namespace MarketBackend.Domain.Market_Client{
             Subject = new RuleSubject();
             _rules = rules;
             _operator = op;
+        }
+
+        public CompositeRule(CompositeRuleDTO ruleDTO,List<IRule> rules) : base(ruleDTO)
+        {
+            Subject = new RuleSubject();
+            _rules = rules;
+            _operator = CastOperator(ruleDTO.Operator);
         }
          private LogicalOperator CastOperator(string operatorName)
         {

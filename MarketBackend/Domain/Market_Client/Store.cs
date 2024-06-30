@@ -85,7 +85,7 @@ namespace MarketBackend.Domain.Market_Client
             //List<AppointmentDTO> appDtos = MarketContext.GetInstance().Appointments.Where((app) => app.ShopId == _id).ToList();
             _products = ProductRepositoryRAM.GetInstance().GetStoreProducts(_storeId);
             _history = new History(_storeId);
-            _rules = RuleRepositoryRAM.GetInstance().GetShopRules(_storeId);
+            _rules = RuleRepositoryRAM.GetInstance().GetStoreRules(_storeId);
             _eventManager = new EventManager(_storeId);
             _purchaseIdCounter = 1;
             _productIdCounter = 1;
