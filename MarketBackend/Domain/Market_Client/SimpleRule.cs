@@ -42,5 +42,10 @@ namespace MarketBackend.Domain.Market_Client
             return $"Simple Rule: Basket must contain at least one {Subject.GetInfo()}";
         }
 
+        public override RuleDTO CloneDTO()
+        {
+            return new SimpleRuleDTO(this);
+        }
+
     }
 }

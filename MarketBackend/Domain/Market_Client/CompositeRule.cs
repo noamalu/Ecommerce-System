@@ -128,5 +128,10 @@ namespace MarketBackend.Domain.Market_Client{
             RuleRepositoryRAM.GetInstance().Update(this);
         }
 
+        public override RuleDTO CloneDTO()
+        {
+            return new CompositeRuleDTO(this);
+        }
+
     }
 }
