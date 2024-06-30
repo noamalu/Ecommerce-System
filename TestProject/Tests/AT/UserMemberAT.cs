@@ -76,7 +76,7 @@ namespace MarketBackend.Tests.AT
 
         [TestCleanup]
         public void CleanUp(){
-            // DBcontext.GetInstance().Dispose();
+            DBcontext.GetInstance().Dispose();
             proxy.Dispose();
         }
 
