@@ -35,9 +35,6 @@ namespace MarketBackend.Domain.Market_Client{
         public abstract bool Predicate(Basket basket);
         public abstract void Update();
 
-        internal RuleDTO CloneDTO()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract RuleDTO CloneDTO();
     }
 }
