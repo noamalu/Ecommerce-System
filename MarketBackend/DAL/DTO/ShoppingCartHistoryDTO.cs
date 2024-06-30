@@ -15,17 +15,19 @@ namespace MarketBackend.DAL.DTO
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int  ShoppingCartId { get; set; }
-        public Dictionary<int, BasketDTO> _baskets = new();
-        public Dictionary<int, ProductDTO> _products = new();        
+        public List<BasketDTO> _baskets = new();
+        public List<ProductDTO> _products = new();        
 
         public ShoppingCartHistoryDTO(ShoppingCartHistory cart) {
             ShoppingCartId = cart._shoppingCartId;
             _baskets = new();
             foreach(var basket in cart._baskets)
-                _baskets.Add(basket.Key, DBcontext.GetInstance().Baskets.Find(basket.Key));
+                _baskets.Add(DBcontext.GetInstance().Baskets.Find(basket.Key));
             _products = new();
             foreach(var product in cart._products)
-                _products.Add(product.Key, DBcontext.GetInstance().Products.Find(product.Key));
+                _products.Add(DBcontext.GetInstance().Products.Find(product.Key));
         }
+
+        public ShoppingCartHistoryDTO() { }
     }
 }

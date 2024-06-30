@@ -14,7 +14,7 @@ namespace MarketBackend.Domain.Market_Client
         public string UserName {get; set;}
         public string Password {get; set;}
         public MailAddress Email {get; set;}
-        public ConcurrentDictionary<int, Role> Roles {get; set;}
+        // public ConcurrentDictionary<int, Role> Roles {get; set;}
         public ConcurrentDictionary<int,ShoppingCartHistory> OrderHistory {get; set;}
         public bool IsSystemAdmin {get; set;}
         public bool IsLoggedIn {get; set;}
@@ -29,7 +29,7 @@ namespace MarketBackend.Domain.Market_Client
             UserName = userName;
             Password = password;
             Email = mailAddress;
-            Roles = new(); 
+            // Roles = new(); 
             OrderHistory = new(); 
             IsSystemAdmin = false;
             IsLoggedIn = false;
@@ -41,9 +41,18 @@ namespace MarketBackend.Domain.Market_Client
         {            
             UserName = other.UserName;
             Password = other.Password;
-            Email = other.Email;
-            Roles = new ConcurrentDictionary<int, Role>(other.Roles.ToDictionary(pair => pair.Key, pair => RoleDTO.ConvertToRole(pair.Value)));
-            OrderHistory = new ConcurrentDictionary<int, ShoppingCartHistory>(other.OrderHistory.ToDictionary(pair => pair.Key, pair => new ShoppingCartHistory(pair.Value)));
+            OrderHistory = new ConcurrentDictionary<int, ShoppingCartHistory>();
+            foreach (ShoppingCartHistoryDTO historyDTO in other.OrderHistory)
+            {
+                ShoppingCartHistory history = new(historyDTO);
+                OrderHistory.TryAdd(history._shoppingCartId, history);
+            }
+            // Roles = new ConcurrentDictionary<int, Role>();
+            // foreach (RoleDTO roleDTO in other.Roles)
+            // {
+            //     Role role = new(roleDTO);
+            //     Roles.TryAdd(role.storeId, role);
+            // }
             IsSystemAdmin = other.IsSystemAdmin;
             IsLoggedIn = false;
             IsNotification = other.IsNotification;

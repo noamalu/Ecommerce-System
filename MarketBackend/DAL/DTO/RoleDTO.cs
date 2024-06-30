@@ -9,15 +9,15 @@ using System.Threading.Tasks;
 
 namespace MarketBackend.DAL.DTO
 {
-    [Table("Baskets")]
+    [Table("Roles")]
     public class RoleDTO
     {
-        [Key]
-        [ForeignKey("StoreDTO")]
+        [Key, Column(Order = 0)]
+        [ForeignKey("Stores")]
         public int storeId { get; }
         
-        [Key]
-        [ForeignKey("MemberDTO")]
+        [Key, Column(Order = 1)]
+        [ForeignKey("Members")]
         public string userName { get; }
 
         public RoleTypeDTO role { get; }
@@ -34,6 +34,8 @@ namespace MarketBackend.DAL.DTO
             foreach (Member member in role.appointees)
                 appointees.Add(new MemberDTO(member));
         }
+
+        public RoleDTO(){}
 
         public static Role ConvertToRole(RoleDTO roleDto)
         {

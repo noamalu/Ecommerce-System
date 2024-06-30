@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace MarketBackend.DAL.DTO
 {
-    [Table("ToleTypes")]
+    [Table("RoleTypes")]
     public class RoleTypeDTO
     {
         [Key]

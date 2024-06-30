@@ -50,7 +50,7 @@ namespace MarketBackend.DAL
             UsernamexMember.Add(item.UserName, item);
             lock (Lock)
             {
-                dbContext.Clients.Add(new MemberDTO(item));
+                dbContext.Members.Add(new MemberDTO(item));
             }
 
         }
@@ -60,7 +60,7 @@ namespace MarketBackend.DAL
             lock (Lock)
             {
                 var dbContext = DBcontext.GetInstance();
-                var dbMember = dbContext.Clients.Find(id);
+                var dbMember = dbContext.Members.Find(id);
                 if(dbMember is not null) {
                     if (IdxMember.ContainsKey(id))
                     {
@@ -69,7 +69,7 @@ namespace MarketBackend.DAL
                         IdxMember.Remove(id);
                     }
 
-                    dbContext.Clients.Remove(dbMember);
+                    dbContext.Members.Remove(dbMember);
                     dbContext.SaveChanges();
                 }
             }
@@ -87,7 +87,7 @@ namespace MarketBackend.DAL
             else
             {
                 var dbContext = DBcontext.GetInstance();
-                MemberDTO mDto = dbContext.Clients.Find(id);
+                MemberDTO mDto = dbContext.Members.Find(id);
                 if (mDto != null)
                 {
                     LoadMember(mDto);
@@ -158,7 +158,7 @@ namespace MarketBackend.DAL
         private void Load()
         {
             var dbContext = DBcontext.GetInstance();
-            List<MemberDTO> members = dbContext.Clients.ToList();
+            List<MemberDTO> members = dbContext.Members.ToList();
             foreach (MemberDTO member in members)
             {
                 IdxMember.TryAdd(member.Id, new Member(member));

@@ -20,6 +20,12 @@ namespace MarketBackend.Domain.Market_Client
             permissions = new HashSet<Permission>();
         }
 
+        public RoleType(RoleName roleName, HashSet<Permission> permissions)
+        {
+            this.roleName = roleName;
+            this.permissions = permissions;
+        }
+
         //default is *can* do, and according to specific roles, false will be returned from override
         public virtual bool canAddProduct() { return true; }
         public virtual bool canRemoveProduct() { return true; }

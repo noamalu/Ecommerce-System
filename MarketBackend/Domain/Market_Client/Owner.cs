@@ -10,6 +10,8 @@ namespace MarketBackend.Domain.Market_Client
     {
         public Owner(RoleName roleName) : base(roleName) { }
 
+        public Owner(RoleName roleName, HashSet<Permission> permissions) : base(roleName, permissions) { }
+
         public override bool canCloseStore() { return false; }
 
         public override void addPermission(Permission permission)

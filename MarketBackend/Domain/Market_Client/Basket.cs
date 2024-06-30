@@ -27,10 +27,15 @@ namespace MarketBackend.Domain.Market_Client
 
         public Basket(BasketDTO other)
         {
-            _basketId = other._basketId;
-            _storeId = other._storeId;
-            products = other.products;
-            _basketItems = new(other.BasketItems);            
+            _basketId = other.BasketId;
+            _storeId = other.StoreId;
+            _basketItems = new(other.BasketItems);
+            List<ProductDTO> productDTOs = other.Products;
+            foreach (ProductDTO productDTO in productDTOs)
+            {
+                Product product = new Product(productDTO);
+                products[product.ProductId] = productDTO.Quantity;
+            }         
         }
 
         public void addToBasket(int productId, int quantity){

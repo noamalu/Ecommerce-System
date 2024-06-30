@@ -8,7 +8,7 @@ namespace MarketBackend.DAL.DTO
 {
     public class CompositeRuleDTO : RuleDTO
     {
-         public List<RuleDTO> Rules { get; set; }
+        public List<RuleDTO> Rules { get; set; }
         public string Operator { get; set; }
         public CompositeRuleDTO() { }
         public CompositeRuleDTO(RuleSubjectDTO subject, List<RuleDTO> rules, string op) : base(subject) {
