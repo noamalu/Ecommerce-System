@@ -65,7 +65,9 @@ namespace MarketBackend.Domain.Market_Client
                 {
                     DBcontext dBcontext = DBcontext.GetInstance();
                     BasketItemDTO basketItemDTO = new BasketItemDTO(basketItem);
-                    dBcontext.BasketItems.Add(basketItemDTO);
+                    // dBcontext.BasketItems.Add(basketItemDTO);
+                    BasketDTO basketDTO = dBcontext.Baskets.Find(_basketId);
+                    basketDTO.BasketItems.Add(basketItemDTO);
                     dBcontext.SaveChanges();
                 }
             }
