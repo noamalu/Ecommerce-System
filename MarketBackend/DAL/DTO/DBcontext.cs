@@ -44,25 +44,25 @@ namespace MarketBackend.DAL.DTO
 
         public override void Dispose()
         {
-            // Stores.ExecuteDelete();
-            // Members.ExecuteDelete();
-            // Roles.ExecuteDelete();
-            // ShoppingCarts.ExecuteDelete();
-            // Baskets.ExecuteDelete();
-            // BasketItems.ExecuteDelete();
-            // Purchases.ExecuteDelete();
-            // Products.ExecuteDelete();
-            // Policies.ExecuteDelete();
-            // PolicySubjects.ExecuteDelete();
-            // PurchasePolicies.ExecuteDelete();
-            // DiscountPolicies.ExecuteDelete();
-            // DiscountCompositePolicies.ExecuteDelete();
-            // Rules.ExecuteDelete();
-            // RuleSubjects.ExecuteDelete();
-            // CompositeRules.ExecuteDelete();
-            // SimplelRules.ExecuteDelete();
-            // TotalPriceRules.ExecuteDelete();
-            // QuantityRules.ExecuteDelete();
+            Stores.ExecuteDelete();
+            Members.ExecuteDelete();
+            Roles.ExecuteDelete();
+            ShoppingCarts.ExecuteDelete();
+            Baskets.ExecuteDelete();
+            BasketItems.ExecuteDelete();
+            Purchases.ExecuteDelete();
+            Products.ExecuteDelete();
+            Policies.ExecuteDelete();
+            PolicySubjects.ExecuteDelete();
+            PurchasePolicies.ExecuteDelete();
+            DiscountPolicies.ExecuteDelete();
+            DiscountCompositePolicies.ExecuteDelete();
+            Rules.ExecuteDelete();
+            RuleSubjects.ExecuteDelete();
+            CompositeRules.ExecuteDelete();
+            SimplelRules.ExecuteDelete();
+            TotalPriceRules.ExecuteDelete();
+            QuantityRules.ExecuteDelete();
             SaveChanges();
             _instance = new DBcontext();
         }
