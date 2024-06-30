@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using MarketBackend.DAL.DTO;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Models;
 using MarketBackend.Domain.Payment;
@@ -47,6 +48,7 @@ namespace MarketBackend.Tests.IT
         public void Setup()
         {
             // Initialize the managers and mock systems
+            DBcontext.GetInstance().Dispose();
             MarketManagerFacade.Dispose();
             mockShippingSystem = new Mock<IShippingSystemFacade>();
             mockPaymentSystem = new Mock<IPaymentSystemFacade>();
@@ -71,6 +73,7 @@ namespace MarketBackend.Tests.IT
         [TestCleanup]
         public void Cleanup()
         {
+            DBcontext.GetInstance().Dispose();
             MarketManagerFacade.Dispose();
         }
 
