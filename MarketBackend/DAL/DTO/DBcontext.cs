@@ -15,10 +15,12 @@ namespace MarketBackend.DAL.DTO
         public static bool LocalMode = true;
 
         public virtual DbSet<MemberDTO> Members { get; set; }
+        public virtual DbSet<MessageDTO> Messages { get; set; }
         public virtual DbSet<StoreDTO> Stores { get; set; }
         public virtual DbSet<RoleDTO> Roles { get; set; }
 
         public virtual DbSet<ShoppingCartDTO> ShoppingCarts { get; set; }
+        public virtual DbSet<ShoppingCartHistoryDTO> ShoppingCartHistories { get; set; }
         public virtual DbSet<BasketDTO> Baskets { get; set; }
         public virtual DbSet<BasketItemDTO> BasketItems { get; set; }
         public virtual DbSet<ProductDTO> Products { get; set; }
@@ -44,25 +46,28 @@ namespace MarketBackend.DAL.DTO
 
         public override void Dispose()
         {
-            Stores.ExecuteDelete();
-            Members.ExecuteDelete();
-            Roles.ExecuteDelete();
-            ShoppingCarts.ExecuteDelete();
-            Baskets.ExecuteDelete();
-            BasketItems.ExecuteDelete();
-            Purchases.ExecuteDelete();
-            Products.ExecuteDelete();
-            Policies.ExecuteDelete();
-            PolicySubjects.ExecuteDelete();
-            PurchasePolicies.ExecuteDelete();
-            DiscountPolicies.ExecuteDelete();
-            DiscountCompositePolicies.ExecuteDelete();
+            Events.ExecuteDelete();
             Rules.ExecuteDelete();
             RuleSubjects.ExecuteDelete();
             CompositeRules.ExecuteDelete();
             SimplelRules.ExecuteDelete();
             TotalPriceRules.ExecuteDelete();
             QuantityRules.ExecuteDelete();
+            Policies.ExecuteDelete();
+            PolicySubjects.ExecuteDelete();
+            PurchasePolicies.ExecuteDelete();
+            DiscountPolicies.ExecuteDelete();
+            DiscountCompositePolicies.ExecuteDelete();
+            Messages.ExecuteDelete();
+            BasketItems.ExecuteDelete();
+            Baskets.ExecuteDelete();
+            Purchases.ExecuteDelete();
+            ShoppingCartHistories.ExecuteDelete();
+            ShoppingCarts.ExecuteDelete();
+            Products.ExecuteDelete();
+            Stores.ExecuteDelete();
+            Members.ExecuteDelete();
+            Roles.ExecuteDelete();
             SaveChanges();
             _instance = new DBcontext();
         }
@@ -87,12 +92,12 @@ namespace MarketBackend.DAL.DTO
         {
             DbPathLocal = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=MarketDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;Application Intent=ReadWrite;MultiSubnetFailover=False";
     
-            DbPathRemote = "Server=tcp:market-db-server.database.windows.net,1433;Initial Catalog=MarketDB;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=\"Active Directory Default\";";
+            DbPathRemote = "Server=tcp:ecommercemarketserver.database.windows.net,1433;Initial Catalog=MarketDB;Persist Security Info=False;User ID=Market;Password=BGU!123456;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
             if (LocalMode)
                 DbPath = DbPathLocal;
             else
                 DbPath = DbPathRemote;
-            DbPath = DbPathLocal;
+            DbPath = DbPathRemote;
         }
         public static void SetLocalDB()
         {
@@ -231,6 +236,9 @@ namespace MarketBackend.DAL.DTO
                 .HasMany<ProductDTO>(s => s._products)
                 .WithOne()
                 .OnDelete(DeleteBehavior.Cascade);
+                
+            modelBuilder.Entity<ShoppingCartHistoryDTO>()
+                .HasKey(r => new { r.ShoppingCartId });
 
 
             // SHoppingCartDTO
