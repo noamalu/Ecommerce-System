@@ -74,7 +74,7 @@ namespace MarketBackend.DAL
 
         public void Delete(Product product)
         {
-            if (!_productById.TryRemove(product.ProductId, out Product _))
+            if (_productById.TryRemove(product.ProductId, out Product _))
             {
                 lock (_lock)
                 {

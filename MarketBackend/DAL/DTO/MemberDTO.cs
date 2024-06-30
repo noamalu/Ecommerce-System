@@ -47,15 +47,15 @@ namespace MarketBackend.DAL.DTO
             IsSystemAdmin = false;
         }
 
-        public MemberDTO(int id, string userName, string password, bool notification)
+        public MemberDTO(int id, string userName, string password, List<MessageDTO> alerts, bool notification, ShoppingCartDTO shoppingCart, List<ShoppingCartHistoryDTO> orderHistory)
         {
             Id = id;
             UserName = userName;
             Password = password;
-            Alerts = new List<MessageDTO>();
+            if (alerts != null) Alerts = alerts; else Alerts = new ();
             IsNotification = notification;
-            ShoppingCart = new ShoppingCartDTO(id);
-            OrderHistory = new ();
+            ShoppingCart = shoppingCart;
+            OrderHistory = orderHistory;
             IsSystemAdmin = false;
         }
         public MemberDTO(Member member)
