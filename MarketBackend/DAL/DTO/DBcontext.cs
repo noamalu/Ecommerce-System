@@ -46,6 +46,7 @@ namespace MarketBackend.DAL.DTO
 
         public override void Dispose()
         {
+            
             Events.ExecuteDelete();
             Rules.ExecuteDelete();
             RuleSubjects.ExecuteDelete();
