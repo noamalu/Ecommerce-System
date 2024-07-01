@@ -1,3 +1,4 @@
+using MarketBackend.DAL.DTO;
 using MarketBackend.Domain.Shipping;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -20,9 +21,16 @@ namespace UnitTests
         [TestInitialize]
         public void SetUp()
         {
+            DBcontext.GetInstance().Dispose();
             shippingSystem = new ShippingSystemProxy();
             shippingDetails = new ShippingDetails(name, city, address, country, zipcode);
             shippingSystem.Connect();
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            DBcontext.GetInstance().Dispose();
         }
 
         [TestMethod]

@@ -1,3 +1,4 @@
+using MarketBackend.DAL.DTO;
 using MarketBackend.Domain.Payment;
 using Moq;
 
@@ -22,10 +23,17 @@ namespace UnitTests
         [TestInitialize]
         public void SetUp()
         {
+            DBcontext.GetInstance().Dispose();
             paymentSystem = new PaymentSystemProxy();
             paymentDetails = new PaymentDetails(cardNumber, exprYear, exprMonth, cvv, cardID, name);
             paymentSystem.Connect();
             
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            DBcontext.GetInstance().Dispose();
         }
 
         [TestMethod]

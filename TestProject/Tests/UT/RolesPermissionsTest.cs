@@ -1,4 +1,5 @@
-﻿using MarketBackend.Domain.Market_Client;
+﻿using MarketBackend.DAL.DTO;
+using MarketBackend.Domain.Market_Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,9 +22,16 @@ namespace UnitTests
         [TestInitialize]
         public void SetUp()
         {
+            DBcontext.GetInstance().Dispose();
             founder = new Role(new Founder(RoleName.Founder), null, 0, username0);
             owner = new Role(new Owner(RoleName.Owner), null, 0, username1);
             manager = new Role(new StoreManagerRole(RoleName.Manager), null, 0, username2);
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            DBcontext.GetInstance().Dispose();
         }
 
         [TestMethod]
