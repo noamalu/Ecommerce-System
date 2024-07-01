@@ -712,13 +712,13 @@ namespace MarketBackend.Services
         {
             try
             {
-                var stores = marketManagerFacade.GetStores();
-                logger.Info($"Get stores succeed.");
+                var stores = _marketManagerFacade.GetStores();
+                _logger.Info($"Get stores succeed.");
                 return Response<List<StoreResultDto>>.FromValue(stores.Select(store => new StoreResultDto(store)).ToList());
             }
             catch (Exception e)
             {
-                logger.Error($"Error in fetching stores. Error message: {e.Message}");
+                _logger.Error($"Error in fetching stores. Error message: {e.Message}");
                 return Response<List<StoreResultDto>>.FromError(e.Message);
             }
         }

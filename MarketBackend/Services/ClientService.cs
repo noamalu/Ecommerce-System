@@ -280,13 +280,13 @@ namespace MarketBackend.Services
         {
            try
             {
-                var notifications = marketManagerFacade.GetMemberNotifications(identifier);
-                logger.Info($"fetched client {identifier} notifications successfuly.");
+                var notifications = _marketManagerFacade.GetMemberNotifications(identifier);
+                _logger.Info($"fetched client {identifier} notifications successfuly.");
                 return Response<List<MessageResultDto>>.FromValue(notifications.Select(notification => new MessageResultDto(notification)).ToList());
             }
             catch (Exception e)
             {
-                logger.Error($"Error in fetching client {identifier} notifications. Error message: {e.Message}");
+                _logger.Error($"Error in fetching client {identifier} notifications. Error message: {e.Message}");
                 return Response<List<MessageResultDto>>.FromError(e.Message);
             }    
         }
@@ -295,13 +295,13 @@ namespace MarketBackend.Services
         {
             try
             {
-                marketManagerFacade.SetMemberNotifications(identifier, on);
-                logger.Info($"set client {identifier} notifications successfuly.");
+                _marketManagerFacade.SetMemberNotifications(identifier, on);
+                _logger.Info($"set client {identifier} notifications successfuly.");
                 return new Response();
             }
             catch (Exception e)
             {
-                logger.Error($"Error in setting client {identifier} notifications. Error message: {e.Message}");
+                _logger.Error($"Error in setting client {identifier} notifications. Error message: {e.Message}");
                 return new Response(e.Message);
             } 
         }
