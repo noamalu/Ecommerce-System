@@ -82,7 +82,7 @@ namespace MarketBackend.Services
             {
                 var product = _marketManagerFacade.AddProduct(storeId, identifier, name, sellMethod, description, price, category, quantity, ageLimit);
                 _logger.Info($"Client {identifier} added product {name} store {storeId} with sellmethod {sellMethod}, description {description}, category {category}, price {price}, quantity {quantity}, ageLimit {ageLimit}.");
-                return Response<int>.FromValue(product._productid);
+                return Response<int>.FromValue(product._productId);
             }
             catch (Exception e)
             {
