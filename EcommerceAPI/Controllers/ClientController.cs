@@ -263,6 +263,36 @@ namespace EcommerceAPI.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("Client/Notifications")]
+        public async Task<ObjectResult> GetMemberNotifications([Required][FromQuery]string identifier)
+        {
+            Response<List<MessageResultDto>> response = await Task.Run(() => _clientService.GetMemberNotifications(identifier));
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<List<MessageResultDto>>.OkResponse(response.Value));
+            }
+        }
+
+        [HttpPost]
+        [Route("Client/Notifications")]
+        public async Task<ObjectResult> SetMemberNotifications([Required][FromQuery]string identifier, [FromQuery]bool on)
+        {
+            Response response = await Task.Run(() => _clientService.SetMemberNotifications(identifier, on));
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<string>.OkResponse("succses"));
+            }
+        }
+
         [HttpPost]
         [Route("Guest/exit")]
         public async Task<ObjectResult> ExitGuest([Required][FromQuery]string identifier)
