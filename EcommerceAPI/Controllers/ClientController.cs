@@ -334,35 +334,35 @@ namespace EcommerceAPI.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("Client/AskOwner")]
-        public async Task<ObjectResult> AskToStoreOwnerReq([Required][FromQuery] string identifier,[FromQuery] int storeId, [FromQuery] string toAddUserName)
-        {
-            Response response = await Task.Run(() => _clientService.AskToStoreOwnershipReq(identifier, storeId, toAddUserName));
-            if (response.ErrorOccured)
-            {
-                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
-            }
-            else
-            {
-                return Ok(ServerResponse<string>.OkResponse("succses"));
-            }
-        }
+        // [HttpPost]
+        // [Route("Client/AskOwner")]
+        // public async Task<ObjectResult> AskToStoreOwnerReq([Required][FromQuery] string identifier,[FromQuery] int storeId, [FromQuery] string toAddUserName)
+        // {
+        //     Response response = await Task.Run(() => _clientService.AskToStoreOwnershipReq(identifier, storeId, toAddUserName));
+        //     if (response.ErrorOccured)
+        //     {
+        //         return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+        //     }
+        //     else
+        //     {
+        //         return Ok(ServerResponse<string>.OkResponse("succses"));
+        //     }
+        // }
 
-        [HttpPost]
-        [Route("Client/AskManager")]
-        public async Task<ObjectResult> AskToStoreManagerReq([Required][FromQuery] string identifier, [FromQuery] int storeId, [FromQuery] string toAddUserName)
-        {
-            Response response = await Task.Run(() => _clientService.AskToStoreManageReq(identifier, storeId, toAddUserName));
-            if (response.ErrorOccured)
-            {
-                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
-            }
-            else
-            {
-                return Ok(ServerResponse<string>.OkResponse("succses"));
-            }
-        }
+        // [HttpPost]
+        // [Route("Client/AskManager")]
+        // public async Task<ObjectResult> AskToStoreManagerReq([Required][FromQuery] string identifier, [FromQuery] int storeId, [FromQuery] string toAddUserName)
+        // {
+        //////     Response response = await Task.Run(() => _clientService.AskToStoreManageReq(identifier, storeId, toAddUserName));
+        //////     if (response.ErrorOccured)
+        //////     {
+        //////         return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+        //////     }
+        //////     else
+        //////     {
+        //         return Ok(ServerResponse<string>.OkResponse("succses"));
+        //     }
+        // }
 
         [HttpPost]
         [Route("Client/ResOwner")]

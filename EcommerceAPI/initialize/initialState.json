@@ -54,17 +54,19 @@
             "PhoneNum": "s1",
             "Scenario": "CreateStore"
         },
-        {
-            "Username": "u2",
-            "Identifier": "2",
-            "StoreId": "1",
-            "ProductName": "Bamba",
-            "Description": "the best Israeli snack ever",
-            "Price": 30.0,
-            "Quantity": 20,
-            "KeyWords": ["snack", "food", "israeli"],
-            "Scenario": "AddProduct"
-        },
+      {
+        "Username": "u2",
+        "Identifier": "2",
+        "StoreId": "1",
+        "ProductName": "Bamba",
+        "Description": "the best Israeli snack ever",
+        "Price": 30.0,
+        "Quantity": 20,
+        "KeyWords": [ "snack", "food", "israeli" ],
+        "Scenario": "AddProduct",
+        "Category": "Snack",
+        "SellMethod": "RegularSell"
+      },
         {
             "Username": "u2",
             "Identifier": "2",

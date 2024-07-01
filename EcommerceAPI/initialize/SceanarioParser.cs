@@ -145,7 +145,10 @@ public class SceanarioParser
                     ProductName = usecaseJson["ProductName"].ToString(),
                     ProductDescription = usecaseJson["Description"].ToString(),
                     Price = double.Parse(usecaseJson["Price"].ToString()),
-                    Quantity = int.Parse(usecaseJson["Quantity"].ToString())
+                    Quantity = int.Parse(usecaseJson["Quantity"].ToString()),
+                    Category = usecaseJson["Category"].ToString(),
+                    SellMethod = usecaseJson["SellMethod"].ToString()
+
                 };
                 var res = _marketService.AddProduct(
                     productDto.StoreId,
@@ -181,8 +184,8 @@ public class SceanarioParser
             {
                 var staffMemberDto = new StaffMemberDto
                 {
-                    MemberUserName = usecaseJson["MemberUserName"].ToString(),
-                    RoleName = usecaseJson["RoleName"].ToString()
+                    MemberUserName = usecaseJson["Username"].ToString(),
+                    RoleName = usecaseJson["Role"].ToString()
                 };
                 var res = _marketService.AddStaffMember(
                     int.Parse(usecaseJson["StoreId"].ToString()),
