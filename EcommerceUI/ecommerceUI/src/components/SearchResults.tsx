@@ -30,7 +30,7 @@ export const SearchResults = ({query, filter} : {query :string,  filter: string}
 
                 const data = await response.json();
                 setDataValue(data.value);
-                console.log(dataValue);
+                // console.log(dataValue);
             } catch (error) {
                 console.error('Error:', error);
             }
@@ -52,7 +52,6 @@ export const SearchResults = ({query, filter} : {query :string,  filter: string}
                         price={product.price} addToCart={function (storeId: number, productId: number): void {
                             throw new Error("Function not implemented.");
                         } } storeId={product.storeId} productId={product.id}  />
-                        {/* } } storeId={1} productId={product.id}  /> */}
                     </Col>
                 ))}
               </Row> }
