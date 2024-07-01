@@ -724,6 +724,11 @@ namespace MarketBackend.Domain.Market_Client
             _clientManager.SetMemberNotifications( identifier,  on);
             
         }
+
+        public string GetTokenByUserName(string userName)
+        {
+            return _clientManager.GetTokenByUserName(userName);
+        }
         // ---------------------------------------------------------
 
     }

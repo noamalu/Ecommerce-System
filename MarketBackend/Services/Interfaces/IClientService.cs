@@ -29,5 +29,6 @@ namespace MarketBackend.Services.Interfaces
         public Response<StoreResultDto> GetMemberStore(string identifier, int storeId);
         public Response<List<MessageResultDto>> GetMemberNotifications(string identifier);
         public Response SetMemberNotifications(string identifier, bool on);
+        public Response<string> GetTokenByUserName(string userName);
     }
 }

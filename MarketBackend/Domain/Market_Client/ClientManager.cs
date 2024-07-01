@@ -327,6 +327,10 @@ namespace MarketBackend.Domain.Market_Client
                 NotificationOff(identifier);
             }
         }
+        public string GetTokenByUserName(string userName)
+        {
+            return MemberByToken.Where(pair => pair.Value.UserName == userName).FirstOrDefault().Key;
+        }
     }
    
 }
