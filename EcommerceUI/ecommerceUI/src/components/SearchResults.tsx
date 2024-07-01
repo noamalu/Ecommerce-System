@@ -51,8 +51,8 @@ export const SearchResults = ({query, filter} : {query :string,  filter: string}
                         description={product.description}
                         price={product.price} addToCart={function (storeId: number, productId: number): void {
                             throw new Error("Function not implemented.");
-                        // } } storeId={product.storeId} productId={product.id}  />
-                        } } storeId={1} productId={product.id}  />
+                        } } storeId={product.storeId} productId={product.id}  />
+                        {/* } } storeId={1} productId={product.id}  /> */}
                     </Col>
                 ))}
               </Row> }
