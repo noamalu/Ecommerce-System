@@ -20,15 +20,18 @@ namespace EcommerceAPI.Controllers
     [Route("api/Client")]
     public class ClientController : ControllerBase
     {
-        public WebSocketServer AlertServer { get; set; }
-        public WebSocketServer LogServer { get; set; }
+        private WebSocketServer _alertServer;
+        private WebSocketServer _logServer;
         private IClientService _clientService;
 
         private static Dictionary<string, IList<string>> _clientPendingAlerts = new();
         private static Dictionary<string, string> _alertPathByclientIdentifier = new();
-        public ClientController(IClientService clientService)
+        public ClientController(WebSocketServer alerts, WebSocketServer logs, IShippingSystemFacade shippingSystemFacade, IPaymentSystemFacade paymentSystem)
         {
-            _clientService = clientService;
+            this._clientService = ClientService.GetInstance(shippingSystemFacade, paymentSystem);
+            this._alertServer = alerts;
+            NotificationManager.GetInstance(alerts);
+            this._logServer = logs;
         }
         private class NotificationsService : WebSocketBehavior
         {
@@ -41,14 +44,14 @@ namespace EcommerceAPI.Controllers
         
         [HttpPost]
         [Route("Guest/Login")]
-        public async Task<ObjectResult> Login([FromBody] ClientDto client)
+        public async Task<ActionResult<ServerResponse<string>>> Login([FromBody] ClientDto client)
         {
             string relativePath = $"/{client.Username}-alerts";
             try
             {
-                if (AlertServer.WebSocketServices[relativePath] == null)
+                if (_alertServer.WebSocketServices[relativePath] == null)
                 {
-                    AlertServer.AddWebSocketService<NotificationsService>(relativePath);
+                    _alertServer.AddWebSocketService<NotificationsService>(relativePath);
 
                 }
             }
@@ -64,7 +67,7 @@ namespace EcommerceAPI.Controllers
             Response<string> response = await Task.Run(() => _clientService.LoginClient(client.Username, client.Password));
             if (response.ErrorOccured)
             {
-                AlertServer.RemoveWebSocketService(relativePath);
+                _alertServer.RemoveWebSocketService(relativePath);
                 var loginResponse = new ServerResponse<string>
                 {
                     ErrorMessage = response.ErrorMessage,
@@ -89,7 +92,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Member/Logout")]
-        public async Task<ObjectResult> Logout([Required][FromQuery]string identifier)
+        public async Task<ActionResult<ServerResponse<string>>> Logout([Required][FromQuery]string identifier)
         {
             Response response = await Task.Run(() => _clientService.LogoutClient(identifier));
             ServerResponse<string> logoutResponse;
@@ -103,7 +106,7 @@ namespace EcommerceAPI.Controllers
             }
             if (_alertPathByclientIdentifier.ContainsKey(identifier))
             {
-                AlertServer.RemoveWebSocketService(_alertPathByclientIdentifier[identifier]);
+                _alertServer.RemoveWebSocketService(_alertPathByclientIdentifier[identifier]);
                 _alertPathByclientIdentifier.Remove(identifier);
             }
             logoutResponse = new ServerResponse<string>
@@ -115,7 +118,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Guest")]
-        public async Task<ObjectResult> EnterAsGuest()
+        public async Task<ActionResult<ServerResponse<string>>> EnterAsGuest()
         {
             string session = HttpContext.Session.Id;
             Response response = await Task.Run(() => _clientService.EnterAsGuest(session));
@@ -139,7 +142,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Guest/Register")]
-        public async Task<ObjectResult> Register([FromBody] ExtendedClientDto client)
+        public async Task<ActionResult<ServerResponse<string>>> Register([FromBody] ExtendedClientDto client)
         {
             Response response = await Task.Run(() => _clientService.Register(client.Username, client.Password, client.Email, client.Age));
             if (response.ErrorOccured)
@@ -163,7 +166,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpPut] //client controller
         [Route("Cart")]
-        public async Task<ObjectResult> UpdateCart([Required][FromQuery]string identifier, [FromBody] ProductDto product)
+        public async Task<ActionResult<ServerResponse<string>>> UpdateCart([Required][FromQuery]string identifier, [FromBody] ProductDto product)
         {
             if(!product.IsValidForCart()) return BadRequest("product must contain id, store id and product name");
 
@@ -295,7 +298,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Guest/exit")]
-        public async Task<ObjectResult> ExitGuest([Required][FromQuery]string identifier)
+        public async Task<ActionResult<ServerResponse<string>>> ExitGuest([Required][FromQuery]string identifier)
         {
             Response response = await Task.Run(() => _clientService.ExitGuest(identifier));
             if (response.ErrorOccured)
@@ -328,6 +331,36 @@ namespace EcommerceAPI.Controllers
             else
             {
                 return Ok(ServerResponse<bool>.OkResponse(response.Value));
+            }
+        }
+
+        [HttpPost]
+        [Route("Client/AskOwner")]
+        public async Task<ObjectResult> AskToStoreOwnerReq([Required][FromQuery] string identifier,[FromQuery] int storeId, [FromQuery] string toAddUserName)
+        {
+            Response response = await Task.Run(() => _clientService.AskToStoreOwnershipReq(identifier, storeId, toAddUserName));
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<string>.OkResponse("succses"));
+            }
+        }
+
+        [HttpPost]
+        [Route("Client/AskManager")]
+        public async Task<ObjectResult> AskToStoreManagerReq([Required][FromQuery] string identifier, [FromQuery] int storeId, [FromQuery] string toAddUserName)
+        {
+            Response response = await Task.Run(() => _clientService.AskToStoreManageReq(identifier, storeId, toAddUserName));
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<string>.OkResponse("succses"));
             }
         }
 

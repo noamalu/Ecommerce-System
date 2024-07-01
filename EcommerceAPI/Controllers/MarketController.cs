@@ -42,16 +42,19 @@ namespace EcommerceAPI.Controllers
     [Route("api/Market")]
     public class MarketController : ControllerBase
     {
-        public WebSocketServer AlertServer { get; set; }
-        public WebSocketServer LogServer { get; set; }
+        private WebSocketServer _alertServer;
+        private WebSocketServer _logServer;
         private IMarketService _marketService;
 
         private static IDictionary<string, IList<string>> buyerUnsentMessages = new Dictionary<string, IList<string>>();
         private static IDictionary<string, string> buyerIdToRelativeNotificationPath = new Dictionary<string, string>();
-        public MarketController(IMarketService marketService)
+        public MarketController(WebSocketServer alerts, WebSocketServer logs, IShippingSystemFacade shippingSystemFacade, IPaymentSystemFacade paymentSystem)
         {
-            _marketService = marketService;
-        }   
+            this._marketService = MarketService.GetInstance(shippingSystemFacade, paymentSystem);
+            this._alertServer = alerts;
+            NotificationManager.GetInstance(alerts);
+            this._logServer = logs;
+        }
         private class NotificationsService : WebSocketBehavior
         {
 
@@ -59,7 +62,46 @@ namespace EcommerceAPI.Controllers
         public class logsService : WebSocketBehavior
         {
 
-        }                          
+        }                  
+
+        // [HttpPost]
+        // [Route("Staff")]
+        // public async Task<ObjectResult> Appoint([Required][FromQuery]string identifier, [FromBody] StaffMemberDto staffMember)
+        // {
+        //     var role = GetRoleByName(staffMember.Role);
+        //     Response<int> response = await Task.Run(() => _marketService.AddStaffMember(staffMember.StoreId, identifier, new Role(new(role), new(), staffMember.StoreId, staffMember.Id), staffMember.Id));
+            
+        //     if (response.ErrorOccured)
+        //     {
+        //         var appointResponse = new ServerResponse<string>
+        //         {
+        //             ErrorMessage = response.ErrorMessage,
+        //         };
+        //         return BadRequest(appointResponse);
+        //     }
+        //     else
+        //     {
+        //         var appointResponse = new ServerResponse<string>
+        //         {
+        //             Value = "Appoint success",
+        //         };
+        //         return Ok(appointResponse);
+        //     }
+        //     return Ok(response);
+
+        // }
+
+        private RoleName GetRoleByName(string description)
+        {
+            foreach (RoleName roleName in Enum.GetValues(typeof(RoleName)))
+            {
+                if (roleName.GetDescription().Equals(description, StringComparison.OrdinalIgnoreCase))
+                {
+                    return roleName;
+                }
+            }
+            return default;
+        }
 
         [HttpPost]
         [Route("Store/{storeId}/Staff")]
@@ -244,7 +286,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Store/{storeId}/Products/Add")]
-        public async Task<ObjectResult> AddProduct([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] ProductDto product)
+        public async Task<ActionResult<int>> AddProduct([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] ProductDto product)
         {
             if(!product.IsValidCreate()) return BadRequest("product must contain store id and product name");
             Response<int> response = await Task.Run(() => _marketService.AddProduct(storeId, identifier, product.ProductName, product.SellMethod, product.ProductDescription, (double)product.Price, product.Category, product.Quantity, product.AgeLimit));
@@ -289,7 +331,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpGet]
         [Route("Search/KeyWords")]
-        public ObjectResult SearchByKeywords([Required][FromQuery]string identifier, [FromQuery] List<string> keyword)
+        public ActionResult<Response<List<ProductResultDto>>> SearchByKeywords([Required][FromQuery]string identifier, [FromQuery] List<string> keyword)
         {
             var products = new List<ProductResultDto>();
             foreach(var word in keyword){
@@ -307,7 +349,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpGet]
         [Route("Search/Name")]
-        public ObjectResult SearchByNames([Required][FromQuery]string identifier, [FromQuery] List<string> name)
+        public ActionResult<Response<List<ProductResultDto>>> SearchByNames([Required][FromQuery]string identifier, [FromQuery] List<string> name)
         {
             var products = new List<ProductResultDto>();
             foreach(var word in name){
@@ -325,7 +367,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpGet]
         [Route("Search/Category")]
-        public ObjectResult SearchByCategory([Required][FromQuery]string identifier, [FromQuery] List<string> category)
+        public ActionResult<Response<List<ProductResultDto>>> SearchByCategory([Required][FromQuery]string identifier, [FromQuery] List<string> category)
         {
             var products = new List<ProductResultDto>();
             foreach(var word in category){
@@ -343,7 +385,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpGet]
         [Route("Store/Name")]
-        public ObjectResult GetStoreById([Required][FromQuery]string identifier, [FromQuery] int storeId)
+        public ActionResult<Response<string>> GetStoreById([Required][FromQuery]string identifier, [FromQuery] int storeId)
         {            
             Response<string> response = _marketService.GetStoreById(storeId);
             if (response.ErrorOccured)
@@ -367,7 +409,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Store/{storeId}/PurchuseHistory")]
-        public ObjectResult ShowShopPurchaseHistory([Required][FromQuery]string identifier, [FromRoute] int storeId)
+        public ActionResult<Response<List<PurchaseResultDto>>> ShowShopPurchaseHistory([Required][FromQuery]string identifier, [FromRoute] int storeId)
         {
             Response<List<PurchaseResultDto>> response = _marketService.GetPurchaseHistoryByStore(storeId, identifier);
             if (response.ErrorOccured)
@@ -382,7 +424,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpGet]
         [Route("Store/{storeId}/Policies/Discount")]
-        public ObjectResult GetStoreDiscountPolicies([Required][FromQuery]string identifier, [FromRoute] int storeId)
+        public ActionResult<Response<List<DiscountPolicyResultDto>>> GetStoreDiscountPolicies([Required][FromQuery]string identifier, [FromRoute] int storeId)
         {
             Response<List<DiscountPolicyResultDto>> response = _marketService.GetStoreDiscountPolicies(storeId, identifier);
             if (response.ErrorOccured)
@@ -397,7 +439,7 @@ namespace EcommerceAPI.Controllers
         
         [HttpGet]
         [Route("Store/{storeId}/Policies/Purchace")]
-        public ObjectResult GetStorePurchacePolicy([Required][FromQuery]string identifier, [FromRoute] int storeId)
+        public ActionResult<Response<List<PolicyResultDto>>> GetStorePurchacePolicy([Required][FromQuery]string identifier, [FromRoute] int storeId)
         {
             Response<List<PolicyResultDto>> response = _marketService.GetStorePurchacePolicies(storeId, identifier);
             if (response.ErrorOccured)
@@ -413,7 +455,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Store/{storeId}/Policies/Discount")]
-        public ObjectResult CreateStoreDiscountPolicy([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] DiscountPolicyDto policy)
+        public ActionResult<Response<int>> CreateStoreDiscountPolicy([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] DiscountPolicyDto policy)
         {
             Response<int> response = _marketService.AddDiscountPolicy(identifier, storeId, policy.ExpirationDate, policy.Subject, policy.RuleId, policy.Precantage);
             if (response.ErrorOccured)
@@ -428,7 +470,7 @@ namespace EcommerceAPI.Controllers
         
         [HttpPost]
         [Route("Store/{storeId}/Policies/Purchace")]
-        public ObjectResult CreateStorePolicy([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] PolicyDto policy)
+        public ActionResult<Response> CreateStorePolicy([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] PolicyDto policy)
         {
             Response<int> response = _marketService.AddPurchasePolicy(identifier, storeId, policy.ExpirationDate, policy.Subject, policy.RuleId);
             if (response.ErrorOccured)
@@ -443,7 +485,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Store/{storeId}/Policies/Composite")]
-        public ObjectResult CreateStoreCompositePolicy([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] CompositePolicyDto policy)
+        public ActionResult<Response<int>> CreateStoreCompositePolicy([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] CompositePolicyDto policy)
         {
             Response<int> response = _marketService.AddCompositePolicy(identifier, storeId, policy.ExpirationDate, policy.Subject, policy.Operator, policy.Policies);
             if (response.ErrorOccured)
@@ -458,7 +500,7 @@ namespace EcommerceAPI.Controllers
         
         [HttpDelete]
         [Route("Store/{storeId}/Policies/Purchace")]
-        public ObjectResult RemoveStorePolicy([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromQuery] int policyId)
+        public ActionResult<Response> RemoveStorePolicy([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromQuery] int policyId)
         {
             Response response = _marketService.RemovePolicy(identifier, storeId, policyId, "PurchasePolicy");
             if (response.ErrorOccured)
@@ -473,7 +515,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpDelete]
         [Route("Store/{storeId}/Policies/Discount")]
-        public ObjectResult RemoveStoreDiscountPolicy([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromQuery] int policyId)
+        public ActionResult<Response> RemoveStoreDiscountPolicy([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromQuery] int policyId)
         {
             Response response = _marketService.RemovePolicy(identifier, storeId, policyId, "DiscountPolicy");
             if (response.ErrorOccured)
@@ -489,7 +531,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpGet]
         [Route("Store/{storeId}/GetRules")]
-        public ObjectResult GetStoreRules([Required][FromQuery]string identifier, [FromRoute] int storeId)
+        public ActionResult<Response<List<RuleResultDto>>> GetStoreRules([Required][FromQuery]string identifier, [FromRoute] int storeId)
         {
             Response<List<RuleResultDto>> response = _marketService.GetStoreRules(storeId, identifier);
             if (response.ErrorOccured)
@@ -504,7 +546,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Store/{storeId}/AddRule")]
-        public ObjectResult CreateStoreRule([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] RuleDto rule)
+        public ActionResult<Response<int>> CreateStoreRule([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] RuleDto rule)
         {
             if(!rule.IsValid()) return BadRequest("rule must have a subject");
             Response<int> response = _marketService.AddSimpleRule(identifier, storeId, rule.Subject);
@@ -520,7 +562,7 @@ namespace EcommerceAPI.Controllers
         
         [HttpPost]
         [Route("Store/{storeId}/AddRule/Quantity")]
-        public ObjectResult CreateStoreQuantityRule([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] QuantityRuleDto rule)
+        public ActionResult<Response<int>> CreateStoreQuantityRule([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] QuantityRuleDto rule)
         {
             if(!rule.IsValid()) return BadRequest("rule must have a subject");
             Response<int> response = _marketService.AddQuantityRule(identifier, storeId, rule.Subject, rule.MinQuantity, rule.MaxQuantity);
@@ -536,7 +578,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Store/{storeId}/AddRule/TotalPrice")]
-        public ObjectResult CreateStoreTotalPriceRule([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] TotalPriceRuleDto rule)
+        public ActionResult<Response<int>> CreateStoreTotalPriceRule([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] TotalPriceRuleDto rule)
         {
             if(!rule.IsValid()) return BadRequest("rule must have a subject");
             Response<int> response = _marketService.AddTotalPriceRule(identifier, storeId, rule.Subject, rule.TargetPrice);
@@ -552,7 +594,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         [Route("Store/{storeId}/AddRule/CompositeRule")]
-        public ObjectResult CreateStoreCompositeRule([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] CompositeRuleDto rule)
+        public ActionResult<Response<int>> CreateStoreCompositeRule([Required][FromQuery]string identifier, [FromRoute] int storeId, [FromBody] CompositeRuleDto rule)
         {
             if(!rule.IsValid()) return BadRequest("composite rule must have rules");
             Response<int> response = _marketService.AddCompositeRule(identifier, storeId, rule.Operator, rule.Rules);
@@ -568,7 +610,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpGet]
         [Route("Store/{storeId}/Info")]
-        public ObjectResult GetInfo([Required][FromRoute] int storeId)
+        public ActionResult<Response<string>> GetInfo([Required][FromRoute] int storeId)
         {            
             Response<string> response = _marketService.GetInfo(storeId);
             if (response.ErrorOccured)
@@ -591,7 +633,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpGet]
         [Route("Store/{storeId}/Product/{productId}")]
-        public ObjectResult GetProductInfo([Required][FromRoute] int storeId, [FromRoute] int productId)
+        public ActionResult<Response<string>> GetProductInfo([Required][FromRoute] int storeId, [FromRoute] int productId)
         {            
             Response<string> response = _marketService.GetProductInfo(storeId, productId);
             if (response.ErrorOccured)
