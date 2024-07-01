@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MarketBackend.DAL;
+using MarketBackend.DAL.DTO;
+using MarketBackend.Tests.AT;
 
 namespace UnitTests
 {
@@ -15,16 +18,29 @@ namespace UnitTests
         Role manager;
         string username0 = "username0";
         string username1 = "username1";
-        string username2 = "username2";
+        string username2 = "username2"; 
+        RoleRepositoryRAM rrr = RoleRepositoryRAM.GetInstance();
 
 
         [TestInitialize]
         public void SetUp()
         {
+            DBcontext.GetInstance().Dispose();
+
             founder = new Role(new Founder(RoleName.Founder), null, 0, username0);
+            rrr.Add(founder);
             owner = new Role(new Owner(RoleName.Owner), null, 0, username1);
+            rrr.Add(owner);
             manager = new Role(new StoreManagerRole(RoleName.Manager), null, 0, username2);
+            rrr.Add(manager);
         }
+
+        [TestCleanup]
+        public void CleanUp()
+        {
+            DBcontext.GetInstance().Dispose();
+        }
+
 
         [TestMethod]
         public void canAddProductSuccess()
@@ -102,6 +118,7 @@ namespace UnitTests
         public void canUpdateProductQuantitySuccess()
         {
             manager.addPermission(Permission.updateProductQuantity);
+            rrr.Update(manager);
             Assert.IsTrue(manager.canUpdateProductQuantity());
 
             Assert.IsTrue(founder.canUpdateProductQuantity());
