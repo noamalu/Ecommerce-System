@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.IO.Compression;
+using MarketBackend.DAL.DTO;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Models;
 using MarketBackend.Domain.Payment;
@@ -59,6 +60,7 @@ namespace MarketBackend.Tests.IT
         public void Setup()
         {
             // Initialize the managers and mock systems
+            DBcontext.GetInstance().Dispose();
             MarketManagerFacade.Dispose();
             var mockShippingSystem = new Mock<IShippingSystemFacade>();
             var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
@@ -86,6 +88,7 @@ namespace MarketBackend.Tests.IT
         [TestCleanup]
         public void Cleanup()
         {
+            DBcontext.GetInstance().Dispose();
             MarketManagerFacade.Dispose();
         }
 
@@ -103,7 +106,7 @@ namespace MarketBackend.Tests.IT
                     for (int j = 0; j < NumIterations; j++)
                     {
                         Product product = marketManagerFacade.AddProduct(1, token1, productName1, sellmethod, desc, price1, category1, quantity1, false);
-                        marketManagerFacade.RemoveProduct(1, token1, product._productid);
+                        marketManagerFacade.RemoveProduct(1, token1, product._productId);
                     }
                 }));
             }
@@ -124,8 +127,8 @@ namespace MarketBackend.Tests.IT
             Product product = marketManagerFacade.AddProduct(1, token1, productName1, sellmethod, desc, price1, category1, 1, false);
             int storeId = 1;
             Client mem2 = clientManager.GetClientByIdentifier(token2);
-            marketManagerFacade.AddToCart(token1, storeId, product._productid, 1);
-            marketManagerFacade.AddToCart(token2, storeId, product._productid, 1);
+            marketManagerFacade.AddToCart(token1, storeId, product._productId, 1);
+            marketManagerFacade.AddToCart(token2, storeId, product._productId, 1);
 
             // Create multiple threads that attempt to purchase the product
             var threads = new List<Thread>();

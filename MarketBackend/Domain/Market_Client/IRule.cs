@@ -1,3 +1,6 @@
+using MarketBackend.DAL.DTO;
+using Microsoft.EntityFrameworkCore;
+
 namespace MarketBackend.Domain.Market_Client{
     public abstract class IRule{
         private int _id;
@@ -19,8 +22,19 @@ namespace MarketBackend.Domain.Market_Client{
             _storeId = storeId;
         }
 
+        public IRule(RuleDTO ruleDTO) {
+            _subject = new RuleSubject(ruleDTO.Subject);
+            _id = ruleDTO.Id;
+            _storeId = DBcontext.GetInstance().Stores
+                .Include(s => s.Rules)
+                .FirstOrDefault(s => s.Rules.Any(rule => rule.Id == ruleDTO.Id))
+                .Id;
+        }
+
         public abstract string GetInfo();
         public abstract bool Predicate(Basket basket);
         public abstract void Update();
+
+        public abstract RuleDTO CloneDTO();
     }
 }

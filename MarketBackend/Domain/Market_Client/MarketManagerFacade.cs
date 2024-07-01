@@ -135,7 +135,7 @@ namespace MarketBackend.Domain.Market_Client
             bool found = false;
             if (store != null){
                 foreach (var product in store._products){
-                    if (product._productid == productId){
+                    if (product._productId == productId){
                         found = true;
                         break;
                     }
@@ -529,7 +529,7 @@ namespace MarketBackend.Domain.Market_Client
         {
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
-
+                store.AddKeyword(productId, keyWord);
             }
             else
                 throw new Exception("Store doesn't exist!");
