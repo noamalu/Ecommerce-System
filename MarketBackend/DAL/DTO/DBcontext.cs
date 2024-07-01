@@ -46,28 +46,28 @@ namespace MarketBackend.DAL.DTO
 
         public override void Dispose()
         {
-            Events.ExecuteDelete();
-            Rules.ExecuteDelete();
-            RuleSubjects.ExecuteDelete();
-            CompositeRules.ExecuteDelete();
-            SimplelRules.ExecuteDelete();
-            TotalPriceRules.ExecuteDelete();
-            QuantityRules.ExecuteDelete();
-            Policies.ExecuteDelete();
-            PolicySubjects.ExecuteDelete();
-            PurchasePolicies.ExecuteDelete();
-            DiscountPolicies.ExecuteDelete();
-            DiscountCompositePolicies.ExecuteDelete();
-            Messages.ExecuteDelete();
-            BasketItems.ExecuteDelete();
-            Baskets.ExecuteDelete();
-            Purchases.ExecuteDelete();
-            ShoppingCartHistories.ExecuteDelete();
-            ShoppingCarts.ExecuteDelete();
-            Products.ExecuteDelete();
-            Stores.ExecuteDelete();
-            Members.ExecuteDelete();
-            Roles.ExecuteDelete();        
+            // Events.ExecuteDelete();
+            // Rules.ExecuteDelete();
+            // RuleSubjects.ExecuteDelete();
+            // CompositeRules.ExecuteDelete();
+            // SimplelRules.ExecuteDelete();
+            // TotalPriceRules.ExecuteDelete();
+            // QuantityRules.ExecuteDelete();
+            // Policies.ExecuteDelete();
+            // PolicySubjects.ExecuteDelete();
+            // PurchasePolicies.ExecuteDelete();
+            // DiscountPolicies.ExecuteDelete();
+            // DiscountCompositePolicies.ExecuteDelete();
+            // Messages.ExecuteDelete();
+            // BasketItems.ExecuteDelete();
+            // Baskets.ExecuteDelete();
+            // Purchases.ExecuteDelete();
+            // ShoppingCartHistories.ExecuteDelete();
+            // ShoppingCarts.ExecuteDelete();
+            // Products.ExecuteDelete();
+            // Stores.ExecuteDelete();
+            // Members.ExecuteDelete();
+            // Roles.ExecuteDelete();        
             
             SaveChanges();
             _instance = new DBcontext();
@@ -215,14 +215,15 @@ namespace MarketBackend.DAL.DTO
             //     .WithMany()
             //     .OnDelete(DeleteBehavior.NoAction);
 
+
+            modelBuilder.Entity<RoleDTO>()
+                .HasOne<MemberDTO>(r => r.appointer)
+                .WithMany()
+                .OnDelete(DeleteBehavior.SetNull);
+
             modelBuilder.Entity<RoleDTO>()
                 .HasOne<MemberDTO>(s => s.appointer)
                 .WithMany()
-                .OnDelete(DeleteBehavior.NoAction);
-
-            modelBuilder.Entity<RoleDTO>()
-                .HasMany<MemberDTO>(s => s.appointees)
-                .WithOne()
                 .OnDelete(DeleteBehavior.NoAction);
 
 

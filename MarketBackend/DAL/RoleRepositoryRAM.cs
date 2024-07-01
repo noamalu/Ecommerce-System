@@ -1,4 +1,5 @@
-﻿using MarketBackend.Domain.Market_Client;
+﻿using MarketBackend.DAL.DTO;
+using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Models;
 using MarketBackend.Services.Interfaces;
 using System;
@@ -14,11 +15,14 @@ namespace MarketBackend.DAL
     {
         public ConcurrentDictionary<int, ConcurrentDictionary<string, Role>> roles; //<storeId, <memberId, Role>>
         private static RoleRepositoryRAM roleRepositoryRAM = null;
+
+        private object _lock;
         
 
         private RoleRepositoryRAM()
         {
             roles = new ConcurrentDictionary<int, ConcurrentDictionary<string, Role>>();
+            _lock = new object();
         }
 
         public static RoleRepositoryRAM GetInstance()
@@ -42,9 +46,28 @@ namespace MarketBackend.DAL
 
         public Role GetById(int storeId, string userName)
         {
-            if (!roles.ContainsKey(storeId) && roles[storeId].ContainsKey(userName))
-                throw new KeyNotFoundException($"member with ID {userName} at store with ID {storeId} not found.");
-
+            if (!roles.ContainsKey(storeId) && roles[storeId].ContainsKey(userName)){
+                lock (_lock)
+                {
+                    RoleDTO roleDTO = DBcontext.GetInstance().Roles.Find(storeId, userName);
+                    if (roleDTO != null)
+                    {
+                        Role role = new Role(roleDTO);
+                        if (!roles.ContainsKey(storeId))
+                        {
+                            roles[storeId] = new ConcurrentDictionary<string, Role>();
+                            roles[storeId][userName] = role;
+                        }
+                        else{
+                            roles[storeId].TryAdd(userName, role);
+                        }
+                    }
+                    else
+                    {
+                        throw new KeyNotFoundException($"member with ID {userName} at store with ID {storeId} not found.");
+                    }
+                }
+            }
             return roles[storeId][userName];
         }
         public void Add(Role entity)
@@ -54,8 +77,15 @@ namespace MarketBackend.DAL
                 roles[entity.storeId] = new ConcurrentDictionary<string, Role>();
                 roles[entity.storeId][entity.userName] = entity;
             }
-            else
+            else{
                 roles[entity.storeId].TryAdd(entity.userName, entity);
+            }
+            lock (_lock)
+                {
+                    DBcontext.GetInstance().Roles.Add(new RoleDTO(entity));
+                    DBcontext.GetInstance().SaveChanges();
+                }
+
         }
         public IEnumerable<Role> getAll()
         {

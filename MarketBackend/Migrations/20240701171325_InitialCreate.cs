@@ -39,72 +39,25 @@ namespace MarketBackend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BasketItems",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ProductId = table.Column<int>(type: "int", nullable: false),
-                    PriceBeforeDiscount = table.Column<double>(type: "float", nullable: false),
-                    PriceAfterDiscount = table.Column<double>(type: "float", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    BasketDTOBasketId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BasketItems", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Baskets",
-                columns: table => new
-                {
-                    BasketId = table.Column<int>(type: "int", nullable: false),
-                    StoreId = table.Column<int>(type: "int", nullable: false),
-                    CartId = table.Column<int>(type: "int", nullable: false),
-                    TotalPrice = table.Column<double>(type: "float", nullable: false),
-                    ShoppingCartHistoryDTOShoppingCartId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Baskets", x => x.BasketId);
-                    table.ForeignKey(
-                        name: "FK_Baskets_ShoppingCart_CartId",
-                        column: x => x.CartId,
-                        principalTable: "ShoppingCart",
-                        principalColumn: "_shoppingCartId");
-                    table.ForeignKey(
-                        name: "FK_Baskets_Stores_StoreId",
-                        column: x => x.StoreId,
-                        principalTable: "Stores",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Purchases",
+                name: "Members",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
-                    StoreId = table.Column<int>(type: "int", nullable: false),
-                    Baskets = table.Column<int>(type: "int", nullable: false),
-                    Identifierr = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<double>(type: "float", nullable: false),
-                    StoreDTOId = table.Column<int>(type: "int", nullable: true)
+                    ShoppingCart_shoppingCartId = table.Column<int>(type: "int", nullable: false),
+                    IsSystemAdmin = table.Column<bool>(type: "bit", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsNotification = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Purchases", x => x.Id);
+                    table.PrimaryKey("PK_Members", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Purchases_Baskets_Baskets",
-                        column: x => x.Baskets,
-                        principalTable: "Baskets",
-                        principalColumn: "BasketId",
+                        name: "FK_Members_ShoppingCart_ShoppingCart_shoppingCartId",
+                        column: x => x.ShoppingCart_shoppingCartId,
+                        principalTable: "ShoppingCart",
+                        principalColumn: "_shoppingCartId",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Purchases_Stores_StoreDTOId",
-                        column: x => x.StoreDTOId,
-                        principalTable: "Stores",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -121,34 +74,15 @@ namespace MarketBackend.Migrations
                 {
                     table.PrimaryKey("PK_Events", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Events_Members_ListenerId",
+                        column: x => x.ListenerId,
+                        principalTable: "Members",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_Events_Stores_StoreId",
                         column: x => x.StoreId,
                         principalTable: "Stores",
                         principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Members",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    ShoppingCart_shoppingCartId = table.Column<int>(type: "int", nullable: false),
-                    IsSystemAdmin = table.Column<bool>(type: "bit", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsNotification = table.Column<bool>(type: "bit", nullable: false),
-                    RoleDTOstoreId = table.Column<int>(type: "int", nullable: true),
-                    RoleDTOuserName = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Members", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Members_ShoppingCart_ShoppingCart_shoppingCartId",
-                        column: x => x.ShoppingCart_shoppingCartId,
-                        principalTable: "ShoppingCart",
-                        principalColumn: "_shoppingCartId",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -178,7 +112,10 @@ namespace MarketBackend.Migrations
                 {
                     storeId = table.Column<int>(type: "int", nullable: false),
                     userName = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    appointerId = table.Column<int>(type: "int", nullable: true)
+                    appointerId = table.Column<int>(type: "int", nullable: false),
+                    appointees = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    roleName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    permissions = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -211,6 +148,37 @@ namespace MarketBackend.Migrations
                         principalTable: "Members",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Baskets",
+                columns: table => new
+                {
+                    BasketId = table.Column<int>(type: "int", nullable: false),
+                    StoreId = table.Column<int>(type: "int", nullable: false),
+                    CartId = table.Column<int>(type: "int", nullable: false),
+                    TotalPrice = table.Column<double>(type: "float", nullable: false),
+                    ShoppingCartHistoryDTOShoppingCartId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Baskets", x => x.BasketId);
+                    table.ForeignKey(
+                        name: "FK_Baskets_ShoppingCartHistory_ShoppingCartHistoryDTOShoppingCartId",
+                        column: x => x.ShoppingCartHistoryDTOShoppingCartId,
+                        principalTable: "ShoppingCartHistory",
+                        principalColumn: "ShoppingCartId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Baskets_ShoppingCart_CartId",
+                        column: x => x.CartId,
+                        principalTable: "ShoppingCart",
+                        principalColumn: "_shoppingCartId");
+                    table.ForeignKey(
+                        name: "FK_Baskets_Stores_StoreId",
+                        column: x => x.StoreId,
+                        principalTable: "Stores",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -249,6 +217,61 @@ namespace MarketBackend.Migrations
                         column: x => x.StoreDTOId,
                         principalTable: "Stores",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Purchases",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    StoreId = table.Column<int>(type: "int", nullable: false),
+                    Baskets = table.Column<int>(type: "int", nullable: false),
+                    Identifierr = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<double>(type: "float", nullable: false),
+                    StoreDTOId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Purchases", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Purchases_Baskets_Baskets",
+                        column: x => x.Baskets,
+                        principalTable: "Baskets",
+                        principalColumn: "BasketId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Purchases_Stores_StoreDTOId",
+                        column: x => x.StoreDTOId,
+                        principalTable: "Stores",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BasketItems",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    PriceBeforeDiscount = table.Column<double>(type: "float", nullable: false),
+                    PriceAfterDiscount = table.Column<double>(type: "float", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    BasketDTOBasketId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BasketItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BasketItems_Baskets_BasketDTOBasketId",
+                        column: x => x.BasketDTOBasketId,
+                        principalTable: "Baskets",
+                        principalColumn: "BasketId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BasketItems_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "ProductId");
                 });
 
             migrationBuilder.CreateTable(
@@ -397,11 +420,6 @@ namespace MarketBackend.Migrations
                 column: "StoreId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Members_RoleDTOstoreId_RoleDTOuserName",
-                table: "Members",
-                columns: new[] { "RoleDTOstoreId", "RoleDTOuserName" });
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Members_ShoppingCart_shoppingCartId",
                 table: "Members",
                 column: "ShoppingCart_shoppingCartId");
@@ -486,60 +504,11 @@ namespace MarketBackend.Migrations
                 name: "IX_ShoppingCartHistory_MemberDTOId",
                 table: "ShoppingCartHistory",
                 column: "MemberDTOId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_BasketItems_Baskets_BasketDTOBasketId",
-                table: "BasketItems",
-                column: "BasketDTOBasketId",
-                principalTable: "Baskets",
-                principalColumn: "BasketId",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_BasketItems_Products_ProductId",
-                table: "BasketItems",
-                column: "ProductId",
-                principalTable: "Products",
-                principalColumn: "ProductId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Baskets_ShoppingCartHistory_ShoppingCartHistoryDTOShoppingCartId",
-                table: "Baskets",
-                column: "ShoppingCartHistoryDTOShoppingCartId",
-                principalTable: "ShoppingCartHistory",
-                principalColumn: "ShoppingCartId",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Events_Members_ListenerId",
-                table: "Events",
-                column: "ListenerId",
-                principalTable: "Members",
-                principalColumn: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Members_Roles_RoleDTOstoreId_RoleDTOuserName",
-                table: "Members",
-                columns: new[] { "RoleDTOstoreId", "RoleDTOuserName" },
-                principalTable: "Roles",
-                principalColumns: new[] { "storeId", "userName" });
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Members_ShoppingCart_ShoppingCart_shoppingCartId",
-                table: "Members");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Roles_Stores_storeId",
-                table: "Roles");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Roles_Members_appointerId",
-                table: "Roles");
-
             migrationBuilder.DropTable(
                 name: "BasketItems");
 
@@ -554,6 +523,9 @@ namespace MarketBackend.Migrations
 
             migrationBuilder.DropTable(
                 name: "Purchases");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Rules");
@@ -574,16 +546,13 @@ namespace MarketBackend.Migrations
                 name: "ShoppingCartHistory");
 
             migrationBuilder.DropTable(
-                name: "ShoppingCart");
-
-            migrationBuilder.DropTable(
                 name: "Stores");
 
             migrationBuilder.DropTable(
                 name: "Members");
 
             migrationBuilder.DropTable(
-                name: "Roles");
+                name: "ShoppingCart");
         }
     }
 }

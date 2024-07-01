@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MarketBackend.Migrations
 {
     [DbContext(typeof(DBcontext))]
-    [Migration("20240630181836_InitialCreate")]
+    [Migration("20240701171325_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -127,12 +127,6 @@ namespace MarketBackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("RoleDTOstoreId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("RoleDTOuserName")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("ShoppingCart_shoppingCartId")
                         .HasColumnType("int");
 
@@ -143,8 +137,6 @@ namespace MarketBackend.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ShoppingCart_shoppingCartId");
-
-                    b.HasIndex("RoleDTOstoreId", "RoleDTOuserName");
 
                     b.ToTable("Members");
                 });
@@ -331,8 +323,20 @@ namespace MarketBackend.Migrations
                         .HasColumnType("nvarchar(450)")
                         .HasColumnOrder(1);
 
-                    b.Property<int?>("appointerId")
+                    b.Property<string>("appointees")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("appointerId")
                         .HasColumnType("int");
+
+                    b.Property<string>("permissions")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("roleName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("storeId", "userName");
 
@@ -594,11 +598,6 @@ namespace MarketBackend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MarketBackend.DAL.DTO.RoleDTO", null)
-                        .WithMany("appointees")
-                        .HasForeignKey("RoleDTOstoreId", "RoleDTOuserName")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.Navigation("ShoppingCart");
                 });
 
@@ -676,7 +675,8 @@ namespace MarketBackend.Migrations
                     b.HasOne("MarketBackend.DAL.DTO.MemberDTO", "appointer")
                         .WithMany()
                         .HasForeignKey("appointerId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("MarketBackend.DAL.DTO.StoreDTO", null)
                         .WithMany()
@@ -737,11 +737,6 @@ namespace MarketBackend.Migrations
                     b.Navigation("Alerts");
 
                     b.Navigation("OrderHistory");
-                });
-
-            modelBuilder.Entity("MarketBackend.DAL.DTO.RoleDTO", b =>
-                {
-                    b.Navigation("appointees");
                 });
 
             modelBuilder.Entity("MarketBackend.DAL.DTO.ShoppingCartDTO", b =>
