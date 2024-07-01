@@ -92,7 +92,7 @@ namespace MarketBackend.DAL
                     }
                     else
                     {
-                        throw new Exception("Shop Id does not exist");
+                        return null;
                     }
                 }
             }

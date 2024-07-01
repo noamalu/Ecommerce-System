@@ -51,6 +51,7 @@ namespace MarketBackend.DAL
             lock (Lock)
             {
                 dbContext.Members.Add(new MemberDTO(item));
+                dbContext.SaveChanges();
             }
 
         }

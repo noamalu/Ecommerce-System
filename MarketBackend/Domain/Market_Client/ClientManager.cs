@@ -183,8 +183,8 @@ namespace MarketBackend.Domain.Market_Client
             try
             {
                 registerAdmin = CreateMember(username, password, email, age);
-                _clientRepository.Add(registerAdmin);
                 registerAdmin.IsSystemAdmin = true;
+                _clientRepository.Add(registerAdmin);
                 return registerAdmin;
             }
             catch (ArgumentException)

@@ -41,7 +41,7 @@ namespace MarketBackend.DAL
             _productById.TryAdd(item.ProductId, item);
             lock (_lock)
             {
-                StoreDTO store = DBcontext.GetInstance().Stores.Include(s => s.Products).FirstOrDefault(s => s.Id == item.ProductId);
+                StoreDTO store = DBcontext.GetInstance().Stores.Include(s => s.Products).FirstOrDefault(s => s.Id == item.StoreId);
                 store.Products.Add(new ProductDTO(item));
                 DBcontext.GetInstance().SaveChanges();
             }
@@ -74,7 +74,7 @@ namespace MarketBackend.DAL
 
         public void Delete(Product product)
         {
-            if (!_productById.TryRemove(product.ProductId, out Product _))
+            if (_productById.TryRemove(product.ProductId, out Product _))
             {
                 lock (_lock)
                 {

@@ -31,11 +31,17 @@ namespace MarketBackend.DAL
         }
         public void Add(Purchase purchase)
         {
+            lock (_lock){
             _purchaseById.Add(purchase.PurchaseId, purchase);
             DBcontext context = DBcontext.GetInstance();
-            StoreDTO storeDTO = context.Stores.Include(s => s.Purchases).FirstOrDefault(s => s.Id == purchase.PurchaseId);
-            storeDTO.Purchases.Add(new PurchaseDTO(purchase));
-            DBcontext.GetInstance().SaveChanges();
+            StoreDTO storeDTO = context.Stores.Include(s => s.Purchases).FirstOrDefault(s => s.Id == purchase.StoreId);
+            BasketDTO basketDTO = context.Baskets.Find(purchase.Basket._basketId);
+            PurchaseDTO purchaseDTO = new PurchaseDTO(purchase, basketDTO);
+            storeDTO.Purchases.Add(purchaseDTO);
+            context.Purchases.Add(purchaseDTO);
+            context.SaveChanges();
+            }
+            
         }
         public Purchase GetById(int id)
         {
@@ -77,10 +83,11 @@ namespace MarketBackend.DAL
             _purchaseById[purchase.PurchaseId] = purchase;
              lock (_lock)
             {
-                PurchaseDTO purchaseDTO = DBcontext.GetInstance().Purchases.Find(purchase.PurchaseId);
+                DBcontext context = DBcontext.GetInstance();
+                PurchaseDTO purchaseDTO = context.Purchases.Find(purchase.PurchaseId);
                 // purchaseDTO.PurchaseStatus = purchase.PurchaseStatus.ToString();
                 purchaseDTO.Price = purchase.Price;
-                DBcontext.GetInstance().SaveChanges();
+                context.SaveChanges();
             }
            
         }

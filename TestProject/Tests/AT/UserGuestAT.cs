@@ -1,3 +1,4 @@
+using MarketBackend.DAL.DTO;
 using MarketBackend.Domain.Payment;
 using MarketBackend.Domain.Shipping;
 using MarketBackend.Services;
@@ -27,6 +28,7 @@ namespace MarketBackend.Tests.AT
 
         [TestInitialize()]
         public void Setup(){
+            DBcontext.GetInstance().Dispose();
             proxy = new Proxy();
             userId = proxy.GetUserId();
             proxy.InitiateSystemAdmin();
@@ -34,6 +36,7 @@ namespace MarketBackend.Tests.AT
 
         [TestCleanup]
         public void CleanUp(){
+            DBcontext.GetInstance().Dispose();
             proxy.Dispose();
             proxy.ExitGuest(session1);
         }

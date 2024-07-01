@@ -27,6 +27,14 @@ namespace MarketBackend.DAL.DTO
             Price = purchase.Price;
         }
 
+        public PurchaseDTO(Purchase purchase, BasketDTO basketDTO) {
+            Id = purchase.PurchaseId;
+            StoreId = purchase.StoreId;
+            Basket = basketDTO;
+            Identifierr = purchase.Identifier;
+            Price = purchase.Price;
+        }
+
         public PurchaseDTO() { }
          public PurchaseDTO(int id, int storeId, BasketDTO basket, string identifierr, double price)
         {
