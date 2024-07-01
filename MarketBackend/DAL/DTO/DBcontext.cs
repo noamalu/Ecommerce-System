@@ -46,28 +46,28 @@ namespace MarketBackend.DAL.DTO
 
         public override void Dispose()
         {
-            // Events.ExecuteDelete();
-            // Rules.ExecuteDelete();
-            // RuleSubjects.ExecuteDelete();
-            // CompositeRules.ExecuteDelete();
-            // SimplelRules.ExecuteDelete();
-            // TotalPriceRules.ExecuteDelete();
-            // QuantityRules.ExecuteDelete();
-            // Policies.ExecuteDelete();
-            // PolicySubjects.ExecuteDelete();
-            // PurchasePolicies.ExecuteDelete();
-            // DiscountPolicies.ExecuteDelete();
-            // DiscountCompositePolicies.ExecuteDelete();
-            // Messages.ExecuteDelete();
-            // BasketItems.ExecuteDelete();
-            // Baskets.ExecuteDelete();
-            // Purchases.ExecuteDelete();
-            // ShoppingCartHistories.ExecuteDelete();
-            // ShoppingCarts.ExecuteDelete();
-            // Products.ExecuteDelete();
-            // Stores.ExecuteDelete();
-            // Members.ExecuteDelete();
-            // Roles.ExecuteDelete();        
+            Events.ExecuteDelete();
+            Rules.ExecuteDelete();
+            RuleSubjects.ExecuteDelete();
+            CompositeRules.ExecuteDelete();
+            SimplelRules.ExecuteDelete();
+            TotalPriceRules.ExecuteDelete();
+            QuantityRules.ExecuteDelete();
+            Policies.ExecuteDelete();
+            PolicySubjects.ExecuteDelete();
+            PurchasePolicies.ExecuteDelete();
+            DiscountPolicies.ExecuteDelete();
+            DiscountCompositePolicies.ExecuteDelete();
+            Messages.ExecuteDelete();
+            BasketItems.ExecuteDelete();
+            Baskets.ExecuteDelete();
+            Purchases.ExecuteDelete();
+            ShoppingCartHistories.ExecuteDelete();
+            ShoppingCarts.ExecuteDelete();
+            Products.ExecuteDelete();
+            Stores.ExecuteDelete();
+            Members.ExecuteDelete();
+            Roles.ExecuteDelete();        
             
             SaveChanges();
             _instance = new DBcontext();

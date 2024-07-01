@@ -19,7 +19,7 @@ namespace MarketBackend.DAL.DTO
         [Key, Column(Order = 1)]
         [ForeignKey("Members")]
         public string userName { get; }
-        public MemberDTO appointer { get; set; }
+        public MemberDTO? appointer { get; set; }
         public List <int> appointees { get; set; }
 
         public string roleName { get; set; }

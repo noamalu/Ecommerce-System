@@ -112,7 +112,7 @@ namespace MarketBackend.Migrations
                 {
                     storeId = table.Column<int>(type: "int", nullable: false),
                     userName = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    appointerId = table.Column<int>(type: "int", nullable: false),
+                    appointerId = table.Column<int>(type: "int", nullable: true),
                     appointees = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     roleName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     permissions = table.Column<string>(type: "nvarchar(max)", nullable: false)

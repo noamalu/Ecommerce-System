@@ -324,7 +324,7 @@ namespace MarketBackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("appointerId")
+                    b.Property<int?>("appointerId")
                         .HasColumnType("int");
 
                     b.Property<string>("permissions")
@@ -672,8 +672,7 @@ namespace MarketBackend.Migrations
                     b.HasOne("MarketBackend.DAL.DTO.MemberDTO", "appointer")
                         .WithMany()
                         .HasForeignKey("appointerId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("MarketBackend.DAL.DTO.StoreDTO", null)
                         .WithMany()

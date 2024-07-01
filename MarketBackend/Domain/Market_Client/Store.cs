@@ -465,10 +465,16 @@ namespace MarketBackend.Domain.Market_Client
         public void AddStaffMember(string roleuserName ,Role role, string userName){
             if ((getRole(userName)!=null && getRole(userName).canAddStaffMember(role.getRoleName())) || (role.getRoleName() == RoleName.Founder && !checkForFounders() ))
             {
-                roles.TryAdd(roleuserName, role);
-                Event e = new AddAppointmentEvent(this, userName, roleuserName, role);
-                _eventManager.NotifySubscribers(e);
-                //add to active user appointees list the newly appointed staff member
+                if (roles.TryAdd(roleuserName, role))
+                {
+                    RoleRepositoryRAM.GetInstance().Add(role);
+                    Role appointer = getRole(userName);
+                    appointer.addAppointee(ClientRepositoryRAM.GetInstance().GetByUserName(roleuserName));
+                    RoleRepositoryRAM.GetInstance().Update(appointer);
+                    Event e = new AddAppointmentEvent(this, userName, roleuserName, role);
+                    _eventManager.NotifySubscribers(e);
+                    //add to active user appointees list the newly appointed staff member
+                }
             }
             else throw new Exception($"Permission exception for userName: {userName}");
 
@@ -487,10 +493,13 @@ namespace MarketBackend.Domain.Market_Client
             {
                 if (roles.ContainsKey(roleuserName))
                 {
-                    roles.TryRemove(new KeyValuePair<string, Role>(roleuserName, roles[roleuserName]));
-                    Event e = new RemoveAppointmentEvent(this, userName, roleuserName);
-                    _eventManager.NotifySubscribers(e);
-                    //remove from active user appointees list the removed staff member
+                    if (roles.TryRemove(new KeyValuePair<string, Role>(roleuserName, roles[roleuserName])))
+                    {
+
+                        Event e = new RemoveAppointmentEvent(this, userName, roleuserName);
+                        _eventManager.NotifySubscribers(e);
+                        //remove from active user appointees list the removed staff member
+                    }
                 }
             }
             else throw new Exception($"Permission exception for userName: {userName}");
@@ -509,7 +518,9 @@ namespace MarketBackend.Domain.Market_Client
         {
             if (getRole(userName) != null && getRole(userName).canEditPermissions())
             {
-                getRole(toAddUserName).addPermission(permission);
+                Role r = getRole(toAddUserName);
+                r.addPermission(permission);
+                RoleRepositoryRAM.GetInstance().Update(r);
             }
             else throw new Exception($"Permission exception for userName: {userName}");
 
@@ -519,10 +530,11 @@ namespace MarketBackend.Domain.Market_Client
         {
             if (getRole(userName) != null && getRole(userName).canEditPermissions())
             {
-                getRole(toRemoveUserName).removePermission(permission);
+                Role r = getRole(toRemoveUserName);
+                r.removePermission(permission);
+                RoleRepositoryRAM.GetInstance().Update(r);
             }
             else throw new Exception($"Permission exception for userName: {userName}");
-
         }
 
         public bool checkForFounders ()
