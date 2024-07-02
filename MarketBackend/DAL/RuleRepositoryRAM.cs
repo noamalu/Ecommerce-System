@@ -178,6 +178,9 @@ namespace MarketBackend.DAL
             return shopRules;
         }
 
-
+        public void Dispose()
+        {
+            _ruleById = new ConcurrentDictionary<int, IRule>();
+        }
     }
 }
