@@ -23,11 +23,10 @@ builder.Services.AddSession(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<IPasswordHasher<object>, PasswordHasher<object>>();
-builder.Services.AddSingleton<IShippingSystemFacade, ShippingSystemProxy>();
-builder.Services.AddSingleton<IPaymentSystemFacade, PaymentSystemProxy>();
+builder.Services.AddSingleton<IShippingSystemFacade>(new RealShippingSystem("https://damp-lynna-wsep-1984852e.koyeb.app/"));
+builder.Services.AddSingleton<IPaymentSystemFacade>(new RealPaymentSystem("https://damp-lynna-wsep-1984852e.koyeb.app/"));
 builder.Services.AddSingleton<IClientService, ClientService>();
 builder.Services.AddSingleton<IMarketService, MarketService>();
-builder.Services.AddSingleton<Configurate>(); // Register Configurate service
 
 builder.Services.AddCors(options =>
 {
@@ -35,6 +34,33 @@ builder.Services.AddCors(options =>
         builder => builder.WithOrigins("http://localhost:5173")
                            .AllowAnyHeader()
                            .AllowAnyMethod());
+});
+
+// Use a factory method to create Configurate with the necessary dependencies
+builder.Services.AddSingleton<Configurate>(sp => 
+{
+    var marketService = sp.GetRequiredService<IMarketService>();
+    var clientService = sp.GetRequiredService<IClientService>();
+    return new Configurate(marketService, clientService);
+});
+
+// Register WebSocket servers using factory methods
+builder.Services.AddSingleton<WebSocketServer>(sp =>
+{
+    var configurate = sp.GetRequiredService<Configurate>();
+    string port = configurate.Parse();
+    var alertServer = new WebSocketServer($"ws://{GetLocalIPAddress()}:{port}");
+    alertServer.Start();
+    return alertServer;
+});
+
+builder.Services.AddSingleton<WebSocketServer>(sp =>
+{
+    var configurate = sp.GetRequiredService<Configurate>();
+    string port = configurate.Parse();
+    var logServer = new WebSocketServer($"ws://{GetLocalIPAddress()}:{int.Parse(port) + 1}");
+    logServer.Start();
+    return logServer;
 });
 
 var app = builder.Build();
@@ -51,17 +77,6 @@ app.UseHttpsRedirection();
 app.UseSession();
 app.UseAuthorization();
 app.MapControllers();
-
-// Initialize the WebSocket servers
-var configurate = app.Services.GetRequiredService<Configurate>();
-string port = configurate.Parse();
-WebSocketServer alertServer = new WebSocketServer($"ws://{GetLocalIPAddress()}:{port}");
-WebSocketServer logServer = new WebSocketServer($"ws://{GetLocalIPAddress()}:{port + 1}");
-
-alertServer.Start();
-logServer.Start();
-builder.Services.AddSingleton(_ => alertServer);
-builder.Services.AddSingleton(_ => logServer);
 
 app.Run();
 
