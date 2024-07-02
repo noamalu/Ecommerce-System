@@ -21,6 +21,7 @@ using MarketBackend.Domain.Models;
 using MarketBackend.Domain.Shipping;
 using MarketBackend.Domain.Payment;
 using EcommerceAPI;
+using EcommerceAPI.initialize;
 
 
 
@@ -32,6 +33,10 @@ namespace TestProject.Tests
     {
         MarketManagerFacade MMF;
         ClientManager CM;
+        ClientService CC;
+        MarketService s;
+        string filePath = Path.Combine(Environment.CurrentDirectory, "Initialize\\InitialState.json");
+
          [TestInitialize]
         public void Setup()
         {
@@ -45,7 +50,7 @@ namespace TestProject.Tests
             mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
-            MarketService s = MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
+            s = MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             s.Dispose();
             Task task = Task.Run(() =>
             {
@@ -54,8 +59,9 @@ namespace TestProject.Tests
                 // Code after disposing the MarketContext instance
             });
             task.Wait();
-            ClientService c = ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
+            CC = ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             CM = ClientManager.GetInstance();
+            
             MMF = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
 
         }
@@ -69,7 +75,7 @@ namespace TestProject.Tests
         public void checkUsersExits(){
             
             UpdateInitFileName("Initialize", "true");
-            new SceanarioParser().Parse();
+            new SceanarioParser(s,CC).Parse(filePath);
             List<Member> ls = ClientRepositoryRAM.GetInstance().GetAll();
             List<string> listofNames = new List<string>() { "u2", "u3", "u4", "u5", "u6", "u1" };
             foreach (Member memName in ls)
@@ -94,7 +100,7 @@ namespace TestProject.Tests
         [TestMethod]
         public void checkStoreExist(){
             UpdateInitFileName("Initialize", "true");
-            new SceanarioParser().Parse();
+            new SceanarioParser(s,CC).Parse(filePath);
             IEnumerable<Store> ls = StoreRepositoryRAM.GetInstance().getAll();
             bool flag = false;
             foreach (Store store in ls)
@@ -113,7 +119,7 @@ namespace TestProject.Tests
         [TestMethod]
         public void checkProductExist(){
             UpdateInitFileName("Initialize", "true");
-            new SceanarioParser().Parse();
+            new SceanarioParser(s,CC).Parse(filePath);
             IEnumerable<Product> ls = ProductRepositoryRAM.GetInstance().getAll();
             bool flag = false;
             foreach (Product product in ls)
@@ -132,7 +138,7 @@ namespace TestProject.Tests
         [TestMethod]
         public void logInWithExistingUserSeccess(){
             UpdateInitFileName("Initialize", "true");
-            new SceanarioParser().Parse();
+            new SceanarioParser(s,CC).Parse(filePath);
             CM.LoginClient("u6","password");
             var client = ClientRepositoryRAM.GetInstance().GetByUserName("u6");
             Assert.IsTrue(client.IsLoggedIn == true);
@@ -141,7 +147,7 @@ namespace TestProject.Tests
         [TestMethod]
         public void logInWithExistingUserFail(){
             UpdateInitFileName("Initialize", "true");
-            new SceanarioParser().Parse();
+            new SceanarioParser(s,CC).Parse(filePath);
             Assert.ThrowsException<Exception>(()=>CM.LoginClient("u6","21312"));
             
         }
@@ -149,7 +155,7 @@ namespace TestProject.Tests
 
          public void UpdateInitFileName(string key, string newValue)
         {
-            string filePath = Path.Combine(Environment.CurrentDirectory, "initial\\initialState.json");
+            string filePath = Path.Combine(Environment.CurrentDirectory, "Initialize\\InitialState.json");
             try
             {
                 // Read the JSON file
