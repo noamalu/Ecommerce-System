@@ -37,7 +37,7 @@ const RegistrationForm: React.FC = () => {
     // if (!formData.email) formErrors.email = 'Email is required';
     // else if (!/\S+@\S+\.\S+/.test(formData.email)) formErrors.email = 'Email is invalid';
     if (!formData.password) formErrors.password = 'Password is required';
-    else if (formData.password.length < 6) formErrors.password = 'Password must be at least 6 characters';
+    else if (formData.password.length < 2) formErrors.password = 'Password must be at least 2 characters';
     return formErrors;
   };
 

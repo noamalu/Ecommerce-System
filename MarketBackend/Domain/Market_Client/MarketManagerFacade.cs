@@ -33,7 +33,7 @@ namespace MarketBackend.Domain.Market_Client
             _shippingSystemFacade = shippingSystemFacade;
             _shippingSystemFacade.Connect();
             _paymentSystem.Connect();
-            //InitiateSystemAdmin();
+            InitiateSystemAdmin();
             
         }
 
