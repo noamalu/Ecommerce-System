@@ -19,7 +19,7 @@ namespace MarketBackend.DAL.DTO
         [Key, Column(Order = 1)]
         [ForeignKey("Members")]
         public string userName { get; }
-        public MemberDTO appointer { get; set; }
+        public int appointer { get; set; }
         public List <int> appointees { get; set; }
 
         public string roleName { get; set; }
@@ -29,10 +29,7 @@ namespace MarketBackend.DAL.DTO
         {
             storeId = role.storeId;
             userName = role.userName;
-            if (role.appointer != null)
-                appointer = DBcontext.GetInstance().Members.Find(role.appointer.Id);
-            else
-                appointer = null;
+            appointer = role.appointer.Id;
             appointees = new List<int>();
             foreach (Member member in role.appointees)
                 appointees.Add(new MemberDTO(member).Id);
@@ -48,13 +45,10 @@ namespace MarketBackend.DAL.DTO
         {
             // Assuming you have a method to convert `RoleTypeDTO` to `RoleType`
             RoleType roleType = ConvertToRoleType(roleDto);
-            
-            // Assuming `MemberDTO` has a conversion constructor or method that doesn't require a full `Member` object
-            Member appointer = null;
-            if (roleDto.appointer != null)
-                appointer = ClientRepositoryRAM.GetInstance().GetById(roleDto.appointer.Id);
 
-            Role role = new Role(roleType, appointer, roleDto.storeId, roleDto.userName);
+            Member appointerMember = ClientRepositoryRAM.GetInstance().GetById(roleDto.appointer);
+
+            Role role = new Role(roleType, appointerMember, roleDto.storeId, roleDto.userName);
 
             // Handling list of appointees
             foreach (int appDto in roleDto.appointees)

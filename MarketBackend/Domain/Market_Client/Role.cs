@@ -28,10 +28,7 @@ namespace MarketBackend.Domain.Market_Client
         public Role(RoleDTO roleDTO)
         {
             role = createRoleType(roleDTO);
-            if (roleDTO.appointer != null)
-                appointer = ClientRepositoryRAM.GetInstance().GetById(roleDTO.appointer.Id);
-            else
-                appointer = null;
+            appointer = ClientRepositoryRAM.GetInstance().GetById(roleDTO.appointer);
             appointees = new List<Member>();
             foreach (int memberDTOId in roleDTO.appointees)
             {

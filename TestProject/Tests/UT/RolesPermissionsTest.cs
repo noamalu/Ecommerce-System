@@ -43,6 +43,8 @@ namespace UnitTests
             ClientManager CM = ClientManager.GetInstance();
             MarketManagerFacade MMF = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             c.Register(username0, "12345", "nofar@gmail.com", 19);
+            c.Register(username1, "12345", "nofar1@gmail.com", 20);
+            c.Register(username2, "12345", "nofar2@gmail.com", 21);
             string token1 = c.LoginClient(username0, "12345").Value;
             int storeId = MMF.CreateStore(token1, "shop1", "shop@gmail.com", "0502552798");
             Store store = MMF.GetStore(storeId);
@@ -50,7 +52,7 @@ namespace UnitTests
             owner = new Role(new Owner(RoleName.Owner), MMF.GetMember(username0), storeId, username1);
             store.AddStaffMember(username1, owner, username0);
             manager = new Role(new StoreManagerRole(RoleName.Manager), MMF.GetMember(username0), storeId, username2);
-            store.AddStaffMember(username2, owner, username0);
+            store.AddStaffMember(username2, manager, username0);
         }
 
         [TestCleanup]
