@@ -78,6 +78,7 @@ namespace UnitTests
         public void canAddProductSuccess()
         {
             manager.addPermission(Permission.addProduct);
+            rrr.Update(manager);
             Assert.IsTrue(manager.canAddProduct());
 
             Assert.IsTrue(founder.canAddProduct());
@@ -88,7 +89,9 @@ namespace UnitTests
         public void canAddProductFailure()
         {
             manager.addPermission(Permission.addProduct);
+            rrr.Update(manager);
             manager.removePermission(Permission.addProduct);
+            rrr.Update(manager);
             Assert.IsFalse(manager.canAddProduct());
         }
 
@@ -96,6 +99,7 @@ namespace UnitTests
         public void canRemoveProductSuccess()
         {
             manager.addPermission(Permission.removeProduct);
+            rrr.Update(manager);
             Assert.IsTrue(manager.canRemoveProduct());
 
             Assert.IsTrue(owner.canRemoveProduct());
@@ -106,7 +110,9 @@ namespace UnitTests
         public void canRemoveProductFailure()
         {
             manager.addPermission(Permission.removeProduct);
+            rrr.Update(manager);
             manager.removePermission(Permission.removeProduct);
+            rrr.Update(manager);
             Assert.IsFalse(manager.canRemoveProduct());
         }
 
@@ -114,6 +120,7 @@ namespace UnitTests
         public void canUpdateProductPriceSuccess()
         {
             manager.addPermission(Permission.updateProductPrice);
+            rrr.Update(manager);
             Assert.IsTrue(manager.canUpdateProductPrice());
 
             Assert.IsTrue(founder.canUpdateProductPrice());
@@ -124,7 +131,9 @@ namespace UnitTests
         public void canUpdateProductPriceFailure()
         {
             manager.addPermission(Permission.updateProductPrice);
+            rrr.Update(manager);
             manager.removePermission(Permission.updateProductPrice);
+            rrr.Update(manager);
             Assert.IsFalse(manager.canUpdateProductPrice());
         }
 
@@ -132,6 +141,7 @@ namespace UnitTests
         public void canUpdateProductDiscountSuccess()
         {
             manager.addPermission(Permission.updateProductDiscount);
+            rrr.Update(manager);
             Assert.IsTrue(manager.canUpdateProductDiscount());
 
             Assert.IsTrue(founder.canUpdateProductDiscount());
@@ -142,7 +152,9 @@ namespace UnitTests
         public void canUpdateProductDiscountFailure()
         {
             manager.addPermission(Permission.updateProductDiscount);
+            rrr.Update(manager);
             manager.removePermission(Permission.updateProductDiscount);
+            rrr.Update(manager);
             Assert.IsFalse(manager.canUpdateProductDiscount());
         }
 
@@ -161,7 +173,9 @@ namespace UnitTests
         public void canUpdateProductQuantityFailure()
         {
             manager.addPermission(Permission.updateProductQuantity);
+            rrr.Update(manager);
             manager.removePermission(Permission.updateProductQuantity);
+            rrr.Update(manager);
             Assert.IsFalse(manager.canUpdateProductQuantity());
         }
 
