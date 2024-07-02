@@ -126,61 +126,39 @@ namespace UnitTests
             Assert.AreEqual(_context.Stores.Find(shop.Id), shop);
         }
 
-        // [TestMethod]
-        // public void MarketContextAppoints()
-        // {
-        //     MemberDTO member1 = new MemberDTO(1, "Tamuz", "123", true);
-        //     MemberDTO member2 = new MemberDTO(2, "Gal", "321", true);
+        [TestMethod]
+        public void MarketContextAppoints()
+        {
+            ShoppingCart cart = new ShoppingCart(2);
+            ShoppingCartDTO shoppingCartDTO = new ShoppingCartDTO(cart);
+            List<MessageDTO> l = new List<MessageDTO>();
+            MemberDTO member1 = new MemberDTO(2, userName, userPassword, l, false, shoppingCartDTO);
+            ShoppingCart cart2 = new ShoppingCart(3);
+            ShoppingCartDTO shoppingCartDTO2 = new ShoppingCartDTO(cart2);
+            MemberDTO member2 = new MemberDTO(3, userName2, pass2,l, false, shoppingCartDTO2);
 
-        //     ShopDTO shop = new ShopDTO(1, "Tamuz's Shop", true, 5.0);
-        //     AppointmentDTO appointment1 = new AppointmentDTO(1, 1, null, new List<MemberDTO>(), "Founder", ((int)Market.DomainLayer.Permission.All));
+            StoreDTO shop = new StoreDTO(1, storeName, phoneNum, email1, true, 5.0);
+            RoleDTO role1 = new RoleDTO(new Role(new StoreManagerRole(RoleName.Manager), new Member(member1), 1, userName2));
+            
+            ProductDTO product1 = new ProductDTO(productID1, productName1, price1, quantity1, category1, desc, "Fruits,Melons,Green,Summer Fruits", sellmethod, 1.0);
+            ProductDTO product2 = new ProductDTO(12, "Pumpkin", 15, 25, "Vegtables", "Sliced pumpkin, price per 1kg.", "Vegtables,Melons,Orange", sellmethod, 0.5);
+            shop.Products.Add(product1);
+            shop.Products.Add(product2);
 
-        //     //string reviewerUsername, double rate, string comment
-        //     string reviewComment1 = "Great product. Had betters though";
-        //     string reviewComment2 = "Doesn't worth the money";
-        //     ReviewDTO review1 = new ReviewDTO("Gal", 4.2, reviewComment1);
-        //     ReviewDTO review2 = new ReviewDTO("Ben", 2, reviewComment2);
-        //     //string name, double price, int quantity, int category, string description, string keywords, List<ReviewDTO> reviews)
-        //     ProductDTO product1 = new ProductDTO(1, "WaterMelon", 30.02, 50, "Fruits", "Best Watermelon in town!", "Fruits,Melons,Green,Summer Fruits", new List<ReviewDTO> { review1, review2 });
+            _context.Stores.Add(shop);
+            _context.Members.Add(member1);
+            _context.SaveChanges();
 
-        //     string reviewComment3 = "Great Pumpkin!";
-        //     string reviewComment4 = "Pricy...";
-        //     ReviewDTO review3 = new ReviewDTO("User123", 5, reviewComment3);
-        //     ReviewDTO review4 = new ReviewDTO("Guest11", 1, reviewComment4);
-        //     ProductDTO product2 = new ProductDTO(2, "Pumpkin", 15, 25, "Vegtables", "Sliced pumpkin, price per 1kg.", "Vegtables,Melons,Orange", new List<ReviewDTO> { review3, review4 });
-        //     shop.Products.Add(product1);
-        //     shop.Products.Add(product2);
+            _context.Roles.Add(role1);
+            _context.SaveChanges();
 
-        //     _context.Add<ShopDTO>(shop);
-        //     _context.Add<MemberDTO>(member1);
-        //     _context.SaveChanges();
+            Assert.AreEqual(_context.Stores.Find(shop.Id), shop);
+        
 
-        //     _context.Add<AppointmentDTO>(appointment1);
-        //     _context.SaveChanges();
+            RoleDTO queryAppoint = _context.Roles.Find(1, member2.UserName);
+            Assert.AreEqual(role1, queryAppoint);
 
-        //     Assert.AreEqual(_context.Find<ShopDTO>(shop.Id), shop);
-        //     ShopDTO queryShop = (_context.Shops.Where(m => m.Id == shop.Id)).ToArray<ShopDTO>()[0];
-        //     Assert.AreEqual(shop, queryShop);
-
-        //     AppointmentDTO queryAppoint = _context.Find<AppointmentDTO>(appointment1.MemberId, appointment1.ShopId);
-        //     Assert.AreEqual(appointment1, queryAppoint);
-
-        //     AppointmentDTO appointment2 = new AppointmentDTO(1, 2, member1, new List<MemberDTO>(), "Manager", ((int)Market.DomainLayer.Permission.Appoint));
-        //     appointment1.Appointees.Add(new AppointeesDTO(member2));
-        //     _context.Add<AppointmentDTO>(appointment2);
-
-        //     _context.SaveChanges();
-
-        //     AppointmentDTO queryAppoint2 = _context.Find<AppointmentDTO>(appointment2.MemberId, appointment2.ShopId);
-        //     Assert.AreEqual(appointment2, queryAppoint2);
-
-        //     _context.Remove<AppointmentDTO>(appointment1);
-        //     _context.SaveChanges();
-
-        //     AppointmentDTO queryAppoint3 = _context.Find<AppointmentDTO>(appointment1.MemberId, appointment1.ShopId);
-        //     Assert.IsNull(queryAppoint3);
-
-        // }
+        }
 
         [TestMethod]
         public void MarketContextAddToBasket()
@@ -307,21 +285,25 @@ namespace UnitTests
         //     Assert.AreEqual(_context.Stores.Find(shop.Id), shop);
 
         //     ProductDTO emptyProduct = new ProductDTO(-1, "Dummy Product", 0, 0, "Non", "Do not use!", "");
-        //     RuleSubjectDTO ruleSubjet1 = new RuleSubjectDTO(product1, "null");
-        //     RuleSubjectDTO ruleSubjet2 = new RuleSubjectDTO(emptyProduct, "Fruits");
-        //     RuleSubjectDTO ruleSubjet3 = new RuleSubjectDTO(product2, "null");
+        //     RuleSubject ruleSubjet1 = new RuleSubject(new Product(product1));
+        //     RuleSubject ruleSubjet2 = new RuleSubject("Fruits");
+        //     RuleSubject ruleSubjet3 = new RuleSubject(new Product(product2));
 
 
         //     PolicySubjectDTO policySubjet1 = new PolicySubjectDTO(product1, "null");
         //     PolicySubjectDTO policySubjet2 = new PolicySubjectDTO(emptyProduct, "Vegtables");
         //     PolicySubjectDTO policySubjet3 = new PolicySubjectDTO(emptyProduct, "Food");
 
-
-        //     QuantityRuleDTO quantityRule1 = new QuantityRuleDTO(ruleSubjet1, 10, 1000);
-        //     QuantityRuleDTO quantityRule2 = new QuantityRuleDTO(ruleSubjet3, 10, 1000);
-        //     TotalPriceRuleDTO totalPriceRule = new TotalPriceRuleDTO(ruleSubjet2, 200);
-        //     SimpleRuleDTO simpleRule = new SimpleRuleDTO(ruleSubjet1);
-        //     CompositeRuleDTO compositeRule = new CompositeRuleDTO(ruleSubjet1, new List<RuleDTO> { quantityRule1, quantityRule2 }, "xor");
+        //     QuantityRule qrule1 = new QuantityRule(1, shop.Id, ruleSubjet1, 10, 1000);
+        //     QuantityRuleDTO quantityRule1 = new QuantityRuleDTO(qrule1);
+        //     QuantityRule qrule2 = new QuantityRule(2, shop.Id, ruleSubjet2, 1, 1000);
+        //     QuantityRuleDTO quantityRule2 = new QuantityRuleDTO(qrule2);
+        //     TotalPriceRule trule = new TotalPriceRule(3, shop.Id, ruleSubjet2, 200);
+        //     TotalPriceRuleDTO totalPriceRule = new TotalPriceRuleDTO(trule);
+        //     SimpleRule srule = new SimpleRule(4, shop.Id, ruleSubjet1);
+        //     SimpleRuleDTO simpleRule = new SimpleRuleDTO(srule);
+        //     CompositeRule crule = new CompositeRule(5, shop.Id, new List<IRule> { qrule1, qrule2 }, LogicalOperator.Xor); 
+        //     CompositeRuleDTO compositeRule = new CompositeRuleDTO(crule);
 
         //     shop.Rules.Add(quantityRule1);
         //     shop.Rules.Add(quantityRule2);
@@ -333,19 +315,19 @@ namespace UnitTests
 
         //     _context.SaveChanges();
 
-        //     RuleDTO queryRule1 = _context.Find<RuleDTO>(quantityRule1.Id);
+        //     RuleDTO queryRule1 = _context.Rules.Find(quantityRule1.Id);
         //     Assert.AreEqual(quantityRule1, queryRule1);
 
-        //     RuleDTO queryRule2 = _context.Find<RuleDTO>(quantityRule2.Id);
+        //     RuleDTO queryRule2 = _context.Rules.Find(quantityRule2.Id);
         //     Assert.AreEqual(quantityRule2, queryRule2);
 
-        //     RuleDTO querytotalPriceRule = _context.Find<RuleDTO>(totalPriceRule.Id);
+        //     RuleDTO querytotalPriceRule = _context.Rules.Find(totalPriceRule.Id);
         //     Assert.AreEqual(totalPriceRule, querytotalPriceRule);
 
-        //     RuleDTO querySimpleRule = _context.Find<RuleDTO>(simpleRule.Id);
+        //     RuleDTO querySimpleRule = _context.Rules.Find(simpleRule.Id);
         //     Assert.AreEqual(simpleRule, querySimpleRule);
 
-        //     RuleDTO queryCompositeRule = _context.Find<RuleDTO>(compositeRule.Id);
+        //     RuleDTO queryCompositeRule = _context.Rules.Find(compositeRule.Id);
         //     Assert.AreEqual(compositeRule, queryCompositeRule);
 
         //     //just to make sure the shop is in the DB
@@ -365,16 +347,16 @@ namespace UnitTests
 
         //     _context.SaveChanges();
 
-        //     PolicyDTO queryPurPolicy1 = _context.Find<PolicyDTO>(purPolicy1.Id);
+        //     PolicyDTO queryPurPolicy1 = _context.Policies.Find(purPolicy1.Id);
         //     Assert.AreEqual(purPolicy1, queryPurPolicy1);
 
-        //     PolicyDTO queryPurPoliciy2 = _context.Find<PolicyDTO>(purPolicy2.Id);
+        //     PolicyDTO queryPurPoliciy2 = _context.Policies.Find(purPolicy2.Id);
         //     Assert.AreEqual(purPolicy2, queryPurPoliciy2);
 
-        //     PolicyDTO queryDisPolicy = _context.Find<PolicyDTO>(disPolicy.Id);
+        //     PolicyDTO queryDisPolicy = _context.Policies.Find(disPolicy.Id);
         //     Assert.AreEqual(disPolicy, queryDisPolicy);
 
-        //     PolicyDTO queryDisCompPolicy = _context.Find<PolicyDTO>(disCompPolicy.Id);
+        //     PolicyDTO queryDisCompPolicy = _context.Policies.Find(disCompPolicy.Id);
         //     Assert.AreEqual(disCompPolicy, queryDisCompPolicy);
 
         //     //just to make sure the shop is in the DB
