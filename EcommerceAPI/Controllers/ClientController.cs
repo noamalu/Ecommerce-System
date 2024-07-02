@@ -20,18 +20,15 @@ namespace EcommerceAPI.Controllers
     [Route("api/Client")]
     public class ClientController : ControllerBase
     {
-        private WebSocketServer _alertServer;
-        private WebSocketServer _logServer;
+        public WebSocketServer AlertServer {get; set;}
+        public WebSocketServer LogServer {get; set;}
         private IClientService _clientService;
 
         private static Dictionary<string, IList<string>> _clientPendingAlerts = new();
         private static Dictionary<string, string> _alertPathByclientIdentifier = new();
-        public ClientController(WebSocketServer alerts, WebSocketServer logs, IShippingSystemFacade shippingSystemFacade, IPaymentSystemFacade paymentSystem)
+        public ClientController(IClientService clientService)
         {
-            this._clientService = ClientService.GetInstance(shippingSystemFacade, paymentSystem);
-            this._alertServer = alerts;
-            NotificationManager.GetInstance(alerts);
-            this._logServer = logs;
+            _clientService = clientService;
         }
         private class NotificationsService : WebSocketBehavior
         {
@@ -49,9 +46,9 @@ namespace EcommerceAPI.Controllers
             string relativePath = $"/{client.Username}-alerts";
             try
             {
-                if (_alertServer.WebSocketServices[relativePath] == null)
+                if (AlertServer.WebSocketServices[relativePath] == null)
                 {
-                    _alertServer.AddWebSocketService<NotificationsService>(relativePath);
+                    AlertServer.AddWebSocketService<NotificationsService>(relativePath);
 
                 }
             }
@@ -67,7 +64,7 @@ namespace EcommerceAPI.Controllers
             Response<string> response = await Task.Run(() => _clientService.LoginClient(client.Username, client.Password));
             if (response.ErrorOccured)
             {
-                _alertServer.RemoveWebSocketService(relativePath);
+                AlertServer.RemoveWebSocketService(relativePath);
                 var loginResponse = new ServerResponse<string>
                 {
                     ErrorMessage = response.ErrorMessage,
@@ -106,7 +103,7 @@ namespace EcommerceAPI.Controllers
             }
             if (_alertPathByclientIdentifier.ContainsKey(identifier))
             {
-                _alertServer.RemoveWebSocketService(_alertPathByclientIdentifier[identifier]);
+                AlertServer.RemoveWebSocketService(_alertPathByclientIdentifier[identifier]);
                 _alertPathByclientIdentifier.Remove(identifier);
             }
             logoutResponse = new ServerResponse<string>
