@@ -66,9 +66,9 @@ namespace MarketBackend.DAL.DTO
             ShoppingCartHistories.ExecuteDelete();
             ShoppingCarts.ExecuteDelete();
             Products.ExecuteDelete();
+            Roles.ExecuteDelete(); 
             Stores.ExecuteDelete();
-            Members.ExecuteDelete();
-            Roles.ExecuteDelete();        
+            Members.ExecuteDelete();       
             
             SaveChanges();
             _instance = new DBcontext();
@@ -216,15 +216,16 @@ namespace MarketBackend.DAL.DTO
             //     .WithMany()
             //     .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<RoleDTO>()
-                .HasOne<MemberDTO>(s => s.appointer)
-                .WithMany()
-                .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<RoleDTO>()
-                .HasMany<MemberDTO>(s => s.appointees)
-                .WithOne()
-                .OnDelete(DeleteBehavior.NoAction);
+            // modelBuilder.Entity<RoleDTO>()
+            //     .HasOne<MemberDTO>(r => r.appointer)
+            //     .WithMany()
+            //     .OnDelete(DeleteBehavior.SetNull);
+
+            // modelBuilder.Entity<RoleDTO>()
+            //     .HasOne<MemberDTO>(s => s.appointer)
+            //     .WithMany()
+            //     .OnDelete(DeleteBehavior.NoAction);
 
 
             // ShoppingCartHistoryDTO
