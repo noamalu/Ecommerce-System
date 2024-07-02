@@ -279,10 +279,10 @@ namespace MarketBackend.DAL.DTO
             
             // PurchaseDTO
 
-            modelBuilder.Entity<PurchaseDTO>()
-                .HasOne<BasketDTO>(p => p.Basket)
-                .WithOne()
-                .OnDelete(DeleteBehavior.Cascade);
+            // modelBuilder.Entity<PurchaseDTO>()
+            //     // .HasOne<BasketDTO>(p => p.Basket)
+            //     .WithOne()
+            //     .OnDelete(DeleteBehavior.SetNull);
 
             
             // EventDTO
