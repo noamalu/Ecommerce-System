@@ -86,6 +86,12 @@ namespace MarketBackend.Tests.IT
             userId2 = marketManagerFacade.GetMemberIDrByUserName(userName2);
             BasketRepositoryRAM.Dispose();
             ClientRepositoryRAM.Dispose();
+            PolicyRepositoryRAM.Dispose();
+            ProductRepositoryRAM.Dispose();
+            PurchaseRepositoryRAM.Dispose();
+            RoleRepositoryRAM.Dispose();
+            RuleRepositoryRAM.Dispose();
+            StoreRepositoryRAM.Dispose();
         }
 
         [TestCleanup]
@@ -93,6 +99,14 @@ namespace MarketBackend.Tests.IT
         {
             DBcontext.GetInstance().Dispose();
             MarketManagerFacade.Dispose();
+            BasketRepositoryRAM.Dispose();
+            ClientRepositoryRAM.Dispose();
+            PolicyRepositoryRAM.Dispose();
+            ProductRepositoryRAM.Dispose();
+            PurchaseRepositoryRAM.Dispose();
+            RoleRepositoryRAM.Dispose();
+            RuleRepositoryRAM.Dispose();
+            StoreRepositoryRAM.Dispose();
         }
 
         [TestMethod]
