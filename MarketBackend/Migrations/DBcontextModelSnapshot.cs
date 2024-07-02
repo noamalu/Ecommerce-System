@@ -284,7 +284,7 @@ namespace MarketBackend.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
-                    b.Property<int>("Baskets")
+                    b.Property<int>("BasketId")
                         .HasColumnType("int");
 
                     b.Property<string>("Identifierr")
@@ -301,9 +301,6 @@ namespace MarketBackend.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Baskets")
-                        .IsUnique();
 
                     b.HasIndex("StoreDTOId");
 
@@ -652,17 +649,9 @@ namespace MarketBackend.Migrations
 
             modelBuilder.Entity("MarketBackend.DAL.DTO.PurchaseDTO", b =>
                 {
-                    b.HasOne("MarketBackend.DAL.DTO.BasketDTO", "Basket")
-                        .WithOne()
-                        .HasForeignKey("MarketBackend.DAL.DTO.PurchaseDTO", "Baskets")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("MarketBackend.DAL.DTO.StoreDTO", null)
                         .WithMany("Purchases")
                         .HasForeignKey("StoreDTOId");
-
-                    b.Navigation("Basket");
                 });
 
             modelBuilder.Entity("MarketBackend.DAL.DTO.RoleDTO", b =>
