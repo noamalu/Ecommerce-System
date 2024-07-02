@@ -63,6 +63,14 @@ namespace MarketBackend.Tests.IT
             // Initialize the managers and mock systems
             DBcontext.GetInstance().Dispose();
             MarketManagerFacade.Dispose();
+            BasketRepositoryRAM.Dispose();
+            ClientRepositoryRAM.Dispose();
+            PolicyRepositoryRAM.Dispose();
+            ProductRepositoryRAM.Dispose();
+            PurchaseRepositoryRAM.Dispose();
+            RoleRepositoryRAM.Dispose();
+            RuleRepositoryRAM.Dispose();
+            StoreRepositoryRAM.Dispose();
             var mockShippingSystem = new Mock<IShippingSystemFacade>();
             var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
             mockPaymentSystem.Setup(pay =>pay.Connect()).Returns(true);
@@ -84,14 +92,6 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.Register(userName2, userPassword, email2, userAge);
             token2 = marketManagerFacade.LoginClient(userName2, userPassword);
             userId2 = marketManagerFacade.GetMemberIDrByUserName(userName2);
-            BasketRepositoryRAM.Dispose();
-            ClientRepositoryRAM.Dispose();
-            PolicyRepositoryRAM.Dispose();
-            ProductRepositoryRAM.Dispose();
-            PurchaseRepositoryRAM.Dispose();
-            RoleRepositoryRAM.Dispose();
-            RuleRepositoryRAM.Dispose();
-            StoreRepositoryRAM.Dispose();
         }
 
         [TestCleanup]
