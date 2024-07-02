@@ -14,13 +14,15 @@ namespace MarketBackend.Domain.Shipping
         private readonly HttpClient _httpClient = new HttpClient();
         private readonly string _url;
 
+        
         public RealShippingSystem(string URL)
         {
             _url = URL;
         }
         public virtual int OrderShippment(ShippingDetails details)
         {
-                Connect();
+                if (!Connect() || details == null)
+                    return -1;
                 var parameters = new Dictionary<string, string>
                 {
                     { "action_type", "supply" },
@@ -48,7 +50,10 @@ namespace MarketBackend.Domain.Shipping
         public int CancelShippment(int orderID)
         {
            
-            Connect();
+            if (!Connect() || orderID < 10000 || orderID > 1000000)
+                return -1;
+
+
             var parameters = new Dictionary<string, string>
             {
                 { "action_type", "cancel_supply" },
@@ -79,7 +84,7 @@ namespace MarketBackend.Domain.Shipping
             if (response.IsSuccessStatusCode) 
             {
                 string responseContent = response.Content.ReadAsStringAsync().Result; //get the response from the web service
-                if (!responseContent.Equals("OK"))
+                if (responseContent.Equals("OK"))
                     return true;
             }
             return false;

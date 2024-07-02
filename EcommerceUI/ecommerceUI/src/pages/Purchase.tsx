@@ -21,6 +21,7 @@ interface FormData {
     expMonth: string;
     expYear: string;
     cvv: string;
+    currency: string;
   }
   
   interface Errors {
@@ -36,6 +37,7 @@ interface FormData {
     expMonth?: string;
     expYear?: string;
     cvv?: string;
+    currency?: string;
   }
 
 export const Purchase = () => {
@@ -53,6 +55,7 @@ export const Purchase = () => {
         expMonth: '',
         expYear: '',
         cvv: '',
+        currency: ''
     });
 
     const [errors, setErrors] = useState<Errors>({});
@@ -83,6 +86,7 @@ export const Purchase = () => {
         if (!formData.expYear) formErrors.expYear = 'Expiration Year is required';
         if (formData.cvv.length != 3)
           formErrors.cvv = 'cvv must be 3 characters';
+        if (!formData.currency) formErrors.currency = 'Currency is required';
 
         return formErrors;
       };
@@ -258,7 +262,6 @@ export const Purchase = () => {
 
                     </Form.Group>
 
-
                     <Form.Group as={Col} controlId="">
                         <Form.Label>Expiration Year</Form.Label>
                         <Form.Select name="expYear" value={formData.expYear} onChange={handleChange}>
@@ -288,6 +291,19 @@ export const Purchase = () => {
                             value={formData.cvv} 
                             onChange={handleChange} />
                         {errors.cvv && <p>{errors.cvv}</p>}
+                    </Form.Group>
+
+                    <Form.Group as={Col} controlId="">
+                        <Form.Label> Currency</Form.Label>
+                        <Form.Select name="currency" value={formData.currency} onChange={handleChange}>
+                        <option value="">Currency...</option>
+                        <option value="ILS">ILS ₪</option>
+                        <option value="USD">USD $</option>
+                        <option value="EURO">ERUO €</option>
+                        <option value="GBP">GBP £</option>
+                        </Form.Select>
+                        {errors.currency && <p>{errors.currency}</p>}
+
                     </Form.Group>
                 </Row>
 
