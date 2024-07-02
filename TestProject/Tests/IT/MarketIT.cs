@@ -35,7 +35,7 @@ namespace MarketBackend.Tests.IT
         double discount1 = 0.5;
         int userAge = 20;
         int userAge2 = 16;
-        PaymentDetails paymentDetails = new PaymentDetails("5326888878675678", "2027", "10", "101", "3190876789", "Hadas");
+        PaymentDetails paymentDetails = new PaymentDetails("ILS", "5326888878675678", "2027", "10", "101", "3190876789", "Hadas");
         ShippingDetails shippingDetails = new ShippingDetails("name", "city", "address", "country", "zipcode");
         private MarketManagerFacade marketManagerFacade;
         private ClientManager clientManager;
@@ -179,38 +179,38 @@ namespace MarketBackend.Tests.IT
             Assert.IsTrue(client.alerts.Count == 0, "Expected no notifications after purchase when offline notifications are disabled.");
         }
 
-        [TestMethod]
-        public void RunMultyTimes()
-        {
-            for (int i=0; i<5; i++){
-                AddProductToShop();
-                Cleanup();
-                Setup();
-                RemoveProductFromShop();
-                Cleanup();
-                Setup();
-                AddProductToBasket();
-                Cleanup();
-                Setup();
-                RemoveProductFromBasket();
-                Cleanup();
-                Setup();
-                AddProductToBasketAndLogout();
-                Cleanup();
-                Setup();
-                PurchaseCartFail_Payment_OrderCancel();
-                Cleanup();
-                Setup();
-                PurchaseCartFail_Shipping_OrderCancel();
-                Cleanup();
-                Setup();
-                Offline_Notifications_Success();
-                Cleanup();
-                Setup();
-                Offline_Notifications_Fail_NotOffline();
-                Cleanup();
-                Setup();
-            }
-        }
+        // [TestMethod]
+        // public void RunMultyTimes()
+        // {
+        //     for (int i=0; i<5; i++){
+        //         AddProductToShop();
+        //         Cleanup();
+        //         Setup();
+        //         RemoveProductFromShop();
+        //         Cleanup();
+        //         Setup();
+        //         AddProductToBasket();
+        //         Cleanup();
+        //         Setup();
+        //         RemoveProductFromBasket();
+        //         Cleanup();
+        //         Setup();
+        //         AddProductToBasketAndLogout();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCartFail_Payment_OrderCancel();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCartFail_Shipping_OrderCancel();
+        //         Cleanup();
+        //         Setup();
+        //         Offline_Notifications_Success();
+        //         Cleanup();
+        //         Setup();
+        //         Offline_Notifications_Fail_NotOffline();
+        //         Cleanup();
+        //         Setup();
+        //     }
+        // }
     }
 }

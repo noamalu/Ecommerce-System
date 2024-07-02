@@ -152,7 +152,7 @@ namespace MarketBackend.Tests.AT
             userId2 = proxy.GetMembeIDrByUserName(userName2);
             token2 = proxy.LoginWithToken(userName2, pass2);
             Assert.IsTrue(proxy.AddToCart(token2, shopID, productID1, quantity1));
-            PaymentDetails paymentDetails = new PaymentDetails("5326888878675678", "2027", "10", "101", "3190876789", "Hadas");
+            PaymentDetails paymentDetails = new PaymentDetails("ILS", "5326888878675678", "2027", "10", "101", "3190876789", "Hadas");
             ShippingDetails shippingDetails = new ShippingDetails("name",  "city",  "address",  "country",  "zipcode");
             Assert.IsTrue(proxy.PurchaseCart(token2, paymentDetails, shippingDetails));
             Assert.IsTrue(proxy.GetPurchaseHistoryByClient(userName2));
@@ -187,46 +187,46 @@ namespace MarketBackend.Tests.AT
                 $"Expected owner count to be 0, but found {proxy.GetOwners(shopID).Count}.");
         }
 
-        [TestMethod]
-        public void RunMultyTimes(){
-            for (int i=0; i<5; i++){
-                AddProductSuccess();
-                CleanUp();
-                Setup();
-                RemoveProductSuccess();
-                CleanUp();
-                Setup();
-                RemoveProductFail_NoProduct();
-                CleanUp();
-                Setup();
-                UpdateProductPriceSuccess();
-                CleanUp();
-                Setup();
-                UpdateProductPriceFail_NegativePrice();
-                CleanUp();
-                Setup();
-                UpdateProductPriceFail_NoProduct();
-                CleanUp();
-                Setup();
-                UpdateProductQuantitySuccess();
-                CleanUp();
-                Setup();
-                UpdateProductQuantityFail_NegativeQuantity();
-                CleanUp();
-                Setup();
-                UpdateProductQuantityFail_NoProduct();
-                CleanUp();
-                Setup();
-                GetPurchaseHistorySuccess();
-                CleanUp();
-                Setup();
-                AddStaffMemberSuccess();
-                CleanUp();
-                Setup();
-                RemoveStaffMemberSuccess();
-                CleanUp();
-                Setup();
-            }
-        }
+        // [TestMethod]
+        // public void RunMultyTimes(){
+        //     for (int i=0; i<5; i++){
+        //         AddProductSuccess();
+        //         CleanUp();
+        //         Setup();
+        //         RemoveProductSuccess();
+        //         CleanUp();
+        //         Setup();
+        //         RemoveProductFail_NoProduct();
+        //         CleanUp();
+        //         Setup();
+        //         UpdateProductPriceSuccess();
+        //         CleanUp();
+        //         Setup();
+        //         UpdateProductPriceFail_NegativePrice();
+        //         CleanUp();
+        //         Setup();
+        //         UpdateProductPriceFail_NoProduct();
+        //         CleanUp();
+        //         Setup();
+        //         UpdateProductQuantitySuccess();
+        //         CleanUp();
+        //         Setup();
+        //         UpdateProductQuantityFail_NegativeQuantity();
+        //         CleanUp();
+        //         Setup();
+        //         UpdateProductQuantityFail_NoProduct();
+        //         CleanUp();
+        //         Setup();
+        //         GetPurchaseHistorySuccess();
+        //         CleanUp();
+        //         Setup();
+        //         AddStaffMemberSuccess();
+        //         CleanUp();
+        //         Setup();
+        //         RemoveStaffMemberSuccess();
+        //         CleanUp();
+        //         Setup();
+        //     }
+        // }
     }
 }

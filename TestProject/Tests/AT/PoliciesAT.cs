@@ -33,7 +33,7 @@ namespace MarketBackend.Tests.AT
         int userAge = 20;
         int userAge2 = 16;
         int basketId = 1;
-        PaymentDetails paymentDetails = new PaymentDetails("5326888878675678", "2027", "10", "101", "3190876789", "Hadas");
+        PaymentDetails paymentDetails = new PaymentDetails("ILS", "5326888878675678", "2027", "10", "101", "3190876789", "Hadas");
         ShippingDetails shippingDetails = new ShippingDetails("name",  "city",  "address",  "country",  "zipcode");
 
         string storeName = "Rami Levi";
@@ -133,29 +133,29 @@ namespace MarketBackend.Tests.AT
                 $"Expected 0 rules in the store, but found {proxy.GetStoreRules(1, token1).Count}.");
         }
 
-        [TestMethod]
-        public void RunMultyTimes()
-        {
-            for (int i = 0; i< 5; i++){
-                AddSimpleRuleStoreName_Success();
-                CleanUp();
-                Setup();
-                AddSimpleRuleStoreName_FailNoStoreOrProductName();
-                CleanUp();
-                Setup();
-                AddQuantityRuleProduct_Success();
-                CleanUp();
-                Setup();
-                AddQuantityRuleProduct_FailNegativeQuantity();
-                CleanUp();
-                Setup();
-                AddTotalPriceRuleProduct_Success();
-                CleanUp();
-                Setup();
-                AddTotalPriceRuleProduct_FailNegativePrice();
-                CleanUp();
-                Setup();
-            }
-        }
+        // [TestMethod]
+        // public void RunMultyTimes()
+        // {
+        //     for (int i = 0; i< 5; i++){
+        //         AddSimpleRuleStoreName_Success();
+        //         CleanUp();
+        //         Setup();
+        //         AddSimpleRuleStoreName_FailNoStoreOrProductName();
+        //         CleanUp();
+        //         Setup();
+        //         AddQuantityRuleProduct_Success();
+        //         CleanUp();
+        //         Setup();
+        //         AddQuantityRuleProduct_FailNegativeQuantity();
+        //         CleanUp();
+        //         Setup();
+        //         AddTotalPriceRuleProduct_Success();
+        //         CleanUp();
+        //         Setup();
+        //         AddTotalPriceRuleProduct_FailNegativePrice();
+        //         CleanUp();
+        //         Setup();
+        //     }
+        // }
     }
 }

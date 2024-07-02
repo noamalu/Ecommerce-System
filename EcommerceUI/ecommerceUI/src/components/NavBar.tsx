@@ -5,7 +5,7 @@ import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import { RiShoppingCart2Line, RiUserLine } from 'react-icons/ri'; // Importing the shopping cart icon
+import { RiShoppingCart2Line, RiUserLine, RiStore2Fill} from 'react-icons/ri'; // Importing the shopping cart icon
 import { useNavigate } from 'react-router-dom';
 import SplitButton from 'react-bootstrap/SplitButton';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -55,6 +55,7 @@ export const NavBar: React.FC<NavBarProps> = (props:{loggedIn : boolean, setLogg
 
               {/* ---- Search ---- */}
               <Form className="d-flex mx-auto" onSubmit={onSearchClick}>
+                <Button variant="outline-success" className="me-2" onClick={() => navigate('/stores')}> <RiStore2Fill size={20} /> </Button>
                 <Form.Control
                   type="search"
                   placeholder={`Search by ${selectedFilter}`}
@@ -71,6 +72,7 @@ export const NavBar: React.FC<NavBarProps> = (props:{loggedIn : boolean, setLogg
                       <Dropdown.Item eventKey="2" active={selectedFilter == "category"} onClick={() => handleFilterClick("category")}> category </Dropdown.Item>
                       <Dropdown.Item eventKey="3" active={selectedFilter == "keyword"} onClick={() => handleFilterClick("keyword")}> keyword </Dropdown.Item>
                     </SplitButton>
+
               </Form>
 
               {/* ---- client related buttons ----- */}

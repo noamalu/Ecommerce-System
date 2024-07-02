@@ -1,4 +1,5 @@
-﻿using MarketBackend.Domain.Market_Client;
+﻿using MarketBackend.DAL.DTO;
+using MarketBackend.Domain.Market_Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,7 +73,6 @@ namespace UnitTests
             ClientManager.Dispose();
             MarketManagerFacade.Dispose();
         }
-
 
         [TestMethod]
         public void canAddProductSuccess()

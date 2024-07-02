@@ -2,6 +2,7 @@
 using System.Net.Mail;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.DAL;
+using MarketBackend.DAL.DTO;
 
 namespace UnitTests
 {
@@ -11,8 +12,15 @@ namespace UnitTests
         [TestInitialize]
         public void SetUp()
         {
+            DBcontext.GetInstance().Dispose();
             ProductRepositoryRAM productRepositoryRAM = ProductRepositoryRAM.GetInstance();
             productRepositoryRAM.Add(new Product(11, 0, "product", "Regular", "nice", 1.0, "fruit", 10, false));
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            DBcontext.GetInstance().Dispose();
         }
 
 
@@ -49,7 +57,14 @@ namespace UnitTests
         [TestInitialize]
         public void SetUp()
         {
+            DBcontext.GetInstance().Dispose();
             member = new Member(1, "username", new MailAddress("email@test.com"), "password");
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            DBcontext.GetInstance().Dispose();
         }
 
         [TestMethod]
@@ -64,6 +79,18 @@ namespace UnitTests
     [TestClass]
     public class GuestTest
     {
+
+        public void SetUp()
+        {
+            DBcontext.GetInstance().Dispose();
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            DBcontext.GetInstance().Dispose();
+        }
+        
         [TestMethod]
         public void GuestCreationTest()
         {

@@ -9,7 +9,7 @@ body {
   padding-top: 6vh;
   display:block !important;
   text-align: center;
-  font-family: 'Trebuchet MS', sans-serif;
+  font-family: 'Open Sans', sans-serif;
 }
 
 .flex {
@@ -19,6 +19,7 @@ body {
 .small-padding {
   padding-top: 2vh;
 }
+
 
 .full-height-row {
   height: 94vh;

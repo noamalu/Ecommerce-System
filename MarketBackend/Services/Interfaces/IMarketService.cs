@@ -56,5 +56,6 @@ namespace MarketBackend.Services.Interfaces
         public Response<List<DiscountPolicyResultDto>> GetStoreDiscountPolicies(int storeId, string identifier);
         public Response<List<PolicyResultDto>> GetStorePurchacePolicies(int storeId, string identifier);
         public Response AddKeyWord(string identifier, string keyWord, int storeId, int productId);
+        public Response<List<StoreResultDto>> GetStores();
     }
 }

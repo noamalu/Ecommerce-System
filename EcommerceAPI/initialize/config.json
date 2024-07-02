@@ -1,0 +1,9 @@
+﻿{
+  "AdminUsername": "u1",
+  "AdminPassword": "password",
+  "InitialState": "initialState.json",
+  "Port": 4560,
+  "ExternalServices": false,
+  "Local": true,
+  "Initialize": true
+}
