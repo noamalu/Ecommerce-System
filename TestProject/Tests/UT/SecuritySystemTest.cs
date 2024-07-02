@@ -1,4 +1,5 @@
-﻿using MarketBackend.Domain.Payment;
+﻿using MarketBackend.DAL.DTO;
+using MarketBackend.Domain.Payment;
 using MarketBackend.Domain.Security;
 using Moq;
 using System.Transactions;
@@ -21,11 +22,18 @@ namespace UnitTests
         [TestInitialize]
         public void SetUp()
         {
+            DBcontext.GetInstance().Dispose();
             _securityManager = SecurityManager.GetInstance();
             _tokenManager = TokenManager.GetInstance();
             mockIssueTime = DateTime.UtcNow;
             mockExpirationTime = mockIssueTime.AddMinutes(_tokenManager.ExpirationTime);
             mockToken = _securityManager.GenerateToken(mockUsername);
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            DBcontext.GetInstance().Dispose();
         }
         
         [TestMethod]

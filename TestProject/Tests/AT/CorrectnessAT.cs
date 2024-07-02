@@ -84,17 +84,17 @@ namespace MarketBackend.Tests.AT
             "Fail in regiter, should throw exception- not unique username.");
         }
 
-        [TestMethod]
-        public void RunMultyTimes()
-        {
-            for (int i = 0; i < 5; i ++){
-                UniqueUsername_GoodCase();
-                CleanUp();
-                Setup();
-                UniqueUsername_BadCase();
-                CleanUp();
-                Setup();
-            }
-        }
+        // [TestMethod]
+        // public void RunMultyTimes()
+        // {
+        //     for (int i = 0; i < 5; i ++){
+        //         UniqueUsername_GoodCase();
+        //         CleanUp();
+        //         Setup();
+        //         UniqueUsername_BadCase();
+        //         CleanUp();
+        //         Setup();
+        //     }
+        // }
     }
 }

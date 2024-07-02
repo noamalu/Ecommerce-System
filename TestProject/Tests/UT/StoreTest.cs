@@ -7,6 +7,7 @@ using MarketBackend.Domain.Models;
 using Moq;
 using MarketBackend.Domain.Shipping;
 using MarketBackend.Domain.Payment;
+using MarketBackend.DAL.DTO;
 
 namespace UnitTests
 {
@@ -21,9 +22,12 @@ namespace UnitTests
         string username1 = "nofar";
         string username2 = "noa";
         string username3 = "yonatan";
+        DBcontext context;
         [TestInitialize]
         public void Initialize()
         {
+            DBcontext.GetInstance().Dispose();
+            context = DBcontext.GetInstance();
             var mockShippingSystem = new Mock<IShippingSystemFacade>();
             var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
             mockPaymentSystem.Setup(pay =>pay.Connect()).Returns(true);
@@ -41,7 +45,7 @@ namespace UnitTests
             int storeId= MMF.CreateStore(token1, "shop1", "shop@gmail.com", "0502552798");
             _owner = CM.GetClientByIdentifier(token1);
             _Store = MMF.GetStore(storeId);
-            _Store.AddProduct(username1, "Brush", "" , "Brush", 4784, "hair", 21, false);
+            _Store.AddProduct(username1, "Brush", "RegularSell" , "Brush", 4784, "hair", 21, false);
             _p1 = _Store.Products.ToList().Find((p) => p.ProductId == 11);
             c.Register( username2, "54321", "nofar@gmail.com", 18);
             token2 = c.LoginClient(username2, "54321").Value;
@@ -50,6 +54,7 @@ namespace UnitTests
          [TestCleanup]
         public void Cleanup()
         {
+            DBcontext.GetInstance().Dispose();
             var mockShippingSystem = new Mock<IShippingSystemFacade>();
             var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
             mockPaymentSystem.Setup(pay =>pay.Connect()).Returns(true);
@@ -66,26 +71,27 @@ namespace UnitTests
         [TestMethod()]
         public void AddProductSuccess()
         {
-            _Store.AddProduct(username1, "Shampo", "" , "Shampo", 4784, "hair", 21, false);
+            
+            _Store.AddProduct(username1, "Shampo", "RegularSell" , "Shampo", 4784, "hair", 21, false);
             Assert.IsTrue(_Store.Products.ToList().Find((p) => p.Name == "Shampo") != null);
         }
 
         [TestMethod()]
         public void AddProductFailHasNoPermissions()
         {
-            Assert.ThrowsException<Exception>(() => _Store.AddProduct(username2,"Shampo", "" , "Shampo", 4784, "hair", 21, false));
+            Assert.ThrowsException<Exception>(() => _Store.AddProduct(username2,"Shampo", "RegularSell" , "Shampo", 4784, "hair", 21, false));
         }
 
         [TestMethod()]
         public void AddProductFailUserNotExist()
         {
-            Assert.ThrowsException<Exception>(() => _Store.AddProduct(username3,"Shampo", "" , "Shampo", 4784, "hair", 21, false));
+            Assert.ThrowsException<Exception>(() => _Store.AddProduct(username3,"Shampo", "RegularSell" , "Shampo", 4784, "hair", 21, false));
         }
 
         [TestMethod()]
         public void RemoveProductSuccess()
         {
-            _Store.AddProduct(username1, "Shampo", "" , "Shampo", 4784, "hair", 21, false);
+            _Store.AddProduct(username1, "Shampo", "RegularSell" , "Shampo", 4784, "hair", 21, false);
             Product p1 = _Store.Products.ToList().Find((p) => p.Name == "Shampo");
             _Store.RemoveProduct(username1, p1.ProductId);
             Assert.IsTrue(!_Store.Products.Contains(p1));
@@ -94,7 +100,7 @@ namespace UnitTests
         [TestMethod()]
         public void RemoveProductFailNOPrermissions()
         {
-           _Store.AddProduct(username1, "Shampo", "" , "Shampo", 4784, "hair", 21, false);
+           _Store.AddProduct(username1, "Shampo", "RegularSell" , "Shampo", 4784, "hair", 21, false);
             Product p1 = _Store.Products.ToList().Find((p) => p.Name == "Shampo");
             Assert.ThrowsException<Exception>(() => _Store.RemoveProduct(username3, p1.ProductId));
         }
@@ -102,7 +108,7 @@ namespace UnitTests
         [TestMethod()]
         public void RemoveProductFailUserNotExist()
         {
-           _Store.AddProduct(username1, "Shampo", "" , "Shampo", 4784, "hair", 21, false);
+           _Store.AddProduct(username1, "Shampo", "RegularSell" , "Shampo", 4784, "hair", 21, false);
             Product p1 = _Store.Products.ToList().Find((p) => p.Name == "Shampo");
             Assert.ThrowsException<Exception>(() => _Store.RemoveProduct(username3, p1.ProductId));
         }
@@ -247,6 +253,8 @@ namespace UnitTests
         public void PurchaseBasketSuccess()
         {
             Basket basket = new Basket(13, _Store._storeId);
+            BasketDTO basketDTO = new BasketDTO(basket);
+            context.Baskets.Add(basketDTO);
             basket.addToBasket(11, 10);
             Purchase purchase = _Store.PurchaseBasket(username2,basket);
             Assert.IsTrue(_Store._history._purchases.Contains(purchase));
