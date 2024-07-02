@@ -60,6 +60,8 @@ WebSocketServer logServer = new WebSocketServer($"ws://{GetLocalIPAddress()}:{po
 
 alertServer.Start();
 logServer.Start();
+builder.Services.AddSingleton(_ => alertServer);
+builder.Services.AddSingleton(_ => logServer);
 
 app.Run();
 
