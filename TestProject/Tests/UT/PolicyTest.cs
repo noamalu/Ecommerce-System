@@ -27,6 +27,7 @@ namespace UnitTests
         [TestInitialize]
         public void Initialize(){
             DBcontext.GetInstance().Dispose();
+            RuleRepositoryRAM.GetInstance().Dispose();
             DBcontext context = DBcontext.GetInstance();
             var mockShippingSystem = new Mock<IShippingSystemFacade>();
             var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
@@ -66,6 +67,7 @@ namespace UnitTests
             MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object).Dispose();
             ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object).Dispose();
             PolicyRepositoryRAM.GetInstance().Dispose();
+            RuleRepositoryRAM.GetInstance().Dispose();
         }
 
         [TestMethod]
