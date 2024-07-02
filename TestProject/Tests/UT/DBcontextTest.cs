@@ -75,6 +75,7 @@ namespace UnitTests
         public void CleanUp()
         {
             _context.Dispose();
+            _context = DBcontext.GetInstance();
             MarketManagerFacade.Dispose();
             mockShippingSystem = new Mock<IShippingSystemFacade>();
             mockPaymentSystem = new Mock<IPaymentSystemFacade>();
@@ -97,7 +98,7 @@ namespace UnitTests
         {
             ShoppingCartDTO shoppingCartDTO = new ShoppingCartDTO();
             List<MessageDTO> l = new List<MessageDTO>();
-            MemberDTO member1 = new MemberDTO(1, "tamuz", "123", l, false, shoppingCartDTO);
+            MemberDTO member1 = new MemberDTO(2, "tamuz", "123", l, false, shoppingCartDTO);
             var add1 = _context.Members.Add(member1);
             _context.SaveChanges();
             Assert.AreEqual(_context.Members.Find(member1.Id), member1);
@@ -106,9 +107,9 @@ namespace UnitTests
         [TestMethod]
         public void MarketContextShopAdd()
         {
-            ShoppingCartDTO shoppingCartDTO = new ShoppingCartDTO();
+            ShoppingCartDTO shoppingCartDTO = new ShoppingCartDTO(2);
             List<MessageDTO> l = new List<MessageDTO>();
-            MemberDTO member1 = new MemberDTO(1, userName, userPassword, l, false, shoppingCartDTO);
+            MemberDTO member1 = new MemberDTO(2, userName, userPassword, l, false, shoppingCartDTO);
             StoreDTO shop = new StoreDTO(1, storeName, phoneNum, email1, true, 5.0);
 
             //string name, double price, int quantity, int category, string description, string keywords, List< ReviewDTO > reviews)
@@ -184,13 +185,13 @@ namespace UnitTests
         [TestMethod]
         public void MarketContextAddToBasket()
         {
-            ShoppingCart cart = new ShoppingCart(1);
+            ShoppingCart cart = new ShoppingCart(2);
             ShoppingCartDTO shoppingCartDTO = new ShoppingCartDTO(cart);
             List<MessageDTO> l = new List<MessageDTO>();
-            MemberDTO member1 = new MemberDTO(1, userName, userPassword, l, false, shoppingCartDTO);
-            ShoppingCart cart2 = new ShoppingCart(2);
+            MemberDTO member1 = new MemberDTO(2, userName, userPassword, l, false, shoppingCartDTO);
+            ShoppingCart cart2 = new ShoppingCart(3);
             ShoppingCartDTO shoppingCartDTO2 = new ShoppingCartDTO(cart2);
-            MemberDTO member2 = new MemberDTO(2, userName2, pass2,l, false, shoppingCartDTO2);
+            MemberDTO member2 = new MemberDTO(3, userName2, pass2,l, false, shoppingCartDTO2);
 
             StoreDTO shop = new StoreDTO(1, storeName, phoneNum, email1, true, 5.0);
 
@@ -228,13 +229,13 @@ namespace UnitTests
         [TestMethod]
         public void MarketContextPurchase()
         {
-            ShoppingCart cart = new ShoppingCart(1);
+            ShoppingCart cart = new ShoppingCart(2);
             ShoppingCartDTO shoppingCartDTO = new ShoppingCartDTO(cart);
             List<MessageDTO> l = new List<MessageDTO>();
-            MemberDTO member1 = new MemberDTO(1, userName, userPassword, l, false, shoppingCartDTO);
-            ShoppingCart cart2 = new ShoppingCart(2);
+            MemberDTO member1 = new MemberDTO(2, userName, userPassword, l, false, shoppingCartDTO);
+            ShoppingCart cart2 = new ShoppingCart(3);
             ShoppingCartDTO shoppingCartDTO2 = new ShoppingCartDTO(cart2);
-            MemberDTO member2 = new MemberDTO(2, userName2, pass2,l, false, shoppingCartDTO2);
+            MemberDTO member2 = new MemberDTO(3, userName2, pass2,l, false, shoppingCartDTO2);
 
             StoreDTO shop = new StoreDTO(1, storeName, phoneNum, email1, true, 5.0);
             StoreDTO shop2 = new StoreDTO(2, "store", phoneNum, email1, true, 5.0);
@@ -247,7 +248,9 @@ namespace UnitTests
             shop2.Products.Add(product3);
 
             _context.Stores.Add(shop);
+            _context.SaveChanges();
             _context.Stores.Add(shop2);
+            _context.SaveChanges();
             _context.Members.Add(member1);
             _context.Members.Add(member2);
             _context.SaveChanges();
@@ -381,16 +384,16 @@ namespace UnitTests
         [TestMethod]
         public void MarketContextEvents()
         {
-            ShoppingCart cart = new ShoppingCart(1);
+            ShoppingCart cart = new ShoppingCart(2);
             ShoppingCartDTO shoppingCartDTO = new ShoppingCartDTO(cart);
             List<MessageDTO> l = new List<MessageDTO>();
-            MemberDTO member1 = new MemberDTO(1, userName, userPassword, l, false, shoppingCartDTO);
-            ShoppingCart cart2 = new ShoppingCart(2);
+            MemberDTO member1 = new MemberDTO(2, userName, userPassword, l, false, shoppingCartDTO);
+            ShoppingCart cart2 = new ShoppingCart(3);
             ShoppingCartDTO shoppingCartDTO2 = new ShoppingCartDTO(cart2);
-            MemberDTO member2 = new MemberDTO(2, userName2, pass2,l, false, shoppingCartDTO2);
-            ShoppingCart cart3 = new ShoppingCart(3);
+            MemberDTO member2 = new MemberDTO(3, userName2, pass2,l, false, shoppingCartDTO2);
+            ShoppingCart cart3 = new ShoppingCart(4);
             ShoppingCartDTO shoppingCartDTO3 = new ShoppingCartDTO(cart3);
-            MemberDTO member3 = new MemberDTO(3, "Ben", "111", l, true, shoppingCartDTO3);
+            MemberDTO member3 = new MemberDTO(4, "Ben", "111", l, true, shoppingCartDTO3);
 
             StoreDTO shop = new StoreDTO(1, storeName, phoneNum, email1, true, 5.0);
             StoreDTO shop2 = new StoreDTO(2, "Tamuz's Shop", phoneNum, email1, true, 5.0);
