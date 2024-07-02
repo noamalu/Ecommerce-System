@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using MarketBackend.DAL;
 using MarketBackend.DAL.DTO;
 using MarketBackend.Domain.Models;
 
@@ -64,6 +65,7 @@ namespace MarketBackend.Domain.Market_Client
             if(!OrderHistory.TryGetValue(basket._cartId, out var cartInHistory)){
                 cartInHistory ??= new(){_shoppingCartId = basket._cartId};
                 OrderHistory.TryAdd(basket._cartId, cartInHistory);
+                BasketRepositoryRAM.GetInstance().Add_cartHistory(cartInHistory, UserName);
             }            
             cartInHistory.AddBasket(basket);            
             base.PurchaseBasket(basket);

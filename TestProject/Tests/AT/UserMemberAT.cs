@@ -199,24 +199,24 @@ namespace MarketBackend.Tests.AT
                 $"Expected purchase history to contain one entry but got {proxy.GetPurchaseHistory(userName2).Count}.");
         }
 
-        // [TestMethod]
-        // public void PurchaseCartFail_NoProduct()
-        // {
-        //     int shopID = 1;
-        //     Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
-        //         "Expected store creation to succeed.");
-        //     Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
-        //         "Expected product addition to the store to succeed.");
-        //     userId2 = proxy.GetMembeIDrByUserName(userName2);
-        //     Assert.IsTrue(proxy.AddToCart(token2, shopID, productID1, quantity1), 
-        //         "Expected product to be added to the cart successfully.");
-        //     Assert.IsTrue(proxy.RemoveProduct(shopID, token1, 11), 
-        //         "Expected product to be removed from the store.");
-        //     Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
-        //         "Expected cart purchase to fail as product does not exist in the store.");
-        //     Assert.AreEqual(0, proxy.GetPurchaseHistory(userName2).Count, 
-        //         $"Expected purchase history to be empty but got {proxy.GetPurchaseHistory(userName2).Count}.");
-        // }
+        [TestMethod]
+        public void PurchaseCartFail_NoProduct()
+        {
+            int shopID = 1;
+            Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
+                "Expected store creation to succeed.");
+            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
+                "Expected product addition to the store to succeed.");
+            userId2 = proxy.GetMembeIDrByUserName(userName2);
+            Assert.IsTrue(proxy.AddToCart(token2, shopID, productID1, quantity1), 
+                "Expected product to be added to the cart successfully.");
+            Assert.IsTrue(proxy.RemoveProduct(shopID, token1, 11), 
+                "Expected product to be removed from the store.");
+            Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
+                "Expected cart purchase to fail as product does not exist in the store.");
+            Assert.AreEqual(0, proxy.GetPurchaseHistory(userName2).Count, 
+                $"Expected purchase history to be empty but got {proxy.GetPurchaseHistory(userName2).Count}.");
+        }
 
         [TestMethod]
         public void PurchaseCartFail_EmptyCart()

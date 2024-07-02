@@ -156,7 +156,7 @@ namespace MarketBackend.DAL
             Delete(policy.Id);
         }
 
-        public void Dispose()
+        public static void Dispose()
         {
              _policyById = new ConcurrentDictionary<int, IPolicy>();
         }
