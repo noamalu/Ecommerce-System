@@ -20,15 +20,17 @@ namespace EcommerceAPI.Controllers
     [Route("api/Client")]
     public class ClientController : ControllerBase
     {
-        public WebSocketServer AlertServer {get; set;}
-        public WebSocketServer LogServer {get; set;}
+        private readonly WebSocketServer AlertServer;
+        private readonly WebSocketServer LogServer;
         private IClientService _clientService;
 
         private static Dictionary<string, IList<string>> _clientPendingAlerts = new();
         private static Dictionary<string, string> _alertPathByclientIdentifier = new();
-        public ClientController(IClientService clientService)
+        public ClientController(IClientService clientService, WebSocketServer alerts, WebSocketServer logs)
         {
             _clientService = clientService;
+            AlertServer = alerts;
+            this.LogServer = logs;
         }
         private class NotificationsService : WebSocketBehavior
         {

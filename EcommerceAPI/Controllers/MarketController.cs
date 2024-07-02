@@ -42,15 +42,17 @@ namespace EcommerceAPI.Controllers
     [Route("api/Market")]
     public class MarketController : ControllerBase
     {
-        public WebSocketServer AlertServer {get; set;}
-        public WebSocketServer LogServer {get; set;}
+        private readonly WebSocketServer AlertServer;
+        private readonly WebSocketServer LogServer;
         private IMarketService _marketService;
 
         private static IDictionary<string, IList<string>> buyerUnsentMessages = new Dictionary<string, IList<string>>();
         private static IDictionary<string, string> buyerIdToRelativeNotificationPath = new Dictionary<string, string>();
-        public MarketController(IMarketService marketService)
+        public MarketController(IMarketService marketService, WebSocketServer alerts, WebSocketServer logs)
         {
             _marketService = marketService;
+            AlertServer = alerts;
+            LogServer = logs;
         }
         private class NotificationsService : WebSocketBehavior
         {
