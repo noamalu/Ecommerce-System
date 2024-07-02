@@ -5,6 +5,8 @@ using MarketBackend.Services.Interfaces;
 using MarketBackend.Domain.Shipping;
 using MarketBackend.Domain.Payment;
 using MarketBackend.Services;
+using MarketBackend.DAL.DTO;
+
 
 namespace EcommerceAPI.initialize;
 
@@ -34,9 +36,15 @@ public class Configurate
             throw new Exception("open config file fail");
         }
         JObject scenarioDtoDict = JObject.Parse(textJson);
+        if (scenarioDtoDict["Local"].Value<bool>())
+
+            DBcontext.SetLocalDB();
+        else
+            DBcontext.SetRemoteDB();
         if (scenarioDtoDict["Initialize"].Value<bool>())
         {
             string initPATH = Path.Combine(Environment.CurrentDirectory, "initialize\\" + scenarioDtoDict["InitialState"]);
+            DBcontext.GetInstance().Dispose();
             new SceanarioParser( _service, _clientService).Parse(initPATH);
         }
         return scenarioDtoDict["Port"].ToString();
