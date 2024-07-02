@@ -23,6 +23,45 @@ namespace UnitTests
         string username2 = "noa";
         string username3 = "yonatan";
         DBcontext context;
+
+        private MarketManagerFacade marketManagerFacade;
+        string userName = "user1";
+        string session1 = "1";
+        string userName2 = "user2";
+        string session2 = "2";
+
+        string userName3 = "user3";
+        string session3 = "3";
+        string token3;
+
+        string userPassword = "pass1";
+        string pass2 = "pass2";
+        string email1 = "printz@post.bgu.ac.il";
+        string email2 = "hadaspr100@gmail.com";
+        string wrongEmail = "@gmail.com";
+        int userId;
+        int productID1 = 11;
+        string productName1 = "Banana";
+        string category1 = "Fruit";
+        string storeName = "Remi levi";
+        string phoneNum = "0522768972";
+        double price1 = 5.0;
+        int quantity1 = 10;
+        double discount1 = 0.5; 
+        int userAge = 20;
+        int userAge2 = 16;
+        int basketId = 1;
+        PaymentDetails paymentDetails = new PaymentDetails("5326888878675678", "2027", "10", "101", "3190876789", "Hadas"); 
+        ShippingDetails shippingDetails = new ShippingDetails("name",  "city",  "address",  "country",  "zipcode");
+        private const int NumThreads = 10;
+        private const int NumIterations = 100;
+        string productname1 = "product1";
+        private ClientManager clientManager;
+        string sellmethod = "RegularSell";
+        string desc = "nice";
+        int productCounter = 0;
+        int storeId = 1;
+        int userId2;
         [TestInitialize]
         public void Initialize()
         {
@@ -65,7 +104,7 @@ namespace UnitTests
             mockPaymentSystem.SetReturnsDefault(true);
             MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object).Dispose();
             ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object).Dispose();
-        
+            MarketManagerFacade.Dispose();
         }
 
         [TestMethod()]
@@ -252,7 +291,7 @@ namespace UnitTests
         [TestMethod()]
         public void PurchaseBasketSuccess()
         {
-            Basket basket = new Basket(13, _Store._storeId);
+            Basket basket = new Basket(1, _Store._storeId);
             BasketDTO basketDTO = new BasketDTO(basket);
             context.Baskets.Add(basketDTO);
             basket.addToBasket(11, 10);
