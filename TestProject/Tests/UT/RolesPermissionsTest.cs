@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 using MarketBackend.DAL;
 using MarketBackend.DAL.DTO;
 using MarketBackend.Tests.AT;
+using MarketBackend.Services;
+using MarketBackend.Domain.Shipping;
+using MarketBackend.Domain.Payment;
+using Moq;
 
 namespace UnitTests
 {
@@ -25,20 +29,46 @@ namespace UnitTests
         [TestInitialize]
         public void SetUp()
         {
+            var mockShippingSystem = new Mock<IShippingSystemFacade>();
+            var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
+            mockPaymentSystem.Setup(pay =>pay.Connect()).Returns(true);
+            mockShippingSystem.Setup(ship => ship.Connect()).Returns(true);
+            mockPaymentSystem.Setup(pay =>pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(1);
+            mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
+            mockShippingSystem.SetReturnsDefault(true);
+            mockPaymentSystem.SetReturnsDefault(true);
             DBcontext.GetInstance().Dispose();
-
-            founder = new Role(new Founder(RoleName.Founder), null, 0, username0);
-            rrr.Add(founder);
-            owner = new Role(new Owner(RoleName.Owner), null, 0, username1);
-            rrr.Add(owner);
-            manager = new Role(new StoreManagerRole(RoleName.Manager), null, 0, username2);
-            rrr.Add(manager);
+            MarketService s = MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
+            ClientService c = ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
+            ClientManager CM = ClientManager.GetInstance();
+            MarketManagerFacade MMF = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
+            c.Register(username0, "12345", "nofar@gmail.com", 19);
+            string token1 = c.LoginClient(username0, "12345").Value;
+            int storeId = MMF.CreateStore(token1, "shop1", "shop@gmail.com", "0502552798");
+            Store store = MMF.GetStore(storeId);
+            founder = store.getRole(username0);
+            owner = new Role(new Owner(RoleName.Owner), MMF.GetMember(username0), storeId, username1);
+            store.AddStaffMember(username1, owner, username0);
+            manager = new Role(new StoreManagerRole(RoleName.Manager), MMF.GetMember(username0), storeId, username2);
+            store.AddStaffMember(username2, owner, username0);
         }
 
         [TestCleanup]
         public void CleanUp()
         {
             DBcontext.GetInstance().Dispose();
+            var mockShippingSystem = new Mock<IShippingSystemFacade>();
+            var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
+            mockPaymentSystem.Setup(pay =>pay.Connect()).Returns(true);
+            mockShippingSystem.Setup(ship => ship.Connect()).Returns(true);
+            mockPaymentSystem.Setup(pay =>pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(1);
+            mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
+            mockShippingSystem.SetReturnsDefault(true);
+            mockPaymentSystem.SetReturnsDefault(true);
+            MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object).Dispose();
+            ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object).Dispose();
+            ClientManager.Dispose();
+            MarketManagerFacade.Dispose();
         }
 
 

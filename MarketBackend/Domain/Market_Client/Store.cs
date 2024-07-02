@@ -168,7 +168,7 @@ namespace MarketBackend.Domain.Market_Client
             }
         }
 
-        private Role getRole(string userName){
+        public Role getRole(string userName){
 
         if (roles.TryGetValue(userName, out Role role))
         {

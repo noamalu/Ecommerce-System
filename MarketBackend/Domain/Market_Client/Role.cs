@@ -28,7 +28,10 @@ namespace MarketBackend.Domain.Market_Client
         public Role(RoleDTO roleDTO)
         {
             role = createRoleType(roleDTO);
-            appointer = new Member(roleDTO.appointer);
+            if (roleDTO.appointer != null)
+                appointer = ClientRepositoryRAM.GetInstance().GetById(roleDTO.appointer.Id);
+            else
+                appointer = null;
             appointees = new List<Member>();
             foreach (int memberDTOId in roleDTO.appointees)
             {
@@ -105,7 +108,7 @@ namespace MarketBackend.Domain.Market_Client
         public void addPermission(Permission permission)
         {
             role.addPermission(permission);
-            
+
         }
         public void removePermission(Permission permission)
         {
