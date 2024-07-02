@@ -98,7 +98,7 @@ namespace MarketBackend.DAL.DTO
                 DbPath = DbPathLocal;
             else
                 DbPath = DbPathRemote;
-            DbPath = DbPathLocal;
+            DbPath = DbPathRemote;
         }
         public static void SetLocalDB()
         {

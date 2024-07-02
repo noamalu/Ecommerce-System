@@ -1,14 +1,14 @@
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Threading.Tasks;
-//using System.ComponentModel.DataAnnotations;
-//using System.ComponentModel.DataAnnotations.Schema;
-//using MarketBackend.Domain.Models;
-//using MarketBackend.Domain.Market_Client;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using MarketBackend.Domain.Models;
+using MarketBackend.Domain.Market_Client;
 
-//namespace MarketBackend.DAL.DTO
-//{
+namespace MarketBackend.DAL.DTO
+{
   
     [Table("Stores")]
     public class StoreDTO
@@ -64,7 +64,7 @@
             foreach (IPolicy policy in store._discountPolicyManager.Policies.Values)
                 Policies.Add(policy.CloneDTO());
 
-//        }
-//    }
-//}
+       }
+   }
+}
     
