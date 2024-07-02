@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MarketBackend.DAL;
+using MarketBackend.DAL.DTO;
 using MarketBackend.Services.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 
@@ -16,31 +17,96 @@ namespace MarketBackend.Domain.Market_Client
         public Dictionary<int, int> products{get;} //product id to quantity
         private SynchronizedCollection<BasketItem> _basketItems;
         public SynchronizedCollection<BasketItem> BasketItems { get => _basketItems; set => _basketItems = value; }
-
+        private object Lock;
 
         public Basket(int basketId, int storeId){
             _basketId = basketId; 
             _storeId = storeId;
             products = new Dictionary<int, int>();
             _basketItems = new SynchronizedCollection<BasketItem>();
+            Lock = new object();
+        }
+
+        public Basket(BasketDTO other)
+        {
+            _basketId = other.BasketId;
+            _storeId = other.StoreId;
+            _basketItems = new(other.BasketItems);
+            List<ProductDTO> productDTOs = other.Products;
+            foreach (ProductDTO productDTO in productDTOs)
+            {
+                Product product = new Product(productDTO);
+                products[product.ProductId] = productDTO.Quantity;
+            }         
         }
 
         public void addToBasket(int productId, int quantity){
             if (products.ContainsKey(productId)){
                 products[productId] += quantity;
                 FindBasketItem(productId).Quantity += quantity;
+                int quantityInBasket = FindBasketItem(productId).Quantity;
+                lock (Lock)
+                {
+                    DBcontext dBcontext = DBcontext.GetInstance();
+                    BasketDTO basketDTO = dBcontext.Baskets.Find(_basketId);
+                    BasketItemDTO basketItemDTO = basketDTO.BasketItems.FirstOrDefault(bi => bi.Product.ProductId == productId);
+                    if (basketItemDTO != null)
+                    {
+                        basketItemDTO.Quantity = quantityInBasket;
+                        dBcontext.SaveChanges();
+                    }
+                }
             }
             else{
                 products[productId] = quantity;
-                _basketItems.Add(new BasketItem(ProductRepositoryRAM.GetInstance().GetById(productId), quantity)) ;
+                BasketItem basketItem = new BasketItem(ProductRepositoryRAM.GetInstance().GetById(productId), quantity);
+                _basketItems.Add(basketItem);
+                lock (Lock)
+                {
+                    DBcontext dBcontext = DBcontext.GetInstance();
+                    BasketItemDTO basketItemDTO = new BasketItemDTO(basketItem);
+                    // dBcontext.BasketItems.Add(basketItemDTO);
+                    BasketDTO basketDTO = dBcontext.Baskets.Find(_basketId);
+                    basketDTO.BasketItems.Add(basketItemDTO);
+                    dBcontext.SaveChanges();
+                }
             }
         }
 
         public void RemoveFromBasket(int productId, int quantity){
             if (products.ContainsKey(productId)){
                 products[productId] = Math.Max(products[productId]-quantity,0);
-                _basketItems.Remove(FindBasketItem(productId));
-                products.Remove(productId);
+                if (products[productId] == 0) {
+                    products.Remove(productId);
+                    _basketItems.Remove(FindBasketItem(productId));
+                    lock (Lock)
+                    {
+                        DBcontext dBcontext = DBcontext.GetInstance();
+                        BasketDTO basketDTO = dBcontext.Baskets.Find(_basketId);
+                        BasketItemDTO basketItemDTO = basketDTO.BasketItems.FirstOrDefault(bi => bi.Product.ProductId == productId);
+                        if (basketItemDTO != null)
+                        {
+                            dBcontext.BasketItems.Remove(basketItemDTO);
+                            dBcontext.Baskets.Remove(basketDTO);
+                            dBcontext.SaveChanges();
+                        }
+                    }
+                }
+                else{
+                    FindBasketItem(productId).Quantity -= quantity;
+                    int quantityInBasket = FindBasketItem(productId).Quantity;
+                    lock (Lock)
+                    {
+                        DBcontext dBcontext = DBcontext.GetInstance();
+                        BasketDTO basketDTO = dBcontext.Baskets.Find(_basketId);
+                        BasketItemDTO basketItemDTO = basketDTO.BasketItems.FirstOrDefault(bi => bi.Product.ProductId == productId);
+                        if (basketItemDTO != null)
+                        {
+                            basketItemDTO.Quantity = quantityInBasket;
+                            dBcontext.SaveChanges();
+                        }
+                    }
+                }
             }
             else{
                 throw new ArgumentException($"Product id={productId} not in the {_basketId}!");

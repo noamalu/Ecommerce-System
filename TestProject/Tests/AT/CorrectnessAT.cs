@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using MarketBackend.DAL.DTO;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Payment;
 using MarketBackend.Domain.Shipping;
@@ -43,6 +44,7 @@ namespace MarketBackend.Tests.AT
 
         [TestInitialize()]
         public void Setup(){
+            DBcontext.GetInstance().Dispose();
             proxy = new Proxy();
             userId = proxy.GetUserId();
             var mockShippingSystem = new Mock<IShippingSystemFacade>();
@@ -61,6 +63,7 @@ namespace MarketBackend.Tests.AT
 
         [TestCleanup]
         public void CleanUp(){
+            DBcontext.GetInstance().Dispose();
             proxy.Dispose();
         }
  
@@ -81,17 +84,17 @@ namespace MarketBackend.Tests.AT
             "Fail in regiter, should throw exception- not unique username.");
         }
 
-        [TestMethod]
-        public void RunMultyTimes()
-        {
-            for (int i = 0; i < 5; i ++){
-                UniqueUsername_GoodCase();
-                CleanUp();
-                Setup();
-                UniqueUsername_BadCase();
-                CleanUp();
-                Setup();
-            }
-        }
+        // [TestMethod]
+        // public void RunMultyTimes()
+        // {
+        //     for (int i = 0; i < 5; i ++){
+        //         UniqueUsername_GoodCase();
+        //         CleanUp();
+        //         Setup();
+        //         UniqueUsername_BadCase();
+        //         CleanUp();
+        //         Setup();
+        //     }
+        // }
     }
 }

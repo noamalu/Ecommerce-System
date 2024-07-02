@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MarketBackend.DAL;
+using MarketBackend.DAL.DTO;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Services.Interfaces;
 
@@ -48,13 +49,22 @@ namespace MarketBackend.Domain.Models
     {
         public int _shoppingCartId{get; set;}
         public ConcurrentDictionary<int, Basket> _baskets = new();
-        public ConcurrentDictionary<int, Product> _products = new();        
+        public ConcurrentDictionary<int, Product> _products = new();
+
+        public ShoppingCartHistory(){}
+        public ShoppingCartHistory(ShoppingCartHistoryDTO other)
+        {
+            _shoppingCartId = other.ShoppingCartId;
+            _baskets = new(other._baskets.Select(basket => new Basket(basket)).ToDictionary(basket => basket._storeId));
+            _products = new(other._products.Select(product => new Product(product)).ToDictionary(product => product.ProductId));
+        }
+
         public void AddBasket(Basket basket)
         {
             _baskets.TryAdd(basket._basketId, Basket.Clone(basket));
             foreach(var product in basket.products)
             {
-                var storeProducts = ProductRepositoryRAM.GetInstance().GetShopProducts(basket._storeId);
+                var storeProducts = ProductRepositoryRAM.GetInstance().GetStoreProducts(basket._storeId);
                 var productDetailsFromStore = storeProducts.Where(p => p.ProductId == product.Key).FirstOrDefault().Clone();
                 if(productDetailsFromStore is not null) _products.TryAdd(product.Key, productDetailsFromStore);
             }

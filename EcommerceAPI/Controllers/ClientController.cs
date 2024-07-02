@@ -266,6 +266,36 @@ namespace EcommerceAPI.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("Client/Notifications")]
+        public async Task<ObjectResult> GetMemberNotifications([Required][FromQuery]string identifier)
+        {
+            Response<List<MessageResultDto>> response = await Task.Run(() => _clientService.GetMemberNotifications(identifier));
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<List<MessageResultDto>>.OkResponse(response.Value));
+            }
+        }
+
+        [HttpPost]
+        [Route("Client/Notifications")]
+        public async Task<ObjectResult> SetMemberNotifications([Required][FromQuery]string identifier, [FromQuery]bool on)
+        {
+            Response response = await Task.Run(() => _clientService.SetMemberNotifications(identifier, on));
+            if (response.ErrorOccured)
+            {
+                return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+            }
+            else
+            {
+                return Ok(ServerResponse<string>.OkResponse("succses"));
+            }
+        }
+
         [HttpPost]
         [Route("Guest/exit")]
         public async Task<ActionResult<ServerResponse<string>>> ExitGuest([Required][FromQuery]string identifier)
@@ -303,6 +333,36 @@ namespace EcommerceAPI.Controllers
                 return Ok(ServerResponse<bool>.OkResponse(response.Value));
             }
         }
+
+        // [HttpPost]
+        // [Route("Client/AskOwner")]
+        // public async Task<ObjectResult> AskToStoreOwnerReq([Required][FromQuery] string identifier,[FromQuery] int storeId, [FromQuery] string toAddUserName)
+        // {
+        //     Response response = await Task.Run(() => _clientService.AskToStoreOwnershipReq(identifier, storeId, toAddUserName));
+        //     if (response.ErrorOccured)
+        //     {
+        //         return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+        //     }
+        //     else
+        //     {
+        //         return Ok(ServerResponse<string>.OkResponse("succses"));
+        //     }
+        // }
+
+        // [HttpPost]
+        // [Route("Client/AskManager")]
+        // public async Task<ObjectResult> AskToStoreManagerReq([Required][FromQuery] string identifier, [FromQuery] int storeId, [FromQuery] string toAddUserName)
+        // {
+        //////     Response response = await Task.Run(() => _clientService.AskToStoreManageReq(identifier, storeId, toAddUserName));
+        //////     if (response.ErrorOccured)
+        //////     {
+        //////         return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
+        //////     }
+        //////     else
+        //////     {
+        //         return Ok(ServerResponse<string>.OkResponse("succses"));
+        //     }
+        // }
 
         [HttpPost]
         [Route("Client/ResOwner")]

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using MarketBackend.DAL.DTO;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Services.Interfaces;
 
@@ -37,6 +38,12 @@ namespace MarketBackend.DAL
                 _cartId = cartId
             };
             baskets.TryAdd(newBasket._basketId, newBasket);
+            DBcontext dbContext = DBcontext.GetInstance();
+            lock (Lock)
+            {
+                dbContext.Baskets.Add(new BasketDTO(newBasket));
+                dbContext.SaveChanges();
+            }
             BasketCounter ++;
             return newBasket;
         }
@@ -47,16 +54,33 @@ namespace MarketBackend.DAL
                 throw new ArgumentException($"Basket with ID {entity._basketId} already exists.");
 
             }
+            DBcontext dbContext = DBcontext.GetInstance();
             baskets.TryAdd(entity._basketId, entity);
+            lock (Lock)
+            {
+                dbContext.Baskets.Add(new BasketDTO(entity));
+                dbContext.SaveChanges();
+            }
+
         }
 
         public void Delete(Basket entity)
         {
-            if (!baskets.ContainsKey(entity._basketId)){
-                throw new KeyNotFoundException($"Basket with ID {entity._basketId} does not exist.");
+            lock (Lock)
+            {
+                var dbContext = DBcontext.GetInstance();
+                var dbBasket = dbContext.Baskets.Find(entity._basketId);
+                if (dbBasket is not null){
+                    if (baskets.ContainsKey(entity._basketId)){
+                        baskets.TryRemove(new KeyValuePair<int, Basket>(entity._basketId, entity));
+                    }
+                    else{
+                        throw new KeyNotFoundException($"Basket with ID {entity._basketId} does not exist.");
+                    }
+                    dbContext.Baskets.Remove(dbBasket);
+                    dbContext.SaveChanges();
+                }
             }
-
-            baskets.TryRemove(new KeyValuePair<int, Basket>(entity._basketId, entity));
         }
 
         public IEnumerable<Basket> getAll()
@@ -70,10 +94,20 @@ namespace MarketBackend.DAL
         }
 
         public Basket GetById(int id){
-            if (!baskets.ContainsKey(id)){
-                throw new KeyNotFoundException($"Basket with ID {id} does not exist.");
+            if (baskets.ContainsKey(id)){
+                return baskets[id];
             }
-            return baskets[id];
+            else
+            {
+                var dbContext = DBcontext.GetInstance();
+                BasketDTO bDto = dbContext.Baskets.Find(id);
+                if (bDto != null)
+                {
+                    LoadBasket(bDto);
+                    return baskets[id];
+                }
+                throw new ArgumentException("Invalid user ID.");
+            }
         }
 
         public Basket? TryGetById(int id){
@@ -92,6 +126,22 @@ namespace MarketBackend.DAL
             {
                 throw new KeyNotFoundException($"Basket with ID {entity._basketId} not found.");
             }
+        }
+
+        private void Load()
+        {
+            var dbContext = DBcontext.GetInstance();
+            List<BasketDTO> Lbaskets = dbContext.Baskets.ToList();
+            foreach (BasketDTO basket in Lbaskets)
+            {
+                baskets.TryAdd(basket.BasketId, new Basket(basket));
+            }
+        }
+
+        private void LoadBasket(BasketDTO basketDTO)
+        {
+            Basket basket = new Basket(basketDTO);
+            baskets[basket._basketId] = basket;
         }
     }
 }

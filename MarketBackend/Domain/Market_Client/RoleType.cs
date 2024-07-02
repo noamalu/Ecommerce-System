@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
+using MarketBackend.DAL.DTO;
 
 namespace MarketBackend.Domain.Market_Client
 {
@@ -17,6 +18,12 @@ namespace MarketBackend.Domain.Market_Client
         {
             this.roleName = roleName;
             permissions = new HashSet<Permission>();
+        }
+
+        public RoleType(RoleName roleName, HashSet<Permission> permissions)
+        {
+            this.roleName = roleName;
+            this.permissions = permissions;
         }
 
         //default is *can* do, and according to specific roles, false will be returned from override
@@ -84,7 +91,5 @@ namespace MarketBackend.Domain.Market_Client
             }
             return null;  // or throw an exception if appropriate
         }
-
-        
     }
 }

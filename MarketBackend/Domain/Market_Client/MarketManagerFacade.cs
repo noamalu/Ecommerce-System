@@ -135,7 +135,7 @@ namespace MarketBackend.Domain.Market_Client
             bool found = false;
             if (store != null){
                 foreach (var product in store._products){
-                    if (product._productid == productId){
+                    if (product._productId == productId){
                         found = true;
                         break;
                     }
@@ -529,7 +529,7 @@ namespace MarketBackend.Domain.Market_Client
         {
             Store store = _storeRepository.GetById(storeId);
             if (store != null){
-
+                store.AddKeyword(productId, keyWord);
             }
             else
                 throw new Exception("Store doesn't exist!");
@@ -706,6 +706,28 @@ namespace MarketBackend.Domain.Market_Client
         public Store GetMemberStore(string identifier, int storeId)
         {
             return GetMemberStores(identifier).Where(store => store.StoreId == storeId).FirstOrDefault();
+        }
+
+        public List<Store> GetStores()
+        {
+            return _storeRepository.getAll().ToList();
+        }
+
+        public List<Message> GetMemberNotifications(string identifier)
+        {
+            var member = _clientManager.GetMemberByIdentifier(identifier);
+            return member.alerts.ToList();
+        }
+
+        public void SetMemberNotifications(string identifier, bool on)
+        {
+            _clientManager.SetMemberNotifications( identifier,  on);
+            
+        }
+
+        public string GetTokenByUserName(string userName)
+        {
+            return _clientManager.GetTokenByUserName(userName);
         }
         // ---------------------------------------------------------
 

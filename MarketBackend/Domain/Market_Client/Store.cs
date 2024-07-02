@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using MarketBackend.Domain.Models;
+using MarketBackend.DAL.DTO;
 
 
 
@@ -49,7 +50,7 @@ namespace MarketBackend.Domain.Market_Client
             _storeEmailAdd=email;
             _storePhoneNum=phoneNum;
             _active = true;
-            _products = ProductRepositoryRAM.GetInstance().GetShopProducts(_storeId);
+            _products = ProductRepositoryRAM.GetInstance().GetStoreProducts(_storeId);
             roles = RoleRepositoryRAM.GetInstance().getShopRoles(_storeId);
             _history = new History(_storeId);
             _discountPolicyManager = new DiscountPolicyManager(_storeId);
@@ -62,6 +63,45 @@ namespace MarketBackend.Domain.Market_Client
             _storeRuleFactory = new StoreRuleFactory(_storeId);
 
         }
+
+
+         public Store(StoreDTO storeDTO)
+        {
+            _storeId = storeDTO.Id;
+            _storeName = storeDTO.Name;
+            _active = storeDTO.Active;
+            _products = new SynchronizedCollection<Product>();
+            roles = new ConcurrentDictionary<string, Role>();
+            _rules = new ConcurrentDictionary<int, IRule>();
+            _discountPolicyManager = new DiscountPolicyManager(storeDTO.Id);
+            _purchasePolicyManager = new PurchasePolicyManager(storeDTO.Id);
+            _rules = new ConcurrentDictionary<int, IRule>();
+            _raiting = storeDTO.Rating;
+            _lock = new object();
+            
+        }
+        public void Initialize(StoreDTO storeDTO)
+        {
+            //List<AppointmentDTO> appDtos = MarketContext.GetInstance().Appointments.Where((app) => app.ShopId == _id).ToList();
+            _products = ProductRepositoryRAM.GetInstance().GetStoreProducts(_storeId);
+            _history = new History(_storeId);
+            _rules = RuleRepositoryRAM.GetInstance().GetStoreRules(_storeId);
+            _eventManager = new EventManager(_storeId);
+            _purchaseIdCounter = 1;
+            _productIdCounter = 1;
+            _policyIdFactory = 1;
+            // foreach (AppointmentDTO appdto in appDtos)
+            //     _appointments.TryAdd(appdto.MemberId, AppointmentRepo.GetInstance()
+            //         .GetById(appdto.MemberId, appdto.ShopId));
+            if (_products.Count > 0)
+                _productIdCounter = storeDTO.Products.Max((p) => p.ProductId) + 1;
+            if (_history._purchases.Count > 0)
+                _purchaseIdCounter = storeDTO.Purchases.Max((p) => p.Id) + 1;
+            if (_discountPolicyManager.Policies.Count() > 0)
+                _policyIdFactory = storeDTO.Policies.Max((p) => p.Id) + 1;
+        }
+
+
 
          public int StoreId { get => _storeId; }
         public SynchronizedCollection<Product> Products { get => _products; set => _products = value; }
@@ -124,11 +164,11 @@ namespace MarketBackend.Domain.Market_Client
         {
         lock (_lock)
             {
-            return _products.ToList().Find((p) => p._productid == productId);
+            return _products.ToList().Find((p) => p._productId == productId);
             }
         }
 
-        private Role getRole(string userName){
+        public Role getRole(string userName){
 
         if (roles.TryGetValue(userName, out Role role))
         {
@@ -354,7 +394,7 @@ namespace MarketBackend.Domain.Market_Client
         {
             if (_products.Contains(product))
                 return quantity <= product.Quantity;
-            throw new Exception($"Product Name: \'{product.Name}\' Id: {product._productid} not exist in shop.");
+            throw new Exception($"Product Name: \'{product.Name}\' Id: {product._productId} not exist in shop.");
         }
 
         private void RemoveBasketProductsFromSupply(Basket basket)
@@ -427,10 +467,16 @@ namespace MarketBackend.Domain.Market_Client
         public void AddStaffMember(string roleuserName ,Role role, string userName){
             if ((getRole(userName)!=null && getRole(userName).canAddStaffMember(role.getRoleName())) || (role.getRoleName() == RoleName.Founder && !checkForFounders() ))
             {
-                roles.TryAdd(roleuserName, role);
-                Event e = new AddAppointmentEvent(this, userName, roleuserName, role);
-                _eventManager.NotifySubscribers(e);
-                //add to active user appointees list the newly appointed staff member
+                if (roles.TryAdd(roleuserName, role))
+                {
+                    RoleRepositoryRAM.GetInstance().Add(role);
+                    Role appointer = getRole(userName);
+                    appointer.addAppointee(ClientRepositoryRAM.GetInstance().GetByUserName(roleuserName));
+                    RoleRepositoryRAM.GetInstance().Update(appointer);
+                    Event e = new AddAppointmentEvent(this, userName, roleuserName, role);
+                    _eventManager.NotifySubscribers(e);
+                    //add to active user appointees list the newly appointed staff member
+                }
             }
             else throw new Exception($"Permission exception for userName: {userName}");
 
@@ -449,10 +495,13 @@ namespace MarketBackend.Domain.Market_Client
             {
                 if (roles.ContainsKey(roleuserName))
                 {
-                    roles.TryRemove(new KeyValuePair<string, Role>(roleuserName, roles[roleuserName]));
-                    Event e = new RemoveAppointmentEvent(this, userName, roleuserName);
-                    _eventManager.NotifySubscribers(e);
-                    //remove from active user appointees list the removed staff member
+                    if (roles.TryRemove(new KeyValuePair<string, Role>(roleuserName, roles[roleuserName])))
+                    {
+
+                        Event e = new RemoveAppointmentEvent(this, userName, roleuserName);
+                        _eventManager.NotifySubscribers(e);
+                        //remove from active user appointees list the removed staff member
+                    }
                 }
             }
             else throw new Exception($"Permission exception for userName: {userName}");
@@ -471,7 +520,9 @@ namespace MarketBackend.Domain.Market_Client
         {
             if (getRole(userName) != null && getRole(userName).canEditPermissions())
             {
-                getRole(toAddUserName).addPermission(permission);
+                Role r = getRole(toAddUserName);
+                r.addPermission(permission);
+                RoleRepositoryRAM.GetInstance().Update(r);
             }
             else throw new Exception($"Permission exception for userName: {userName}");
 
@@ -481,10 +532,11 @@ namespace MarketBackend.Domain.Market_Client
         {
             if (getRole(userName) != null && getRole(userName).canEditPermissions())
             {
-                getRole(toRemoveUserName).removePermission(permission);
+                Role r = getRole(toRemoveUserName);
+                r.removePermission(permission);
+                RoleRepositoryRAM.GetInstance().Update(r);
             }
             else throw new Exception($"Permission exception for userName: {userName}");
-
         }
 
         public bool checkForFounders ()

@@ -183,8 +183,8 @@ namespace MarketBackend.Domain.Market_Client
             try
             {
                 registerAdmin = CreateMember(username, password, email, age);
-                _clientRepository.Add(registerAdmin);
                 registerAdmin.IsSystemAdmin = true;
+                _clientRepository.Add(registerAdmin);
                 return registerAdmin;
             }
             catch (ArgumentException)
@@ -317,6 +317,19 @@ namespace MarketBackend.Domain.Market_Client
                 {
                     throw new Exception($"{identifier} not logged in");
                 }
+        }
+
+        public void SetMemberNotifications(string identifier, bool on)
+        {
+            if(on){
+                NotificationOn(identifier);
+            }else{
+                NotificationOff(identifier);
+            }
+        }
+        public string GetTokenByUserName(string userName)
+        {
+            return MemberByToken.Where(pair => pair.Value.UserName == userName).FirstOrDefault().Key;
         }
     }
    

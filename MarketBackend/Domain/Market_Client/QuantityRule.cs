@@ -1,4 +1,5 @@
 using MarketBackend.DAL;
+using MarketBackend.DAL.DTO;
 
 namespace MarketBackend.Domain.Market_Client{
     public class QuantityRule : IConditionalRule{
@@ -12,6 +13,12 @@ namespace MarketBackend.Domain.Market_Client{
         {
             _minQuantity = minQuantity;
             _maxQuantity = maxQuantity;
+        }
+
+         public QuantityRule(QuantityRuleDTO ruleDTO) : base(ruleDTO)
+        {
+            _minQuantity = ruleDTO.MinQuantity;
+            _maxQuantity = ruleDTO.MaxQuantity;
         }
 
         public override bool Predicate(Basket basket)
@@ -71,6 +78,11 @@ namespace MarketBackend.Domain.Market_Client{
         public override void Update()
         {
             RuleRepositoryRAM.GetInstance().Update(this);
+        }
+
+        public override RuleDTO CloneDTO()
+        {
+            return new QuantityRuleDTO(this);
         }
 
 

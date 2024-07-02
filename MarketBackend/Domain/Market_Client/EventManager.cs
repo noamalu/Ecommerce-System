@@ -1,5 +1,7 @@
 
 using System.Collections.Concurrent;
+using MarketBackend.DAL;
+using MarketBackend.DAL.DTO;
 
 namespace MarketBackend.Domain.Market_Client
 {
@@ -22,9 +24,21 @@ namespace MarketBackend.Domain.Market_Client
             // UploadEventsFromContext();
         }
 
-        public void UploadEventsFromContext()
+        private void UploadEventsFromContext()
         {
-
+            DBcontext context = DBcontext.GetInstance();
+            List<EventDTO> events =  context.Events.Where((e) => e.StoreId == _shopId).ToList();
+            List<MemberDTO> members = context.Members.Where((m)=>m.IsSystemAdmin==true).ToList();
+            foreach(EventDTO e in events)
+            {
+                _listeners[e.Name].Add(ClientRepositoryRAM.GetInstance().GetById(e.Listener.Id));
+            }
+            foreach(MemberDTO m in members)
+            {
+                Member member = ClientRepositoryRAM.GetInstance().GetById(m.Id);
+                if (!_listeners["Report Event"].Contains(member))
+                    _listeners["Report Event"].Add(member);
+            }
         }
 
         public void Subscribe(Member member, Event e)
@@ -32,6 +46,8 @@ namespace MarketBackend.Domain.Market_Client
             if (!_listeners[e.Name].Contains(member))
             {
                 _listeners[e.Name].Add(member);
+                DBcontext.GetInstance().Events.Add(new EventDTO(e.Name, _shopId, DBcontext.GetInstance().Members.Find(member.Id)));
+                DBcontext.GetInstance().SaveChanges();
             }
             else throw new Exception("User already sign to this event.");
         }
@@ -41,6 +57,10 @@ namespace MarketBackend.Domain.Market_Client
             if (_listeners[e.Name].Contains(member))
             {
                 _listeners[e.Name].Remove(member);
+                EventDTO eventDTO = DBcontext.GetInstance().Events
+                    .Where((e)=>e.Listener.Id == member.Id && e.StoreId==_shopId).FirstOrDefault();
+                DBcontext.GetInstance().Events.Remove(eventDTO);
+                DBcontext.GetInstance().SaveChanges();
             }
             else throw new Exception("User already not sign to this event.");
         }
@@ -51,6 +71,8 @@ namespace MarketBackend.Domain.Market_Client
             foreach (string eventName in events)
             {
                 _listeners[eventName].Add(member);
+                DBcontext.GetInstance().Events.Add(new EventDTO(eventName, _shopId, DBcontext.GetInstance().Members.Find(member.Id)));
+                DBcontext.GetInstance().SaveChanges();
             }
         }
 
@@ -61,6 +83,9 @@ namespace MarketBackend.Domain.Market_Client
                 if (_listeners[eventName].Contains(member))
                 {
                     _listeners[eventName].Remove(member);
+                    EventDTO eventDTO = DBcontext.GetInstance().Events
+                        .Where((e) => e.Listener.Id == member.Id && e.StoreId == _shopId).FirstOrDefault();
+                    DBcontext.GetInstance().Events.Remove(eventDTO);
                 }
             }
         }

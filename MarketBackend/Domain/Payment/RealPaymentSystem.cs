@@ -3,108 +3,96 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace MarketBackend.Domain.Payment
 {
     public class RealPaymentSystem : IPaymentSystemFacade
     {
-        private readonly HttpClient _httpClient;
+        private static readonly HttpClient _httpClient = new HttpClient();
         private readonly string _url;
 
-        public RealPaymentSystem()
-        {}
-        public RealPaymentSystem(HttpClient httpClient, string url)
+        public RealPaymentSystem(string URL)
         {
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-            _url = url ?? throw new ArgumentNullException(nameof(url));
+            _url = URL;
         }
 
         public virtual int Pay(PaymentDetails cardDetails, double totalAmount)
         {
-            if (_url == null)
-                throw new NotImplementedException();
-
+            if (!Connect() || totalAmount <= 0)
+                return -1;
+            
             var parameters = new Dictionary<string, string>
             {
                 { "action_type", "pay" },
-                {"payment_id", cardDetails.PaymentID.ToString()},
+                {"amount", totalAmount.ToString()},
+                {"currency", cardDetails.Currency},
                 { "card_number", cardDetails.CardNumber },
                 { "month", cardDetails.ExprMonth },
                 { "year", cardDetails.ExprYear },
                 { "holder", cardDetails.HolderName },
-                { "ccv", cardDetails.Cvv },
-                { "id", cardDetails.HolderID },
-                {"amount", totalAmount.ToString()}
+                { "cvv", cardDetails.Cvv },
+                { "id", cardDetails.HolderID }
+        
             };
-
-            using (var httpRequest = new HttpRequestMessage(HttpMethod.Post, _url)
-            {
-                Content = new FormUrlEncodedContent(parameters)
-            })
-            {
-                HttpResponseMessage response = _httpClient.SendAsync(httpRequest).Result;
-                if (response.IsSuccessStatusCode)
-                {
-                    string responseBody = response.Content.ReadAsStringAsync().Result;
-                    if (responseBody.Equals("OK"))
-                    {
-                        if (response.Headers.TryGetValues("TransactionId", out var transactionIdValues))
-                        {
-                            return Convert.ToInt32(transactionIdValues.FirstOrDefault());
-                        }
-                    }
+            var payContect = new FormUrlEncodedContent(parameters); //wrap the request as post content
+            var response = _httpClient.PostAsync(_url, payContect).Result; //send the post request to the web service
+            if (response.IsSuccessStatusCode){ 
+                string responseContent = response.Content.ReadAsStringAsync().Result; //get the response from the web service
+                if (!responseContent.Equals("-1"))
+                    return int.Parse(responseContent);
                 }
-            }
-            return -1;
+
+            return -1; 
+        
         }
 
-        public int CancelPayment(int paymentID)
+
+        public int CancelPayment(int transactionId)
         {
-            if (_url == null)
-                throw new NotImplementedException();
+            if (!Connect() || transactionId < 10000 || transactionId > 1000000)
+            {
+                return -1;
+            }
 
             var parameters = new Dictionary<string, string>
             {
-                { "action_type", "cancel_payment" },
-                { "transaction_ID", paymentID.ToString() }
+                { "action_type", "cancel_pay" },
+                { "transaction_id", transactionId.ToString() }
             };
 
-            using (var httpRequest = new HttpRequestMessage(HttpMethod.Post, _url)
-            {
-                Content = new FormUrlEncodedContent(parameters)
-            })
-            {
-                HttpResponseMessage response = _httpClient.SendAsync(httpRequest).Result;
-                if (response.IsSuccessStatusCode)
+    
+            var cancelPayContect = new FormUrlEncodedContent(parameters); //wrap the request as post content
+            var response = _httpClient.PostAsync(_url, cancelPayContect).Result; //send the post request to the web service
+            if (response.IsSuccessStatusCode){
+                string responseContent = response.Content.ReadAsStringAsync().Result; //get the response from the web service
+                if (responseContent.Equals("1")) //success
                 {
-                    string responseBody = response.Content.ReadAsStringAsync().Result;
-                    if (responseBody.Equals("OK"))
-                    {
-                        return 1;
-                    }
+                    return 1;
                 }
             }
             return -1;
+                
         }
 
         public bool Connect()
         {
-            if (_url == null)
-                throw new NotImplementedException();
-
-            var parameters = new Dictionary<string, string>
+            var content = new Dictionary<string, string>
             {
-                { "action_type", "connect" }
+                { "action_type", "handshake" }
             };
-
-            using (var httpRequest = new HttpRequestMessage(HttpMethod.Post, _url)
-            {
-                Content = new FormUrlEncodedContent(parameters)
-            })
-            {
-                HttpResponseMessage response = _httpClient.SendAsync(httpRequest).Result;
-                return response.IsSuccessStatusCode;
+            var handshakeContect = new FormUrlEncodedContent(content); //wrap the request as post content
+            var response = _httpClient.PostAsync(_url, handshakeContect).Result; //send the post request to the web service
+            if(response.IsSuccessStatusCode){
+                string responseContent = response.Content.ReadAsStringAsync().Result; //get the response from the web service
+                if (responseContent.Equals("OK"))
+                {
+                    return true;
+                }
             }
+            return false;
+            
+        
         }
 
         public void Disconnect()

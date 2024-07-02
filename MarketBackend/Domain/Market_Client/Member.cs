@@ -4,16 +4,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using MarketBackend.DAL.DTO;
 using MarketBackend.Domain.Models;
 
 namespace MarketBackend.Domain.Market_Client
 {
-    public class Member : Client
+    public class Member : Guest
     {
         public string UserName {get; set;}
         public string Password {get; set;}
         public MailAddress Email {get; set;}
-        public ConcurrentDictionary<int, Role> Roles {get; set;}
+        // public ConcurrentDictionary<int, Role> Roles {get; set;}
         public ConcurrentDictionary<int,ShoppingCartHistory> OrderHistory {get; set;}
         public bool IsSystemAdmin {get; set;}
         public bool IsLoggedIn {get; set;}
@@ -28,7 +29,7 @@ namespace MarketBackend.Domain.Market_Client
             UserName = userName;
             Password = password;
             Email = mailAddress;
-            Roles = new(); 
+            // Roles = new(); 
             OrderHistory = new(); 
             IsSystemAdmin = false;
             IsLoggedIn = false;
@@ -36,6 +37,28 @@ namespace MarketBackend.Domain.Market_Client
             alerts = new SynchronizedCollection<Message>();
         }
 
+        public Member(MemberDTO other) : base(other.Id)
+        {            
+            UserName = other.UserName;
+            Password = other.Password;
+            OrderHistory = new ConcurrentDictionary<int, ShoppingCartHistory>();
+            foreach (ShoppingCartHistoryDTO historyDTO in other.OrderHistory)
+            {
+                ShoppingCartHistory history = new(historyDTO);
+                OrderHistory.TryAdd(history._shoppingCartId, history);
+            }
+            // Roles = new ConcurrentDictionary<int, Role>();
+            // foreach (RoleDTO roleDTO in other.Roles)
+            // {
+            //     Role role = new(roleDTO);
+            //     Roles.TryAdd(role.storeId, role);
+            // }
+            IsSystemAdmin = other.IsSystemAdmin;
+            IsLoggedIn = false;
+            IsNotification = other.IsNotification;
+            alerts = new (other.Alerts);
+        }
+       
         public override void PurchaseBasket(Basket basket)
         {
             if(!OrderHistory.TryGetValue(basket._cartId, out var cartInHistory)){

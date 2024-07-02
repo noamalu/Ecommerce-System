@@ -1,4 +1,5 @@
 using MarketBackend.DAL;
+using MarketBackend.DAL.DTO;
 namespace MarketBackend.Domain.Market_Client
 {
     
@@ -16,6 +17,24 @@ namespace MarketBackend.Domain.Market_Client
             _numericOperator = Operator;
             _policies = policies;
             Rule = GenerateDummyRule(); //dummy rule
+        }
+
+        public DiscountCompositePolicy(DiscountCompositePolicyDTO discountCompositePolicyDTO, List<IPolicy> policies) : base(discountCompositePolicyDTO)
+        {
+            Precentage = 0;
+            Subject = new RuleSubject();
+            _numericOperator = CastOperator(discountCompositePolicyDTO.NumericOperator);
+            _policies = policies;
+
+        }
+
+        private NumericOperator CastOperator(string operatorName)
+        {
+            try
+            {
+                return (NumericOperator)Enum.Parse(typeof(NumericOperator), operatorName);
+            }
+            catch { throw new Exception("Invalid operator name"); }
         }
         public IRule GenerateDummyRule()
         {
@@ -58,6 +77,10 @@ namespace MarketBackend.Domain.Market_Client
                 }
             }
             return (DiscountPolicy)Policies[bestDiscountIndex];
+        }
+        public override DiscountCompositePolicyDTO CloneDTO()
+        {
+            return new DiscountCompositePolicyDTO(this);
         }
 
     }

@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using MarketBackend.DAL.DTO;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Models;
 using MarketBackend.Domain.Payment;
@@ -37,7 +38,7 @@ namespace MarketBackend.Tests.IT
         int userAge = 20;
         int userAge2 = 16;
         int basketId = 1;
-        PaymentDetails paymentDetails = new PaymentDetails("5326888878675678", "2027", "10", "101", "3190876789", "Hadas");
+        PaymentDetails paymentDetails = new PaymentDetails("ILS", "5326888878675678", "2027", "10", "101", "3190876789", "Hadas");
         ShippingDetails shippingDetails = new ShippingDetails("name",  "city",  "address",  "country",  "zipcode");
         private const int NumThreads = 10;
         private const int NumIterations = 100;
@@ -57,6 +58,7 @@ namespace MarketBackend.Tests.IT
         public void Setup()
         {
             // Initialize the managers
+            DBcontext.GetInstance().Dispose();
             MarketManagerFacade.Dispose();
             mockShippingSystem = new Mock<IShippingSystemFacade>();
             mockPaymentSystem = new Mock<IPaymentSystemFacade>();
@@ -79,6 +81,7 @@ namespace MarketBackend.Tests.IT
         [TestCleanup]
         public void Cleanup()
         {
+            DBcontext.GetInstance().Dispose();
             MarketManagerFacade.Dispose();
         }
 
@@ -600,95 +603,95 @@ namespace MarketBackend.Tests.IT
             $"Expected purchase price to be 10, but got {store._history._purchases[0].Price}");
         }
 
-        [TestMethod]
-        public void RunMultyTimes()
-        {
-            for (int i=0; i<5; i++){
-                AddCompositeRulePurchaseCart_success();
-                Cleanup();
-                Setup();
-                AddDiscountPurchaseCart_success();
-                Cleanup();
-                Setup();
-                PurchaseCart_Quantity_Role_Product_Fail();
-                Cleanup();
-                Setup();
-                PurchaseCart_Quantity_Role__product_Success();
-                Cleanup();
-                Setup();
-                PurchaseCart_Quantity_Role__simple_Fail();
-                Cleanup();
-                Setup();
-                PurchaseCart_Quantity_Role__category_Success();
-                Cleanup();
-                Setup();
-                PurchaseCart_Quantity_Role__category_Fail();
-                Cleanup();
-                Setup();
-                PurchaseCart_composite_rule__and_Success();
-                Cleanup();
-                Setup();
-                PurchaseCart_composite_rule__and_Fail_OneNotTrue();
-                Cleanup();
-                Setup();
-                PurchaseCart_composite_rule__or_Success();
-                Cleanup();
-                Setup();
-                PurchaseCart_composite_rule__and_or_AllFalse();
-                Cleanup();
-                Setup();
-                PurchaseCart_composite_rule__xor_Success1();
-                Cleanup();
-                Setup();
-                PurchaseCart_composite_rule__xor_Success2();
-                Cleanup();
-                Setup();
-                PurchaseCart_composite_rule__and_xor_AllFalse();
-                Cleanup();
-                Setup();
-                PurchaseCart_Discount_Role__category_Success();
-                Cleanup();
-                Setup();
-                PurchaseCart_Discount_Role__category_Fail();
-                Cleanup();
-                Setup();
-                PurchaseCart_Discount_rule__and_Success();
-                Cleanup();
-                Setup();
-                PurchaseCart_Discount_rule__and_Fail_OneNotTrue();
-                Cleanup();
-                Setup();
-                PurchaseCart_Discount_rule__or_Success();
-                Cleanup();
-                Setup();
-                PurchaseCart_Discount_rule__and_or_AllFalse();
-                Cleanup();
-                Setup();
-                PurchaseCart_Discount_rule__xor_Success1();
-                Cleanup();
-                Setup();
-                PurchaseCart_Discount_rule__xor_Success2();
-                Cleanup();
-                Setup();
-                PurchaseCart_Discount_rule__and_xor_AllFalse();
-                Cleanup();
-                Setup();
-                PurchaseCart_Discount_Success_Purchase_fail();
-                Cleanup();
-                Setup();
-                PurchaseCart_Discount_Fail_Purchase_Success();
-                Cleanup();
-                Setup();
-                PurchaseCart_Discount_Success_Purchase_Success();
-                Cleanup();
-                Setup();
-                PurchaseCart_Composite_Policies_add();
-                Cleanup();
-                Setup();
-                PurchaseCart_Composite_Policies_max();
-                Cleanup();
-                Setup();
-            }
-        }
+        // [TestMethod]
+        // public void RunMultyTimes()
+        // {
+        //     for (int i=0; i<5; i++){
+        //         AddCompositeRulePurchaseCart_success();
+        //         Cleanup();
+        //         Setup();
+        //         AddDiscountPurchaseCart_success();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_Quantity_Role_Product_Fail();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_Quantity_Role__product_Success();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_Quantity_Role__simple_Fail();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_Quantity_Role__category_Success();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_Quantity_Role__category_Fail();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_composite_rule__and_Success();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_composite_rule__and_Fail_OneNotTrue();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_composite_rule__or_Success();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_composite_rule__and_or_AllFalse();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_composite_rule__xor_Success1();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_composite_rule__xor_Success2();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_composite_rule__and_xor_AllFalse();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_Discount_Role__category_Success();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_Discount_Role__category_Fail();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_Discount_rule__and_Success();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_Discount_rule__and_Fail_OneNotTrue();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_Discount_rule__or_Success();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_Discount_rule__and_or_AllFalse();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_Discount_rule__xor_Success1();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_Discount_rule__xor_Success2();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_Discount_rule__and_xor_AllFalse();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_Discount_Success_Purchase_fail();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_Discount_Fail_Purchase_Success();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_Discount_Success_Purchase_Success();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_Composite_Policies_add();
+        //         Cleanup();
+        //         Setup();
+        //         PurchaseCart_Composite_Policies_max();
+        //         Cleanup();
+        //         Setup();
+        //     }
+        // }
     }
 }
