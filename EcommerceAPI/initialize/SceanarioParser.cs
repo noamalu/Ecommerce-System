@@ -15,6 +15,7 @@ public class SceanarioParser
     private int Identifiers = 0;
     private IMarketService _marketService;
     private IClientService _clientService;
+    string defaultPath = "initialize\\initialState.json";
 
     private string PATH;
 
@@ -25,18 +26,22 @@ public class SceanarioParser
 
     }
 
-    public async void Parse(string path)
+    public async Task defaultParse (){
+        await Parse(defaultPath);
+    }
+
+    public async Task Parse(string path)
     {
         try
         {
             string textJson = await File.ReadAllTextAsync(path);
-            dynamic scenarios = JObject.Parse(textJson);
-            JArray sceanarios = scenarios["Scenarios"];
+            JObject scenarios = JObject.Parse(textJson);
+            JArray sceanarios = (JArray)scenarios["Scenarios"];
             foreach (var sceanario in sceanarios.ToList())
             {
-                dynamic parsedSeacnarios = JObject.Parse(sceanario.ToString());
+                JObject parsedSeacnarios = JObject.Parse(sceanario.ToString());
                 string task = parsedSeacnarios["Scenario"]!.ToString();
-                ParseUseCase((Sceanarios)Enum.Parse(typeof(Sceanarios), task), parsedSeacnarios);
+                await ParseUseCase((Sceanarios)Enum.Parse(typeof(Sceanarios), task), parsedSeacnarios);
             }
         }
         catch (Exception ex)

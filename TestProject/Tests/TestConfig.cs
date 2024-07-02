@@ -35,11 +35,11 @@ namespace TestProject.Tests
         ClientManager CM;
         ClientService CC;
         MarketService s;
-        string filePath = Path.Combine(Environment.CurrentDirectory, "Initialize\\InitialState.json");
-
+        string filePath = Path.Combine("..", "..", "..", "EcommerceAPI", "initialize", "initialState.json");
          [TestInitialize]
         public void Setup()
         {
+            DBcontext.GetInstance().Dispose();
             UpdateInitFileName("Initialize", "true");
             UpdateInitFileName("InitialState", "initialState.json");
             var mockShippingSystem = new Mock<IShippingSystemFacade>();
@@ -52,41 +52,51 @@ namespace TestProject.Tests
             mockPaymentSystem.SetReturnsDefault(true);
             s = MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             s.Dispose();
-            Task task = Task.Run(() =>
-            {
-                // Code before disposing the MarketContext instance
-                DBcontext.GetInstance().Dispose();
-                // Code after disposing the MarketContext instance
-            });
-            task.Wait();
+            DBcontext.GetInstance().Dispose();
+            // Task task = Task.Run(() =>
+            // {
+            //     // Code before disposing the MarketContext instance
+            //     DBcontext.GetInstance().Dispose();
+            //     // Code after disposing the MarketContext instance
+            // });
+            // task.Wait();
             CC = ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             CM = ClientManager.GetInstance();
             
-            MMF = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
-
+            MMF = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);           
         }
          [TestCleanup]
         public void Cleanup()
         {
             UpdateInitFileName("Initialize", "false");
+            DBcontext.GetInstance().Dispose();
+            var mockShippingSystem = new Mock<IShippingSystemFacade>();
+            var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
+            mockPaymentSystem.Setup(pay =>pay.Connect()).Returns(true);
+            mockShippingSystem.Setup(ship => ship.Connect()).Returns(true);
+            mockPaymentSystem.Setup(pay =>pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(1);
+            mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
+            mockShippingSystem.SetReturnsDefault(true);
+            mockPaymentSystem.SetReturnsDefault(true);
+            MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object).Dispose();
+            ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object).Dispose();
+            MarketManagerFacade.Dispose();
         }
 
         [TestMethod]
         public void checkUsersExits(){
-            
             UpdateInitFileName("Initialize", "true");
-            new SceanarioParser(s,CC).Parse(filePath);
+            new SceanarioParser(s,CC).defaultParse().Wait();
             List<Member> ls = ClientRepositoryRAM.GetInstance().GetAll();
-            List<string> listofNames = new List<string>() { "u2", "u3", "u4", "u5", "u6", "u1" };
+            List<string> listofNames = new List<string>() { "u2", "u3", "u4", "u5", "u6", "system_admin" };
             foreach (Member memName in ls)
             {
-                bool flag = false;
+                bool flag = false;                
                 foreach (string name in listofNames)
                 {
                     if (name == memName.UserName)
                         flag = true;
                 }
-
                 if (!flag)
                 {
                     Assert.Fail();
@@ -100,7 +110,7 @@ namespace TestProject.Tests
         [TestMethod]
         public void checkStoreExist(){
             UpdateInitFileName("Initialize", "true");
-            new SceanarioParser(s,CC).Parse(filePath);
+            new SceanarioParser(s,CC).defaultParse().Wait();
             IEnumerable<Store> ls = StoreRepositoryRAM.GetInstance().getAll();
             bool flag = false;
             foreach (Store store in ls)
@@ -119,7 +129,7 @@ namespace TestProject.Tests
         [TestMethod]
         public void checkProductExist(){
             UpdateInitFileName("Initialize", "true");
-            new SceanarioParser(s,CC).Parse(filePath);
+            new SceanarioParser(s,CC).defaultParse().Wait();
             IEnumerable<Product> ls = ProductRepositoryRAM.GetInstance().getAll();
             bool flag = false;
             foreach (Product product in ls)
@@ -138,7 +148,7 @@ namespace TestProject.Tests
         [TestMethod]
         public void logInWithExistingUserSeccess(){
             UpdateInitFileName("Initialize", "true");
-            new SceanarioParser(s,CC).Parse(filePath);
+            new SceanarioParser(s,CC).defaultParse().Wait();
             CM.LoginClient("u6","password");
             var client = ClientRepositoryRAM.GetInstance().GetByUserName("u6");
             Assert.IsTrue(client.IsLoggedIn == true);
@@ -147,7 +157,7 @@ namespace TestProject.Tests
         [TestMethod]
         public void logInWithExistingUserFail(){
             UpdateInitFileName("Initialize", "true");
-            new SceanarioParser(s,CC).Parse(filePath);
+            new SceanarioParser(s,CC).defaultParse().Wait();
             Assert.ThrowsException<Exception>(()=>CM.LoginClient("u6","21312"));
             
         }

@@ -70,14 +70,6 @@
         {
             "Username": "u2",
             "Identifier": "2",
-            "StoreId": 1,
-            "Username": "u3",
-            "Role": "Manager",
-            "Scenario": "AddStaff"
-        },
-        {
-            "Username": "u2",
-            "Identifier": "2",
             "Scenario": "Logout"
         }
     ]
