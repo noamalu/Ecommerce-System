@@ -10,8 +10,8 @@ namespace MarketBackend.Services
     public class MarketService : IMarketService
     {
         private static MarketService _marketService = null;
-        private MarketManagerFacade marketManagerFacade;
-        private Logger logger;
+        private MarketManagerFacade _marketManagerFacade;
+        private Logger _logger;
 
         // for testing external systems
         // IShippingSystemFacade shippingSystem = new RealShippingSystem("https://damp-lynna-wsep-1984852e.koyeb.app/");
@@ -19,9 +19,10 @@ namespace MarketBackend.Services
         // IPaymentSystemFacade paymentSystem = new RealPaymentSystem("https://damp-lynna-wsep-1984852e.koyeb.app/");
 
 
-        private MarketService(IShippingSystemFacade shippingSystemFacade, IPaymentSystemFacade paymentSystemFacade){
-            marketManagerFacade = MarketManagerFacade.GetInstance(shippingSystemFacade, paymentSystemFacade);
-            logger = MyLogger.GetLogger();
+        public MarketService(IShippingSystemFacade shippingSystemFacade, IPaymentSystemFacade paymentSystem)
+        {
+            _marketManagerFacade = MarketManagerFacade.GetInstance(shippingSystemFacade, paymentSystem);
+            _logger = MyLogger.GetLogger();
         }
 
 
@@ -88,7 +89,7 @@ namespace MarketBackend.Services
             {
                 var product = _marketManagerFacade.AddProduct(storeId, identifier, name, sellMethod, description, price, category, quantity, ageLimit);
                 _logger.Info($"Client {identifier} added product {name} store {storeId} with sellmethod {sellMethod}, description {description}, category {category}, price {price}, quantity {quantity}, ageLimit {ageLimit}.");
-                return Response<int>.FromValue(product._productid);
+                return Response<int>.FromValue(product._productId);
             }
             catch (Exception e)
             {

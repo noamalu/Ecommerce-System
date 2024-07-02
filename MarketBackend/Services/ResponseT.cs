@@ -1,4 +1,5 @@
 
+
 namespace MarketBackend.Services
 {
     [Serializable]
@@ -23,6 +24,11 @@ namespace MarketBackend.Services
         public static Response<T> FromError(string msg)
         {
             return new Response<T>(default(T), msg);
+        }
+
+        internal static Response<int> FromValue(object productid)
+        {
+            throw new NotImplementedException();
         }
     }
 }
