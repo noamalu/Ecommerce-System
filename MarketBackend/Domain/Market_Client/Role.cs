@@ -4,6 +4,7 @@ using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MarketBackend.DAL.DTO;
 
 namespace MarketBackend.Domain.Market_Client
 {
@@ -22,6 +23,59 @@ namespace MarketBackend.Domain.Market_Client
             this.userName = userName;
             appointees = new List<Member>();
         }
+
+        public Role(RoleDTO roleDTO)
+        {
+            role = createRoleType(roleDTO.role);
+            appointer = new Member(roleDTO.appointer);
+            appointees = new List<Member>();
+            foreach (MemberDTO memberDTO in roleDTO.appointees)
+            {
+                appointees.Add(new Member(memberDTO));
+            }
+        }
+
+        public RoleType createRoleType(RoleTypeDTO roleDTO)
+        {
+            RoleName roleName = CastNameOperator(roleDTO.roleName);
+            HashSet<Permission> permissions = new HashSet<Permission>();
+            foreach (string permission in roleDTO.permissions)
+            {
+                permissions.Add(CastPermissionOperator(permission));
+            }
+
+            switch (roleName)
+            {
+                case RoleName.Owner:
+                    return new Owner(roleName, permissions);
+                case RoleName.Founder:
+                    return new Founder(roleName, permissions);
+                case RoleName.Manager:
+                    return new StoreManagerRole(roleName, permissions);
+                default:
+                    throw new Exception("Invalid role name");
+            }
+        }
+
+        private RoleName CastNameOperator(string roleName)
+        {
+            try
+            {
+                return (RoleName)Enum.Parse(typeof(RoleName), roleName);
+            }
+            catch { throw new Exception("Invalid operator name"); }
+        }
+
+        private Permission CastPermissionOperator(string permission)
+        {
+            try
+            {
+                return (Permission)Enum.Parse(typeof(Permission), permission);
+            }
+            catch { throw new Exception("Invalid operator name"); }
+        }
+
+
 
         public Member getAppointer() { return appointer; }
 

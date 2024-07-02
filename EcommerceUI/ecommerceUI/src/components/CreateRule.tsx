@@ -1,13 +1,22 @@
-import React, { useState } from 'react';
-import { Form, Button, Row, Col } from 'react-bootstrap';
+import React, {useEffect, useState } from 'react';
+import { Form, Button, Row, Col, ListGroup } from 'react-bootstrap';
 import { getToken } from '../services/SessionService';
 
-export const CreateRule = ({ onClose, onSuccess, storeId }: { onClose: any, onSuccess: any, storeId: any }) => {
+export const CreateRule = ({ onClose, onSuccess, storeId, rules }: { onClose: any, onSuccess: any, storeId: any, rules : any }) => {
     const [ruleType, setRuleType] = useState('SimpleRule');
     const [subject, setSubject] = useState('');
     const [minQuantity, setMinQuantity] = useState('');
     const [maxQuantity, setMaxQuantity] = useState('');
     const [targetPrice, setTargetPrice] = useState('');
+    const [operator, setOperator] = useState(0);
+    const [rulesChecked, setRulesChecked] = useState<{[key: number]: boolean}>(
+        () => {
+            return rules.reduce((acc, rule) => {
+                acc[rule.id] = false;
+                return acc;
+              }, {});
+        }
+    );
 
     const [ruleTypeError, setRuleTypeError] = useState('');
     const [subjectError, setSubjectError] = useState('');
@@ -15,6 +24,24 @@ export const CreateRule = ({ onClose, onSuccess, storeId }: { onClose: any, onSu
     const [maxQuantityError, setMaxQuantityError] = useState('');
     const [targetPriceError, setTargetPriceError] = useState('');
 
+
+    const onCheckClick = (checked : boolean, ruleId : number) => {
+        console.log(`im in on check click with id = ${ruleId} and e.target.value = ${checked}`);
+        console.log(rulesChecked)
+        // var map = rulesChecked;
+        // map[ruleId] = checked;
+        // setRulesChecked(map);
+        setRulesChecked(prevRulesChecked => {
+            // Create a copy of previous state
+            const updatedRulesChecked = {
+              ...prevRulesChecked,
+              [ruleId]: checked,
+            };
+            // Log the updated state (optional for debugging)
+            console.log(updatedRulesChecked);
+            return updatedRulesChecked;
+          });
+    };
 
     const addRule = async () => {
         var ruleTypeAddress = "";
@@ -31,9 +58,12 @@ export const CreateRule = ({ onClose, onSuccess, storeId }: { onClose: any, onSu
                                                         targetPrice: targetPrice,
                                                     }); 
                                 break; }
-            case 'SimpleRule': {ruleTypeAddress = `/TotalPrice`; 
+            case 'SimpleRule': {ruleTypeAddress = ``; 
                                 body = JSON.stringify({subject: subject}); 
                                 break; }
+            case 'Composite': {ruleTypeAddress = `/CompositeRule`; 
+                body = JSON.stringify({operator: operator, rules: Object.entries(rulesChecked).filter(([key, value]) => value === true).map(([key, value]) => key)}); 
+                break; }
         }
 
         const response = await fetch(`https://localhost:7163/api/Market/Store/${storeId}/AddRule${ruleTypeAddress}?identifier=${getToken()}`, {
@@ -57,7 +87,7 @@ export const CreateRule = ({ onClose, onSuccess, storeId }: { onClose: any, onSu
             // Validate the inputs
             let valid = true;
             
-            if (subject.trim() === '') {
+            if (ruleType != 'Composite' && subject.trim() === '') {
                 setSubjectError('Please enter the subject');
                 valid = false;
             }
@@ -96,6 +126,7 @@ export const CreateRule = ({ onClose, onSuccess, storeId }: { onClose: any, onSu
                         <option value="SimpleRule">Simple Rule</option>
                         <option value="Quantity">Quantity</option>
                         <option value="TotalPrice">Total Price</option>
+                        <option value="Composite">Composite Rule</option>
                         </Form.Select>
                     </Form.Group>
                 </Col>
@@ -107,6 +138,7 @@ export const CreateRule = ({ onClose, onSuccess, storeId }: { onClose: any, onSu
                         value={subject}
                         onChange={(ev) => setSubject(ev.target.value)} 
                         placeholder="Enter Subject" 
+                        disabled={ruleType == 'Composite'}
                     />
                     <label className="errorLabel">{subjectError}</label>
                 </Form.Group>
@@ -154,7 +186,30 @@ export const CreateRule = ({ onClose, onSuccess, storeId }: { onClose: any, onSu
                 </Form.Group>
                 </Col>
                 </Row>
-                
+
+                { ruleType == 'Composite' && 
+                <Form.Group as={Col} controlId="">
+                    <Form.Label>Operator</Form.Label>
+                    <Form.Select value={operator} onChange={(e) => setOperator(parseInt(e.target.value))}>
+                    <option value="0">Or</option>
+                    <option value="1">Xor</option>
+                    <option value="2">And</option>
+                    </Form.Select>
+                </Form.Group>
+            }
+        { ruleType == 'Composite' && 
+
+                <div key={`checkbox`} className="mb-3">
+                    {rules.map((rule) => (
+                        <Form.Check
+                        key={rule.id}
+                        label={`${rule.id}:  ${rule.subjectInfo}`}
+                        type="checkbox"
+                        checked={ rulesChecked[rule.id] === true} 
+                        onChange={(ev) => onCheckClick(ev.target.checked, rule.id)}      
+                    /> 
+                    ))}
+                </div> }
                 <Button variant="primary" type="button" onClick={validate}>
                     Add Rule
                 </Button>

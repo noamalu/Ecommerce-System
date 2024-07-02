@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MarketBackend.DAL.DTO;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Services.Interfaces;
 
@@ -44,11 +45,13 @@ namespace MarketBackend.DAL
 
         public void Add(Member item)
         {
+            DBcontext dbContext = DBcontext.GetInstance();
             IdxMember.Add(item.Id, item);
             UsernamexMember.Add(item.UserName, item);
             lock (Lock)
             {
-
+                dbContext.Members.Add(new MemberDTO(item));
+                dbContext.SaveChanges();
             }
 
         }
@@ -57,18 +60,24 @@ namespace MarketBackend.DAL
         {
             lock (Lock)
             {
- 
-                if (IdxMember.ContainsKey(id))
-                {
-                    Member member = IdxMember[id];
-                    UsernamexMember.Remove(member.UserName);
-                    IdxMember.Remove(id);
-                }
+                var dbContext = DBcontext.GetInstance();
+                var dbMember = dbContext.Members.Find(id);
+                if(dbMember is not null) {
+                    if (IdxMember.ContainsKey(id))
+                    {
+                        Member member = IdxMember[id];
+                        UsernamexMember.Remove(member.UserName);
+                        IdxMember.Remove(id);
+                    }
 
+                    dbContext.Members.Remove(dbMember);
+                    dbContext.SaveChanges();
+                }
             }
         }
         public List<Member> GetAll()
         {
+            Load();
             return IdxMember.Values.ToList();
         }
 
@@ -78,6 +87,13 @@ namespace MarketBackend.DAL
                 return IdxMember[id];
             else
             {
+                var dbContext = DBcontext.GetInstance();
+                MemberDTO mDto = dbContext.Members.Find(id);
+                if (mDto != null)
+                {
+                    LoadMember(mDto);
+                    return IdxMember[id];
+                }
                 throw new ArgumentException("Invalid user ID.");
             }
         }
@@ -139,6 +155,24 @@ namespace MarketBackend.DAL
             IdxMember = new Dictionary<int, Member>();
             UsernamexMember = new Dictionary<string, Member>();
         }
+
+        private void Load()
+        {
+            var dbContext = DBcontext.GetInstance();
+            List<MemberDTO> members = dbContext.Members.ToList();
+            foreach (MemberDTO member in members)
+            {
+                IdxMember.TryAdd(member.Id, new Member(member));
+            }
+        }
+
+        private void LoadMember(MemberDTO memberDto)
+        {
+            Member member = new Member(memberDto);
+            IdxMember[member.Id] = member;
+            UsernamexMember[member.UserName] = member;
+        }
+
 
     }
 }

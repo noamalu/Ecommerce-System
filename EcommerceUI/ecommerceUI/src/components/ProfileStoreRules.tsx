@@ -16,28 +16,24 @@ export const ProfileStoreRules = ({storeId} : {storeId : any}) => {
     };
 
     useEffect(() => {
-        const fetchPurchaseHistory = async () => {
+        const fetchRulesList = async () => {
 
             try {
-                //TODO change the url token id
                 const response = await fetch(`https://localhost:7163/api/Market/Store/${storeId}/GetRules?identifier=${getToken()}`, {
                     method: 'GET'
                 });
                 const data = await response.json();
                 if (response.ok) {
-                    // console.log(data.value);
-                    // const newPurchases = data.value[0].baskets.flatMap((basket: any) => basket.products);
-            // console.log(newPurchases);
                     setRules(data.value);
                 } else {
-                    console.error('Error fetching purchase history:', data.ErrorMessage);
+                    console.error('Error fetching rules list:', data.ErrorMessage);
                 }
             } catch (error) {
-                console.error('Error occurred while fetching purchase history:', error);
+                console.error('Error occurred while fetching rules list:', error);
             }
         };
 
-        fetchPurchaseHistory();
+        fetchRulesList();
     }, []); 
 
 
@@ -69,7 +65,7 @@ export const ProfileStoreRules = ({storeId} : {storeId : any}) => {
                     <Modal.Title>Add Rule</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <CreateRule onClose={handleClose} onSuccess={handleSuccess} storeId={storeId}/>
+                    <CreateRule onClose={handleClose} onSuccess={handleSuccess} storeId={storeId} rules={rules}/>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>

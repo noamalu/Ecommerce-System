@@ -12,6 +12,8 @@ namespace MarketBackend.Domain.Market_Client
             permissions.Add(Permission.all);
         }
 
+        public Founder(RoleName roleName, HashSet<Permission> permissions) : base(roleName, permissions) { }
+
         public override void addPermission(Permission permission)
         {
             throw new Exception("can't change founder's permissions");
