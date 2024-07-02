@@ -15,14 +15,14 @@ namespace MarketBackend.DAL.DTO
         public int Id { get; set; }
         public int StoreId { get; set; }
         [ForeignKey("Baskets")]
-        public BasketDTO Basket { get; set; }
+        public int BasketId { get; set; }
         public string Identifierr { get; set; }
         public double Price { get; set; }
 
         public PurchaseDTO(Purchase purchase) {
             Id = purchase.PurchaseId;
             StoreId = purchase.StoreId;
-            Basket = new BasketDTO(purchase.Basket);
+            BasketId = purchase.Basket._basketId;
             Identifierr = purchase.Identifier;
             Price = purchase.Price;
         }
@@ -30,7 +30,7 @@ namespace MarketBackend.DAL.DTO
         public PurchaseDTO(Purchase purchase, BasketDTO basketDTO) {
             Id = purchase.PurchaseId;
             StoreId = purchase.StoreId;
-            Basket = basketDTO;
+            BasketId = basketDTO.BasketId;
             Identifierr = purchase.Identifier;
             Price = purchase.Price;
         }
@@ -40,7 +40,7 @@ namespace MarketBackend.DAL.DTO
         {
             Id = id;
             StoreId = storeId;
-            Basket = basket;
+            BasketId = basket.BasketId;
             Identifierr = identifierr;
             Price = price;
         }

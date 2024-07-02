@@ -34,6 +34,10 @@ namespace MarketBackend.Domain.Market_Client
             List<IPolicy> policiesToAdd = new List<IPolicy>();
             foreach(int policyId in policies)
             {
+                IPolicy p = GetPolicy(policyId) ?? throw new Exception("Policy was not found");
+            }
+            foreach (int policyId in policies)
+            {
                 policiesToAdd.Add(GetPolicy(policyId));
                 Policies.TryRemove(policyId, out IPolicy dummy);
                 PolicyRepositoryRAM.GetInstance().Delete(policyId);
