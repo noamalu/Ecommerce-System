@@ -87,7 +87,7 @@ export const Purchase = () => {
         if (formData.cvv.length != 3)
           formErrors.cvv = 'cvv must be 3 characters';
         if (!formData.currency) formErrors.currency = 'Currency is required';
-
+        console.log(formErrors)
         return formErrors;
       };
     
