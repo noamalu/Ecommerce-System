@@ -74,17 +74,6 @@ namespace UnitTests
             Assert.AreEqual(-1, paymentSystem.Pay(paymentDetails, totalAmount),
             $"Expected fail with -1 but got {paymentSystem.Pay(paymentDetails, totalAmount)}");
         }
-
-         // This test isnt relevant anymore because connect its just to check the ability to connect
-        // [TestMethod]
-        // // Fails - Test that the payment system returns -1 when the payment fails due to a missing connection
-        // public void TestPaymentWithoutConnection()
-        // {
-        //     Assert.AreEqual(-1, paymentSystem.Pay(paymentDetails, totalAmount),
-        //     $"Expected fail with -1 but got {paymentSystem.Pay(paymentDetails, totalAmount)}");
-        //     Assert.AreEqual(-1, paymentSystem.CancelPayment(123),
-        //     $"Expected fail with -1 but got {paymentSystem.CancelPayment(123)}");
-            
-        // }
+ 
     }
 }
