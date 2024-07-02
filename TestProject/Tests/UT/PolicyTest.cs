@@ -1,4 +1,5 @@
 using MarketBackend.DAL;
+using MarketBackend.DAL.DTO;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Payment;
 using MarketBackend.Domain.Shipping;
@@ -25,6 +26,8 @@ namespace UnitTests
 
         [TestInitialize]
         public void Initialize(){
+            DBcontext.GetInstance().Dispose();
+            DBcontext context = DBcontext.GetInstance();
             var mockShippingSystem = new Mock<IShippingSystemFacade>();
             var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
             mockPaymentSystem.Setup(pay =>pay.Connect()).Returns(true);
@@ -33,16 +36,16 @@ namespace UnitTests
             mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
-            s = MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
-            c = ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
-            CM = ClientManager.GetInstance();
-            MMF = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
+            MarketService s = MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
+            ClientService c = ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
+            ClientManager CM = ClientManager.GetInstance();
+            MarketManagerFacade MMF = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             c.Register(username1, "12345", "nofar@gmail.com", 19);
             token1 = c.LoginClient(username1, "12345").Value;
             int storeId= MMF.CreateStore(token1, "shop1", "shop@gmail.com", "0502552798");
             _owner = CM.GetClientByIdentifier(token1);
             _Store = MMF.GetStore(storeId);
-            _Store.AddProduct(username1, "Brush", "" , "Brush", 4784, "hair", 21, false);
+            _Store.AddProduct(username1, "Brush", "RegularSell" , "Brush", 4784, "hair", 21, false);
             _p1 = _Store.Products.ToList().Find((p) => p.ProductId == 11);
             c.Register( username2, "54321", "nofar@gmail.com", 18);
             token2 = c.LoginClient(username2, "54321").Value;
@@ -51,6 +54,7 @@ namespace UnitTests
         [TestCleanup]
         public void Cleanup()
         {
+            DBcontext.GetInstance().Dispose();
             var mockShippingSystem = new Mock<IShippingSystemFacade>();
             var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
             mockPaymentSystem.Setup(pay =>pay.Connect()).Returns(true);
@@ -62,7 +66,6 @@ namespace UnitTests
             MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object).Dispose();
             ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object).Dispose();
             PolicyRepositoryRAM.GetInstance().Dispose();
-        
         }
 
         [TestMethod]
