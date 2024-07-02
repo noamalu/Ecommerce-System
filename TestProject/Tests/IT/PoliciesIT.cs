@@ -162,21 +162,6 @@ namespace MarketBackend.Tests.IT
             $"Expected puchase history count to be 0 but got {store._history._purchases.Count}");
         }
 
-        //to do: need to fix role by store name
-        // [TestMethod]
-        // public void PurchaseCart_Quantity_Role__simple_Success()
-        // {
-        //     marketManagerFacade.AddProduct(1, userId, "apple", "RegularSell", "nice", 5, category1, 200, false);
-        //     int rule1 = marketManagerFacade.AddQuantityRule(userId, 1, storeName, 1, 5);
-        //     DateTime expirationDate = DateTime.Now.AddDays(2);
-        //     marketManagerFacade.AddPurchasePolicy(userId, 1, expirationDate, storeName, rule1);
-        //     marketManagerFacade.AddToCart(userId, 1, 12, 2);
-        //     marketManagerFacade.AddToCart(userId, 1, 11, 2);
-        //     marketManagerFacade.PurchaseCart(userId, paymentDetails, shippingDetails);
-        //     Store store = marketManagerFacade.GetStore(1);
-        //     Assert.IsTrue(store._history._purchases.Count == 1);
-        // }
-
         [TestMethod]
         public void PurchaseCart_Quantity_Role__category_Success()
         {
