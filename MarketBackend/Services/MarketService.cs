@@ -12,6 +12,12 @@ namespace MarketBackend.Services
         private static MarketService _marketService = null;
         private MarketManagerFacade _marketManagerFacade;
         private Logger _logger;
+
+        // for testing external systems
+        // IShippingSystemFacade shippingSystem = new RealShippingSystem("https://damp-lynna-wsep-1984852e.koyeb.app/");
+
+        // IPaymentSystemFacade paymentSystem = new RealPaymentSystem("https://damp-lynna-wsep-1984852e.koyeb.app/");
+
         public MarketService(IShippingSystemFacade shippingSystemFacade, IPaymentSystemFacade paymentSystem)
         {
             _marketManagerFacade = MarketManagerFacade.GetInstance(shippingSystemFacade, paymentSystem);

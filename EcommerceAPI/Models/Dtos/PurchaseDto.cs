@@ -23,6 +23,10 @@ namespace EcommerceAPI.Models.Dtos
         public string? ExpMonth { get; set; }
         public string? CardNumber { get; set; }
 
+        public string? Currency { get; set; }
+
+
+
         public bool IsValid()
         {
             return 
@@ -35,7 +39,8 @@ namespace EcommerceAPI.Models.Dtos
                 && !Address.IsNullOrEmpty() 
                 && !CVV.IsNullOrEmpty()
                 && !ExpYear.IsNullOrEmpty()
-                && !ExpMonth.IsNullOrEmpty();
+                && !ExpMonth.IsNullOrEmpty()
+                && !Currency.IsNullOrEmpty();
         }
         public ShippingDetails ShippingInfo()
         {
@@ -43,7 +48,7 @@ namespace EcommerceAPI.Models.Dtos
         }
         public PaymentDetails PaymentInfo()
         {
-            return new(CardNumber, ExpYear, ExpMonth, CVV, HolderId, CardHolder);
+            return new(Currency, CardNumber, ExpYear, ExpMonth, CVV, HolderId, CardHolder);
         }
     }
 }
