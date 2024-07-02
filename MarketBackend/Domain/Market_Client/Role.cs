@@ -4,6 +4,7 @@ using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MarketBackend.DAL;
 using MarketBackend.DAL.DTO;
 
 namespace MarketBackend.Domain.Market_Client
@@ -26,16 +27,16 @@ namespace MarketBackend.Domain.Market_Client
 
         public Role(RoleDTO roleDTO)
         {
-            role = createRoleType(roleDTO.role);
-            appointer = new Member(roleDTO.appointer);
+            role = createRoleType(roleDTO);
+            appointer = ClientRepositoryRAM.GetInstance().GetById(roleDTO.appointer);
             appointees = new List<Member>();
-            foreach (MemberDTO memberDTO in roleDTO.appointees)
+            foreach (int memberDTOId in roleDTO.appointees)
             {
-                appointees.Add(new Member(memberDTO));
+                appointees.Add(ClientRepositoryRAM.GetInstance().GetById(memberDTOId));
             }
         }
 
-        public RoleType createRoleType(RoleTypeDTO roleDTO)
+        public RoleType createRoleType(RoleDTO roleDTO)
         {
             RoleName roleName = CastNameOperator(roleDTO.roleName);
             HashSet<Permission> permissions = new HashSet<Permission>();
@@ -104,6 +105,7 @@ namespace MarketBackend.Domain.Market_Client
         public void addPermission(Permission permission)
         {
             role.addPermission(permission);
+
         }
         public void removePermission(Permission permission)
         {

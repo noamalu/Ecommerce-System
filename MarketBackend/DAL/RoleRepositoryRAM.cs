@@ -1,9 +1,12 @@
-﻿using MarketBackend.Domain.Market_Client;
+﻿using MarketBackend.DAL.DTO;
+using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Models;
 using MarketBackend.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,11 +17,14 @@ namespace MarketBackend.DAL
     {
         public ConcurrentDictionary<int, ConcurrentDictionary<string, Role>> roles; //<storeId, <memberId, Role>>
         private static RoleRepositoryRAM roleRepositoryRAM = null;
+
+        private object _lock;
         
 
         private RoleRepositoryRAM()
         {
             roles = new ConcurrentDictionary<int, ConcurrentDictionary<string, Role>>();
+            _lock = new object();
         }
 
         public static RoleRepositoryRAM GetInstance()
@@ -32,7 +38,7 @@ namespace MarketBackend.DAL
             roleRepositoryRAM = new RoleRepositoryRAM();
         }
 
-        public Role GetById(int storeId)
+        public Role GetById(int storeId) 
         {
             if(!roles.ContainsKey(storeId))
                 throw new KeyNotFoundException($"store with ID {storeId} not found.");
@@ -42,9 +48,28 @@ namespace MarketBackend.DAL
 
         public Role GetById(int storeId, string userName)
         {
-            if (!roles.ContainsKey(storeId) && roles[storeId].ContainsKey(userName))
-                throw new KeyNotFoundException($"member with ID {userName} at store with ID {storeId} not found.");
-
+            if (!roles.ContainsKey(storeId) && roles[storeId].ContainsKey(userName)){
+                lock (_lock)
+                {
+                    RoleDTO roleDTO = DBcontext.GetInstance().Roles.Find(storeId, userName);
+                    if (roleDTO != null)
+                    {
+                        Role role = new Role(roleDTO);
+                        if (!roles.ContainsKey(storeId))
+                        {
+                            roles[storeId] = new ConcurrentDictionary<string, Role>();
+                            roles[storeId][userName] = role;
+                        }
+                        else{
+                            roles[storeId].TryAdd(userName, role);
+                        }
+                    }
+                    else
+                    {
+                        throw new KeyNotFoundException($"member with ID {userName} at store with ID {storeId} not found.");
+                    }
+                }
+            }
             return roles[storeId][userName];
         }
         public void Add(Role entity)
@@ -54,32 +79,80 @@ namespace MarketBackend.DAL
                 roles[entity.storeId] = new ConcurrentDictionary<string, Role>();
                 roles[entity.storeId][entity.userName] = entity;
             }
-            else
+            else{
                 roles[entity.storeId].TryAdd(entity.userName, entity);
+            }
+            lock (_lock)
+            {
+                DBcontext.GetInstance().Roles.Add(new RoleDTO(entity));
+                DBcontext.GetInstance().SaveChanges();
+            }
+
         }
         public IEnumerable<Role> getAll()
         {
-            return roles.Values.SelectMany(innerDict => innerDict.Values).ToList();
+            List<RoleDTO> rolesDtos = new List<RoleDTO>();
+            foreach (RoleDTO r in rolesDtos)
+            {
+                if (!roles.ContainsKey(r.storeId))
+                {
+                    roles[r.storeId] = new ConcurrentDictionary<string, Role>();
+                    roles[r.storeId][r.userName] = new Role(r);
+                }
+                else
+                {
+                    roles[r.storeId].TryAdd(r.userName, new Role(r));
+                }
+            }
+
+            return roles.SelectMany(store => store.Value.Values).ToList();
         }
         public void Update(Role entity)
         {
-            if(!roles.ContainsKey(entity.storeId) && roles[entity.storeId].ContainsKey(entity.userName))
-                throw new KeyNotFoundException($"member with ID {entity.userName} at store with ID {entity.storeId} not found.");
-            
             roles[entity.storeId][entity.userName] = entity;
+
+            lock (_lock)
+            {
+                RoleDTO roleDTO = DBcontext.GetInstance().Roles.Find(entity.storeId, entity.userName);
+                if (roleDTO != null)
+                {
+                    List<string> newPermissions = new List<string>();
+                    foreach (Permission permission in entity.getPermissions())
+                        newPermissions.Add(permission.ToString());
+
+                    List<int> newAppointees = new List<int>();
+                    foreach (Member app in entity.getAppointees())
+                        newAppointees.Add(app.Id);
+
+                    roleDTO.permissions = newPermissions;
+                    roleDTO.appointees = newAppointees;
+                    DBcontext.GetInstance().SaveChanges();
+                }
+            }
         }
         public void Delete(Role entity)
         {
-            if (!roles.ContainsKey(entity.storeId) && roles[entity.storeId].ContainsKey(entity.userName))
-                throw new KeyNotFoundException($"member with ID {entity.userName} at store with ID {entity.storeId} not found.");
-            roles[entity.storeId].TryRemove(new KeyValuePair<string, Role>(entity.userName, entity));
+            if (roles.ContainsKey(entity.storeId) && roles[entity.storeId].ContainsKey(entity.userName))
+            {
+                roles[entity.storeId].TryRemove(new KeyValuePair<string, Role>(entity.userName, entity));
+            }
+
+            lock (_lock)
+            {
+                RoleDTO roleDto = DBcontext.GetInstance().Roles.Find(entity.storeId, entity.userName);
+                DBcontext.GetInstance().Roles.Remove(roleDto);
+                DBcontext.GetInstance().SaveChanges();
+            }
         }
 
         public ConcurrentDictionary<string, Role> getShopRoles(int storeId)
         {
             if (!roles.ContainsKey(storeId))
-                // throw new KeyNotFoundException($"store with ID {storeId} not found.");
-                return new ConcurrentDictionary<string, Role>();
+            {
+                roles[storeId] = new ConcurrentDictionary<string, Role>();
+            }
+            DBcontext.GetInstance().Roles.Where(role => role.storeId == storeId).ToList().ForEach(role => roles[storeId].TryAdd(role.userName, RoleDTO.ConvertToRole(role)));
+
             return roles[storeId];
         }
     }

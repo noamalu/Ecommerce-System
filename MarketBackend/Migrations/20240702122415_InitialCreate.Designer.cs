@@ -4,6 +4,7 @@ using MarketBackend.DAL.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MarketBackend.Migrations
 {
     [DbContext(typeof(DBcontext))]
-    partial class DBcontextModelSnapshot : ModelSnapshot
+    [Migration("20240702122415_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -284,7 +287,7 @@ namespace MarketBackend.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
-                    b.Property<int>("BasketId")
+                    b.Property<int>("Baskets")
                         .HasColumnType("int");
 
                     b.Property<string>("Identifierr")
@@ -301,6 +304,9 @@ namespace MarketBackend.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Baskets")
+                        .IsUnique();
 
                     b.HasIndex("StoreDTOId");
 
@@ -649,9 +655,17 @@ namespace MarketBackend.Migrations
 
             modelBuilder.Entity("MarketBackend.DAL.DTO.PurchaseDTO", b =>
                 {
+                    b.HasOne("MarketBackend.DAL.DTO.BasketDTO", "Basket")
+                        .WithOne()
+                        .HasForeignKey("MarketBackend.DAL.DTO.PurchaseDTO", "Baskets")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("MarketBackend.DAL.DTO.StoreDTO", null)
                         .WithMany("Purchases")
                         .HasForeignKey("StoreDTOId");
+
+                    b.Navigation("Basket");
                 });
 
             modelBuilder.Entity("MarketBackend.DAL.DTO.RoleDTO", b =>

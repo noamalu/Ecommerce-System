@@ -126,7 +126,17 @@ namespace MarketBackend.DAL
                 return UsernamexMember[userName];
             else
             {
-                throw new ArgumentException("Invalid user name.");
+                var dbContext = DBcontext.GetInstance();
+                MemberDTO mDto = dbContext.Members.FirstOrDefault(m => m.UserName == userName);
+                if (mDto != null)
+                {
+                    LoadMember(mDto);
+                    return UsernamexMember[userName];
+                }
+                else
+                {
+                    throw new ArgumentException("Invalid user name.");
+                }
             }
         }
 
