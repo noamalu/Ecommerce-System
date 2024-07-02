@@ -78,7 +78,7 @@ namespace UnitTests
             MarketService s = MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             ClientService c = ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             ClientManager CM = ClientManager.GetInstance();
-            MarketManagerFacade MMF = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
+            MarketManagerFacade MMF = marketManagerFacade = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             c.Register(username1, "12345", "nofar@gmail.com", 19);
             token1 = c.LoginClient(username1, "12345").Value;
             int storeId= MMF.CreateStore(token1, "shop1", "shop@gmail.com", "0502552798");
@@ -292,6 +292,7 @@ namespace UnitTests
         public void PurchaseBasketSuccess()
         {
             Basket basket = new Basket(1, _Store._storeId);
+            basket._cartId = marketManagerFacade.GetMember(username1).Cart._shoppingCartId;
             BasketDTO basketDTO = new BasketDTO(basket);
             context.Baskets.Add(basketDTO);
             basket.addToBasket(11, 10);
@@ -306,6 +307,9 @@ namespace UnitTests
         public void PurchaseBasketFailStoreIsClose()
         {
             Basket basket = new Basket(13, _Store._storeId);
+            basket._cartId = marketManagerFacade.GetMember(username1).Cart._shoppingCartId;
+            BasketDTO basketDTO = new BasketDTO(basket);
+            context.Baskets.Add(basketDTO);
             basket.addToBasket(11, 10);
             _Store._active=false;
             Assert.ThrowsException<Exception>(() => _Store.PurchaseBasket(username2,basket));
@@ -319,6 +323,9 @@ namespace UnitTests
         public void PurchaseBasketFailnotEnoughQuantity()
         {
             Basket basket = new Basket(13, _Store._storeId);
+            basket._cartId = marketManagerFacade.GetMember(username1).Cart._shoppingCartId;
+            BasketDTO basketDTO = new BasketDTO(basket);
+            context.Baskets.Add(basketDTO);
             basket.addToBasket(11, 40);
             Assert.ThrowsException<Exception>(() => _Store.PurchaseBasket(username2,basket));
             Product product = _Store.GetProduct(11);
