@@ -68,6 +68,7 @@ namespace MarketBackend.Domain.Models
                 var productDetailsFromStore = storeProducts.Where(p => p.ProductId == product.Key).FirstOrDefault().Clone();
                 if(productDetailsFromStore is not null) _products.TryAdd(product.Key, productDetailsFromStore);
             }
+            
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MarketBackend.DAL.DTO;
 using MarketBackend.Domain.Market_Client;
+using MarketBackend.Domain.Models;
 using MarketBackend.Services.Interfaces;
 
 namespace MarketBackend.DAL
@@ -142,6 +143,18 @@ namespace MarketBackend.DAL
         {
             Basket basket = new Basket(basketDTO);
             baskets[basket._basketId] = basket;
+        }
+
+        public void Add_cartHistory(ShoppingCartHistory shoppingCartHistory, string memberUserName)
+        {
+            lock (Lock){
+                var dbContext = DBcontext.GetInstance();
+                ShoppingCartHistoryDTO shoppingCartHistoryDTO = new ShoppingCartHistoryDTO(shoppingCartHistory);
+                MemberDTO memberDTO = dbContext.Members.Where(member => member.UserName == memberUserName).ToList()[0];
+                memberDTO.OrderHistory.Add(shoppingCartHistoryDTO);
+                dbContext.SaveChanges();
+            }
+            
         }
     }
 }
