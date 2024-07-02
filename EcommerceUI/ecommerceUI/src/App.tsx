@@ -11,6 +11,7 @@ import { initSession } from './services/SessionService';
 import { Search } from './pages/Search';
 import { Cart } from './pages/Cart';
 import { Purchase } from './pages/Purchase';
+import { Stores } from './pages/Stores';
 
 
 
@@ -32,7 +33,7 @@ function App() {
           <Route path="/profile" element={<Profile/>}/>
           <Route path="/cart" element={<Cart/>}/>
           <Route path="/Purchase" element={<Purchase/>}/>
-
+          <Route path="/stores" element={<Stores/>}/>
 
         </Routes>
       </BrowserRouter>
