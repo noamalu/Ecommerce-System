@@ -52,11 +52,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response<int> CreateStore(string identifier, string storeName, string email, string phoneNum)
+        public async Task<Response<int>> CreateStore(string identifier, string storeName, string email, string phoneNum)
         {
             try
             {
-                var storeId = _marketManagerFacade.CreateStore(identifier, storeName, email, phoneNum);
+                var storeId = await _marketManagerFacade.CreateStore(identifier, storeName, email, phoneNum);
                 _logger.Info($"client {identifier} created store '{storeName}'");
                 return Response<int>.FromValue(storeId);
             }

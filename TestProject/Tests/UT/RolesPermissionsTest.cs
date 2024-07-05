@@ -28,7 +28,7 @@ namespace UnitTests
 
 
         [TestInitialize]
-        public void SetUp()
+        public async void SetUp()
         {
             var mockShippingSystem = new Mock<IShippingSystemFacade>();
             var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
@@ -47,7 +47,7 @@ namespace UnitTests
             c.Register(username1, "12345", "nofar1@gmail.com", 20);
             c.Register(username2, "12345", "nofar2@gmail.com", 21);
             string token1 = c.LoginClient(username0, "12345").Value;
-            int storeId = MMF.CreateStore(token1, "shop1", "shop@gmail.com", "0502552798");
+            int storeId = await MMF.CreateStore(token1, "shop1", "shop@gmail.com", "0502552798");
             Store store = MMF.GetStore(storeId);
             founder = store.getRole(username0);
             owner = new Role(new Owner(RoleName.Owner), MMF.GetMember(username0), storeId, username1);

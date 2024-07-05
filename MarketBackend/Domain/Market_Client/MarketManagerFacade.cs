@@ -163,7 +163,7 @@ namespace MarketBackend.Domain.Market_Client
         }
 
     
-        public int CreateStore(string identifier, string storeName, string email, string phoneNum)
+        public async Task<int> CreateStore(string identifier, string storeName, string email, string phoneNum)
         {
             int storeId=-1;
             Client store_founder = _clientManager.GetClientByIdentifier(identifier);
@@ -177,7 +177,8 @@ namespace MarketBackend.Domain.Market_Client
                 {
                     _active = true
                 };
-                _storeRepository.Add(store);
+                await _storeRepository.Add2(store);
+                // _storeRepository.Add(store);
                 Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
                 Role role = new Role(new Founder(RoleName.Founder), activeMember, storeId, activeMember.UserName);
 

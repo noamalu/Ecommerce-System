@@ -165,8 +165,24 @@ namespace MarketBackend.Tests.AT
         }
 
         public bool CreateStore(string identifier, string storeName, string email, string phoneNum){
-            Response res = clientService.CreateStore(identifier, storeName, email, phoneNum);
-            return !res.ErrorOccured;
+            try
+            {
+            Task<Response<int>> task = clientService.CreateStore(identifier, storeName, email, phoneNum);
+            task.Wait(); // Block until task completes (synchronous context)
+
+            if (task.IsFaulted || task.IsCanceled)
+            {
+                return true; // Task faulted or canceled, assume error
+            }
+
+            Response<int> response = task.Result;
+            return !response.ErrorOccured;
+            }
+            catch (Exception e)
+            {
+            // Log or handle the exception, if needed
+            return false; // Error occurred
+            }
         }
         
         public void InitiateSystemAdmin(){

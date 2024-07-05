@@ -15,7 +15,7 @@ namespace MarketBackend.Domain.Market_Client
         void Register(string username, string password, string email, int age);
         void EnterAsGuest(string identifier);
         void PurchaseCart(string identifier, PaymentDetails paymentDetails, ShippingDetails shippingDetails);
-        int CreateStore(string identifier, string storeName, string email, string phoneNum);
+        Task<int> CreateStore(string identifier, string storeName, string email, string phoneNum);
         bool ResToStoreManageReq(string identifier);
         bool ResToStoreOwnershipReq(string identifier); //respond to store ownership request
         void LogoutClient(string identifier);

@@ -130,11 +130,18 @@ public class SceanarioParser
                     Email = usecaseJson["Email"].ToString(),
                     PhoneNum = usecaseJson["PhoneNum"].ToString()
                 };
-                var res = _clientService.CreateStore(
-                    _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
-                    storeDto.Name, storeDto.Email, storeDto.PhoneNum);
+                var tokenResult = _clientService.GetTokenByUserName(usecaseJson["Username"].ToString());
+
+                if (tokenResult.ErrorOccured)
+                {
+                    throw new Exception(tokenResult.ErrorMessage);
+                }
+                var res = await _clientService.CreateStore(tokenResult.Value, storeDto.Name, storeDto.Email, storeDto.PhoneNum);
+
                 if (res.ErrorOccured)
-                    throw new Exception(res.ErrorMessage);                
+                {
+                    throw new Exception(res.ErrorMessage);
+                }             
                 break;
             }
             case Sceanarios.AddProduct:

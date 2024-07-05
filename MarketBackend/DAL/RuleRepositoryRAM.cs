@@ -182,5 +182,10 @@ namespace MarketBackend.DAL
         {
             _ruleById = new ConcurrentDictionary<int, IRule>();
         }
+
+        public Task Add2(IRule entity)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -300,5 +300,44 @@ namespace MarketBackend.DAL.DTO
                 .OnDelete(DeleteBehavior.NoAction);
 
         } 
+
+        public async Task PerformTransactionalOperationAsync(Func<Task> operations)
+        {
+            using (var transaction = await Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    await operations();
+                    await SaveChangesAsync();
+                    await transaction.CommitAsync();
+                }
+                catch (Exception)
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
+            }
+        }
     }
 }
+
+// public class SomeService
+// {
+//     private readonly DBcontext _dbContext;
+
+//     public SomeService(DBcontext dbContext)
+//     {
+//         _dbContext = dbContext;
+//     }
+
+//     public async Task SomeBusinessOperationAsync()
+//     {
+//         await _dbContext.PerformTransactionalOperationAsync(async () =>
+//         {
+//             // Perform your operations here
+//             _dbContext.Members.Add(new MemberDTO { /* properties */ });
+//             _dbContext.Products.Add(new ProductDTO { /* properties */ });
+//             // ... other operations ...
+//         });
+//     }
+// }

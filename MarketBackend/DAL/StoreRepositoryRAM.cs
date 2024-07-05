@@ -10,6 +10,7 @@ namespace MarketBackend.DAL
     {
           private static ConcurrentDictionary<int, Store> _stores;
         private static StoreRepositoryRAM StoreRepository = null;
+        DBcontext dBcontext;
 
         public ConcurrentDictionary<int, Store> Stores { get => _stores; set => _stores = value; }
         private object _lock ;
@@ -30,11 +31,16 @@ namespace MarketBackend.DAL
         public static void Dispose(){
             StoreRepository = new StoreRepositoryRAM();
         }
-        public void Add(Store store)
+        public async Task Add2(Store store)
         {
+            dBcontext = DBcontext.GetInstance();
+            await dBcontext.PerformTransactionalOperationAsync(async () =>
+            {
+                dBcontext.Stores.Add(new StoreDTO(store));
+            });
             _stores.TryAdd(store.StoreId, store);
-            DBcontext.GetInstance().Stores.Add(new StoreDTO(store));
-            DBcontext.GetInstance().SaveChanges();
+            // DBcontext.GetInstance().Stores.Add(new StoreDTO(store));
+            // DBcontext.GetInstance().SaveChanges();
         
         }
 
@@ -114,6 +120,11 @@ namespace MarketBackend.DAL
             }
             else DBcontext.GetInstance().Stores.Add(newStore);
             DBcontext.GetInstance().SaveChanges();
+        }
+
+        void IRepository<Store>.Add(Store entity)
+        {
+            throw new NotImplementedException();
         }
     }
 }

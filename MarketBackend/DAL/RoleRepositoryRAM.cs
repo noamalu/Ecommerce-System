@@ -155,6 +155,11 @@ namespace MarketBackend.DAL
 
             return roles[storeId];
         }
+
+        public Task Add2(Role entity)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

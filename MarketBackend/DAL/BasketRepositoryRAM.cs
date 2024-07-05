@@ -156,5 +156,10 @@ namespace MarketBackend.DAL
             }
             
         }
+
+        public Task Add2(Basket entity)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

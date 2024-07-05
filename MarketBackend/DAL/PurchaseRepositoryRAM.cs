@@ -110,5 +110,10 @@ namespace MarketBackend.DAL
             }
             return result;
         }
+
+        public Task Add2(Purchase entity)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -184,6 +184,9 @@ namespace MarketBackend.DAL
             UsernamexMember[member.UserName] = member;
         }
 
-
+        public Task Add2(Member entity)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -63,7 +63,7 @@ namespace UnitTests
         int storeId = 1;
         int userId2;
         [TestInitialize]
-        public void Initialize()
+        public async void Initialize()
         {
             DBcontext.GetInstance().Dispose();
             context = DBcontext.GetInstance();
@@ -81,7 +81,7 @@ namespace UnitTests
             MarketManagerFacade MMF = marketManagerFacade = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             c.Register(username1, "12345", "nofar@gmail.com", 19);
             token1 = c.LoginClient(username1, "12345").Value;
-            int storeId= MMF.CreateStore(token1, "shop1", "shop@gmail.com", "0502552798");
+            int storeId= await MMF.CreateStore(token1, "shop1", "shop@gmail.com", "0502552798");
             _owner = CM.GetClientByIdentifier(token1);
             _Store = MMF.GetStore(storeId);
             _Store.AddProduct(username1, "Brush", "RegularSell" , "Brush", 4784, "hair", 21, false);

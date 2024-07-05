@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using MarketBackend.Services.Interfaces;
 using MarketBackend.DAL.DTO;
 
-
 namespace MarketBackend.DAL
 {
     public class PolicyRepositoryRAM : IPolicyRepository {
@@ -159,6 +158,11 @@ namespace MarketBackend.DAL
         public static void Dispose()
         {
              _policyById = new ConcurrentDictionary<int, IPolicy>();
+        }
+
+        public Task Add2(IPolicy entity)
+        {
+            throw new NotImplementedException();
         }
     }
 }

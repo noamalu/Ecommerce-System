@@ -178,5 +178,10 @@ namespace MarketBackend.DAL
         {
             _productById = new ConcurrentDictionary<int, Product>();
         }
+
+        public Task Add2(Product entity)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

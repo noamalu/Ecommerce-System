@@ -12,6 +12,8 @@ namespace MarketBackend.Services.Interfaces
         public IEnumerable<T> getAll();
         public void Update(T entity);
         public void Delete(T entity);
+        Task Add2(T entity);
+        
 }
         
 
