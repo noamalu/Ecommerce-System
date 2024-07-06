@@ -9,6 +9,8 @@ namespace MarketBackend.DAL
         private static ConcurrentDictionary<int, IPolicy> _policyById;
 
         private static PolicyRepositoryRAM _policyRepo = null;
+        private DBcontext dbcontext;
+        private PolicyDTO policyDTO;
 
         private PolicyRepositoryRAM()
         {
@@ -21,28 +23,31 @@ namespace MarketBackend.DAL
             return _policyRepo;
         }
 
-        public void Add(IPolicy policy)
+        public async Task Add(IPolicy policy)
         {
+            dbcontext = DBcontext.GetInstance();
+            await dbcontext.PerformTransactionalOperationAsync(async () =>
+            {
+                dbcontext.Stores.Find(policy.StoreId).Policies.Add(policy.CloneDTO());
+            });
             _policyById.TryAdd(policy.Id, policy);
-            DBcontext.GetInstance().Stores.Find(policy.StoreId).Policies.Add(policy.CloneDTO());
-            DBcontext.GetInstance().SaveChanges();
         }
 
-        public bool ContainsID(int id)
+        public async Task<bool> ContainsID(int id)
         {
             if (_policyById.ContainsKey(id))
                 return true;
             else return DBcontext.GetInstance().Stores.Any(s => s.Rules.Any(r => r.Id.Equals(id)));
         }
 
-        public bool ContainsValue(IPolicy policy)
+        public async Task<bool> ContainsValue(IPolicy policy)
         {
             if (_policyById.Contains(new KeyValuePair<int, IPolicy>(policy.Id, policy)))
                 return true;
             else return DBcontext.GetInstance().Stores.Any(s => s.Policies.Any(r => r.Id.Equals(policy.Id)));
         }
 
-        public ConcurrentDictionary<int, IPolicy> GetShopRules(int storeId)
+        public async Task<ConcurrentDictionary<int, IPolicy>> GetShopRules(int storeId)
         {
             ConcurrentDictionary<int, IPolicy> storePolicies = new ConcurrentDictionary<int, IPolicy>();
             foreach (IPolicy policy in _policyById.Values)
@@ -52,74 +57,88 @@ namespace MarketBackend.DAL
             return storePolicies;
         }
 
-         public IPolicy GetById(int id)
+         public async Task<IPolicy> GetById(int id)
         {
             if (_policyById.ContainsKey(id))
                 return _policyById[id];
-            else if (ContainsID(id))
+            else if (await ContainsID(id))
             {
                 DBcontext context = DBcontext.GetInstance();
-                StoreDTO shopDto = context.Stores.Where(s => s.Policies.Any(p => p.Id == id)).FirstOrDefault();
-                PolicyDTO policyDTO = shopDto.Policies.Find(p => p.Id == id);
-                _policyById.TryAdd(id, makePolicy(policyDTO));
+                await dbcontext.PerformTransactionalOperationAsync(async () =>
+                {
+                    StoreDTO shopDto = context.Stores.Where(s => s.Policies.Any(p => p.Id == id)).FirstOrDefault();
+                    policyDTO = shopDto.Policies.Find(p => p.Id == id);
+                });
+                _policyById.TryAdd(id, await makePolicy(policyDTO));
                 return _policyById[id];
             }
             else
                 throw new ArgumentException("Invalid Rule Id.");
         }
 
-        public IEnumerable<IPolicy> getAll()
+        public async Task<IEnumerable<IPolicy>> getAll()
         {
             UploadRulesFromContext();
             return _policyById.Values.ToList();
         }
 
         
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
             if (_policyById.ContainsKey(id))
             {
-                StoreDTO store = DBcontext.GetInstance().Stores.Find(_policyById[id].StoreId);
-                _policyById.TryRemove(id, out IPolicy removed);
-                PolicyDTO p = store.Policies.Find(p => p.Id == id);
-                store.Policies.Remove(p);
-                DBcontext.GetInstance().Policies.Remove(p);
-                DBcontext.GetInstance().SaveChanges();
+                DBcontext dbcontext = DBcontext.GetInstance();
+                await dbcontext.PerformTransactionalOperationAsync(async () =>
+                {
+                    StoreDTO store = dbcontext.Stores.Find(_policyById[id].StoreId);
+                    PolicyDTO p = store.Policies.Find(p => p.Id == id);
+                    store.Policies.Remove(p);
+                    DBcontext.GetInstance().Policies.Remove(p);
+                    _policyById.TryRemove(id, out IPolicy removed);
+                });
             }
             else throw new Exception("Product Id does not exist."); ;
         }
 
-        public void Update(IPolicy policy)
+        public async Task Update(IPolicy policy)
         {
             
         }
 
-        private void UploadRulesFromContext()
+        private async Task UploadRulesFromContext()
         {
-            List<StoreDTO> stores = DBcontext.GetInstance().Stores.ToList();
-            foreach (StoreDTO storeDTO in stores)
+            DBcontext dbcontext = DBcontext.GetInstance();
+            await dbcontext.PerformTransactionalOperationAsync(async () =>
             {
-                UploadShopPoliciesFromContext(storeDTO.Id);
-            }
+                List<StoreDTO> stores = DBcontext.GetInstance().Stores.ToList();
+                foreach (StoreDTO storeDTO in stores)
+                {
+                    await UploadShopPoliciesFromContext(storeDTO.Id);
+                }
+            });
         }
 
-        private void UploadShopPoliciesFromContext(int storeId)
+        private async Task UploadShopPoliciesFromContext(int storeId)
         {
-            StoreDTO storeDto = DBcontext.GetInstance().Stores.Find(storeId);
-            if (storeDto != null)
+            DBcontext dbcontext = DBcontext.GetInstance();
+            await dbcontext.PerformTransactionalOperationAsync(async () =>
             {
-                if (storeDto.Rules != null)
+                StoreDTO storeDto = dbcontext.Stores.Find(storeId);
+                if (storeDto != null)
                 {
-                    List<PolicyDTO> policies = storeDto.Policies.ToList();
-                    foreach (PolicyDTO policyDTO in policies)
+                    if (storeDto.Rules != null)
                     {
-                        _policyById.TryAdd(policyDTO.Id, makePolicy(policyDTO));
+                        List<PolicyDTO> policies = storeDto.Policies.ToList();
+                        foreach (PolicyDTO policyDTO in policies)
+                        {
+                            _policyById.TryAdd(policyDTO.Id, await makePolicy(policyDTO));
+                        }
                     }
                 }
-            }
+            });
         }
 
-        public IPolicy makePolicy(PolicyDTO policyDTO)
+        public async Task<IPolicy> makePolicy(PolicyDTO policyDTO)
         {
             Type policyType = policyDTO.GetType();
             if (policyType.Name.Equals("DiscountPolicyDTO"))
@@ -135,7 +154,7 @@ namespace MarketBackend.DAL
                 List<IPolicy> policies = new List<IPolicy>();
                 foreach (PolicyDTO p in ((DiscountCompositePolicyDTO)policyDTO).Policies)
                 {
-                    policies.Add(makePolicy(p));
+                    policies.Add(await makePolicy(p));
                 }
                 return new DiscountCompositePolicy((DiscountCompositePolicyDTO)policyDTO, policies);
             }
@@ -150,19 +169,14 @@ namespace MarketBackend.DAL
             _policyById = new ConcurrentDictionary<int, IPolicy>();
         }
 
-        public void Delete(IPolicy policy)
+        public async Task Delete(IPolicy policy)
         {
-            Delete(policy.Id);
+            await Delete(policy.Id);
         }
 
         public static void Dispose()
         {
              _policyById = new ConcurrentDictionary<int, IPolicy>();
-        }
-
-        public Task Add2(IPolicy entity)
-        {
-            throw new NotImplementedException();
         }
     }
 }

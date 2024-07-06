@@ -15,7 +15,11 @@ namespace MarketBackend.Domain.Market_Client
         {
             _lowRate = lowRate;
             _highRate = highRate;
-            _relevantstores = FindRelevantstores();
+            asyneStoreRatingFilter();
+        }
+
+        public async void asyneStoreRatingFilter(){
+            _relevantstores = await FindRelevantstores();
         }
 
         protected override bool Predicate(Product product)
@@ -23,9 +27,9 @@ namespace MarketBackend.Domain.Market_Client
             return _relevantstores.ToList().Find((store) => store.StoreId == product.StoreId) != null;
         }
 
-        private List<Store> FindRelevantstores()
+        private async Task<List<Store>> FindRelevantstores()
         {
-            List<Store> stores = StoreRepositoryRAM.GetInstance().getAll().ToList();
+            List<Store> stores = (await StoreRepositoryRAM.GetInstance().getAll()).ToList();
             return stores.FindAll((store) => store._raiting >= _lowRate && store._raiting <= _highRate);
         }
 

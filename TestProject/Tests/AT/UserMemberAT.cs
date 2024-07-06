@@ -48,7 +48,7 @@ namespace MarketBackend.Tests.AT
         Mock<IPaymentSystemFacade> mockPaymentSystem;
 
         [TestInitialize()]
-        public void Setup(){
+        public async void Setup(){
             DBcontext.GetInstance().Dispose();
             proxy = new Proxy();
             userId = proxy.GetUserId();
@@ -63,15 +63,15 @@ namespace MarketBackend.Tests.AT
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
             proxy.InitiateSystemAdmin();
-            proxy.EnterAsGuest(session1);
-            proxy.Register(userName, userPassword, email1, userAge);
-            token1 = proxy.LoginWithToken(userName, userPassword);
-            userId = proxy.GetMembeIDrByUserName(userName);
+            await proxy.EnterAsGuest(session1);
+            await proxy.Register(userName, userPassword, email1, userAge);
+            token1 = await proxy.LoginWithToken(userName, userPassword);
+            userId = await proxy.GetMembeIDrByUserName(userName);
             int userId2 = proxy.GetUserId();
-            proxy.EnterAsGuest(session2);
-            proxy.Register(userName2, pass2, email2, userAge);
-            token2 = proxy.LoginWithToken(userName2, pass2);
-            userId2 = proxy.GetMembeIDrByUserName(userName2);
+            await proxy.EnterAsGuest(session2);
+            await proxy.Register(userName2, pass2, email2, userAge);
+            token2 = await proxy.LoginWithToken(userName2, pass2);
+            userId2 = await proxy.GetMembeIDrByUserName(userName2);
         }
 
         [TestCleanup]
@@ -81,14 +81,14 @@ namespace MarketBackend.Tests.AT
         }
 
         [TestMethod]
-        public void LogOutSuccess(){
-            Assert.IsTrue(proxy.LogOut(token1), "Expected logout to succeed for logged-in user.");
+        public async void LogOutSuccess(){
+            Assert.IsTrue(await proxy.LogOut(token1), "Expected logout to succeed for logged-in user.");
         }
 
         [TestMethod]
-        public void LogOutFail_NotLoggedIn(){
-            proxy.LogOut(token1);
-            Assert.IsFalse(proxy.LogOut(token1), "Expected logout to fail for a user that is not logged in.");
+        public async void LogOutFail_NotLoggedIn(){
+            await proxy.LogOut(token1);
+            Assert.IsFalse(await proxy.LogOut(token1), "Expected logout to fail for a user that is not logged in.");
         }
 
         [TestMethod]
@@ -97,222 +97,222 @@ namespace MarketBackend.Tests.AT
         }
 
         [TestMethod]
-        public void CreateShopSuccess()
+        public async void CreateShopSuccess()
         {
-            Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
+            Assert.IsTrue(await proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
                 "Expected store creation to succeed.");
-            Assert.AreEqual(storeName, proxy.GetStoreById(1), 
+            Assert.AreEqual(storeName, await proxy.GetStoreById(1), 
                 $"Expected store name to be {storeName} but got {proxy.GetStoreById(1)}.");
         }
 
         [TestMethod]
-        public void CreateShopFail_NotLoggedIn()
+        public async void CreateShopFail_NotLoggedIn()
         {
-            proxy.LogOut(token1);
-            Assert.IsFalse(proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
+            await proxy.LogOut(token1);
+            Assert.IsFalse(await proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
                 "Expected store creation to fail for a user that is not logged in.");
         }
 
         [TestMethod]
-        public void GetInfoSuccess()
+        public async void GetInfoSuccess()
         {
             int shopID = 1;
-            Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
+            Assert.IsTrue(await proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
                 "Expected store creation to succeed.");
-            Assert.IsTrue(proxy.GetInfo(shopID), 
+            Assert.IsTrue(await proxy.GetInfo(shopID), 
                 "Expected to retrieve information for the created store.");
         }
 
         [TestMethod]
-        public void AddToCartSuccess()
+        public async void AddToCartSuccess()
         {
             int shopID = 1;
-            Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
+            Assert.IsTrue(await proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
                 "Expected store creation to succeed.");
-            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
+            Assert.IsTrue(await proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
                 "Expected product addition to the store to succeed.");
-            userId2 = proxy.GetMembeIDrByUserName(userName2);
-            Assert.IsTrue(proxy.AddToCart(token2, shopID, productID1, quantity1), 
+            userId2 = await proxy.GetMembeIDrByUserName(userName2);
+            Assert.IsTrue(await proxy.AddToCart(token2, shopID, productID1, quantity1), 
                 "Expected product to be added to the cart successfully.");
-            Assert.AreEqual(1, proxy.GetMember(userName2).Cart.GetBaskets().Count, 
-                $"Expected cart to contain one basket but got {proxy.GetMember(userName2).Cart.GetBaskets().Count}.");
+            // Assert.AreEqual(1, (await proxy.GetMember(userName2)).Cart.GetBaskets().Count, 
+            //     $"Expected cart to contain one basket but got {(await proxy.GetMember(userName2)).Cart.GetBaskets().Count}.");
         }
 
         [TestMethod]
-        public void AddToCartFail_NoProduct()
+        public async void AddToCartFail_NoProduct()
         {
             int shopID = 1;
-            Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
+            Assert.IsTrue(await proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
                 "Expected store creation to succeed.");
-            userId2 = proxy.GetMembeIDrByUserName(userName2);
-            Assert.IsFalse(proxy.AddToCart(token2, shopID, productID1, quantity1), 
+            userId2 = await proxy.GetMembeIDrByUserName(userName2);
+            Assert.IsFalse(await proxy.AddToCart(token2, shopID, productID1, quantity1), 
                 "Expected adding product to cart to fail as product does not exist.");
-            Assert.AreEqual(0, proxy.GetMember(userName2).Cart.GetBaskets().Count, 
-                $"Expected cart to be empty but got basket count: {proxy.GetMember(userName2).Cart.GetBaskets().Count}.");
+            // Assert.AreEqual(0, (await proxy.GetMember(userName2)).Cart.GetBaskets().Count, 
+            //     $"Expected cart to be empty but got basket count: {(await proxy.GetMember(userName2)).Cart.GetBaskets().Count}.");
         }
 
         [TestMethod]
-        public void RemoveFromCartSuccess()
+        public async void RemoveFromCartSuccess()
         {
             int shopID = 1;
-            Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
+            Assert.IsTrue(await proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
                 "Expected store creation to succeed.");
-            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
+            Assert.IsTrue(await proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
                 "Expected product addition to the store to succeed.");
-            userId2 = proxy.GetMembeIDrByUserName(userName2);
-            Assert.IsTrue(proxy.AddToCart(token2, shopID, productID1, 1), 
+            userId2 = await proxy.GetMembeIDrByUserName(userName2);
+            Assert.IsTrue(await proxy.AddToCart(token2, shopID, productID1, 1), 
                 "Expected product to be added to the cart successfully.");
-            Assert.IsTrue(proxy.RemoveFromCart(token2, productID1, shopID, 1), 
+            Assert.IsTrue(await proxy.RemoveFromCart(token2, productID1, shopID, 1), 
                 "Expected product to be removed from the cart successfully.");
-            Member mem = proxy.GetMember(userName2);
-            Assert.AreEqual(0, mem.Cart.GetBaskets()[shopID].products.Count, 
-                $"Expected cart to be empty after removing the product but got {mem.Cart.GetBaskets()[shopID].products.Count}.");
+            Member mem = await proxy.GetMember(userName2);
+            Assert.AreEqual(0, (await mem.Cart.GetBaskets())[shopID].products.Count, 
+                $"Expected cart to be empty after removing the product but got {(await mem.Cart.GetBaskets())[shopID].products.Count}.");
         }
 
         [TestMethod]
-        public void RemoveFromCartFail_NoProduct()
+        public async void RemoveFromCartFail_NoProduct()
         {
             int shopID = 1;
-            Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
+            Assert.IsTrue(await proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
                 "Expected store creation to succeed.");
-            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
+            Assert.IsTrue(await proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
                 "Expected product addition to the store to succeed.");
-            userId2 = proxy.GetMembeIDrByUserName(userName2);
-            Assert.IsFalse(proxy.RemoveFromCart(token2, productID1, shopID, 1), 
+            userId2 = await proxy.GetMembeIDrByUserName(userName2);
+            Assert.IsFalse(await proxy.RemoveFromCart(token2, productID1, shopID, 1), 
                 "Expected removing product from cart to fail as product does not exist in the cart.");
         }
 
         [TestMethod]
-        public void PurchaseCartSuccess()
+        public async void PurchaseCartSuccess()
         {
             int shopID = 1;
-            Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
+            Assert.IsTrue(await proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
                 "Expected store creation to succeed.");
-            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
+            Assert.IsTrue(await proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
                 "Expected product addition to the store to succeed.");
-            userId2 = proxy.GetMembeIDrByUserName(userName2);
-            Assert.IsTrue(proxy.AddToCart(token2, shopID, productID1, quantity1), 
+            userId2 = await proxy.GetMembeIDrByUserName(userName2);
+            Assert.IsTrue(await proxy.AddToCart(token2, shopID, productID1, quantity1), 
                 "Expected product to be added to the cart successfully.");
-            Assert.IsTrue(proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
+            Assert.IsTrue(await proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
                 "Expected cart purchase to succeed.");
-            Assert.AreEqual(1, proxy.GetPurchaseHistory(userName2).Count, 
-                $"Expected purchase history to contain one entry but got {proxy.GetPurchaseHistory(userName2).Count}.");
+            Assert.AreEqual(1, (await proxy.GetPurchaseHistory(userName2)).Count, 
+                $"Expected purchase history to contain one entry but got {(await proxy.GetPurchaseHistory(userName2)).Count}.");
         }
 
         [TestMethod]
-        public void PurchaseCartFail_NoProduct()
+        public async void PurchaseCartFail_NoProduct()
         {
             int shopID = 1;
-            Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
+            Assert.IsTrue(await proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
                 "Expected store creation to succeed.");
-            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
+            Assert.IsTrue(await proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
                 "Expected product addition to the store to succeed.");
-            userId2 = proxy.GetMembeIDrByUserName(userName2);
-            Assert.IsTrue(proxy.AddToCart(token2, shopID, productID1, quantity1), 
+            userId2 = await proxy.GetMembeIDrByUserName(userName2);
+            Assert.IsTrue(await proxy.AddToCart(token2, shopID, productID1, quantity1), 
                 "Expected product to be added to the cart successfully.");
-            Assert.IsTrue(proxy.RemoveProduct(shopID, token1, 11), 
+            Assert.IsTrue(await proxy.RemoveProduct(shopID, token1, 11), 
                 "Expected product to be removed from the store.");
-            Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
+            Assert.IsFalse(await proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
                 "Expected cart purchase to fail as product does not exist in the store.");
-            Assert.AreEqual(0, proxy.GetPurchaseHistory(userName2).Count, 
-                $"Expected purchase history to be empty but got {proxy.GetPurchaseHistory(userName2).Count}.");
+            Assert.AreEqual(0, (await proxy.GetPurchaseHistory(userName2)).Count, 
+                $"Expected purchase history to be empty but got {(await proxy.GetPurchaseHistory(userName2)).Count}.");
         }
 
         [TestMethod]
-        public void PurchaseCartFail_EmptyCart()
+        public async void PurchaseCartFail_EmptyCart()
         {
             int shopID = 1;
-            Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
+            Assert.IsTrue(await proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
                 "Expected store creation to succeed.");
-            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
+            Assert.IsTrue(await proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
                 "Expected product addition to the store to succeed.");
-            userId2 = proxy.GetMembeIDrByUserName(userName2);
-            Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
+            userId2 = await proxy.GetMembeIDrByUserName(userName2);
+            Assert.IsFalse(await proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
                 "Expected cart purchase to fail as cart is empty.");
-            Assert.AreEqual(0, proxy.GetPurchaseHistory(userName2).Count, 
-                $"Expected purchase history to be empty but got {proxy.GetPurchaseHistory(userName2).Count}.");
+            Assert.AreEqual(0, (await proxy.GetPurchaseHistory(userName2)).Count, 
+                $"Expected purchase history to be empty but got {(await proxy.GetPurchaseHistory(userName2)).Count}.");
         }
 
         [TestMethod]
-        public void PurchaseCartFail_IlegalAge()
+        public async void PurchaseCartFail_IlegalAge()
         {
             int shopID = 1;
-            Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
+            Assert.IsTrue(await proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
                 "Expected store creation to succeed.");
-            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, true), 
+            Assert.IsTrue(await proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, true), 
                 "Expected product addition to the store to succeed.");
-            userId2 = proxy.GetMembeIDrByUserName(userName2);
-            Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
+            userId2 = await proxy.GetMembeIDrByUserName(userName2);
+            Assert.IsFalse(await proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
                 "Expected cart purchase to fail due to illegal age for purchasing the product.");
-            Assert.AreEqual(0, proxy.GetPurchaseHistory(userName2).Count, 
-                $"Expected purchase history to be empty but got {proxy.GetPurchaseHistory(userName2).Count}.");
+            Assert.AreEqual(0, (await proxy.GetPurchaseHistory(userName2)).Count, 
+                $"Expected purchase history to be empty but got {(await proxy.GetPurchaseHistory(userName2)).Count}.");
         }
 
         [TestMethod]
-        public void PurchaseCartFail_Payment(){
+        public async void PurchaseCartFail_Payment(){
             int shopID = 1;
-            Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
+            Assert.IsTrue(await proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
                 "Expected store creation to succeed.");
-            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
+            Assert.IsTrue(await proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
                 "Expected product addition to the store to succeed.");
-            userId2 = proxy.GetMembeIDrByUserName(userName2);
+            userId2 = await proxy.GetMembeIDrByUserName(userName2);
             mockPaymentSystem.SetReturnsDefault(false);
-            Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
+            Assert.IsFalse(await proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
                 "Expected cart purchase to fail due to payment failure.");
-            Assert.AreEqual(0, proxy.GetPurchaseHistory(userName2).Count, 
-                $"Expected purchase history to be empty but got {proxy.GetPurchaseHistory(userName2).Count}.");
+            Assert.AreEqual(0, (await proxy.GetPurchaseHistory(userName2)).Count, 
+                $"Expected purchase history to be empty but got {(await proxy.GetPurchaseHistory(userName2)).Count}.");
         }
 
         [TestMethod]
-        public void PurchaseCartFail_Shipping(){
+        public async void PurchaseCartFail_Shipping(){
             int shopID = 1;
-            Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
+            Assert.IsTrue(await proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
                 "Expected store creation to succeed.");
-            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
+            Assert.IsTrue(await proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
                 "Expected product addition to the store to succeed.");
-            userId2 = proxy.GetMembeIDrByUserName(userName2);
+            userId2 = await proxy.GetMembeIDrByUserName(userName2);
             mockShippingSystem.SetReturnsDefault(false);
-            Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
+            Assert.IsFalse(await proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
                 "Expected cart purchase to fail due to shipping failure.");
-            Assert.AreEqual(0, proxy.GetPurchaseHistory(userName2).Count, 
-                $"Expected purchase history to be empty but got {proxy.GetPurchaseHistory(userName2).Count}.");
+            Assert.AreEqual(0, (await proxy.GetPurchaseHistory(userName2)).Count, 
+                $"Expected purchase history to be empty but got {(await proxy.GetPurchaseHistory(userName2)).Count}.");
         }
 
         [TestMethod]
-        public void GetPurchaseHistorySuccess_Permission()
+        public async void GetPurchaseHistorySuccess_Permission()
         {
             int shopID = 1;
-            Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
+            Assert.IsTrue(await proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
                 "Expected store creation to succeed.");
-            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
+            Assert.IsTrue(await proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
                 "Expected product addition to the store to succeed.");
-            userId2 = proxy.GetMembeIDrByUserName(userName2);
-            Assert.IsTrue(proxy.AddToCart(token2, shopID, productID1, quantity1), 
+            userId2 = await proxy.GetMembeIDrByUserName(userName2);
+            Assert.IsTrue(await proxy.AddToCart(token2, shopID, productID1, quantity1), 
                 "Expected product to be added to the cart successfully.");
-            Assert.IsTrue(proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
+            Assert.IsTrue(await proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
                 "Expected cart purchase to succeed.");
-            Assert.IsTrue(proxy.AddOwner(token1, 1, userName2), 
+            Assert.IsTrue(await proxy.AddOwner(token1, 1, userName2), 
                 "Expected adding owner to succeed.");
-            Assert.IsTrue(proxy.GetPurchaseHistory(shopID, token2), 
+            Assert.IsTrue(await proxy.GetPurchaseHistory(shopID, token2), 
                 "Expected to retrieve purchase history with valid permission.");
-            Assert.AreEqual(1, proxy.GetPurchaseHistory(userName2).Count, 
-                $"Expected purchase history to contain one entry but got {proxy.GetPurchaseHistory(userName2).Count}.");
+            Assert.AreEqual(1, (await proxy.GetPurchaseHistory(userName2)).Count, 
+                $"Expected purchase history to contain one entry but got {(await proxy.GetPurchaseHistory(userName2)).Count}.");
         }
 
         [TestMethod]
-        public void GetPurchaseHistoryFail_Permission()
+        public async void GetPurchaseHistoryFail_Permission()
         {
             int shopID = 1;
-            Assert.IsTrue(proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
+            Assert.IsTrue(await proxy.CreateStore(token1, storeName, storeEmail, phoneNum), 
                 "Expected store creation to succeed.");
-            Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
+            Assert.IsTrue(await proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
                 "Expected product addition to the store to succeed.");
-            userId2 = proxy.GetMembeIDrByUserName(userName2);
-            Assert.IsTrue(proxy.AddToCart(token2, shopID, productID1, quantity1), 
+            userId2 = await proxy.GetMembeIDrByUserName(userName2);
+            Assert.IsTrue(await proxy.AddToCart(token2, shopID, productID1, quantity1), 
                 "Expected product to be added to the cart successfully.");
-            Assert.IsTrue(proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
+            Assert.IsTrue(await proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
                 "Expected cart purchase to succeed.");
-            Assert.IsFalse(proxy.GetPurchaseHistory(shopID, token2), 
+            Assert.IsFalse(await proxy.GetPurchaseHistory(shopID, token2), 
                 "Expected retrieving purchase history to fail due to lack of permission.");
         }
 

@@ -62,8 +62,14 @@ namespace UnitTests
         int productCounter = 0;
         int storeId = 1;
         int userId2;
+
         [TestInitialize]
-        public async void Initialize()
+        public void SetUp()
+        {
+            Task.Run(async () => await AsyncSetUp()).GetAwaiter().GetResult();
+        }
+
+         private async Task AsyncSetUp()
         {
             DBcontext.GetInstance().Dispose();
             context = DBcontext.GetInstance();
@@ -79,15 +85,15 @@ namespace UnitTests
             ClientService c = ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             ClientManager CM = ClientManager.GetInstance();
             MarketManagerFacade MMF = marketManagerFacade = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
-            c.Register(username1, "12345", "nofar@gmail.com", 19);
-            token1 = c.LoginClient(username1, "12345").Value;
+            await c.Register(username1, "12345", "nofar@gmail.com", 19);
+            token1 = (await c.LoginClient(username1, "12345")).Value;
             int storeId= await MMF.CreateStore(token1, "shop1", "shop@gmail.com", "0502552798");
             _owner = CM.GetClientByIdentifier(token1);
-            _Store = MMF.GetStore(storeId);
-            _Store.AddProduct(username1, "Brush", "RegularSell" , "Brush", 4784, "hair", 21, false);
+            _Store = await MMF.GetStore(storeId);
+            await _Store.AddProduct(username1, "Brush", "RegularSell" , "Brush", 4784, "hair", 21, false);
             _p1 = _Store.Products.ToList().Find((p) => p.ProductId == 11);
-            c.Register( username2, "54321", "nofar@gmail.com", 18);
-            token2 = c.LoginClient(username2, "54321").Value;
+            await c.Register( username2, "54321", "nofar@gmail.com", 18);
+            token2 = (await c.LoginClient(username2, "54321")).Value;
         }
 
          [TestCleanup]
@@ -108,195 +114,198 @@ namespace UnitTests
         }
 
         [TestMethod()]
-        public void AddProductSuccess()
+        public async void AddProductSuccess()
         {
             
-            _Store.AddProduct(username1, "Shampo", "RegularSell" , "Shampo", 4784, "hair", 21, false);
+            await _Store.AddProduct(username1, "Shampo", "RegularSell" , "Shampo", 4784, "hair", 21, false);
             Assert.IsTrue(_Store.Products.ToList().Find((p) => p.Name == "Shampo") != null);
         }
 
         [TestMethod()]
-        public void AddProductFailHasNoPermissions()
+        public async Task AddProductFailHasNoPermissions()
         {
-            Assert.ThrowsException<Exception>(() => _Store.AddProduct(username2,"Shampo", "RegularSell" , "Shampo", 4784, "hair", 21, false));
+           await Assert.ThrowsExceptionAsync<Exception>(async () => 
+            {
+                await _Store.AddProduct(username2, "Shampo", "RegularSell", "Shampo", 4784, "hair", 21, false);
+            });
         }
 
         [TestMethod()]
-        public void AddProductFailUserNotExist()
+        public async Task AddProductFailUserNotExist()
         {
-            Assert.ThrowsException<Exception>(() => _Store.AddProduct(username3,"Shampo", "RegularSell" , "Shampo", 4784, "hair", 21, false));
+            await Assert.ThrowsExceptionAsync<Exception>(async () => await _Store.AddProduct(username3,"Shampo", "RegularSell" , "Shampo", 4784, "hair", 21, false));
         }
 
         [TestMethod()]
-        public void RemoveProductSuccess()
+        public async Task RemoveProductSuccess()
         {
-            _Store.AddProduct(username1, "Shampo", "RegularSell" , "Shampo", 4784, "hair", 21, false);
+            await _Store.AddProduct(username1, "Shampo", "RegularSell" , "Shampo", 4784, "hair", 21, false);
             Product p1 = _Store.Products.ToList().Find((p) => p.Name == "Shampo");
-            _Store.RemoveProduct(username1, p1.ProductId);
+            await _Store.RemoveProduct(username1, p1.ProductId);
             Assert.IsTrue(!_Store.Products.Contains(p1));
         }
 
         [TestMethod()]
-        public void RemoveProductFailNOPrermissions()
+        public async Task RemoveProductFailNOPrermissions()
         {
-           _Store.AddProduct(username1, "Shampo", "RegularSell" , "Shampo", 4784, "hair", 21, false);
+           await _Store.AddProduct(username1, "Shampo", "RegularSell" , "Shampo", 4784, "hair", 21, false);
             Product p1 = _Store.Products.ToList().Find((p) => p.Name == "Shampo");
-            Assert.ThrowsException<Exception>(() => _Store.RemoveProduct(username3, p1.ProductId));
+            await Assert.ThrowsExceptionAsync<Exception>(async () => await _Store.RemoveProduct(username3, p1.ProductId));
         }
 
         [TestMethod()]
-        public void RemoveProductFailUserNotExist()
+        public async Task RemoveProductFailUserNotExist()
         {
-           _Store.AddProduct(username1, "Shampo", "RegularSell" , "Shampo", 4784, "hair", 21, false);
+           await _Store.AddProduct(username1, "Shampo", "RegularSell" , "Shampo", 4784, "hair", 21, false);
             Product p1 = _Store.Products.ToList().Find((p) => p.Name == "Shampo");
-            Assert.ThrowsException<Exception>(() => _Store.RemoveProduct(username3, p1.ProductId));
+            await Assert.ThrowsExceptionAsync<Exception>(async () => await _Store.RemoveProduct(username3, p1.ProductId));
         }
 
         [TestMethod()]
-        public void OpenStoreSuccess()
+        public async Task OpenStoreSuccess()
         {
             _Store.Active = false;
-            _Store.OpenStore(username1);
+            await _Store.OpenStore(username1);
             Assert.IsTrue(_Store.Active);
         }
 
         [TestMethod()]
-        public void OpenStoreFailUserNotExist()
+        public async Task OpenStoreFailUserNotExist()
         {
             _Store.Active = false;
-            Assert.ThrowsException<Exception>(() => _Store.OpenStore(username3));
+            await Assert.ThrowsExceptionAsync<Exception>(async () => await _Store.OpenStore(username3));
             Assert.IsFalse(_Store.Active);
         }
 
         [TestMethod()]
-        public void OpenStoreFailUserHasNoPermissions()
+        public async Task OpenStoreFailUserHasNoPermissions()
         {
             _Store.Active = false;
-            Assert.ThrowsException<Exception>(() => _Store.OpenStore(username2));
+            await Assert.ThrowsExceptionAsync<Exception>(async () => await _Store.OpenStore(username2));
             Assert.IsFalse(_Store.Active);
         }
         [TestMethod()]
-        public void OpenStoreFailStoreIsOpen()
+        public async Task OpenStoreFailStoreIsOpen()
         {
             _Store.Active = true;
-            Assert.ThrowsException<Exception>(() => _Store.OpenStore(username1));
+            await Assert.ThrowsExceptionAsync<Exception>(async () => await _Store.OpenStore(username1));
             Assert.IsTrue(_Store.Active);
         }
 
         [TestMethod()]
-        public void closeStoreSuccess()
+        public async Task closeStoreSuccess()
         {
             _Store.Active = true;
-            _Store.CloseStore(username1);
+            await _Store.CloseStore(username1);
             Assert.IsFalse(_Store.Active);
         }
 
         [TestMethod()]
-        public void CloseStoreFailUserNotExist()
+        public async Task CloseStoreFailUserNotExist()
         {
             _Store.Active = true;
-            Assert.ThrowsException<Exception>(() => _Store.CloseStore(username3));
+            await Assert.ThrowsExceptionAsync<Exception>(async () => await _Store.CloseStore(username3));
             Assert.IsTrue(_Store.Active);
         }
 
         [TestMethod()]
-        public void CloseStoreFailUserHasNoPermissions()
+        public async Task CloseStoreFailUserHasNoPermissions()
         {
             _Store.Active = true;
-            Assert.ThrowsException<Exception>(() => _Store.CloseStore(username2));
+            await Assert.ThrowsExceptionAsync<Exception>(async () => await _Store.CloseStore(username2));
             Assert.IsTrue(_Store.Active);
         }
         [TestMethod()]
-        public void CloseStoreFailStoreIsClose()
+        public async Task CloseStoreFailStoreIsClose()
         {
             _Store.Active = false;
-            Assert.ThrowsException<Exception>(() => _Store.CloseStore(username1));
+            await Assert.ThrowsExceptionAsync<Exception>(async () => await _Store.CloseStore(username1));
             Assert.IsFalse(_Store.Active);
         }
 
-         public void UpdateProductPriceSuccess()
+         public async Task UpdateProductPriceSuccess()
         {
-            _Store.UpdateProductPrice(username1, _p1.ProductId, 45555);
+            await _Store.UpdateProductPrice(username1, _p1.ProductId, 45555);
             Assert.AreEqual(45555, _p1.Price,
             $"Expected price of 45555 but got {_p1.Price}");
         }
 
         [TestMethod()]
-        public void UpdateProductPriceFailUserNotExist()
+        public async Task UpdateProductPriceFailUserNotExist()
         {
-            Assert.ThrowsException<Exception>(() => _Store.UpdateProductPrice(username3, _p1.ProductId, 45555));
+            await Assert.ThrowsExceptionAsync<Exception>(async () => await _Store.UpdateProductPrice(username3, _p1.ProductId, 45555));
         }
 
         [TestMethod()]
-        public void UpdateProductPriceFailUserHasNotPermissions()
+        public async Task UpdateProductPriceFailUserHasNotPermissions()
         {
-            Assert.ThrowsException<Exception>(() => _Store.UpdateProductPrice(username2, _p1.ProductId, 45555));
+            await Assert.ThrowsExceptionAsync<Exception>(async () => await _Store.UpdateProductPrice(username2, _p1.ProductId, 45555));
         }
 
         [TestMethod()]
-        public void UpdateProductQuantitySuccess()
+        public async Task UpdateProductQuantitySuccess()
         {
-            _Store.UpdateProductQuantity(username1, _p1.ProductId, 45555);
+            await _Store.UpdateProductQuantity(username1, _p1.ProductId, 45555);
             Assert.AreEqual(45555, _p1.Quantity,
             $"Expected quantity of 45555 but got {_p1.Quantity}");
         }
 
         [TestMethod()]
-        public void UpdateProductQuantityFailUserNotExist()
+        public async Task UpdateProductQuantityFailUserNotExist()
         {
-            Assert.ThrowsException<Exception>(() => _Store.UpdateProductQuantity(username3, _p1.ProductId, 45555));
+            await Assert.ThrowsExceptionAsync<Exception>(async () => await _Store.UpdateProductQuantity(username3, _p1.ProductId, 45555));
         }
 
          [TestMethod()]
-        public void UpdateProductQuantityFailUserHasNotPermissions()
+        public async Task UpdateProductQuantityFailUserHasNotPermissions()
         {
-            Assert.ThrowsException<Exception>(() => _Store.UpdateProductQuantity(username2, _p1.ProductId, 45555));
+            await Assert.ThrowsExceptionAsync<Exception>(async () => await _Store.UpdateProductQuantity(username2, _p1.ProductId, 45555));
         }
 
         [TestMethod()]
-        public void AddStaffMemberSuccess()
+        public async Task AddStaffMemberSuccess()
         {
             Role role = new Role(new StoreManagerRole(RoleName.Manager), (Member)_owner, _Store._storeId, username2);
-            _Store.AddStaffMember(username2, role, username1);
+            await _Store.AddStaffMember(username2, role, username1);
             Assert.IsTrue(_Store.roles.ContainsKey(username1));
 
         }
 
         [TestMethod()]
-        public void AddStaffMemberFailUserNotExist()
+        public async Task AddStaffMemberFailUserNotExist()
         {
             Role role = new Role(new StoreManagerRole(RoleName.Manager), (Member)_owner, _Store._storeId, username2);
-            Assert.ThrowsException<Exception>(() => _Store.AddStaffMember(username2, role, username3));
+            await Assert.ThrowsExceptionAsync<Exception>(async () => await _Store.AddStaffMember(username2, role, username3));
             Assert.IsFalse(_Store.roles.ContainsKey(username2));
 
         }
 
         [TestMethod()]
-        public void AddStaffMemberFailUserHasNoPermissions()
+        public async Task AddStaffMemberFailUserHasNoPermissions()
         {
             Role role = new Role(new StoreManagerRole(RoleName.Manager), (Member)_owner, _Store._storeId, username2);
-            Assert.ThrowsException<Exception>(() => _Store.AddStaffMember(username2, role, username2));
+            await Assert.ThrowsExceptionAsync<Exception>(async () => await _Store.AddStaffMember(username2, role, username2));
             Assert.IsFalse(_Store.roles.ContainsKey(username2));
         }
 
         [TestMethod()]
-        public void AddStaffMemberFailAnotherFounder()
+        public async Task AddStaffMemberFailAnotherFounder()
         {
             Role role = new Role(new Founder(RoleName.Founder), (Member)_owner, _Store._storeId, username2);
-            Assert.ThrowsException<Exception>(() => _Store.AddStaffMember(username2, role, username1));
+            await Assert.ThrowsExceptionAsync<Exception>(async () => await _Store.AddStaffMember(username2, role, username1));
             Assert.IsFalse(_Store.roles.ContainsKey(username2));
 
         }
 
         [TestMethod()]
-        public void PurchaseBasketSuccess()
+        public async Task PurchaseBasketSuccess()
         {
             Basket basket = new Basket(1, _Store._storeId);
-            basket._cartId = marketManagerFacade.GetMember(username1).Cart._shoppingCartId;
+            basket._cartId = (await marketManagerFacade.GetMember(username1)).Cart._shoppingCartId;
             BasketDTO basketDTO = new BasketDTO(basket);
             context.Baskets.Add(basketDTO);
-            basket.addToBasket(11, 10);
-            Purchase purchase = _Store.PurchaseBasket(username2,basket);
+            await basket.addToBasket(11, 10);
+            Purchase purchase = await _Store.PurchaseBasket(username2,basket);
             Assert.IsTrue(_Store._history._purchases.Contains(purchase));
             Product product = _Store.GetProduct(11);
             Assert.AreEqual(11, product._quantity,
@@ -304,15 +313,15 @@ namespace UnitTests
         }
 
         [TestMethod()]
-        public void PurchaseBasketFailStoreIsClose()
+        public async Task PurchaseBasketFailStoreIsClose()
         {
             Basket basket = new Basket(13, _Store._storeId);
-            basket._cartId = marketManagerFacade.GetMember(username1).Cart._shoppingCartId;
+            basket._cartId = (await marketManagerFacade.GetMember(username1)).Cart._shoppingCartId;
             BasketDTO basketDTO = new BasketDTO(basket);
             context.Baskets.Add(basketDTO);
-            basket.addToBasket(11, 10);
+            await basket.addToBasket(11, 10);
             _Store._active=false;
-            Assert.ThrowsException<Exception>(() => _Store.PurchaseBasket(username2,basket));
+            await Assert.ThrowsExceptionAsync<Exception>(() => _Store.PurchaseBasket(username2,basket));
             Product product = _Store.GetProduct(11);
             Assert.AreEqual(21, product._quantity,
             $"Expected product quantity of 21 but got {product._quantity}");
@@ -320,17 +329,17 @@ namespace UnitTests
         }
 
          [TestMethod()]
-        public void PurchaseBasketFailnotEnoughQuantity()
+        public async Task PurchaseBasketFailnotEnoughQuantity()
         {
             Basket basket = new Basket(13, _Store._storeId);
-            basket._cartId = marketManagerFacade.GetMember(username1).Cart._shoppingCartId;
+            basket._cartId = (await marketManagerFacade.GetMember(username1)).Cart._shoppingCartId;
             BasketDTO basketDTO = new BasketDTO(basket);
             context.Baskets.Add(basketDTO);
-            basket.addToBasket(11, 40);
-            Assert.ThrowsException<Exception>(() => _Store.PurchaseBasket(username2,basket));
+            await basket.addToBasket(11, 40);
+            await Assert.ThrowsExceptionAsync<Exception>(() => _Store.PurchaseBasket(username2,basket));
             Product product = _Store.GetProduct(11);
-             Assert.AreEqual(21, product._quantity,
-             $"Expected product quantity of 21 but got {product._quantity}");
+            Assert.AreEqual(21, product._quantity,
+            $"Expected product quantity of 21 but got {product._quantity}");
             
         }
 

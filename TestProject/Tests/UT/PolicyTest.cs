@@ -41,15 +41,15 @@ namespace UnitTests
             ClientService c = ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             ClientManager CM = ClientManager.GetInstance();
             MarketManagerFacade MMF = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
-            c.Register(username1, "12345", "nofar@gmail.com", 19);
-            token1 = c.LoginClient(username1, "12345").Value;
+            await c.Register(username1, "12345", "nofar@gmail.com", 19);
+            token1 = (await c.LoginClient(username1, "12345")).Value;
             int storeId= await MMF.CreateStore(token1, "shop1", "shop@gmail.com", "0502552798");
             _owner = CM.GetClientByIdentifier(token1);
-            _Store = MMF.GetStore(storeId);
-            _Store.AddProduct(username1, "Brush", "RegularSell" , "Brush", 4784, "hair", 21, false);
+            _Store = await MMF.GetStore(storeId);
+            await _Store.AddProduct(username1, "Brush", "RegularSell" , "Brush", 4784, "hair", 21, false);
             _p1 = _Store.Products.ToList().Find((p) => p.ProductId == 11);
-            c.Register( username2, "54321", "nofar@gmail.com", 18);
-            token2 = c.LoginClient(username2, "54321").Value;
+            await c.Register( username2, "54321", "nofar@gmail.com", 18);
+            token2 = (await c.LoginClient(username2, "54321")).Value;
         }
 
         [TestCleanup]
@@ -71,12 +71,12 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void AddPurchasePolicySuccess()
+        public async void AddPurchasePolicySuccess()
         {
             int minQuantity = 5;
             int maxQuantity = 20;
             _Store.AddQuantityRule(username1,"Brush", minQuantity, maxQuantity);
-            QuantityRule r = (QuantityRule)RuleRepositoryRAM.GetInstance().GetById(11);
+            QuantityRule r = (QuantityRule) await RuleRepositoryRAM.GetInstance().GetById(11);
             Assert.IsTrue(r.MinQuantity == 5 && r.MaxQuantity == 20);
             Assert.IsTrue(r.Id == 11);
             _Store.AddPurchasePolicy(username1, new DateTime(2027, 1, 1), "Brush", 11);
@@ -94,12 +94,12 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void AddDiscountPolicySuccess()
+        public async void AddDiscountPolicySuccess()
         {
             int minQuantity = 5;
             int maxQuantity = 20;
             _Store.AddQuantityRule(username1,"Brush", minQuantity, maxQuantity);
-            QuantityRule r = (QuantityRule)RuleRepositoryRAM.GetInstance().GetById(11);
+            QuantityRule r = (QuantityRule) await RuleRepositoryRAM.GetInstance().GetById(11);
             Assert.IsTrue(r.MinQuantity == 5 && r.MaxQuantity == 20);
             Assert.IsTrue(r.Id == 11);
             _Store.AddDiscountPolicy(username1, new DateTime(2027, 1, 1), "Brush", 11, 50);

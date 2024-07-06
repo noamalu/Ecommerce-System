@@ -7,13 +7,17 @@ namespace MarketBackend.Domain.Market_Client
 
         public History(int StoreId)
         {
-            _purchases = PurchaseRepositoryRAM.GetInstance().GetShopPurchaseHistory(StoreId);
+            asyncHistory(StoreId);
         }
 
-        public void AddPurchase(Purchase p)
+        public async void asyncHistory(int StoreId){
+            _purchases = await PurchaseRepositoryRAM.GetInstance().GetShopPurchaseHistory(StoreId);
+        }
+
+        public async Task AddPurchase(Purchase p)
         {
                 _purchases.Add(p);
-                PurchaseRepositoryRAM.GetInstance().Add(p);
+                await PurchaseRepositoryRAM.GetInstance().Add(p);
         }
     }
 }

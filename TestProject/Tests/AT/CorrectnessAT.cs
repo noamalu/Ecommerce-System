@@ -43,7 +43,7 @@ namespace MarketBackend.Tests.AT
 
 
         [TestInitialize()]
-        public void Setup(){
+        public async void Setup(){
             DBcontext.GetInstance().Dispose();
             proxy = new Proxy();
             userId = proxy.GetUserId();
@@ -56,9 +56,9 @@ namespace MarketBackend.Tests.AT
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
             proxy.InitiateSystemAdmin();
-            proxy.EnterAsGuest(session1);
-            proxy.Register(userName, userPassword, email1, userAge);
-            token1 = proxy.LoginWithToken(userName, userPassword);
+            await proxy.EnterAsGuest(session1);
+            await proxy.Register(userName, userPassword, email1, userAge);
+            token1 = await proxy.LoginWithToken(userName, userPassword);
         }
 
         [TestCleanup]
@@ -68,19 +68,19 @@ namespace MarketBackend.Tests.AT
         }
  
         [TestMethod]
-        public void UniqueUsername_GoodCase()
+        public async void UniqueUsername_GoodCase()
         {
-            Assert.IsTrue(proxy.EnterAsGuest(session2));
-            Assert.IsTrue(proxy.Register(userName2, pass2, email2, userAge2), 
+            Assert.IsTrue(await proxy.EnterAsGuest(session2));
+            Assert.IsTrue(await proxy.Register(userName2, pass2, email2, userAge2), 
             "Fail in regiter, should not throw exception.");
         }
 
         [TestMethod]
-        public void UniqueUsername_BadCase()
+        public async void UniqueUsername_BadCase()
         {
             int userId2 = proxy.GetUserId();
-            Assert.IsTrue(proxy.EnterAsGuest(session2));
-            Assert.IsFalse(proxy.Register(userName, userPassword, email1, userAge), 
+            Assert.IsTrue(await proxy.EnterAsGuest(session2));
+            Assert.IsFalse(await proxy.Register(userName, userPassword, email1, userAge), 
             "Fail in regiter, should throw exception- not unique username.");
         }
 

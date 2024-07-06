@@ -13,6 +13,9 @@ namespace MarketBackend.DAL
         private static PurchaseRepositoryRAM _purchaseRepo = null;
         private object _lock;
 
+        private DBcontext dBcontext;
+        private PurchaseDTO purchaseDTO;
+
 
         private PurchaseRepositoryRAM()
         {
@@ -29,91 +32,90 @@ namespace MarketBackend.DAL
         public static void Dispose(){
             _purchaseRepo = new PurchaseRepositoryRAM();
         }
-        public void Add(Purchase purchase)
+        public async Task Add(Purchase purchase)
         {
-            lock (_lock){
-            _purchaseById.Add(purchase.PurchaseId, purchase);
-            DBcontext context = DBcontext.GetInstance();
-            StoreDTO storeDTO = context.Stores.Include(s => s.Purchases).FirstOrDefault(s => s.Id == purchase.StoreId);
-            BasketDTO basketDTO = context.Baskets.Find(purchase.Basket._basketId);
+            dBcontext = DBcontext.GetInstance();
+            await dBcontext.PerformTransactionalOperationAsync(async () =>
+            {
+            StoreDTO storeDTO = dBcontext.Stores.Include(s => s.Purchases).FirstOrDefault(s => s.Id == purchase.StoreId);
+            BasketDTO basketDTO = dBcontext.Baskets.Find(purchase.Basket._basketId);
             PurchaseDTO purchaseDTO = new PurchaseDTO(purchase, basketDTO);
             storeDTO.Purchases.Add(purchaseDTO);
-            context.Purchases.Add(purchaseDTO);
-            context.SaveChanges();
-            }
-            
+            dBcontext.Purchases.Add(purchaseDTO);
+            });
+            _purchaseById.Add(purchase.PurchaseId, purchase);
         }
-        public Purchase GetById(int id)
+
+        public async Task<Purchase> GetById(int id)
         {
             if (_purchaseById.ContainsKey(id))
                 return _purchaseById[id];
             else
             {
-                lock (_lock)
+                dBcontext = DBcontext.GetInstance();
+                await dBcontext.PerformTransactionalOperationAsync(async () =>
                 {
-                    PurchaseDTO purchaseDTO = DBcontext.GetInstance().Purchases.Find(id);
-                    if (purchaseDTO != null)
-                    {
-                        _purchaseById.Add(id, new Purchase(purchaseDTO));
-                    }
-                    return _purchaseById[id];
+                purchaseDTO = DBcontext.GetInstance().Purchases.Find(id);
+                });
+                
+                if (purchaseDTO != null)
+                {
+                    _purchaseById.Add(id, new Purchase(purchaseDTO));
                 }
+                return _purchaseById[id];
             }
         }
     
-        public void Delete(Purchase Purchase)
+        public async Task Delete(Purchase Purchase)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Purchase> getAll()
+        public async Task<IEnumerable<Purchase>> getAll()
         {
-             lock (_lock)
+            dBcontext = DBcontext.GetInstance();
+            await dBcontext.PerformTransactionalOperationAsync(async () =>
             {
-                foreach (PurchaseDTO purchaseDTO in DBcontext.GetInstance().Purchases)
+                foreach (PurchaseDTO purchaseDTO in dBcontext.Purchases)
                 {
                     _purchaseById.TryAdd(purchaseDTO.Id, new Purchase(purchaseDTO));
                 }
-            }
+            });
+            
             return _purchaseById.Values.ToList();
         }
 
-        public void Update(Purchase purchase)
-        {
-            _purchaseById[purchase.PurchaseId] = purchase;
-             lock (_lock)
+        public async Task Update(Purchase purchase)
+        { 
+            dBcontext = DBcontext.GetInstance();
+            await dBcontext.PerformTransactionalOperationAsync(async () =>
             {
-                DBcontext context = DBcontext.GetInstance();
-                PurchaseDTO purchaseDTO = context.Purchases.Find(purchase.PurchaseId);
-                // purchaseDTO.PurchaseStatus = purchase.PurchaseStatus.ToString();
-                purchaseDTO.Price = purchase.Price;
-                context.SaveChanges();
-            }
+                purchaseDTO = dBcontext.Purchases.Find(purchase.PurchaseId);
+            });
+            _purchaseById[purchase.PurchaseId] = purchase;
+            purchaseDTO.Price = purchase.Price;
            
         }
     
 
-        public SynchronizedCollection<Purchase> GetShopPurchaseHistory(int storeId)
+        public async Task<SynchronizedCollection<Purchase>> GetShopPurchaseHistory(int storeId)
         {
             SynchronizedCollection<Purchase> result = new SynchronizedCollection<Purchase>();
-            lock (_lock)
+            dBcontext = DBcontext.GetInstance();
+            await dBcontext.PerformTransactionalOperationAsync(async () =>
             {
-                List<PurchaseDTO> lp = DBcontext.GetInstance().Purchases.Where((p) => p.StoreId == storeId).ToList();
+                List<PurchaseDTO> lp = dBcontext.Purchases.Where((p) => p.StoreId == storeId).ToList();
                 foreach (PurchaseDTO purchaseDTO in lp)
                 {
                     _purchaseById.TryAdd(purchaseDTO.Id, new Purchase(purchaseDTO));
                 }
-            }
+            });
+            
             foreach (Purchase purchase in _purchaseById.Values)
             {
                 if (purchase.StoreId == storeId) result.Add(purchase);
             }
             return result;
-        }
-
-        public Task Add2(Purchase entity)
-        {
-            throw new NotImplementedException();
         }
     }
 }

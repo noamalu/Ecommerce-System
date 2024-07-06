@@ -17,6 +17,9 @@ namespace MarketBackend.DAL
         private static ProductRepositoryRAM _productRepo = null;
 
         private object _lock;
+        private DBcontext dbcontext;
+        private bool ans;
+        private ProductDTO productDTO;
       
 
         private ProductRepositoryRAM()
@@ -36,82 +39,86 @@ namespace MarketBackend.DAL
             _productRepo = new ProductRepositoryRAM();
         }
 
-        public void Add(Product item)
+        public async Task Add(Product item)
         {
-            _productById.TryAdd(item.ProductId, item);
-            lock (_lock)
+            dbcontext = DBcontext.GetInstance();
+            await dbcontext.PerformTransactionalOperationAsync(async () =>
             {
-                StoreDTO store = DBcontext.GetInstance().Stores.Include(s => s.Products).FirstOrDefault(s => s.Id == item.StoreId);
+                StoreDTO store = dbcontext.Stores.Include(s => s.Products).FirstOrDefault(s => s.Id == item.StoreId);
                 store.Products.Add(new ProductDTO(item));
-                DBcontext.GetInstance().SaveChanges();
-            }
-            
+            });
+            _productById.TryAdd(item.ProductId, item);          
         }
 
-        public bool ContainsID(int id)
+        public async Task<bool> ContainsID(int id)
         {
             if (!_productById.ContainsKey(id))
             {
-                lock (_lock)
+                dbcontext = DBcontext.GetInstance();
+                await dbcontext.PerformTransactionalOperationAsync(async () =>
                 {
-                    return DBcontext.GetInstance().Products.Find(id) != null;
-                }
+                    ans = dbcontext.Products.Find(id) != null;
+                });
+                return ans;
             }
             return true;
         }
 
-        public bool ContainsValue(Product item)
+        public async Task<bool> ContainsValue(Product item)
         {
            if (!_productById.ContainsKey(item.ProductId))
             {
-                lock (_lock)
+                dbcontext = DBcontext.GetInstance();
+                await dbcontext.PerformTransactionalOperationAsync(async () =>
                 {
-                    return DBcontext.GetInstance().Products.Find(item.ProductId) != null;
-                }
+                    ans = dbcontext.Products.Find(item.ProductId) != null;
+                });
+                return ans;
             }
             return true;
         }
 
-        public void Delete(Product product)
+        public async Task Delete(Product product)
         {
             if (_productById.TryRemove(product.ProductId, out Product _))
             {
-                lock (_lock)
+                dbcontext = DBcontext.GetInstance();
+                await dbcontext.PerformTransactionalOperationAsync(async () =>
                 {
-                    ProductDTO productdto = DBcontext.GetInstance().Products.Find(product.ProductId);
-                    DBcontext.GetInstance().Products.Remove(productdto);
-                    DBcontext.GetInstance().SaveChanges();
-                }
+                    ProductDTO productdto = dbcontext.Products.Find(product.ProductId);
+                    dbcontext.Products.Remove(productdto);
+                });
             }
         }
 
-        public IEnumerable<Product> getAll()
+        public async Task<IEnumerable<Product>> getAll()
         {
-            List<Store> stores = StoreRepositoryRAM.GetInstance().getAll().ToList();
+            List<Store> stores = (await StoreRepositoryRAM.GetInstance().getAll()).ToList();
             foreach (Store s in stores) UploadStoreProductsFromContext(s.StoreId);
             return _productById.Values.ToList();
         }
 
-        private void UploadStoreProductsFromContext(int storeId)
+        private async Task UploadStoreProductsFromContext(int storeId)
         {
-            lock (_lock)
+            dbcontext = DBcontext.GetInstance();
+            await dbcontext.PerformTransactionalOperationAsync(async () =>
             {
-                StoreDTO store = DBcontext.GetInstance().Stores.Find(storeId);
-                if (store != null)
+                StoreDTO store = dbcontext.Stores.Find(storeId);
+            if (store != null)
+            {
+                List<ProductDTO> products = dbcontext.Stores.Find(storeId).Products;
+                if (products != null)
                 {
-                    List<ProductDTO> products = DBcontext.GetInstance().Stores.Find(storeId).Products;
-                    if (products != null)
+                    foreach (ProductDTO product in products)
                     {
-                        foreach (ProductDTO product in products)
-                        {
-                            _productById.TryAdd(product.ProductId, new Product(product));
-                        }
+                        _productById.TryAdd(product.ProductId, new Product(product));
                     }
                 }
             }
+            });
         }
 
-        public Product GetById(int id)
+        public async Task<Product> GetById(int id)
         {
             if (_productById.ContainsKey(id))
             {
@@ -119,39 +126,41 @@ namespace MarketBackend.DAL
             }
             else
             {
-                lock (_lock)
+                dbcontext = DBcontext.GetInstance();
+                await dbcontext.PerformTransactionalOperationAsync(async () =>
                 {
-                    ProductDTO productDTO = DBcontext.GetInstance().Products.Find(id);
-                    if (productDTO != null)
-                    {
-                        Product product = new Product(productDTO);
-                        _productById.TryAdd(id, product);
-                        return product;
-                    }
-                    else
-                    {
-                        throw new Exception("Invalid product Id.");
-                    }
+                    productDTO = dbcontext.Products.Find(id);
+                });
+                
+                if (productDTO != null)
+                {
+                    Product product = new Product(productDTO);
+                    _productById.TryAdd(id, product);
+                    return product;
+                }
+                else
+                {
+                    throw new Exception("Invalid product Id.");
                 }
             }
         }
 
-        public void Update(Product product)
+        public async Task Update(Product product)
         {
-            _productById[product.ProductId] = product;
-            lock (_lock)
+            dbcontext = DBcontext.GetInstance();
+            await dbcontext.PerformTransactionalOperationAsync(async () =>
             {
-                ProductDTO p = DBcontext.GetInstance().Products.Find(product.ProductId);
-                if (p != null)
-                {
-                    if (product.Description != null) p.Description = product.Description;
-                    if (product.Category != null) p.Category = product.Category.ToString();
-                    if (product.Keywords != null) p.Keywords = string.Join(", ", product.Keywords);
-                    p.Quantity = product.Quantity;
-                    p.Price = product.Price;
-                    DBcontext.GetInstance().SaveChanges();
-                }
+                productDTO = dbcontext.Products.Find(product.ProductId);
+            });
+            if (productDTO != null)
+            {
+                if (product.Description != null) productDTO.Description = product.Description;
+                if (product.Category != null) productDTO.Category = product.Category.ToString();
+                if (product.Keywords != null) productDTO.Keywords = string.Join(", ", product.Keywords);
+                productDTO.Quantity = product.Quantity;
+                productDTO.Price = product.Price;
             }
+            _productById[product.ProductId] = product;
         }
 
         /// <summary>
@@ -159,9 +168,9 @@ namespace MarketBackend.DAL
         /// </summary>
         /// <param name="storeId"></param> the Id of the shop
         /// <returns></returns>
-        public SynchronizedCollection<Product> GetStoreProducts(int storeId)
+        public async Task<SynchronizedCollection<Product>> GetStoreProducts(int storeId)
         {
-            UploadStoreProductsFromContext(storeId);
+            await UploadStoreProductsFromContext(storeId);
             SynchronizedCollection<Product> products = new SynchronizedCollection<Product>();
             foreach(Product p in _productById.Values)
             {
@@ -170,18 +179,5 @@ namespace MarketBackend.DAL
             return products;
         }
 
-        public void Clear()
-        {
-            _productById.Clear();
-        }
-        public void ResetDomainData()
-        {
-            _productById = new ConcurrentDictionary<int, Product>();
-        }
-
-        public Task Add2(Product entity)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

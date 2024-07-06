@@ -192,9 +192,9 @@ namespace EcommerceAPI.Controllers
 
         [HttpGet]
         [Route("Cart")]
-        public ActionResult<Response<ShoppingCartResultDto>> GetShoppingCartInfo([Required][FromQuery]string identifier)
+        public async Task<ActionResult<Response<ShoppingCartResultDto>>> GetShoppingCartInfo([Required][FromQuery]string identifier)
         {
-            Response<ShoppingCartResultDto> response = _clientService.ViewCart(identifier);
+            Response<ShoppingCartResultDto> response = await _clientService.ViewCart(identifier);
             if (response.ErrorOccured)
             {
                 return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));
@@ -207,9 +207,9 @@ namespace EcommerceAPI.Controllers
 
         [HttpGet]
         [Route("Member/PurchaseHistory")]
-        public ActionResult<Response<List<ShoppingCartResultDto>>> GetMemberPurchaseHistory([Required][FromQuery]string userName)
+        public async Task<ActionResult<Response<List<ShoppingCartResultDto>>>> GetMemberPurchaseHistory([Required][FromQuery]string userName)
         {
-            Response<List<ShoppingCartResultDto>> response = _clientService.GetPurchaseHistoryByClient(userName);
+            Response<List<ShoppingCartResultDto>> response = await _clientService.GetPurchaseHistoryByClient(userName);
             if (response.ErrorOccured)
             {
                 return BadRequest(ServerResponse<string>.BadResponse(response.ErrorMessage));

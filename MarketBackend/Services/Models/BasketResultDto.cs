@@ -12,10 +12,15 @@ namespace MarketBackend.Services.Models
         public int StoreId { get; set; }
         public List<ProductResultDto> Products { get; set; }
         public double Price { get; set; }
+        private Store store;
 
         public BasketResultDto(Basket basket){
+            asyncBasketResultDto(basket);
+        }
+
+        public async void asyncBasketResultDto(Basket basket){
             StoreId = basket._storeId;
-            var store = StoreRepositoryRAM.GetInstance().GetById(StoreId);
+            store = await StoreRepositoryRAM.GetInstance().GetById(StoreId);
             Price = store.CalculateBasketPrice(basket);
             Products = store.Products.Where(product => basket.products.Keys.Contains(product.ProductId))
                 .Select(product => new ProductResultDto(product){Quantity = basket.products[product.ProductId]}).ToList();

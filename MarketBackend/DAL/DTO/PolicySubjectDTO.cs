@@ -23,19 +23,24 @@ namespace MarketBackend.DAL.DTO{
         }
         public PolicySubjectDTO(RuleSubject subject)
         {
+            asyncPolicySubjectDTO(subject);
+        }
+
+        public async void asyncPolicySubjectDTO(RuleSubject subject){
             if (subject.Product != null)
             {
                 Product = DBcontext.GetInstance().Products.Find(subject.Product.ProductId);
             }
             else
             {
-                Product = GenerateDummyProduct();
+                Product = await GenerateDummyProduct();
             }
             Category = subject.Category.ToString();
         }
-        private ProductDTO GenerateDummyProduct()
+
+        private async Task<ProductDTO> GenerateDummyProduct()
         {
-            if (ProductRepositoryRAM.GetInstance().ContainsID(-1))
+            if (await ProductRepositoryRAM.GetInstance().ContainsID(-1))
                 return DBcontext.GetInstance().Products.Find(-1);
             return new ProductDTO(-1,"null",-1,-1, "null", "None", "null");
         }

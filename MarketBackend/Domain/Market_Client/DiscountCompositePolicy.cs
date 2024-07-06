@@ -16,7 +16,11 @@ namespace MarketBackend.Domain.Market_Client
             Subject = new RuleSubject();
             _numericOperator = Operator;
             _policies = policies;
-            Rule = GenerateDummyRule(); //dummy rule
+            asyneDiscountCompositePolicy();
+        }
+
+        public async void asyneDiscountCompositePolicy(){
+            Rule = await GenerateDummyRule(); //dummy rule
         }
 
         public DiscountCompositePolicy(DiscountCompositePolicyDTO discountCompositePolicyDTO, List<IPolicy> policies) : base(discountCompositePolicyDTO)
@@ -36,10 +40,10 @@ namespace MarketBackend.Domain.Market_Client
             }
             catch { throw new Exception("Invalid operator name"); }
         }
-        public IRule GenerateDummyRule()
+        public async Task<IRule> GenerateDummyRule()
         {
-            if (RuleRepositoryRAM.GetInstance().ContainsID(-1))
-                return RuleRepositoryRAM.GetInstance().GetById(-1);
+            if (await RuleRepositoryRAM.GetInstance().ContainsID(-1))
+                return await RuleRepositoryRAM.GetInstance().GetById(-1);
             return new SimpleRule(-1, -1, new RuleSubject());
         }
 

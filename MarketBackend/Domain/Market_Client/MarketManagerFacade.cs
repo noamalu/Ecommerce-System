@@ -56,42 +56,42 @@ namespace MarketBackend.Domain.Market_Client
             marketManagerFacade = null;            
         }
         
-        public void InitiateSystemAdmin()
+        public async Task InitiateSystemAdmin()
         {
-            _clientManager.RegisterAsSystemAdmin("system_admin", "system_admin", "system.admin@mail.com", 30);            
+            await _clientManager.RegisterAsSystemAdmin("system_admin", "system_admin", "system.admin@mail.com", 30);            
         }
         
-        public void AddManger(string identifier, int storeId, string toAddUserName)
+        public async Task AddManger(string identifier, int storeId, string toAddUserName)
         {
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null && _clientManager.CheckMemberIsLoggedIn(identifier))
             {
                 Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
                 Role role = new Role(new StoreManagerRole(RoleName.Manager), activeMember, storeId, toAddUserName);
-                store.AddStaffMember(toAddUserName, role, activeMember.UserName);
+                await store.AddStaffMember(toAddUserName, role, activeMember.UserName);
             }
             else
                 throw new Exception("Store doesn't exist!");
 
         }
 
-        public void AddOwner(string identifier, int storeId, string userName)
+        public async Task AddOwner(string identifier, int storeId, string userName)
         {
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null && _clientManager.CheckMemberIsLoggedIn(identifier))
             {
                 Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
                 Role role = new Role(new Owner(RoleName.Owner), activeMember, storeId, userName);
-                store.AddStaffMember(userName, role, activeMember.UserName);
+                await store.AddStaffMember(userName, role, activeMember.UserName);
             }
             else
                 throw new Exception("Store doesn't exist!");
 
         }
 
-        public void AddPermission(string identifier, int storeId, string toAddUserName, Permission permission)
+        public async Task AddPermission(string identifier, int storeId, string toAddUserName, Permission permission)
         {
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null && _clientManager.CheckMemberIsLoggedIn(identifier))
             {
                 Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
@@ -101,9 +101,9 @@ namespace MarketBackend.Domain.Market_Client
                 throw new Exception("Store doesn't exist!");
         }
 
-        public void RemovePermission(string identifier, int storeId, string toRemoveUserName, Permission permission)
+        public async Task RemovePermission(string identifier, int storeId, string toRemoveUserName, Permission permission)
         {
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null && _clientManager.CheckMemberIsLoggedIn(identifier))
             {
                 Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
@@ -115,23 +115,23 @@ namespace MarketBackend.Domain.Market_Client
         }
 
 
-        public Product AddProduct(int storeId, string identifier, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
+        public async Task<Product> AddProduct(int storeId, string identifier, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
         {
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null && _clientManager.CheckMemberIsLoggedIn(identifier))
             {
                 Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
-                return store.AddProduct(activeMember.UserName, name, sellMethod, description, price, category, quantity, ageLimit);
+                return await store.AddProduct(activeMember.UserName, name, sellMethod, description, price, category, quantity, ageLimit);
             }
             else
                 throw new Exception("Store doesn't exist!");
 
         }
 
-        public void AddToCart(string identifier, int storeId, int productId, int quantity)
+        public async Task AddToCart(string identifier, int storeId, int productId, int quantity)
         {
             ClientManager.CheckClientIdentifier(identifier);
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             bool found = false;
             if (store != null){
                 foreach (var product in store._products){
@@ -141,7 +141,7 @@ namespace MarketBackend.Domain.Market_Client
                     }
                 }
                 if (found) 
-                    _clientManager.AddToCart(identifier, storeId, productId, quantity);
+                    await _clientManager.AddToCart(identifier, storeId, productId, quantity);
                 else
                     throw new Exception($"No productid {productId}");
             }
@@ -150,9 +150,9 @@ namespace MarketBackend.Domain.Market_Client
             
         }
 
-        public void CloseStore(string identifier, int storeId)
+        public async Task CloseStore(string identifier, int storeId)
         {
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null && _clientManager.CheckMemberIsLoggedIn(identifier)){
                 Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
                 store.CloseStore(activeMember.UserName);
@@ -170,20 +170,21 @@ namespace MarketBackend.Domain.Market_Client
             if(store_founder != null && _clientManager.CheckMemberIsLoggedIn(identifier))
             {
                 storeId = _storeCounter++;
-                if (_storeRepository.GetById(storeId) != null){
+                Store store1 = await _storeRepository.GetById(storeId);
+                if (store1 != null){
                     throw new Exception("Store exists");
                 }
                 Store store = new Store(storeId, storeName, email, phoneNum)
                 {
                     _active = true
                 };
-                await _storeRepository.Add2(store);
+                await _storeRepository.Add(store);
                 // _storeRepository.Add(store);
                 Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
                 Role role = new Role(new Founder(RoleName.Founder), activeMember, storeId, activeMember.UserName);
 
                 store.SubscribeStoreOwner(activeMember);
-                store.AddStaffMember(activeMember.UserName, role, activeMember.UserName); //adds himself
+                await store.AddStaffMember(activeMember.UserName, role, activeMember.UserName); //adds himself
                 
             }
             else
@@ -193,29 +194,29 @@ namespace MarketBackend.Domain.Market_Client
             return storeId;
         }
 
-        public void EditPurchasePolicy(int storeId)
+        public Task EditPurchasePolicy(int storeId)
         {
             throw new NotImplementedException();
         }
 
-        public void EnterAsGuest(string identifier)
+        public async Task EnterAsGuest(string identifier)
         {
-            _clientManager.BrowseAsGuest(identifier);
+            await _clientManager.BrowseAsGuest(identifier);
         }
 
-        public void ExitGuest(string identifier)
+        public async Task ExitGuest(string identifier)
         {
-            _clientManager.DeactivateGuest(identifier);
+            await _clientManager.DeactivateGuest(identifier);
         }
 
-        public Member GetFounder(int storeId)
+        public async Task<Member> GetFounder(int storeId)
         {
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null)
             {
                 string founderUsername = store.roles.FirstOrDefault(pair => pair.Value.getRoleName() == RoleName.Founder).Key;
-                if (_clientManager.IsMember(founderUsername))
-                    return _clientManager.GetMemberByUserName(founderUsername);
+                if (await _clientManager.IsMember(founderUsername))
+                    return await _clientManager.GetMemberByUserName(founderUsername);
                 else
                     throw new Exception("should not happen! founder is not a member");
             }
@@ -223,15 +224,15 @@ namespace MarketBackend.Domain.Market_Client
                 throw new Exception("Store doesn't exist!");
         }
 
-        public List<Member> GetMangers(int storeId)
+        public async Task<List<Member>> GetMangers(int storeId)
         {
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null)
             {
 
                 List<string> usernames = store.roles.Where(pair => pair.Value.getRoleName() == RoleName.Manager).Select(pair => pair.Key).ToList();
                 List<Member> managers = new();
-                usernames.ForEach(username => managers.Add((Member)_clientManager.GetMemberByUserName(username)));
+                usernames.ForEach(async username => managers.Add(await _clientManager.GetMemberByUserName(username)));
                 return managers;
             }
             else
@@ -239,57 +240,57 @@ namespace MarketBackend.Domain.Market_Client
 
         }
 
-        public List<Member> GetOwners(int storeId)
+        public async Task<List<Member>> GetOwners(int storeId)
         {
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null)
             {
 
                 List<string> usernames = store.roles.Where(pair => pair.Value.getRoleName() == RoleName.Owner).Select(pair => pair.Key).ToList();
                 List<Member> managers = new List<Member>();
-                usernames.ForEach(useerName => managers.Add((Member)_clientManager.GetMemberByUserName(useerName)));
+                usernames.ForEach(async useerName => managers.Add(await _clientManager.GetMemberByUserName(useerName)));
                 return managers;
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
 
-        public string GetProductInfo(int storeId, int productId)
+        public async Task<string> GetProductInfo(int storeId, int productId)
         {
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store == null){
                 throw new Exception("Store doesn't exists");
             }
             return store.getProductInfo(productId);
         }
 
-        public Product GetProduct(int storeId, int productId)
+        public async Task<Product> GetProduct(int storeId, int productId)
         {
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store == null){
                 throw new Exception("Store doesn't exists");
             }
             return store.GetProduct(productId);
         }
 
-        public string GetInfo(int storeId){
-            Store store = _storeRepository.GetById(storeId);
+        public async Task<string> GetInfo(int storeId){
+            Store store = await _storeRepository.GetById(storeId);
             if (store == null){
                 throw new Exception("Store doesn't exists");
             }
             return store.getInfo();
         }
 
-        public List<ShoppingCartHistory> GetPurchaseHistoryByClient(string userName)
+        public async Task<List<ShoppingCartHistory>> GetPurchaseHistoryByClient(string userName)
         {
-            return _clientManager.GetPurchaseHistoryByClient(userName);
+            return await _clientManager.GetPurchaseHistoryByClient(userName);
         }
 
-        public List<Purchase> GetPurchaseHistoryByStore(int storeId, string identifier)
+        public async Task<List<Purchase>> GetPurchaseHistoryByStore(int storeId, string identifier)
         {
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null){           
-                var member  = _clientManager.GetMemberByIdentifier(identifier);
+                var member  = await _clientManager.GetMemberByIdentifier(identifier);
                 return store.getHistory(member.UserName);
             }
             else{
@@ -297,9 +298,9 @@ namespace MarketBackend.Domain.Market_Client
             }
         }
 
-        public bool IsAvailable(int storeId)
+        public async Task<bool> IsAvailable(int storeId)
         {
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null){
                 return store._active;
             }
@@ -308,21 +309,21 @@ namespace MarketBackend.Domain.Market_Client
             }
         }
 
-        public string LoginClient(string username, string password)
+        public async Task<string> LoginClient(string username, string password)
         {
-            return _clientManager.LoginClient(username, password);
+            return await _clientManager.LoginClient(username, password);
         }
 
-        public void LogoutClient(string identifier)
+        public async Task LogoutClient(string identifier)
         {
-            _clientManager.LogoutClient(identifier);
+            await _clientManager.LogoutClient(identifier);
         }
 
-        public void OpenStore(string identifier, int storeId)
+        public async Task OpenStore(string identifier, int storeId)
         {
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null && _clientManager.CheckMemberIsLoggedIn(identifier)){
-                Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
+                Member activeMember = (Member) _clientManager.GetClientByIdentifier(identifier);
                 store.OpenStore(activeMember.UserName);
             }
             else{
@@ -330,17 +331,17 @@ namespace MarketBackend.Domain.Market_Client
             }
         }
 
-        public void PurchaseCart(string identifier, PaymentDetails paymentDetails, ShippingDetails shippingDetails) //clientId
+        public async Task PurchaseCart(string identifier, PaymentDetails paymentDetails, ShippingDetails shippingDetails) //clientId
         {
             ClientManager.CheckClientIdentifier(identifier);
             var client = _clientManager.GetClientByIdentifier(identifier);
-            var baskets = client.Cart.GetBaskets();
+            var baskets = await client.Cart.GetBaskets();
             if (baskets.IsNullOrEmpty()){
                 throw new Exception("Empty cart.");
             }
             var stores = new List<Store>();
             foreach(var basket in baskets){
-                var store = _storeRepository.GetById(basket.Key);
+                var store = await _storeRepository.GetById(basket.Key);
                 stores.Add(store);
                 if(!store.checkBasketInSupply(basket.Value)) throw new Exception("unavailable."); 
                 if(!store.checklegalBasket(basket.Value, client.IsAbove18)) throw new Exception("unavailable.");               
@@ -362,29 +363,29 @@ namespace MarketBackend.Domain.Market_Client
 
         }
 
-        public void Register(string username, string password, string email, int age)
+        public async Task Register(string username, string password, string email, int age)
         {
-            _clientManager.Register(username, password, email, age);
+            await _clientManager.Register(username, password, email, age);
         }
 
-        public void RemoveFromCart(string identifier, int productId, int storeId, int quantity)
+        public async Task RemoveFromCart(string identifier, int productId, int storeId, int quantity)
         {
-            _clientManager.RemoveFromCart(identifier, productId, storeId, quantity);
+            await _clientManager.RemoveFromCart(identifier, productId, storeId, quantity);
         }
 
-        public void RemoveManger(string identifier, int storeId, string toRemoveUserName)
+        public async Task RemoveManger(string identifier, int storeId, string toRemoveUserName)
         {
-            RemoveStaffMember(storeId, identifier, toRemoveUserName);
+            await RemoveStaffMember(storeId, identifier, toRemoveUserName);
         }
 
-        public void RemoveOwner(string identifier, int storeId, string toRemoveUserName)
+        public async Task RemoveOwner(string identifier, int storeId, string toRemoveUserName)
         {
-            RemoveStaffMember(storeId, identifier, toRemoveUserName);
+            await RemoveStaffMember(storeId, identifier, toRemoveUserName);
         }
 
-        public void RemoveProduct(int storeId, string identifier, int productId)
+        public async Task RemoveProduct(int storeId, string identifier, int productId)
         {
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store == null){
                 throw new Exception("Store doesn't exists");
             }
@@ -392,9 +393,9 @@ namespace MarketBackend.Domain.Market_Client
             store.RemoveProduct(activeMember.UserName, productId);
         }
 
-        public void RemoveStaffMember(int storeId, string identifier, string toRemoveUserName)
+        public async Task RemoveStaffMember(int storeId, string identifier, string toRemoveUserName)
         {
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null)
             {
                 Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
@@ -404,46 +405,46 @@ namespace MarketBackend.Domain.Market_Client
                 throw new Exception("Store doesn't exist!");
         }
 
-        public bool ResToStoreManageReq(string identifier)
+        public Task<bool> ResToStoreManageReq(string identifier)
         {
             throw new NotImplementedException();
         }
 
-        public bool ResToStoreOwnershipReq(string identifier)
+        public Task<bool> ResToStoreOwnershipReq(string identifier)
         {
             throw new NotImplementedException();
         }
 
-        public HashSet<Product> SearchByCategory(string category)
+        public async Task<HashSet<Product>> SearchByCategory(string category)
         {
-            return SearchingManager.searchByCategory(category);
+            return await SearchingManager.searchByCategory(category);
         }
 
-        public HashSet<Product> SearchByKeyWords(string keywords)
+        public async Task<HashSet<Product>> SearchByKeyWords(string keywords)
         {
-            return SearchingManager.searchByKeyword(keywords);
+            return await SearchingManager.searchByKeyword(keywords);
         }
 
-        public HashSet<Product> SearchByName(string name)
+        public async Task<HashSet<Product>> SearchByName(string name)
         {
-            return SearchingManager.serachByName(name);
+            return await SearchingManager.serachByName(name);
         }
-        public HashSet<Product> SearchByCategoryWithStore(int storeId, string category)
+        public async Task<HashSet<Product>> SearchByCategoryWithStore(int storeId, string category)
         {
-            return SearchingManager.searchByCategoryWithStore(storeId, category);
-        }
-
-        public HashSet<Product> SearchByKeyWordsWithStore(int storeId, string keywords)
-        {
-            return SearchingManager.searchByKeywordWithStore(storeId, keywords);
+            return await SearchingManager.searchByCategoryWithStore(storeId, category);
         }
 
-        public HashSet<Product> SearchByNameWithStore(int storeId, string name)
+        public async Task<HashSet<Product>> SearchByKeyWordsWithStore(int storeId, string keywords)
         {
-            return SearchingManager.serachByNameWithStore(storeId, name);
+            return await SearchingManager.searchByKeywordWithStore(storeId, keywords);
         }
 
-        public void Filter(HashSet<Product> products, string category, double lowPrice, double highPrice, double lowProductRate, double highProductRate, double lowStoreRate, double highStoreRate)
+        public async Task<HashSet<Product>> SearchByNameWithStore(int storeId, string name)
+        {
+            return await SearchingManager.serachByNameWithStore(storeId, name);
+        }
+
+        public async Task Filter(HashSet<Product> products, string category, double lowPrice, double highPrice, double lowProductRate, double highProductRate, double lowStoreRate, double highStoreRate)
         {
             FilterParameterManager filter = new FilterParameterManager(category, lowPrice, highPrice, lowProductRate, highProductRate, lowStoreRate, highStoreRate);
             filter.Filter(products);
@@ -464,12 +465,12 @@ namespace MarketBackend.Domain.Market_Client
 
         // }
 
-        public void UpdateProductPrice(int storeId, string identifier,  int productId, double price)
+        public async Task UpdateProductPrice(int storeId, string identifier,  int productId, double price)
         {
             if (_storeRepository.GetById(storeId) != null && _clientManager.CheckMemberIsLoggedIn(identifier))
             {
                 Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
-                _storeRepository.GetById(storeId).UpdateProductPrice(activeMember.UserName, productId, price);
+                (await _storeRepository.GetById(storeId)).UpdateProductPrice(activeMember.UserName, productId, price);
             }
             else
             {
@@ -478,12 +479,12 @@ namespace MarketBackend.Domain.Market_Client
 
         }
 
-        public void UpdateProductQuantity(int storeId, string identifier, int productId, int quantity)
+        public async Task UpdateProductQuantity(int storeId, string identifier, int productId, int quantity)
         {
             if (_storeRepository.GetById(storeId) != null && _clientManager.CheckMemberIsLoggedIn(identifier)) 
             {
                 Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
-                _storeRepository.GetById(storeId).UpdateProductQuantity(activeMember.UserName, productId, quantity);
+                (await _storeRepository.GetById(storeId)).UpdateProductQuantity(activeMember.UserName, productId, quantity);
             }
             else
             {
@@ -491,44 +492,44 @@ namespace MarketBackend.Domain.Market_Client
             }
         }
 
-        public ShoppingCart ViewCart(string identifier)
+        public async Task<ShoppingCart> ViewCart(string identifier)
         {
             ClientManager.CheckClientIdentifier(identifier);
             return _clientManager.ViewCart(identifier);
         }
 
-        public void AddStaffMember(int storeId, string identifier, string roleName, string toAddUserName){            
-            Store store = _storeRepository.GetById(storeId);
+        public async Task AddStaffMember(int storeId, string identifier, string roleName, string toAddUserName){            
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null && _clientManager.CheckMemberIsLoggedIn(identifier))
             {
-                Member appoint = _clientManager.GetMemberByIdentifier(identifier);
-                Member appointe = _clientManager.GetMemberByUserName(toAddUserName);
+                Member appoint = await _clientManager.GetMemberByIdentifier(identifier);
+                Member appointe = await _clientManager.GetMemberByUserName(toAddUserName);
                 RoleType roleType = RoleType.GetRoleTypeFromDescription(roleName);
                 Role role = new(roleType, appoint, storeId, toAddUserName);
-                store.AddStaffMember(toAddUserName, role, appoint.UserName);
+                await store.AddStaffMember(toAddUserName, role, appoint.UserName);
                 store.SubscribeStaffMember(appoint, appointe);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
 
-        public Store GetStore(int storeId){
-            return _storeRepository.GetById(storeId);
+        public async Task<Store> GetStore(int storeId){
+            return await _storeRepository.GetById(storeId);
         }
 
-        public int GetMemberIDrByUserName(string userName)
+        public async Task<int> GetMemberIDrByUserName(string userName)
         {
-            return _clientManager.GetMemberIDrByUserName(userName); 
+            return await _clientManager.GetMemberIDrByUserName(userName); 
         }
 
-        public Member GetMember(string userName)
+        public async Task<Member> GetMember(string userName)
         {
-            return _clientManager.GetMember(userName); 
+            return await _clientManager.GetMember(userName); 
         }
 
-        public void AddKeyWord(string keyWord, int storeId, int productId)
+        public async Task AddKeyWord(string keyWord, int storeId, int productId)
         {
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null){
                 store.AddKeyword(productId, keyWord);
             }
@@ -537,147 +538,147 @@ namespace MarketBackend.Domain.Market_Client
         }
 
         // policies ------------------------------------------------
-        public void RemovePolicy(string identifier, int storeId, int policyID,string type)
+        public async Task RemovePolicy(string identifier, int storeId, int policyID,string type)
         {
             _clientManager.CheckMemberIsLoggedIn(identifier);
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null){
-                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
+                Member activeMember = await _clientManager.GetMemberByIdentifier(identifier);                
                 store.RemovePolicy(activeMember.UserName, policyID, type);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public int AddSimpleRule(string identifier, int storeId,string subject)
+        public async Task<int> AddSimpleRule(string identifier, int storeId,string subject)
         {
             _clientManager.CheckMemberIsLoggedIn(identifier);
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null){
-                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
-                return store.AddSimpleRule(activeMember.UserName, subject);
+                Member activeMember = await _clientManager.GetMemberByIdentifier(identifier);                
+                return await store.AddSimpleRule(activeMember.UserName, subject);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public int AddQuantityRule(string identifier, int storeId, string subject, int minQuantity, int maxQuantity)
+        public async Task<int> AddQuantityRule(string identifier, int storeId, string subject, int minQuantity, int maxQuantity)
         {
             _clientManager.CheckMemberIsLoggedIn(identifier);
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null){
-                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
-                return store.AddQuantityRule(activeMember.UserName, subject, minQuantity, maxQuantity);
+                Member activeMember = await _clientManager.GetMemberByIdentifier(identifier);                
+                return await store.AddQuantityRule(activeMember.UserName, subject, minQuantity, maxQuantity);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public int AddTotalPriceRule(string identifier, int storeId, string subject, int targetPrice)
+        public async Task<int> AddTotalPriceRule(string identifier, int storeId, string subject, int targetPrice)
         {
             _clientManager.CheckMemberIsLoggedIn(identifier);
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null){
-                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
-                return store.AddTotalPriceRule(activeMember.UserName, subject, targetPrice);
+                Member activeMember = await _clientManager.GetMemberByIdentifier(identifier);                
+                return await store.AddTotalPriceRule(activeMember.UserName, subject, targetPrice);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public int AddCompositeRule(string identifier, int storeId, int Operator, List<int> rules)
+        public async Task<int> AddCompositeRule(string identifier, int storeId, int Operator, List<int> rules)
         {
             _clientManager.CheckMemberIsLoggedIn(identifier);
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null){
-                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
+                Member activeMember = await _clientManager.GetMemberByIdentifier(identifier);                
                 LogicalOperator op = (LogicalOperator)Enum.ToObject(typeof(LogicalOperator), Operator);
-                return store.AddCompositeRule(activeMember.UserName, op, rules);
+                return await store.AddCompositeRule(activeMember.UserName, op, rules);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public void UpdateRuleSubject(string identifier, int storeId, int ruleId, string subject)
+        public async Task UpdateRuleSubject(string identifier, int storeId, int ruleId, string subject)
         {
             _clientManager.CheckMemberIsLoggedIn(identifier);
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null){
-                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
+                Member activeMember = await _clientManager.GetMemberByIdentifier(identifier);                
                 store.UpdateRuleSubject(activeMember.UserName, ruleId, subject);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public void UpdateRuleQuantity(string identifier, int storeId, int ruleId, int minQuantity, int maxQuantity)
+        public async Task UpdateRuleQuantity(string identifier, int storeId, int ruleId, int minQuantity, int maxQuantity)
         {
             _clientManager.CheckMemberIsLoggedIn(identifier);
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null){
-                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
+                Member activeMember = await _clientManager.GetMemberByIdentifier(identifier);                
                 store.UpdateRuleQuantity(activeMember.UserName, ruleId, minQuantity, maxQuantity);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public void UpdateRuleTargetPrice(string identifier, int storeId, int ruleId, int targetPrice)
+        public async Task UpdateRuleTargetPrice(string identifier, int storeId, int ruleId, int targetPrice)
         {
             _clientManager.CheckMemberIsLoggedIn(identifier);
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null){
-                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
+                Member activeMember = await _clientManager.GetMemberByIdentifier(identifier);                
                 store.UpdateRuleTargetPrice(activeMember.UserName, ruleId, targetPrice);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public void UpdateCompositeOperator(string identifier, int storeId, int ruleId, int Operator)
+        public async Task UpdateCompositeOperator(string identifier, int storeId, int ruleId, int Operator)
         {
             _clientManager.CheckMemberIsLoggedIn(identifier);
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null){
-                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
+                Member activeMember = await _clientManager.GetMemberByIdentifier(identifier);                
                 LogicalOperator op = (LogicalOperator)Enum.ToObject(typeof(LogicalOperator), Operator);
                 store.UpdateCompositeOperator(activeMember.UserName, ruleId, op);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public void UpdateCompositeRules(string identifier, int storeId, int ruleId, List<int> rules)
+        public async Task UpdateCompositeRules(string identifier, int storeId, int ruleId, List<int> rules)
         {
             _clientManager.CheckMemberIsLoggedIn(identifier);
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null){
-                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
+                Member activeMember = await _clientManager.GetMemberByIdentifier(identifier);                
                 store.UpdateCompositeRules(activeMember.UserName, ruleId, rules);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
 
-        public int AddPurchasePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int ruleId)
+        public async Task<int> AddPurchasePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int ruleId)
         {
             _clientManager.CheckMemberIsLoggedIn(identifier);
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null){
-                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
+                Member activeMember = await _clientManager.GetMemberByIdentifier(identifier);                
                 return store.AddPurchasePolicy(activeMember.UserName, expirationDate, subject, ruleId);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public int AddDiscountPolicy(string identifier, int storeId, DateTime expirationDate, string subject, int ruleId, double precentage)
+        public async Task<int> AddDiscountPolicy(string identifier, int storeId, DateTime expirationDate, string subject, int ruleId, double precentage)
         {
             _clientManager.CheckMemberIsLoggedIn(identifier);
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null){
-                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
+                Member activeMember = await _clientManager.GetMemberByIdentifier(identifier);                
                 return store.AddDiscountPolicy(activeMember.UserName, expirationDate, subject, ruleId, precentage);
             }
             else
                 throw new Exception("Store doesn't exist!");
         }
-        public int AddCompositePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int Operator, List<int> policies)
+        public async Task<int> AddCompositePolicy(string identifier, int storeId, DateTime expirationDate, string subject, int Operator, List<int> policies)
         {
             _clientManager.CheckMemberIsLoggedIn(identifier);
-            Store store = _storeRepository.GetById(storeId);
+            Store store = await _storeRepository.GetById(storeId);
             if (store != null){
-                Member activeMember = _clientManager.GetMemberByIdentifier(identifier);                
+                Member activeMember = await _clientManager.GetMemberByIdentifier(identifier);                
                 NumericOperator op = (NumericOperator)Enum.ToObject(typeof(NumericOperator), Operator);
                 return store.AddCompositePolicy(activeMember.UserName, expirationDate, subject, op, policies);
             }
@@ -685,38 +686,38 @@ namespace MarketBackend.Domain.Market_Client
                 throw new Exception("Store doesn't exist!");
         }
 
-        public void NotificationOn(string identifier){
+        public async Task NotificationOn(string identifier){
             _clientManager.CheckMemberIsLoggedIn(identifier);
-            _clientManager.NotificationOn(identifier);
+            await _clientManager.NotificationOn(identifier);
         }
 
-        public void NotificationOff(string identifier){
+        public async Task NotificationOff(string identifier){
             _clientManager.CheckMemberIsLoggedIn(identifier);
-            _clientManager.NotificationOff(identifier);
+            await _clientManager.NotificationOff(identifier);
         }
 
-        public List<Store> GetMemberStores(string identifier)
+        public async Task<List<Store>> GetMemberStores(string identifier)
         {
-            var member = _clientManager.GetMemberByIdentifier(identifier);
+            var member = await _clientManager.GetMemberByIdentifier(identifier);
 
-            return _storeRepository.getAll()
+            return (await _storeRepository.getAll())
                 .Where(store => store.roles.Values.Any(role => role.userName == member.UserName))
                 .ToList(); 
         }
 
-        public Store GetMemberStore(string identifier, int storeId)
+        public async Task<Store> GetMemberStore(string identifier, int storeId)
         {
-            return GetMemberStores(identifier).Where(store => store.StoreId == storeId).FirstOrDefault();
+            return (await GetMemberStores(identifier)).Where(store => store.StoreId == storeId).FirstOrDefault();
         }
 
-        public List<Store> GetStores()
+        public async Task<List<Store>> GetStores()
         {
-            return _storeRepository.getAll().ToList();
+            return (await _storeRepository.getAll()).ToList();
         }
 
-        public List<Message> GetMemberNotifications(string identifier)
+        public async Task<List<Message>> GetMemberNotifications(string identifier)
         {
-            var member = _clientManager.GetMemberByIdentifier(identifier);
+            var member = await _clientManager.GetMemberByIdentifier(identifier);
             return member.alerts.ToList();
         }
 

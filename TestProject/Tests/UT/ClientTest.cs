@@ -57,24 +57,29 @@ namespace UnitTests
         [TestInitialize]
         public void SetUp()
         {
+            Task.Run(async () => await AsyncSetUp()).GetAwaiter().GetResult();
+        }
+
+        private async Task AsyncSetUp()
+        {
             DBcontext.GetInstance().Dispose();
             MarketManagerFacade.Dispose();
             var mockShippingSystem = new Mock<IShippingSystemFacade>();
             var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
-            mockPaymentSystem.Setup(pay =>pay.Connect()).Returns(true);
+            mockPaymentSystem.Setup(pay => pay.Connect()).Returns(true);
             mockShippingSystem.Setup(ship => ship.Connect()).Returns(true);
-            mockPaymentSystem.Setup(pay =>pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(1);
-            mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
+            mockPaymentSystem.Setup(pay => pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(1);
+            mockShippingSystem.Setup(ship => ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
             marketManagerFacade = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
-            marketManagerFacade.InitiateSystemAdmin();
-            marketManagerFacade.EnterAsGuest(session1);
-            marketManagerFacade.Register(userName, userPassword, email1, userAge);
-            token1 = marketManagerFacade.LoginClient(userName, userPassword);
-            userId = marketManagerFacade.GetMemberIDrByUserName(userName);
-            marketManagerFacade.CreateStore(token1, storeName, email1, phoneNum);
-            marketManagerFacade.AddProduct(1, token1, productName1, sellmethod, desc, price1, category1, quantity1, false);
+            // marketManagerFacade.InitiateSystemAdmin();
+            await marketManagerFacade.EnterAsGuest(session1);
+            await marketManagerFacade.Register(userName, userPassword, email1, userAge);
+            token1 = await marketManagerFacade.LoginClient(userName, userPassword);
+            userId = await marketManagerFacade.GetMemberIDrByUserName(userName);
+            await marketManagerFacade.CreateStore(token1, storeName, email1, phoneNum);
+            await marketManagerFacade.AddProduct(1, token1, productName1, sellmethod, desc, price1, category1, quantity1, false);
         }
 
         [TestCleanup]
@@ -87,22 +92,22 @@ namespace UnitTests
 
 
         [TestMethod]
-        public void TestAddToCart()
+        public async Task TestAddToCart()
         {
             var client = new Guest(1); // Testing with Guest as an example
-            client.AddToCart(1, 11, 10); // basket, productId, quantity
-            var productsInBasket = BasketRepositoryRAM.GetInstance().getBasketsByCartId(client.Cart._shoppingCartId).Where(basket => basket._storeId == 1).FirstOrDefault()?.products;
+            await client.AddToCart(1, 11, 10); // basket, productId, quantity
+            var productsInBasket = (await BasketRepositoryRAM.GetInstance().getBasketsByCartId(client.Cart._shoppingCartId)).Where(basket => basket._storeId == 1).FirstOrDefault()?.products;
             Assert.AreEqual(10, productsInBasket?[11],
             $"Expected products in basket to be 10, but got {productsInBasket?[11]}");
         }
 
         [TestMethod]
-        public void TestRemoveFromCart()
+        public async Task TestRemoveFromCart()
         {
             var client = new Guest(1);
-            client.AddToCart(1, 11, 10);
-            var basket = BasketRepositoryRAM.GetInstance().getBasketsByCartId(client.Cart._shoppingCartId).Where(basket => basket._storeId == 1).FirstOrDefault();
-            client.RemoveFromCart(1, 11, 10);
+            await client.AddToCart(1, 11, 10);
+            var basket = (await BasketRepositoryRAM.GetInstance().getBasketsByCartId(client.Cart._shoppingCartId)).Where(basket => basket._storeId == 1).FirstOrDefault();
+            await client.RemoveFromCart(1, 11, 10);
             var productsInBasket = basket.products;
             Assert.AreEqual(0, productsInBasket.Count,
             $"Expected count of products to be 0 but got {productsInBasket.Count}");

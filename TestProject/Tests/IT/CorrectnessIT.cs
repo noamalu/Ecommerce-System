@@ -58,7 +58,7 @@ namespace MarketBackend.Tests.IT
         int userId2;
 
         [TestInitialize]
-        public void Setup()
+        public async void Setup()
         {
             // Initialize the managers and mock systems
             DBcontext.GetInstance().Dispose();
@@ -81,17 +81,17 @@ namespace MarketBackend.Tests.IT
             mockPaymentSystem.SetReturnsDefault(true);            
             marketManagerFacade = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             clientManager = ClientManager.GetInstance();
-            marketManagerFacade.InitiateSystemAdmin();
-            marketManagerFacade.EnterAsGuest(session1);
-            marketManagerFacade.Register(userName, userPassword, email1, userAge);
-            token1 = marketManagerFacade.LoginClient(userName, userPassword);
-            userId = marketManagerFacade.GetMemberIDrByUserName(userName);
-            marketManagerFacade.CreateStore(token1, storeName, email1, phoneNum);
+            await marketManagerFacade.InitiateSystemAdmin();
+            await marketManagerFacade.EnterAsGuest(session1);
+            await marketManagerFacade.Register(userName, userPassword, email1, userAge);
+            token1 = await marketManagerFacade.LoginClient(userName, userPassword);
+            userId = await marketManagerFacade.GetMemberIDrByUserName(userName);
+            await marketManagerFacade.CreateStore(token1, storeName, email1, phoneNum);
             userId2 = userId + 1;
-            marketManagerFacade.EnterAsGuest(session2);
-            marketManagerFacade.Register(userName2, userPassword, email2, userAge);
-            token2 = marketManagerFacade.LoginClient(userName2, userPassword);
-            userId2 = marketManagerFacade.GetMemberIDrByUserName(userName2);
+            await marketManagerFacade.EnterAsGuest(session2);
+            await marketManagerFacade.Register(userName2, userPassword, email2, userAge);
+            token2 = await marketManagerFacade.LoginClient(userName2, userPassword);
+            userId2 = await marketManagerFacade.GetMemberIDrByUserName(userName2);
         }
 
         [TestCleanup]
@@ -110,7 +110,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public void TestConcurrentShopManager()
+        public async void TestConcurrentShopManager()
         {
             Client mem = clientManager.GetClientByIdentifier(token1);
             // Create multiple threads that add and remove products from the shop
@@ -118,12 +118,12 @@ namespace MarketBackend.Tests.IT
             for (int i = 0; i < NumThreads; i++)
             {
                 string pName = $"{productname1}-{i}-";
-                threads.Add(new Thread(() =>
+                threads.Add(new Thread(async () =>
                 {
                     for (int j = 0; j < NumIterations; j++)
                     {
-                        Product product = marketManagerFacade.AddProduct(1, token1, productName1, sellmethod, desc, price1, category1, quantity1, false);
-                        marketManagerFacade.RemoveProduct(1, token1, product._productId);
+                        Product product = await marketManagerFacade.AddProduct(1, token1, productName1, sellmethod, desc, price1, category1, quantity1, false);
+                        await marketManagerFacade.RemoveProduct(1, token1, product._productId);
                     }
                 }));
             }
@@ -133,32 +133,32 @@ namespace MarketBackend.Tests.IT
             threads.ForEach(t => t.Join());
 
             // Assert that the shop has the correct number of products
-            Assert.AreEqual(0, marketManagerFacade.GetStore(storeId)._products.Count, 
-            $"Expected the store to have zero products but got: {marketManagerFacade.GetStore(storeId)._products.Count}.");
+            Assert.AreEqual(0, (await marketManagerFacade.GetStore(storeId))._products.Count, 
+            $"Expected the store to have zero products but got: {(await marketManagerFacade.GetStore(storeId))._products.Count}.");
         }
 
         [TestMethod]
-        public void TwoClientsByLastProductTogether()
+        public async void TwoClientsByLastProductTogether()
         {
             Client mem1 = clientManager.GetClientByIdentifier(token1);
-            Product product = marketManagerFacade.AddProduct(1, token1, productName1, sellmethod, desc, price1, category1, 1, false);
+            Product product = await marketManagerFacade.AddProduct(1, token1, productName1, sellmethod, desc, price1, category1, 1, false);
             int storeId = 1;
             Client mem2 = clientManager.GetClientByIdentifier(token2);
-            marketManagerFacade.AddToCart(token1, storeId, product._productId, 1);
-            marketManagerFacade.AddToCart(token2, storeId, product._productId, 1);
+            await marketManagerFacade.AddToCart(token1, storeId, product._productId, 1);
+            await marketManagerFacade.AddToCart(token2, storeId, product._productId, 1);
 
             // Create multiple threads that attempt to purchase the product
             var threads = new List<Thread>();
             foreach (int userId in new int[]{userId, userId2})
             {
                 string pName = $"{productname1}-{userId}-";
-                threads.Add(new Thread(() =>
+                threads.Add(new Thread(async () =>
                 {
                     for (int j = 0; j < NumIterations; j++)
                     {
                         try
                         {
-                            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+                            await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
                         }
                         catch (Exception ex)
                         {
@@ -172,38 +172,38 @@ namespace MarketBackend.Tests.IT
             threads.ForEach(t => t.Start());
             threads.ForEach(t => t.Join());
 
-            Dictionary<int, Basket> basket1 = mem1.Cart.GetBaskets();
-            Dictionary<int, Basket> basket2 = mem2.Cart.GetBaskets();
+            Dictionary<int, Basket> basket1 = await mem1.Cart.GetBaskets();
+            Dictionary<int, Basket> basket2 = await mem2.Cart.GetBaskets();
 
             Assert.IsTrue(basket1.Count == 0 || basket2.Count == 0, "Expected that one of the clients has an empty cart, indicating only one successful purchase.");
         }
 
         [TestMethod]
-        public void RemoveProductAndPurchaseProductTogether()
+        public async void RemoveProductAndPurchaseProductTogether()
         {
             Client mem1 = clientManager.GetClientByIdentifier(token1);
-            Product product = marketManagerFacade.AddProduct(1, token1, productName1, sellmethod, desc, price1, category1, 1, false);
+            Product product = await marketManagerFacade.AddProduct(1, token1, productName1, sellmethod, desc, price1, category1, 1, false);
             Client mem2 = clientManager.GetClientByIdentifier(token2);
-            marketManagerFacade.AddToCart(token2, storeId, productID1, 1);
+            await marketManagerFacade.AddToCart(token2, storeId, productID1, 1);
             bool thorwnExeptionStore  = false;
             bool thorwnExeptionClient = false;
 
             // Create threads for removing product and purchasing product concurrently
             var threads = new List<Thread>
             {
-                new Thread(() =>
+                new Thread(async () =>
                 {
                     try
                     {
-                        marketManagerFacade.RemoveProduct(storeId, token1, productID1);
+                        await marketManagerFacade.RemoveProduct(storeId, token1, productID1);
                     }catch{
                         thorwnExeptionStore = true;
                     }
                 }),
-                new Thread(() =>
+                new Thread(async () =>
                 {
                     try{
-                        marketManagerFacade.PurchaseCart(token2, paymentDetails, shippingDetails);
+                        await marketManagerFacade.PurchaseCart(token2, paymentDetails, shippingDetails);
                     }catch{
                         thorwnExeptionClient = true;
                     }
@@ -216,34 +216,34 @@ namespace MarketBackend.Tests.IT
 
             Assert.IsTrue(thorwnExeptionStore || thorwnExeptionClient, "Expected at least one exception to be thrown, either in removing product or purchasing product.");
             Assert.IsFalse(thorwnExeptionStore && thorwnExeptionClient, "Expected only one of the operations to throw an exception, not both.");
-            Dictionary<int, Basket> basket = mem2.Cart.GetBaskets();
+            Dictionary<int, Basket> basket = await mem2.Cart.GetBaskets();
             Assert.IsTrue((basket.Count == 1 && thorwnExeptionClient) || (basket.Count == 0 && thorwnExeptionStore), "Expected the cart to be consistent with the operations.");
         }
 
         [TestMethod]
-        public void TwoStoreOwnerAppointThirdToManagerTogether()
+        public async void TwoStoreOwnerAppointThirdToManagerTogether()
         {
             Client mem1 = clientManager.GetClientByIdentifier(token1);
             Client mem2 = clientManager.GetClientByIdentifier(token2);
-            marketManagerFacade.AddManger(token1, storeId, userName2);
+            await marketManagerFacade.AddManger(token1, storeId, userName2);
             Permission permission = Permission.all;
-            marketManagerFacade.AddPermission(token1, storeId, userName2, permission);
+            await marketManagerFacade.AddPermission(token1, storeId, userName2, permission);
             int userId3 = mem2.Id + 1;
-            marketManagerFacade.EnterAsGuest(session3);
-            marketManagerFacade.Register(userName3, userPassword, email1, userAge);
-            token3 = marketManagerFacade.LoginClient(userName3, userPassword);
-            userId3 = marketManagerFacade.GetMemberIDrByUserName(userName);
+            await marketManagerFacade.EnterAsGuest(session3);
+            await marketManagerFacade.Register(userName3, userPassword, email1, userAge);
+            token3 = await marketManagerFacade.LoginClient(userName3, userPassword);
+            userId3 = await marketManagerFacade.GetMemberIDrByUserName(userName);
             bool thorwnExeption  = false;
             ConcurrentBag<bool> results = new ConcurrentBag<bool>();
 
             // Create threads to appoint the third user as a manager
             var threads = new List<Thread>()
             {
-                new Thread(() =>
+                new Thread(async () =>
                 {
                     try
                     {
-                        marketManagerFacade.AddManger(token1, storeId, userName3);
+                        await marketManagerFacade.AddManger(token1, storeId, userName3);
                         results.Add(true);
                     }
                     catch{
@@ -251,11 +251,11 @@ namespace MarketBackend.Tests.IT
                         results.Add(false);
                     }
                 }),
-                new Thread(() =>
+                new Thread(async () =>
                 {
                     try
                     {
-                        marketManagerFacade.AddManger(token2, storeId, userName3);
+                        await marketManagerFacade.AddManger(token2, storeId, userName3);
                         results.Add(true);
                     }
                     catch{
@@ -269,7 +269,7 @@ namespace MarketBackend.Tests.IT
 
             int successCount = results.Count(r => r == true);
             int exceptionCount = results.Count(r => r == false);
-            Store store = marketManagerFacade.GetStore(storeId);
+            Store store = await marketManagerFacade.GetStore(storeId);
 
             Assert.AreEqual(true, thorwnExeption, "Expected one of the threads to throw an exception.");
             Assert.AreEqual(1, successCount, "Exactly one thread should succeed in adding the manager.");

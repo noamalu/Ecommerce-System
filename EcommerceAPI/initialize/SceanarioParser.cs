@@ -56,14 +56,14 @@ public class SceanarioParser
                     Username = usecaseJson["Username"].ToString(),
                     Password = usecaseJson["Password"].ToString()
                 };
-                var res = _clientService.LoginClient(clientDto.Username, clientDto.Password);
+                var res = await _clientService.LoginClient(clientDto.Username, clientDto.Password);
                 if (res.ErrorOccured)
                     throw new Exception("Failed to parse the login " + res.ErrorMessage);
                 break;
             }
             case Sceanarios.Logout:
             {
-                var res = _clientService.LogoutClient(
+                var res = await _clientService.LogoutClient(
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value);
                 if (res.ErrorOccured)
                     throw new Exception(res.ErrorMessage);
@@ -71,7 +71,7 @@ public class SceanarioParser
             }
             case Sceanarios.EnterAsGuest:
             {
-                var res = _clientService.EnterAsGuest(usecaseJson["Identifier"].ToString());
+                var res = await _clientService.EnterAsGuest(usecaseJson["Identifier"].ToString());
                 if (res.ErrorOccured)
                     throw new Exception(res.ErrorMessage);                
                 break;
@@ -85,7 +85,7 @@ public class SceanarioParser
                     Email = usecaseJson["Email"].ToString(),
                     Age = int.Parse(usecaseJson["Age"].ToString())
                 };
-                var res = _clientService.Register(extendedClientDto.Username, extendedClientDto.Password, extendedClientDto.Email, extendedClientDto.Age);
+                var res = await _clientService.Register(extendedClientDto.Username, extendedClientDto.Password, extendedClientDto.Email, extendedClientDto.Age);
                 if (res.ErrorOccured)
                     throw new Exception(res.ErrorMessage);                
                 break;
@@ -100,13 +100,13 @@ public class SceanarioParser
                     Quantity = int.Parse(usecaseJson["Quantity"].ToString())
                 };
                 if(productDto.Quantity>0){
-                    var res = _clientService.AddToCart(
+                    var res = await _clientService.AddToCart(
                         _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                         productDto.StoreId, (int)productDto.Id, productDto.Quantity);
                     if (res.ErrorOccured)
                         throw new Exception(res.ErrorMessage);                
                 }else{
-                    var res = _clientService.RemoveFromCart(
+                    var res = await _clientService.RemoveFromCart(
                         _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                         productDto.StoreId, (int)productDto.Id, Math.Abs(productDto.Quantity));
                     if (res.ErrorOccured)
@@ -116,7 +116,7 @@ public class SceanarioParser
             }
             case Sceanarios.ExitGuest:
             {
-                var res = _clientService.ExitGuest(
+                var res = await _clientService.ExitGuest(
                     usecaseJson["Identifier"].ToString());
                 if (res.ErrorOccured)
                     throw new Exception(res.ErrorMessage);                
@@ -157,7 +157,7 @@ public class SceanarioParser
                     SellMethod = usecaseJson["SellMethod"].ToString()
 
                 };
-                var res = _marketService.AddProduct(
+                var res = await _marketService.AddProduct(
                     productDto.StoreId,
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                     productDto.ProductName,
@@ -179,7 +179,7 @@ public class SceanarioParser
                     ProductName = usecaseJson["ProductName"].ToString(),
                     Id = int.Parse(usecaseJson["Id"].ToString())
                 };
-                var res = _marketService.RemoveProduct(
+                var res = await _marketService.RemoveProduct(
                     productDto.StoreId,
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                     (int)productDto.Id);
@@ -194,7 +194,7 @@ public class SceanarioParser
                     MemberUserName = usecaseJson["Username"].ToString(),
                     RoleName = usecaseJson["Role"].ToString()
                 };
-                var res = _marketService.AddStaffMember(
+                var res = await _marketService.AddStaffMember(
                     int.Parse(usecaseJson["StoreId"].ToString()),
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                     staffMemberDto.RoleName,
@@ -209,7 +209,7 @@ public class SceanarioParser
                 {
                     MemberUserName = usecaseJson["MemberUserName"].ToString()
                 };
-                var res = _marketService.RemoveStaffMember(
+                var res = await _marketService.RemoveStaffMember(
                     int.Parse(usecaseJson["StoreId"].ToString()),
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                     staffMemberDto.MemberUserName);        
@@ -226,7 +226,7 @@ public class SceanarioParser
                 };
                 var responses = new List<Response>();
                 foreach(var permission in staffMemberDto.Permission){
-                    var res = _marketService.AddPermission(
+                    var res = await _marketService.AddPermission(
                         _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                         int.Parse(usecaseJson["StoreId"].ToString()),
                         staffMemberDto.MemberUserName,
@@ -248,7 +248,7 @@ public class SceanarioParser
                 };
                 var responses = new List<Response>();
                 foreach(var permission in staffMemberDto.Permission){
-                    var res = _marketService.RemovePermission(
+                    var res = await _marketService.RemovePermission(
                         _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                         int.Parse(usecaseJson["StoreId"].ToString()),
                         staffMemberDto.MemberUserName,
@@ -263,7 +263,7 @@ public class SceanarioParser
             }
             case Sceanarios.CloseStore:
             {
-                var res = _marketService.CloseStore(
+                var res = await _marketService.CloseStore(
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                     int.Parse(usecaseJson["StoreId"].ToString()));
                 if (res.ErrorOccured)
@@ -272,7 +272,7 @@ public class SceanarioParser
             }
             case Sceanarios.OpenStore:
             {
-                var res = _marketService.OpenStore(
+                var res = await _marketService.OpenStore(
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                     int.Parse(usecaseJson["StoreId"].ToString()));
                 if (res.ErrorOccured)
@@ -295,7 +295,7 @@ public class SceanarioParser
                     ExpMonth = usecaseJson["ExpMonth"].ToString(),
                     CardNumber = usecaseJson["CardNumber"].ToString()
                 };
-                var res = _marketService.PurchaseCart(
+                var res = await _marketService.PurchaseCart(
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                     purchaseDto.PaymentInfo(),
                     purchaseDto.ShippingInfo());
@@ -308,7 +308,7 @@ public class SceanarioParser
                 var keywords = usecaseJson["Keywords"].ToObject<List<string>>();
                 var responses = new List<Response>();
                 foreach(var keyword in keywords){
-                    var res = _marketService.SearchByKeywords(
+                    var res = await _marketService.SearchByKeywords(
                         keyword);
                     responses.Add(res);
                 }
@@ -323,7 +323,7 @@ public class SceanarioParser
                 var names = usecaseJson["Names"].ToObject<List<string>>();
                 var responses = new List<Response>();
                 foreach(var name in names){
-                    var res = _marketService.SearchByName(name);
+                    var res = await _marketService.SearchByName(name);
                     responses.Add(res);
                 }
                 if (responses.Any(res => res.ErrorOccured))
@@ -337,7 +337,7 @@ public class SceanarioParser
                 var categories = usecaseJson["Categories"].ToObject<List<string>>();
                 var responses = new List<Response>();
                 foreach(var category in categories){
-                    var res = _marketService.SearchByCategory(category);
+                    var res = await _marketService.SearchByCategory(category);
                     responses.Add(res);
                 }
                 if (responses.Any(res => res.ErrorOccured))
@@ -348,7 +348,7 @@ public class SceanarioParser
             }
             case Sceanarios.GetStoreById:
             {
-                var res = _marketService.GetStoreById(
+                var res = await _marketService.GetStoreById(
                     int.Parse(usecaseJson["StoreId"].ToString()));
                 if (res.ErrorOccured)
                     throw new Exception(res.ErrorMessage);                
@@ -356,7 +356,7 @@ public class SceanarioParser
             }
             case Sceanarios.ShowShopPurchaseHistory:
             {
-                var res = _marketService.GetPurchaseHistoryByStore(
+                var res = await _marketService.GetPurchaseHistoryByStore(
                     int.Parse(usecaseJson["StoreId"].ToString()),
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value
                     );
@@ -366,7 +366,7 @@ public class SceanarioParser
             }
             case Sceanarios.GetStoreDiscountPolicies:
             {
-                var res = _marketService.GetStoreDiscountPolicies(
+                var res = await _marketService.GetStoreDiscountPolicies(
                     int.Parse(usecaseJson["StoreId"].ToString()),
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value
                     );
@@ -383,7 +383,7 @@ public class SceanarioParser
                     RuleId = int.Parse(usecaseJson["RuleId"].ToString()),
                     Precantage = double.Parse(usecaseJson["Precantage"].ToString())
                 };
-                var res = _marketService.AddDiscountPolicy(
+                var res = await _marketService.AddDiscountPolicy(
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                     int.Parse(usecaseJson["StoreId"].ToString()),
                     policyDto.ExpirationDate,
@@ -402,7 +402,7 @@ public class SceanarioParser
                     Subject = usecaseJson["Subject"].ToString(),
                     RuleId = int.Parse(usecaseJson["RuleId"].ToString())
                 };
-                var res = _marketService.AddPurchasePolicy(
+                var res = await _marketService.AddPurchasePolicy(
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                     int.Parse(usecaseJson["StoreId"].ToString()),
                     policyDto.ExpirationDate,
@@ -421,7 +421,7 @@ public class SceanarioParser
                     Operator = int.Parse(usecaseJson["Operator"].ToString()),
                     Policies = usecaseJson["Policies"].ToObject<List<int>>()
                 };
-                var res = _marketService.AddCompositePolicy(
+                var res = await _marketService.AddCompositePolicy(
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                     int.Parse(usecaseJson["StoreId"].ToString()),
                     compositePolicyDto.ExpirationDate,
@@ -438,7 +438,7 @@ public class SceanarioParser
                 {
                     Subject = usecaseJson["Subject"].ToString()
                 };
-                var res = _marketService.AddSimpleRule(
+                var res = await _marketService.AddSimpleRule(
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                     int.Parse(usecaseJson["StoreId"].ToString()),
                     ruleDto.Subject);
@@ -454,7 +454,7 @@ public class SceanarioParser
                     MinQuantity = int.Parse(usecaseJson["MinQuantity"].ToString()),
                     MaxQuantity = int.Parse(usecaseJson["MaxQuantity"].ToString())
                 };
-                var res = _marketService.AddQuantityRule(
+                var res = await _marketService.AddQuantityRule(
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                     int.Parse(usecaseJson["StoreId"].ToString()),
                     quantityRuleDto.Subject,
@@ -471,7 +471,7 @@ public class SceanarioParser
                     Subject = usecaseJson["Subject"].ToString(),
                     TargetPrice = int.Parse(usecaseJson["TargetPrice"].ToString())
                 };
-                var res = _marketService.AddTotalPriceRule(
+                var res = await _marketService.AddTotalPriceRule(
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                     int.Parse(usecaseJson["StoreId"].ToString()),
                     totalPriceRuleDto.Subject,
@@ -487,7 +487,7 @@ public class SceanarioParser
                     Operator = int.Parse(usecaseJson["Operator"].ToString()),
                     Rules = usecaseJson["Rules"].ToObject<List<int>>()
                 };
-                var res = _marketService.AddCompositeRule(
+                var res = await _marketService.AddCompositeRule(
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                     int.Parse(usecaseJson["StoreId"].ToString()),
                     compositeRuleDto.Operator,
@@ -498,7 +498,7 @@ public class SceanarioParser
             }
             case Sceanarios.GetInfo:
             {
-                var res = _marketService.GetInfo(
+                var res = await _marketService.GetInfo(
                     int.Parse(usecaseJson["StoreId"].ToString()));
                 if (res.ErrorOccured)
                     throw new Exception(res.ErrorMessage);                
@@ -506,7 +506,7 @@ public class SceanarioParser
             }
             case Sceanarios.GetProductInfo:
             {
-                var res = _marketService.GetProductInfo(
+                var res = await _marketService.GetProductInfo(
                     int.Parse(usecaseJson["StoreId"].ToString()),
                     int.Parse(usecaseJson["ProductId"].ToString()));
                 if (res.ErrorOccured)
@@ -515,7 +515,7 @@ public class SceanarioParser
             }
             case Sceanarios.AddKeyWord:
             {
-                var res = _marketService.AddKeyWord(
+                var res = await _marketService.AddKeyWord(
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                     usecaseJson["KeyWord"].ToString(),
                     int.Parse(usecaseJson["StoreId"].ToString()),

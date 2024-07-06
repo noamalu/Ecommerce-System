@@ -10,11 +10,17 @@ namespace MarketBackend.Services.Models
     public class ShoppingCartResultDto
     {
         public double Price { get; set; }
-        public List<BasketResultDto> Baskets { get; set; }
+        public List<BasketResultDto> Baskets { get; set; } = new List<BasketResultDto>();
 
-        public ShoppingCartResultDto(ShoppingCart cart){
-            Baskets = cart.GetBaskets().Values.Select(basket => new BasketResultDto(basket)).ToList();
-            Price = Baskets.Select(basket => basket.Price).Sum();
+        private ShoppingCartResultDto() { }
+
+        public static async Task<ShoppingCartResultDto> CreateAsync(ShoppingCart cart)
+        {
+            var dto = new ShoppingCartResultDto();
+            var baskets = await cart.GetBaskets();
+            dto.Baskets = baskets.Values.Select(basket => new BasketResultDto(basket)).ToList();
+            dto.Price = dto.Baskets.Select(basket => basket.Price).Sum();
+            return dto;
         }
 
         public ShoppingCartResultDto(ShoppingCartHistory cart){

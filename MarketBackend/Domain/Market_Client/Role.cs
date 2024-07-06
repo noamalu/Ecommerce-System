@@ -11,7 +11,7 @@ namespace MarketBackend.Domain.Market_Client
 {
     public class Role
     {
-        public RoleType role { get; }
+        public RoleType role { get; set;}
         public int storeId { get; }
         public string userName { get; }
         public Member appointer;
@@ -27,12 +27,17 @@ namespace MarketBackend.Domain.Market_Client
 
         public Role(RoleDTO roleDTO)
         {
+            asyncRole(roleDTO);
+        }
+
+        public async void asyncRole(RoleDTO roleDTO)
+        {
             role = createRoleType(roleDTO);
-            appointer = ClientRepositoryRAM.GetInstance().GetById(roleDTO.appointer);
+            appointer = await ClientRepositoryRAM.GetInstance().GetById(roleDTO.appointer);
             appointees = new List<Member>();
             foreach (int memberDTOId in roleDTO.appointees)
             {
-                appointees.Add(ClientRepositoryRAM.GetInstance().GetById(memberDTOId));
+                appointees.Add(await ClientRepositoryRAM.GetInstance().GetById(memberDTOId));
             }
         }
 

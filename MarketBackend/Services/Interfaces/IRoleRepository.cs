@@ -9,6 +9,6 @@ namespace MarketBackend.Services.Interfaces
 {
     public interface IRoleRepository : IRepository<Role>
     {
-        public Role GetById(int storeId, string memberId);
+        public Task<Role> GetById(int storeId, string memberId);
     }
 }

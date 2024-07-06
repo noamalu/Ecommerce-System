@@ -19,19 +19,19 @@ namespace MarketBackend.Domain.Models
             _basketRepository = BasketRepositoryRAM.GetInstance();
         }
 
-        public void addToCart(int storeId, int productId, int quantity){
-            Basket? basket = GetBaskets().Values.Where(basket => basket._storeId == storeId).FirstOrDefault() ?? _basketRepository.CreateBasket(storeId, _shoppingCartId);
-            basket.addToBasket(productId, quantity);
+        public async Task addToCart(int storeId, int productId, int quantity){
+            Basket? basket = (await GetBaskets()).Values.Where(basket => basket._storeId == storeId).FirstOrDefault() ?? await _basketRepository.CreateBasket(storeId, _shoppingCartId);
+            await basket.addToBasket(productId, quantity);
         }
 
-        public void removeFromCart(int storeId, int productId, int quantity){
-            var basket = GetBaskets().Values.Where(basket => basket._storeId == storeId).FirstOrDefault();
-            basket.RemoveFromBasket(productId, quantity);
+        public async Task removeFromCart(int storeId, int productId, int quantity){
+            var basket = (await GetBaskets()).Values.Where(basket => basket._storeId == storeId).FirstOrDefault();
+            await basket.RemoveFromBasket(productId, quantity);
         }
 
-        public Dictionary<int, Basket> GetBaskets() //returns a dictionary of store id to productIdxQuantity
+        public async Task<Dictionary<int, Basket>> GetBaskets() //returns a dictionary of store id to productIdxQuantity
         {
-            var baskets = _basketRepository.getBasketsByCartId(_shoppingCartId);
+            var baskets = await _basketRepository.getBasketsByCartId(_shoppingCartId);
             var retBaskets = new Dictionary<int, Basket>();
             foreach (var basket in baskets) {
                 retBaskets.Add(basket._storeId, basket);
@@ -39,8 +39,8 @@ namespace MarketBackend.Domain.Models
             return retBaskets;
         }
 
-        public void PurchaseBasket(int basketId){
-            Basket basket = _basketRepository.GetById(basketId);
+        public async void PurchaseBasket(int basketId){
+            Basket basket = await _basketRepository.GetById(basketId);
             _basketRepository.Delete(basket);
         }
     }
@@ -59,12 +59,12 @@ namespace MarketBackend.Domain.Models
             _products = new(other._products.Select(product => new Product(product)).ToDictionary(product => product.ProductId));
         }
 
-        public void AddBasket(Basket basket)
+        public async void AddBasket(Basket basket)
         {
             _baskets.TryAdd(basket._basketId, Basket.Clone(basket));
             foreach(var product in basket.products)
             {
-                var storeProducts = ProductRepositoryRAM.GetInstance().GetStoreProducts(basket._storeId);
+                var storeProducts = await ProductRepositoryRAM.GetInstance().GetStoreProducts(basket._storeId);
                 var productDetailsFromStore = storeProducts.Where(p => p.ProductId == product.Key).FirstOrDefault().Clone();
                 if(productDetailsFromStore is not null) _products.TryAdd(product.Key, productDetailsFromStore);
             }

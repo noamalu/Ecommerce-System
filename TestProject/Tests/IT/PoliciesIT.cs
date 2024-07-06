@@ -55,7 +55,7 @@ namespace MarketBackend.Tests.IT
         int and_operator = 2;
 
         [TestInitialize]
-        public void Setup()
+        public async void Setup()
         {
             // Initialize the managers
             DBcontext.GetInstance().Dispose();
@@ -70,13 +70,13 @@ namespace MarketBackend.Tests.IT
             mockPaymentSystem.SetReturnsDefault(true);            
             marketManagerFacade = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             clientManager = ClientManager.GetInstance();
-            marketManagerFacade.InitiateSystemAdmin();
-            marketManagerFacade.EnterAsGuest(session1);
-            marketManagerFacade.Register(userName, userPassword, email1, userAge);
-            token1 = marketManagerFacade.LoginClient(userName, userPassword);
-            userId = marketManagerFacade.GetMemberIDrByUserName(userName);
-            marketManagerFacade.CreateStore(token1, storeName, email1, phoneNum);
-            marketManagerFacade.AddProduct(1, token1, productName1, sellmethod, desc, price1, category1, quantity1, false);
+            await marketManagerFacade.InitiateSystemAdmin();
+            await marketManagerFacade.EnterAsGuest(session1);
+            await marketManagerFacade.Register(userName, userPassword, email1, userAge);
+            token1 = await marketManagerFacade.LoginClient(userName, userPassword);
+            userId = await marketManagerFacade.GetMemberIDrByUserName(userName);
+            await marketManagerFacade.CreateStore(token1, storeName, email1, phoneNum);
+            await marketManagerFacade.AddProduct(1, token1, productName1, sellmethod, desc, price1, category1, quantity1, false);
         }
         [TestCleanup]
         public void Cleanup()
@@ -86,249 +86,249 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public void AddCompositeRulePurchaseCart_success()
+        public async void AddCompositeRulePurchaseCart_success()
         {
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 10);
-            int rule2 = marketManagerFacade.AddSimpleRule(token1, 1, storeName);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 10);
+            int rule2 = await marketManagerFacade.AddSimpleRule(token1, 1, storeName);
             List<int> rules = [rule1, rule2];
-            marketManagerFacade.AddCompositeRule(token1, 1, or_operator, rules);
-            Store store = marketManagerFacade.GetStore(1);
+            await marketManagerFacade.AddCompositeRule(token1, 1, or_operator, rules);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.IsTrue(store._rules.Count == 3);
-            marketManagerFacade.AddToCart(token1, 1, productID1, 1);
+            await marketManagerFacade.AddToCart(token1, 1, productID1, 1);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, storeName, rule1);
-            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            await marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, storeName, rule1);
+            await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Assert.AreEqual(1, store._history._purchases.Count,
             $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
-        public void AddDiscountPurchaseCart_success()
+        public async void AddDiscountPurchaseCart_success()
         {
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 10);
-            int rule2 = marketManagerFacade.AddSimpleRule(token1, 1, storeName);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 10);
+            int rule2 = await marketManagerFacade.AddSimpleRule(token1, 1, storeName);
             List<int> rules = [rule1, rule2];
-            marketManagerFacade.AddCompositeRule(token1, 1, or_operator, rules);
-            Store store = marketManagerFacade.GetStore(1);
+            await marketManagerFacade.AddCompositeRule(token1, 1, or_operator, rules);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.IsTrue(store._rules.Count == 3);
-            marketManagerFacade.AddToCart(token1, 1, productID1, 1);
+            await marketManagerFacade.AddToCart(token1, 1, productID1, 1);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, rule1, 0.5);
-            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            await marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, rule1, 0.5);
+            await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Assert.AreEqual(2.5, store._history._purchases[0].Price,
             $"Expected price to be 2.5 but got {store._history._purchases[0].Price}");
         }
 
         [TestMethod]
-        public void PurchaseCart_Quantity_Role_Product_Fail()
+        public async void PurchaseCart_Quantity_Role_Product_Fail()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, "apple", 1, 5);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, "apple", 1, 5);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, "apple", rule1);
-            marketManagerFacade.AddToCart(token1, 1, 12, 10);
+            await marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, "apple", rule1);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 10);
             Assert.ThrowsException<Exception>(() => marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails));
-            Store store = marketManagerFacade.GetStore(1);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(0, store._history._purchases.Count,
             $"Expected puchase history count to be 0 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
-        public void PurchaseCart_Quantity_Role__product_Success()
+        public async void PurchaseCart_Quantity_Role__product_Success()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, "apple", 1, 5);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, "apple", 1, 5);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, "apple", rule1);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
-            Store store = marketManagerFacade.GetStore(1);
+            await marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, "apple", rule1);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(1, store._history._purchases.Count,
             $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
-        public void PurchaseCart_Quantity_Role__simple_Fail()
+        public async void PurchaseCart_Quantity_Role__simple_Fail()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, storeName, 1, 5);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, storeName, 1, 5);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, storeName, rule1);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 5);
+            await marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, storeName, rule1);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 5);
             Assert.ThrowsException<Exception>(() => marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails));
-            Store store = marketManagerFacade.GetStore(1);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(0, store._history._purchases.Count,
             $"Expected puchase history count to be 0 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
-        public void PurchaseCart_Quantity_Role__category_Success()
+        public async void PurchaseCart_Quantity_Role__category_Success()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, rule1);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 2);
-            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
-            Store store = marketManagerFacade.GetStore(1);
+            await marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, rule1);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 2);
+            await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(1, store._history._purchases.Count,
             $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
-        public void PurchaseCart_Quantity_Role__category_Fail()
+        public async void PurchaseCart_Quantity_Role__category_Fail()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, rule1);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 5);
+            await marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, rule1);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 5);
             Assert.ThrowsException<Exception>(() => marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails));
-            Store store = marketManagerFacade.GetStore(1);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(0, store._history._purchases.Count,
             $"Expected puchase history count to be 0 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
-        public void PurchaseCart_composite_rule__and_Success()
+        public async void PurchaseCart_composite_rule__and_Success()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
-            int rule2 = marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
+            int rule2 = await marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
             List<int> rules = [rule1, rule2];
-            int composite = marketManagerFacade.AddCompositeRule(token1, 1, and_operator, rules);
+            int composite = await marketManagerFacade.AddCompositeRule(token1, 1, and_operator, rules);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, composite);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 2);
-            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
-            Store store = marketManagerFacade.GetStore(1);
+            await marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, composite);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 2);
+            await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(1, store._history._purchases.Count,
             $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
-        public void PurchaseCart_composite_rule__and_Fail_OneNotTrue()
+        public async void PurchaseCart_composite_rule__and_Fail_OneNotTrue()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
-            int rule2 = marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
+            int rule2 = await marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
             List<int> rules = [rule1, rule2];
-            int composite = marketManagerFacade.AddCompositeRule(token1, 1, and_operator, rules);
+            int composite = await marketManagerFacade.AddCompositeRule(token1, 1, and_operator, rules);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, composite);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 5);
+            await marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, composite);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 5);
             Assert.ThrowsException<Exception>(() => marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails));
-            Store store = marketManagerFacade.GetStore(1);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(0, store._history._purchases.Count,
             $"Expected puchase history count to be 0 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
-        public void PurchaseCart_composite_rule__or_Success()
+        public async void PurchaseCart_composite_rule__or_Success()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
-            int rule2 = marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
+            int rule2 = await marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
             List<int> rules = [rule1, rule2];
-            int composite = marketManagerFacade.AddCompositeRule(token1, 1, or_operator, rules);
+            int composite = await marketManagerFacade.AddCompositeRule(token1, 1, or_operator, rules);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, composite);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 2);
-            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
-            Store store = marketManagerFacade.GetStore(1);
+            await marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, composite);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 2);
+            await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(1, store._history._purchases.Count,
             $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
-        public void PurchaseCart_composite_rule__and_or_AllFalse()
+        public async void PurchaseCart_composite_rule__and_or_AllFalse()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
-            int rule2 = marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 100);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
+            int rule2 = await marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 100);
             List<int> rules = [rule1, rule2];
-            int composite = marketManagerFacade.AddCompositeRule(token1, 1, or_operator, rules);
+            int composite = await marketManagerFacade.AddCompositeRule(token1, 1, or_operator, rules);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, composite);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 5);
+            await marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, composite);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 5);
             Assert.ThrowsException<Exception>(() => marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails));
-            Store store = marketManagerFacade.GetStore(1);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(0, store._history._purchases.Count,
             $"Expected puchase history count to be 0 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
-        public void PurchaseCart_composite_rule__xor_Success1()
+        public async void PurchaseCart_composite_rule__xor_Success1()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
-            int rule2 = marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
+            int rule2 = await marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
             List<int> rules = [rule1, rule2];
-            int composite = marketManagerFacade.AddCompositeRule(token1, 1, xor_operator, rules);
+            int composite = await marketManagerFacade.AddCompositeRule(token1, 1, xor_operator, rules);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, composite);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 5);
-            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
-            Store store = marketManagerFacade.GetStore(1);
+            await marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, composite);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 5);
+            await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(1, store._history._purchases.Count,
             $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
-        public void PurchaseCart_composite_rule__xor_Success2()
+        public async void PurchaseCart_composite_rule__xor_Success2()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
-            int rule2 = marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 100);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
+            int rule2 = await marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 100);
             List<int> rules = [rule1, rule2];
-            int composite = marketManagerFacade.AddCompositeRule(token1, 1, xor_operator, rules);
+            int composite = await marketManagerFacade.AddCompositeRule(token1, 1, xor_operator, rules);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, composite);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 2);
-            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
-            Store store = marketManagerFacade.GetStore(1);
+            await marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, composite);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 2);
+            await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(1, store._history._purchases.Count,
             $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
-        public void PurchaseCart_composite_rule__and_xor_AllFalse()
+        public async void PurchaseCart_composite_rule__and_xor_AllFalse()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
-            int rule2 = marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
+            int rule2 = await marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
             List<int> rules = [rule1, rule2];
-            int composite = marketManagerFacade.AddCompositeRule(token1, 1, xor_operator, rules);
+            int composite = await marketManagerFacade.AddCompositeRule(token1, 1, xor_operator, rules);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, composite);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 2);
+            await marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, composite);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 2);
             Assert.ThrowsException<Exception>(() => marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails));
-            Store store = marketManagerFacade.GetStore(1);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(0, store._history._purchases.Count,
             $"Expected puchase history count to be 0 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
-        public void PurchaseCart_Discount_Role__category_Success()
+        public async void PurchaseCart_Discount_Role__category_Success()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, rule1, 0.5);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 2);
-            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
-            Store store = marketManagerFacade.GetStore(1);
+            await marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, rule1, 0.5);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 2);
+            await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(1, store._history._purchases.Count,
             $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
             Assert.AreEqual(10, store._history._purchases[0].Price,
@@ -336,16 +336,16 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public void PurchaseCart_Discount_Role__category_Fail()
+        public async void PurchaseCart_Discount_Role__category_Fail()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, rule1, 0.5);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 5);
-            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
-            Store store = marketManagerFacade.GetStore(1);
+            await marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, rule1, 0.5);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 5);
+            await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(1, store._history._purchases.Count,
             $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
             Assert.AreEqual(35, store._history._purchases[0].Price,
@@ -353,19 +353,19 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public void PurchaseCart_Discount_rule__and_Success()
+        public async void PurchaseCart_Discount_rule__and_Success()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
-            int rule2 = marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
+            int rule2 = await marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
             List<int> rules = [rule1, rule2];
-            int composite = marketManagerFacade.AddCompositeRule(token1, 1, and_operator, rules);
+            int composite = await marketManagerFacade.AddCompositeRule(token1, 1, and_operator, rules);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, composite);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 2);
-            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
-            Store store = marketManagerFacade.GetStore(1);
+            await marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, composite);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 2);
+            await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(1, store._history._purchases.Count,
             $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
             Assert.AreEqual(20, store._history._purchases[0].Price,
@@ -373,19 +373,19 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public void PurchaseCart_Discount_rule__and_Fail_OneNotTrue()
+        public async void PurchaseCart_Discount_rule__and_Fail_OneNotTrue()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
-            int rule2 = marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
+            int rule2 =await  marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
             List<int> rules = [rule1, rule2];
-            int composite = marketManagerFacade.AddCompositeRule(token1, 1, and_operator, rules);
+            int composite =await marketManagerFacade.AddCompositeRule(token1, 1, and_operator, rules);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, composite, 0.5);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 5);
-            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
-            Store store = marketManagerFacade.GetStore(1);
+            await marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, composite, 0.5);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 5);
+            await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(1, store._history._purchases.Count,
             $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
             Assert.AreEqual(35, store._history._purchases[0].Price,
@@ -393,19 +393,19 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public void PurchaseCart_Discount_rule__or_Success()
+        public async void PurchaseCart_Discount_rule__or_Success()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
-            int rule2 = marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
+            int rule2 = await marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
             List<int> rules = [rule1, rule2];
-            int composite = marketManagerFacade.AddCompositeRule(token1, 1, or_operator, rules);
+            int composite = await marketManagerFacade.AddCompositeRule(token1, 1, or_operator, rules);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, composite, 0.5);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 2);
-            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
-            Store store = marketManagerFacade.GetStore(1);
+            await marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, composite, 0.5);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 2);
+            await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(1, store._history._purchases.Count,
             $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
             Assert.AreEqual(10, store._history._purchases[0].Price,
@@ -413,19 +413,19 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public void PurchaseCart_Discount_rule__and_or_AllFalse()
+        public async void PurchaseCart_Discount_rule__and_or_AllFalse()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
-            int rule2 = marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 100);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
+            int rule2 = await marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 100);
             List<int> rules = [rule1, rule2];
-            int composite = marketManagerFacade.AddCompositeRule(token1, 1, or_operator, rules);
+            int composite = await marketManagerFacade.AddCompositeRule(token1, 1, or_operator, rules);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, composite, 0.5);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 5);
-            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
-            Store store = marketManagerFacade.GetStore(1);
+            await marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, composite, 0.5);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 5);
+            await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(1, store._history._purchases.Count,
             $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
             Assert.AreEqual(35, store._history._purchases[0].Price,
@@ -433,19 +433,19 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public void PurchaseCart_Discount_rule__xor_Success1()
+        public async void PurchaseCart_Discount_rule__xor_Success1()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
-            int rule2 = marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
+            int rule2 = await marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
             List<int> rules = [rule1, rule2];
-            int composite = marketManagerFacade.AddCompositeRule(token1, 1, xor_operator, rules);
+            int composite =await  marketManagerFacade.AddCompositeRule(token1, 1, xor_operator, rules);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, composite, 0.5);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 5);
-            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
-            Store store = marketManagerFacade.GetStore(1);
+            await marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, composite, 0.5);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 5);
+            await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(1, store._history._purchases.Count,
             $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
             Assert.AreEqual(17.5, store._history._purchases[0].Price,
@@ -453,19 +453,19 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public void PurchaseCart_Discount_rule__xor_Success2()
+        public async void PurchaseCart_Discount_rule__xor_Success2()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
-            int rule2 = marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 100);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
+            int rule2 = await marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 100);
             List<int> rules = [rule1, rule2];
-            int composite = marketManagerFacade.AddCompositeRule(token1, 1, xor_operator, rules);
+            int composite = await marketManagerFacade.AddCompositeRule(token1, 1, xor_operator, rules);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, composite, 0.5);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 2);
-            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
-            Store store = marketManagerFacade.GetStore(1);
+            await marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, composite, 0.5);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 2);
+            await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(1, store._history._purchases.Count,
             $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
             Assert.AreEqual(10, store._history._purchases[0].Price,
@@ -473,19 +473,19 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public void PurchaseCart_Discount_rule__and_xor_AllFalse()
+        public async void PurchaseCart_Discount_rule__and_xor_AllFalse()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
-            int rule2 = marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
+            int rule2 = await marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
             List<int> rules = [rule1, rule2];
-            int composite = marketManagerFacade.AddCompositeRule(token1, 1, xor_operator, rules);
+            int composite = await marketManagerFacade.AddCompositeRule(token1, 1, xor_operator, rules);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, composite, 0.5);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 2);
-            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
-            Store store = marketManagerFacade.GetStore(1);
+            await marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, composite, 0.5);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 2);
+            await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(1, store._history._purchases.Count,
             $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
             Assert.AreEqual(20, store._history._purchases[0].Price,
@@ -493,35 +493,35 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public void PurchaseCart_Discount_Success_Purchase_fail()
+        public async void PurchaseCart_Discount_Success_Purchase_fail()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
-            int rule2 = marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
+            int rule2 = await marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, rule1);
-            marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, rule2, 0.5);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 5);
+            await marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, rule1);
+            await marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, rule2, 0.5);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 5);
             Assert.ThrowsException<Exception>(() => marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails));
-            Store store = marketManagerFacade.GetStore(1);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(0, store._history._purchases.Count,
             $"Expected puchase history count to be 0 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
-        public void PurchaseCart_Discount_Fail_Purchase_Success()
+        public async void PurchaseCart_Discount_Fail_Purchase_Success()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
-            int rule2 = marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
+            int rule2 = await marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, rule2);
-            marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, rule1, 0.5);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 5);
-            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
-            Store store = marketManagerFacade.GetStore(1);
+            await marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, rule2);
+            await marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, rule1, 0.5);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 5);
+            await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(1, store._history._purchases.Count,
             $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
             Assert.AreEqual(35, store._history._purchases[0].Price,
@@ -529,17 +529,16 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public void PurchaseCart_Discount_Success_Purchase_Success()
+        public async void PurchaseCart_Discount_Success_Purchase_Success()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule2 = marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule2 = await marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, rule2);
-            marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, rule2, 0.5);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 5);
-            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
-            Store store = marketManagerFacade.GetStore(1);
+            await marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, rule2);
+            await marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, rule2, 0.5);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(1, store._history._purchases.Count,
             $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
             Assert.AreEqual(17.5, store._history._purchases[0].Price,
@@ -547,20 +546,20 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public void PurchaseCart_Composite_Policies_add()
+        public async void PurchaseCart_Composite_Policies_add()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 10);
-            int rule2 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 10);
+            int rule2 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            int policy1 = marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, rule2, 0.5);
-            int policy2 = marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, rule1, 0.1);
+            int policy1 = await marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, rule2, 0.5);
+            int policy2 = await marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, rule1, 0.1);
             List<int> policies = [policy1, policy2];
-            marketManagerFacade.AddCompositePolicy(token1, 1, expirationDate, category1, 0, policies);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 2);
-            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
-            Store store = marketManagerFacade.GetStore(1);
+            await marketManagerFacade.AddCompositePolicy(token1, 1, expirationDate, category1, 0, policies);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 2);
+            await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(1, store._history._purchases.Count,
             $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
             Assert.AreEqual(8, store._history._purchases[0].Price,
@@ -568,20 +567,20 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public void PurchaseCart_Composite_Policies_max()
+        public async void PurchaseCart_Composite_Policies_max()
         {
-            marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
-            int rule1 = marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 10);
-            int rule2 = marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
+            await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
+            int rule1 = await marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 10);
+            int rule2 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            int policy1 = marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, rule2, 0.5);
-            int policy2 = marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, rule1, 0.1);
+            int policy1 = await marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, rule2, 0.5);
+            int policy2 = await marketManagerFacade.AddDiscountPolicy(token1, 1, expirationDate, category1, rule1, 0.1);
             List<int> policies = [policy1, policy2];
-            marketManagerFacade.AddCompositePolicy(token1, 1, expirationDate, category1, 1, policies);
-            marketManagerFacade.AddToCart(token1, 1, 12, 2);
-            marketManagerFacade.AddToCart(token1, 1, 11, 2);
-            marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
-            Store store = marketManagerFacade.GetStore(1);
+            await marketManagerFacade.AddCompositePolicy(token1, 1, expirationDate, category1, 1, policies);
+            await marketManagerFacade.AddToCart(token1, 1, 12, 2);
+            await marketManagerFacade.AddToCart(token1, 1, 11, 2);
+            await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
+            Store store = await marketManagerFacade.GetStore(1);
             Assert.AreEqual(1, store._history._purchases.Count,
             $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
             Assert.AreEqual(10, store._history._purchases[0].Price,

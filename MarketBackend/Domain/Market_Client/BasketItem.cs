@@ -32,7 +32,11 @@ namespace MarketBackend.Domain.Market_Client{
 
         public BasketItem(BasketItemDTO basketItemDTO)
         {
-            _product = ProductRepositoryRAM.GetInstance().GetById(basketItemDTO.Product.ProductId);
+            asyneBasketItem(basketItemDTO);
+        }
+
+        public async void asyneBasketItem(BasketItemDTO basketItemDTO){
+            _product = await ProductRepositoryRAM.GetInstance().GetById(basketItemDTO.Product.ProductId);
             _priceAfterDiscount = basketItemDTO.PriceAfterDiscount;
             _quantity = basketItemDTO.Quantity;
         }

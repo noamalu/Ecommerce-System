@@ -40,72 +40,67 @@ namespace MarketBackend.Domain.Market_Client
             }         
         }
 
-        public void addToBasket(int productId, int quantity){
+        public async Task addToBasket(int productId, int quantity){
             if (products.ContainsKey(productId)){
                 products[productId] += quantity;
                 FindBasketItem(productId).Quantity += quantity;
                 int quantityInBasket = FindBasketItem(productId).Quantity;
-                lock (Lock)
+                DBcontext dBcontext = DBcontext.GetInstance();
+                await dBcontext.PerformTransactionalOperationAsync(async () =>
                 {
-                    DBcontext dBcontext = DBcontext.GetInstance();
                     BasketDTO basketDTO = dBcontext.Baskets.Find(_basketId);
                     BasketItemDTO basketItemDTO = basketDTO.BasketItems.FirstOrDefault(bi => bi.Product.ProductId == productId);
                     if (basketItemDTO != null)
                     {
                         basketItemDTO.Quantity = quantityInBasket;
-                        dBcontext.SaveChanges();
                     }
-                }
+                });
             }
             else{
                 products[productId] = quantity;
-                BasketItem basketItem = new BasketItem(ProductRepositoryRAM.GetInstance().GetById(productId), quantity);
-                _basketItems.Add(basketItem);
-                lock (Lock)
+                BasketItem basketItem = new BasketItem(await ProductRepositoryRAM.GetInstance().GetById(productId), quantity);
+                DBcontext dBcontext = DBcontext.GetInstance();
+                await dBcontext.PerformTransactionalOperationAsync(async () =>
                 {
-                    DBcontext dBcontext = DBcontext.GetInstance();
                     BasketItemDTO basketItemDTO = new BasketItemDTO(basketItem);
-                    // dBcontext.BasketItems.Add(basketItemDTO);
                     BasketDTO basketDTO = dBcontext.Baskets.Find(_basketId);
                     basketDTO.BasketItems.Add(basketItemDTO);
-                    dBcontext.SaveChanges();
-                }
+                });
+                _basketItems.Add(basketItem);
             }
         }
 
-        public void RemoveFromBasket(int productId, int quantity){
+        public async Task RemoveFromBasket(int productId, int quantity){
             if (products.ContainsKey(productId)){
                 products[productId] = Math.Max(products[productId]-quantity,0);
                 if (products[productId] == 0) {
-                    products.Remove(productId);
-                    _basketItems.Remove(FindBasketItem(productId));
-                    lock (Lock)
+                    DBcontext dBcontext = DBcontext.GetInstance();
+                    await dBcontext.PerformTransactionalOperationAsync(async () =>
                     {
-                        DBcontext dBcontext = DBcontext.GetInstance();
                         BasketDTO basketDTO = dBcontext.Baskets.Find(_basketId);
                         BasketItemDTO basketItemDTO = basketDTO.BasketItems.FirstOrDefault(bi => bi.Product.ProductId == productId);
                         if (basketItemDTO != null)
                         {
                             dBcontext.BasketItems.Remove(basketItemDTO);
                             dBcontext.Baskets.Remove(basketDTO);
-                            dBcontext.SaveChanges();
                         }
-                    }
+                    });
+                    products.Remove(productId);
+                    _basketItems.Remove(FindBasketItem(productId));
                 }
                 else{
                     FindBasketItem(productId).Quantity -= quantity;
                     int quantityInBasket = FindBasketItem(productId).Quantity;
-                    lock (Lock)
+                    DBcontext dBcontext = DBcontext.GetInstance();
+                    await dBcontext.PerformTransactionalOperationAsync(async () =>
                     {
-                        DBcontext dBcontext = DBcontext.GetInstance();
                         BasketDTO basketDTO = dBcontext.Baskets.Find(_basketId);
                         BasketItemDTO basketItemDTO = basketDTO.BasketItems.FirstOrDefault(bi => bi.Product.ProductId == productId);
                         if (basketItemDTO != null)
                         {
                             basketItemDTO.Quantity = quantityInBasket;
-                            dBcontext.SaveChanges();
                         }
-                    }
+                    });
                 }
             }
             else{

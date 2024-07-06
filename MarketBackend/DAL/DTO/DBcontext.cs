@@ -14,6 +14,8 @@ namespace MarketBackend.DAL.DTO
         public static string DbPathLocal;
         public static bool LocalMode = true;
 
+        private static readonly SemaphoreSlim _dbSemaphore = new SemaphoreSlim(1, 1);
+
         public virtual DbSet<MemberDTO> Members { get; set; }
         public virtual DbSet<MessageDTO> Messages { get; set; }
         public virtual DbSet<StoreDTO> Stores { get; set; }
@@ -303,19 +305,26 @@ namespace MarketBackend.DAL.DTO
 
         public async Task PerformTransactionalOperationAsync(Func<Task> operations)
         {
-            using (var transaction = await Database.BeginTransactionAsync())
-            {
+            await _dbSemaphore.WaitAsync();
+            try{
+                using (var transaction = await Database.BeginTransactionAsync())
+                {
                 try
                 {
                     await operations();
                     await SaveChangesAsync();
                     await transaction.CommitAsync();
-                }
+                }   
                 catch (Exception)
                 {
                     await transaction.RollbackAsync();
                     throw;
                 }
+                }
+            }
+            finally
+            {
+                _dbSemaphore.Release();
             }
         }
     }

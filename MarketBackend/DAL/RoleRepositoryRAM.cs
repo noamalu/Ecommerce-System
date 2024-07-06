@@ -18,6 +18,8 @@ namespace MarketBackend.DAL
         public ConcurrentDictionary<int, ConcurrentDictionary<string, Role>> roles; //<storeId, <memberId, Role>>
         private static RoleRepositoryRAM roleRepositoryRAM = null;
 
+        private DBcontext dBcontext;
+
         private object _lock;
         
 
@@ -38,7 +40,7 @@ namespace MarketBackend.DAL
             roleRepositoryRAM = new RoleRepositoryRAM();
         }
 
-        public Role GetById(int storeId) 
+        public async Task<Role> GetById(int storeId) 
         {
             if(!roles.ContainsKey(storeId))
                 throw new KeyNotFoundException($"store with ID {storeId} not found.");
@@ -46,34 +48,40 @@ namespace MarketBackend.DAL
             return roles[storeId].Values.First(role => role.getRoleName() == RoleName.Founder);
         }
 
-        public Role GetById(int storeId, string userName)
+        public async Task<Role> GetById(int storeId, string userName)
         {
             if (!roles.ContainsKey(storeId) && roles[storeId].ContainsKey(userName)){
-                lock (_lock)
+                dBcontext = DBcontext.GetInstance();
+                await dBcontext.PerformTransactionalOperationAsync(async () =>
                 {
-                    RoleDTO roleDTO = DBcontext.GetInstance().Roles.Find(storeId, userName);
-                    if (roleDTO != null)
+                RoleDTO roleDTO = dBcontext.Roles.Find(storeId, userName);
+                if (roleDTO != null)
+                {
+                    Role role = new Role(roleDTO);
+                    if (!roles.ContainsKey(storeId))
                     {
-                        Role role = new Role(roleDTO);
-                        if (!roles.ContainsKey(storeId))
-                        {
-                            roles[storeId] = new ConcurrentDictionary<string, Role>();
-                            roles[storeId][userName] = role;
-                        }
-                        else{
-                            roles[storeId].TryAdd(userName, role);
-                        }
+                        roles[storeId] = new ConcurrentDictionary<string, Role>();
+                        roles[storeId][userName] = role;
                     }
-                    else
-                    {
-                        throw new KeyNotFoundException($"member with ID {userName} at store with ID {storeId} not found.");
+                    else{
+                        roles[storeId].TryAdd(userName, role);
                     }
                 }
+                else
+                {
+                    throw new KeyNotFoundException($"member with ID {userName} at store with ID {storeId} not found.");
+                }
+                });
             }
             return roles[storeId][userName];
         }
-        public void Add(Role entity)
+        public async Task Add(Role entity)
         {
+            dBcontext = DBcontext.GetInstance();
+            await dBcontext.PerformTransactionalOperationAsync(async () =>
+            {
+            dBcontext.Roles.Add(new RoleDTO(entity));
+            });
             if (!roles.ContainsKey(entity.storeId))
             {
                 roles[entity.storeId] = new ConcurrentDictionary<string, Role>();
@@ -82,14 +90,9 @@ namespace MarketBackend.DAL
             else{
                 roles[entity.storeId].TryAdd(entity.userName, entity);
             }
-            lock (_lock)
-            {
-                DBcontext.GetInstance().Roles.Add(new RoleDTO(entity));
-                DBcontext.GetInstance().SaveChanges();
-            }
-
         }
-        public IEnumerable<Role> getAll()
+        
+        public async Task<IEnumerable<Role>> getAll()
         {
             List<RoleDTO> rolesDtos = new List<RoleDTO>();
             foreach (RoleDTO r in rolesDtos)
@@ -107,58 +110,54 @@ namespace MarketBackend.DAL
 
             return roles.SelectMany(store => store.Value.Values).ToList();
         }
-        public void Update(Role entity)
+        public async Task Update(Role entity)
         {
             roles[entity.storeId][entity.userName] = entity;
-
-            lock (_lock)
+            dBcontext = DBcontext.GetInstance();
+            await dBcontext.PerformTransactionalOperationAsync(async () =>
             {
-                RoleDTO roleDTO = DBcontext.GetInstance().Roles.Find(entity.storeId, entity.userName);
-                if (roleDTO != null)
-                {
-                    List<string> newPermissions = new List<string>();
-                    foreach (Permission permission in entity.getPermissions())
-                        newPermissions.Add(permission.ToString());
+            RoleDTO roleDTO = dBcontext.Roles.Find(entity.storeId, entity.userName);
+            if (roleDTO != null)
+            {
+                List<string> newPermissions = new List<string>();
+                foreach (Permission permission in entity.getPermissions())
+                    newPermissions.Add(permission.ToString());
 
-                    List<int> newAppointees = new List<int>();
-                    foreach (Member app in entity.getAppointees())
-                        newAppointees.Add(app.Id);
+                List<int> newAppointees = new List<int>();
+                foreach (Member app in entity.getAppointees())
+                    newAppointees.Add(app.Id);
 
-                    roleDTO.permissions = newPermissions;
-                    roleDTO.appointees = newAppointees;
-                    DBcontext.GetInstance().SaveChanges();
-                }
-            }
+                roleDTO.permissions = newPermissions;
+                roleDTO.appointees = newAppointees;
+            }});
         }
-        public void Delete(Role entity)
+
+        public async Task Delete(Role entity)
         {
             if (roles.ContainsKey(entity.storeId) && roles[entity.storeId].ContainsKey(entity.userName))
             {
                 roles[entity.storeId].TryRemove(new KeyValuePair<string, Role>(entity.userName, entity));
             }
-
-            lock (_lock)
+            dBcontext = DBcontext.GetInstance();
+            await dBcontext.PerformTransactionalOperationAsync(async () =>
             {
-                RoleDTO roleDto = DBcontext.GetInstance().Roles.Find(entity.storeId, entity.userName);
-                DBcontext.GetInstance().Roles.Remove(roleDto);
-                DBcontext.GetInstance().SaveChanges();
-            }
+            RoleDTO roleDto = dBcontext.Roles.Find(entity.storeId, entity.userName);
+            dBcontext.Roles.Remove(roleDto);
+            });
         }
 
-        public ConcurrentDictionary<string, Role> getShopRoles(int storeId)
+        public async Task<ConcurrentDictionary<string, Role>> getShopRoles(int storeId)
         {
             if (!roles.ContainsKey(storeId))
             {
                 roles[storeId] = new ConcurrentDictionary<string, Role>();
             }
-            DBcontext.GetInstance().Roles.Where(role => role.storeId == storeId).ToList().ForEach(role => roles[storeId].TryAdd(role.userName, RoleDTO.ConvertToRole(role)));
-
+            dBcontext = DBcontext.GetInstance();
+            await dBcontext.PerformTransactionalOperationAsync(async () =>
+            {
+            dBcontext.Roles.Where(role => role.storeId == storeId).ToList().ForEach(async role => roles[storeId].TryAdd(role.userName, await RoleDTO.ConvertToRole(role)));
+            });
             return roles[storeId];
-        }
-
-        public Task Add2(Role entity)
-        {
-            throw new NotImplementedException();
         }
     }
 }

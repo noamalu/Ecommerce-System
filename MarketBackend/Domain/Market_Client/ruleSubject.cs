@@ -29,12 +29,16 @@ namespace MarketBackend.Domain.Market_Client{
         //todo: nofar
         public RuleSubject(RuleSubjectDTO subject)
         {
+            asyncRuleSubject(subject);
+        }
+
+        public async void asyncRuleSubject(RuleSubjectDTO subject){
             if (subject.Category.Equals("None"))
             {
                 _category = subject.Category;
                 if (subject.Product.ProductId != -1)
                 {
-                    _product = ProductRepositoryRAM.GetInstance().GetById(subject.Product.ProductId);
+                    _product = await ProductRepositoryRAM.GetInstance().GetById(subject.Product.ProductId);
                 }
                 else _product = null;
             }
@@ -46,12 +50,16 @@ namespace MarketBackend.Domain.Market_Client{
 
          public RuleSubject(PolicySubjectDTO policySubject)
         {
+            asyncRuleSubject(policySubject);
+        }
+
+        public async void asyncRuleSubject(PolicySubjectDTO policySubject){
             if (policySubject.Category.Equals("None"))
             {
                 _category = policySubject.Category;
                 if (policySubject.Product.ProductId != -1)
                 {
-                    _product = ProductRepositoryRAM.GetInstance().GetById(policySubject.Product.ProductId);
+                    _product = await ProductRepositoryRAM.GetInstance().GetById(policySubject.Product.ProductId);
                 }
                 else _product = null;
             }

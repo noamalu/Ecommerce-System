@@ -37,11 +37,11 @@ namespace MarketBackend.Services
             MarketManagerFacade.Dispose();
             _clientService = null;
         }
-        public Response AddToCart(string identifier, int storeId, int productId, int quantity)
+        public async Task<Response> AddToCart(string identifier, int storeId, int productId, int quantity)
         {
             try
             {
-                _marketManagerFacade.AddToCart(identifier, storeId, productId, quantity);
+                await _marketManagerFacade.AddToCart(identifier, storeId, productId, quantity);
                 _logger.Info($"client {identifier} added product {productId} with quantity {quantity} to cart in store {storeId}");
                 return new Response();
             }
@@ -67,11 +67,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response<string> EnterAsGuest(string identifier)
+        public async Task<Response<string>> EnterAsGuest(string identifier)
         {
              try
             {
-                _marketManagerFacade.EnterAsGuest(identifier);
+                await _marketManagerFacade.EnterAsGuest(identifier);
                 _logger.Info($"Client {identifier} entered as guest.");
                 return Response<string>.FromValue(identifier);
             }
@@ -82,11 +82,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response ExitGuest(string identifier)
+        public async Task<Response> ExitGuest(string identifier)
         {
              try
             {
-                _marketManagerFacade.ExitGuest(identifier);
+                await _marketManagerFacade.ExitGuest(identifier);
                 _logger.Info($"Client exited.");
                 return new Response();
             }
@@ -97,11 +97,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response<List<ShoppingCartResultDto>> GetPurchaseHistoryByClient(string userName)
+        public async Task<Response<List<ShoppingCartResultDto>>> GetPurchaseHistoryByClient(string userName)
         {
              try
             {
-                List<ShoppingCartHistory> shoppingCarts = _marketManagerFacade.GetPurchaseHistoryByClient(userName);
+                List<ShoppingCartHistory> shoppingCarts = await _marketManagerFacade.GetPurchaseHistoryByClient(userName);
                 //log
                 return Response<List<ShoppingCartResultDto>>.FromValue(shoppingCarts.Select(cart => new ShoppingCartResultDto(cart)).ToList());
             }
@@ -112,11 +112,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response<string> LoginClient(string username, string password)
+        public async Task<Response<string>> LoginClient(string username, string password)
         {
              try
             {
-                string token = _marketManagerFacade.LoginClient(username, password);
+                string token = await _marketManagerFacade.LoginClient(username, password);
                 _logger.Info($"Client {username} logged in with username {username}.");
                 return Response<string>.FromValue(token);
             }
@@ -127,11 +127,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response LogoutClient(string identifier)
+        public async Task<Response> LogoutClient(string identifier)
         {
              try
             {
-                _marketManagerFacade.LogoutClient(identifier);
+                await _marketManagerFacade.LogoutClient(identifier);
                 _logger.Info($"Client {identifier} logged out.");
                 return new Response();
             }
@@ -142,11 +142,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response Register(string username, string password, string email, int age)
+        public async Task<Response> Register(string username, string password, string email, int age)
         {
              try
             {
-                _marketManagerFacade.Register(username, password, email, age);
+                await _marketManagerFacade.Register(username, password, email, age);
                 _logger.Info($"Client {username} registerd with username {username}.");
                 return new Response();
             }
@@ -157,11 +157,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response RemoveFromCart(string identifier, int productId, int storeId, int quantity)
+        public async Task<Response> RemoveFromCart(string identifier, int productId, int storeId, int quantity)
         {
             try
             {
-                _marketManagerFacade.RemoveFromCart(identifier, productId, storeId, quantity);
+                await _marketManagerFacade.RemoveFromCart(identifier, productId, storeId, quantity);
                 _logger.Info($"Client {identifier} removed {quantity} products {productId} from basket {storeId}.");
                 return new Response();
             }
@@ -172,11 +172,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response<bool> ResToStoreManageReq(string identifier)
+        public async Task<Response<bool>> ResToStoreManageReq(string identifier)
         {
             try
             {
-                bool ans = _marketManagerFacade.ResToStoreManageReq(identifier);
+                bool ans = await _marketManagerFacade.ResToStoreManageReq(identifier);
                 _logger.Info($"Client {identifier} responed to store manager request: {ans}");
                 return Response<bool>.FromValue(ans);
             }
@@ -187,11 +187,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response<bool> ResToStoreOwnershipReq(string identifier)
+        public async Task<Response<bool>> ResToStoreOwnershipReq(string identifier)
         {
             try
             {
-                bool ans = _marketManagerFacade.ResToStoreOwnershipReq(identifier);
+                bool ans = await _marketManagerFacade.ResToStoreOwnershipReq(identifier);
                 _logger.Info($"Client {identifier} responed to store owner request: {ans}");
                 return Response<bool>.FromValue(ans);
             }
@@ -202,13 +202,13 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response<ShoppingCartResultDto> ViewCart(string identifier)
+        public async Task<Response<ShoppingCartResultDto>> ViewCart(string identifier)
         {
             try
             {
-                ShoppingCart cart = _marketManagerFacade.ViewCart(identifier);
+                ShoppingCart cart = await _marketManagerFacade.ViewCart(identifier);
                 _logger.Info($"Client {identifier} view cart successfully.");
-                return Response<ShoppingCartResultDto>.FromValue(new(cart));
+                return Response<ShoppingCartResultDto>.FromValue(await ShoppingCartResultDto.CreateAsync(cart));
             }
             catch (Exception e)
             {
@@ -217,10 +217,10 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response EditPurchasePolicy(int storeId){
+        public async Task<Response> EditPurchasePolicy(int storeId){
             try
             {
-                _marketManagerFacade.EditPurchasePolicy(storeId);
+                await _marketManagerFacade.EditPurchasePolicy(storeId);
                 _logger.Info($"Purchase policy was edited in store {storeId}");
                 return new Response();
             }
@@ -231,26 +231,26 @@ namespace MarketBackend.Services
             }
         }
 
-        public void InitiateSystemAdmin(){
-            _marketManagerFacade.InitiateSystemAdmin();
+        public async Task InitiateSystemAdmin(){
+            await _marketManagerFacade.InitiateSystemAdmin();
             _logger.Info("initial");
         }
 
-        public int GetMemberIDByUserName(string username)
+        public async Task<int> GetMemberIDByUserName(string username)
         {
-            return _marketManagerFacade.GetMemberIDrByUserName(username);
+            return await _marketManagerFacade.GetMemberIDrByUserName(username);
         }
 
-        public Member GetMember(string username)
+        public async Task<Member> GetMember(string username)
         {
-            return _marketManagerFacade.GetMember(username);
+            return await _marketManagerFacade.GetMember(username);
         }
 
-        public Response<List<StoreResultDto>> GetMemberStores(string identifier)
+        public async Task<Response<List<StoreResultDto>>> GetMemberStores(string identifier)
         {
             try
             {
-                var stores = _marketManagerFacade.GetMemberStores(identifier);
+                var stores = await _marketManagerFacade.GetMemberStores(identifier);
                 _logger.Info($"fetched client {identifier} stores successfuly.");
                 return Response<List<StoreResultDto>>.FromValue(stores.Select(store => new StoreResultDto(store)).ToList());
             }
@@ -261,11 +261,11 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response<StoreResultDto> GetMemberStore(string identifier, int storeId)
+        public async Task<Response<StoreResultDto>> GetMemberStore(string identifier, int storeId)
         {
             try
             {
-                var store = _marketManagerFacade.GetMemberStore(identifier, storeId);
+                var store = await _marketManagerFacade.GetMemberStore(identifier, storeId);
                 _logger.Info($"fetched client {identifier} stores successfuly.");
                 return Response<StoreResultDto>.FromValue(new(store));
             }
@@ -276,11 +276,11 @@ namespace MarketBackend.Services
             }        
         }
 
-        public Response<List<MessageResultDto>> GetMemberNotifications(string identifier)
+        public async Task<Response<List<MessageResultDto>>> GetMemberNotifications(string identifier)
         {
            try
             {
-                var notifications = _marketManagerFacade.GetMemberNotifications(identifier);
+                var notifications = await _marketManagerFacade.GetMemberNotifications(identifier);
                 _logger.Info($"fetched client {identifier} notifications successfuly.");
                 return Response<List<MessageResultDto>>.FromValue(notifications.Select(notification => new MessageResultDto(notification)).ToList());
             }

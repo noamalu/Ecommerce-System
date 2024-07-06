@@ -41,19 +41,19 @@ namespace MarketBackend.DAL.DTO
 
         public RoleDTO(){}
 
-        public static Role ConvertToRole(RoleDTO roleDto)
+        public static async Task<Role> ConvertToRole(RoleDTO roleDto)
         {
             // Assuming you have a method to convert `RoleTypeDTO` to `RoleType`
             RoleType roleType = ConvertToRoleType(roleDto);
 
-            Member appointerMember = ClientRepositoryRAM.GetInstance().GetById(roleDto.appointer);
+            Member appointerMember = await ClientRepositoryRAM.GetInstance().GetById(roleDto.appointer);
 
             Role role = new Role(roleType, appointerMember, roleDto.storeId, roleDto.userName);
 
             // Handling list of appointees
             foreach (int appDto in roleDto.appointees)
             {
-                Member app = ClientRepositoryRAM.GetInstance().GetById(appDto);
+                Member app = await ClientRepositoryRAM.GetInstance().GetById(appDto);
                 role.addAppointee(app);
             }
 

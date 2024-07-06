@@ -16,6 +16,7 @@ namespace MarketBackend.DAL
 
         private static BasketRepositoryRAM _basketRepository = null;
         private object Lock;
+        private BasketDTO bDto;
 
         private BasketRepositoryRAM()
         {
@@ -32,82 +33,82 @@ namespace MarketBackend.DAL
         public static void Dispose(){
             _basketRepository = new BasketRepositoryRAM();
         }
-        public Basket CreateBasket(int storeId, int cartId)
+        public async Task<Basket> CreateBasket(int storeId, int cartId)
         {
             var newBasket = new Basket(BasketCounter, storeId)
             {
                 _cartId = cartId
             };
-            baskets.TryAdd(newBasket._basketId, newBasket);
+            
             DBcontext dbContext = DBcontext.GetInstance();
-            lock (Lock)
+            await dbContext.PerformTransactionalOperationAsync(async () =>
             {
                 dbContext.Baskets.Add(new BasketDTO(newBasket));
-                dbContext.SaveChanges();
-            }
+            });
+            baskets.TryAdd(newBasket._basketId, newBasket);
             BasketCounter ++;
             return newBasket;
         }
 
-        public void Add(Basket entity)
+        public async Task Add(Basket entity)
         {
             if(baskets.ContainsKey(entity._basketId)){
                 throw new ArgumentException($"Basket with ID {entity._basketId} already exists.");
-
             }
             DBcontext dbContext = DBcontext.GetInstance();
-            baskets.TryAdd(entity._basketId, entity);
-            lock (Lock)
+            await dbContext.PerformTransactionalOperationAsync(async () =>
             {
                 dbContext.Baskets.Add(new BasketDTO(entity));
-                dbContext.SaveChanges();
-            }
-
+            });
+            baskets.TryAdd(entity._basketId, entity);
         }
 
-        public void Delete(Basket entity)
+        public async Task Delete(Basket entity)
         {
-            lock (Lock)
+            DBcontext dbContext = DBcontext.GetInstance();
+            await dbContext.PerformTransactionalOperationAsync(async () =>
             {
-                var dbContext = DBcontext.GetInstance();
                 var dbBasket = dbContext.Baskets.Find(entity._basketId);
                 if (dbBasket is not null){
+                    dbContext.Baskets.Remove(dbBasket);
                     if (baskets.ContainsKey(entity._basketId)){
                         baskets.TryRemove(new KeyValuePair<int, Basket>(entity._basketId, entity));
                     }
                     else{
                         throw new KeyNotFoundException($"Basket with ID {entity._basketId} does not exist.");
+            
                     }
-                    dbContext.Baskets.Remove(dbBasket);
-                    dbContext.SaveChanges();
                 }
-            }
+            });
         }
 
-        public IEnumerable<Basket> getAll()
+        public async Task<IEnumerable<Basket>> getAll()
         {
             return baskets.Values.ToList();
         }
 
-        public IEnumerable<Basket> getBasketsByCartId(int cartId)
+        public async Task<IEnumerable<Basket>> getBasketsByCartId(int cartId)
         {
             return baskets.Values.Where(basket => basket._cartId == cartId).ToList();
         }
 
-        public Basket GetById(int id){
+        public async Task<Basket> GetById(int id){
             if (baskets.ContainsKey(id)){
                 return baskets[id];
             }
             else
             {
-                var dbContext = DBcontext.GetInstance();
-                BasketDTO bDto = dbContext.Baskets.Find(id);
-                if (bDto != null)
+                DBcontext dbContext = DBcontext.GetInstance();
+                await dbContext.PerformTransactionalOperationAsync(async () =>
                 {
-                    LoadBasket(bDto);
-                    return baskets[id];
-                }
-                throw new ArgumentException("Invalid user ID.");
+                    bDto = dbContext.Baskets.Find(id);
+                });
+                if (bDto != null)
+                    {
+                        LoadBasket(bDto);
+                        return baskets[id];
+                    }
+                    throw new ArgumentException("Invalid user ID.");
             }
         }
 
@@ -117,7 +118,7 @@ namespace MarketBackend.DAL
             return value;
         }
 
-        public void Update(Basket entity)
+        public async Task Update(Basket entity)
         {
             if (baskets.ContainsKey(entity._basketId))
             {
@@ -129,14 +130,18 @@ namespace MarketBackend.DAL
             }
         }
 
-        private void Load()
+        private async Task Load()
         {
             var dbContext = DBcontext.GetInstance();
-            List<BasketDTO> Lbaskets = dbContext.Baskets.ToList();
-            foreach (BasketDTO basket in Lbaskets)
+            await dbContext.PerformTransactionalOperationAsync(async () =>
             {
-                baskets.TryAdd(basket.BasketId, new Basket(basket));
-            }
+                List<BasketDTO> Lbaskets = dbContext.Baskets.ToList();
+                foreach (BasketDTO basket in Lbaskets)
+                {
+                    baskets.TryAdd(basket.BasketId, new Basket(basket));
+                }
+            });
+            
         }
 
         private void LoadBasket(BasketDTO basketDTO)
@@ -145,21 +150,15 @@ namespace MarketBackend.DAL
             baskets[basket._basketId] = basket;
         }
 
-        public void Add_cartHistory(ShoppingCartHistory shoppingCartHistory, string memberUserName)
+        public async Task Add_cartHistory(ShoppingCartHistory shoppingCartHistory, string memberUserName)
         {
-            lock (Lock){
-                var dbContext = DBcontext.GetInstance();
+            var dbContext = DBcontext.GetInstance();
+            await dbContext.PerformTransactionalOperationAsync(async () =>
+            {
                 ShoppingCartHistoryDTO shoppingCartHistoryDTO = new ShoppingCartHistoryDTO(shoppingCartHistory);
                 MemberDTO memberDTO = dbContext.Members.Where(member => member.UserName == memberUserName).ToList()[0];
                 memberDTO.OrderHistory.Add(shoppingCartHistoryDTO);
-                dbContext.SaveChanges();
-            }
-            
-        }
-
-        public Task Add2(Basket entity)
-        {
-            throw new NotImplementedException();
+            });
         }
     }
 }

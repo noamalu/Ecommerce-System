@@ -24,18 +24,18 @@ namespace MarketBackend.Domain.Market_Client
             // UploadEventsFromContext();
         }
 
-        private void UploadEventsFromContext()
+        private async void UploadEventsFromContext()
         {
             DBcontext context = DBcontext.GetInstance();
             List<EventDTO> events =  context.Events.Where((e) => e.StoreId == _shopId).ToList();
             List<MemberDTO> members = context.Members.Where((m)=>m.IsSystemAdmin==true).ToList();
             foreach(EventDTO e in events)
             {
-                _listeners[e.Name].Add(ClientRepositoryRAM.GetInstance().GetById(e.Listener.Id));
+                _listeners[e.Name].Add(await ClientRepositoryRAM.GetInstance().GetById(e.Listener.Id));
             }
             foreach(MemberDTO m in members)
             {
-                Member member = ClientRepositoryRAM.GetInstance().GetById(m.Id);
+                Member member = await ClientRepositoryRAM.GetInstance().GetById(m.Id);
                 if (!_listeners["Report Event"].Contains(member))
                     _listeners["Report Event"].Add(member);
             }

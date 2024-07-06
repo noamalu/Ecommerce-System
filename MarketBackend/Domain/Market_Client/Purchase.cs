@@ -26,10 +26,14 @@ namespace MarketBackend.Domain.Market_Client
         }
         public Purchase(PurchaseDTO purchaseDTO)
         {
+            asyncPurchase(purchaseDTO);
+        }
+
+        public async void asyncPurchase(PurchaseDTO purchaseDTO){
             _purchaseId = purchaseDTO.Id;
             _storeId = purchaseDTO.StoreId;
             _identifier = purchaseDTO.Identifierr;
-            _basket = BasketRepositoryRAM.GetInstance().GetById(purchaseDTO.BasketId);
+            _basket = await BasketRepositoryRAM.GetInstance().GetById(purchaseDTO.BasketId);
             _price = purchaseDTO.Price;
         }
 

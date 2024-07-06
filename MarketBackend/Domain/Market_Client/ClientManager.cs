@@ -71,7 +71,7 @@ namespace MarketBackend.Domain.Market_Client
 
             return null;
         }
-        public Guest GetGuestByIdentifier(string identiifer)
+        public async Task<Guest> GetGuestByIdentifier(string identiifer)
         {
             if (GuestBySession.TryGetValue(identiifer, out var guest))
             {
@@ -81,7 +81,7 @@ namespace MarketBackend.Domain.Market_Client
             return null;
         }
 
-        public Member GetMemberByIdentifier(string identifier)
+        public async Task<Member> GetMemberByIdentifier(string identifier)
         {
             if (MemberByToken.TryGetValue(identifier, out var member))
             {
@@ -90,19 +90,19 @@ namespace MarketBackend.Domain.Market_Client
             throw new KeyNotFoundException($"identifier={identifier} not found in members");
         }
 
-        public bool AddToCart(string identifier, int storeId, int productId, int quantity)
+        public async Task<bool> AddToCart(string identifier, int storeId, int productId, int quantity)
         {
             Client client = GetClientByIdentifier(identifier);
-            client?.AddToCart(storeId ,productId, quantity);
+            await client?.AddToCart(storeId ,productId, quantity);
             return client is not null;
         }
 
-        public Client Register(string username, string password, string email, int age)
+        public async Task<Client> Register(string username, string password, string email, int age)
         {
             try
             {
-                var newClient = CreateMember(username, password, email, age);
-                _clientRepository.Add(newClient);
+                var newClient = await CreateMember(username, password, email, age);
+                await _clientRepository.Add(newClient);
                 return newClient;
             }
             catch (ArgumentException)
@@ -111,7 +111,7 @@ namespace MarketBackend.Domain.Market_Client
             }
         }
 
-        private Member CreateMember(string username, string password, string email, int age)
+        private async Task<Member> CreateMember(string username, string password, string email, int age)
         {
             var emailParsed = ValidateEmail(email);
             ValidateUserName(username);
@@ -144,18 +144,18 @@ namespace MarketBackend.Domain.Market_Client
             return true;            
         }
 
-        private bool ValidateUserName(string username){
-            if(_clientRepository.ContainsUserName(username))
+        private async Task<bool> ValidateUserName(string username){
+            if(await _clientRepository.ContainsUserName(username))
             {
                 throw new ArgumentException("Username already exists.", nameof(username));
             }
             return true;            
         }
 
-        public void RemoveFromCart(string identifier, int productId, int storeId, int quantity)
+        public async Task RemoveFromCart(string identifier, int productId, int storeId, int quantity)
         {
             var client = GetClientByIdentifier(identifier);
-            client.RemoveFromCart(storeId, productId, quantity);
+            await client.RemoveFromCart(storeId, productId, quantity);
         }
 
         public ShoppingCart ViewCart(string identifier)
@@ -164,27 +164,27 @@ namespace MarketBackend.Domain.Market_Client
             return client.Cart;
         }
 
-        public bool IsMember(string userName){
-            return _clientRepository.ContainsUserName(userName);
+        public async Task<bool> IsMember(string userName){
+            return await _clientRepository.ContainsUserName(userName);
         }
 
-        public Member GetSystemAdmin()
+        public async Task<Member> GetSystemAdmin()
         {
-            var allMembers = _clientRepository.getAll();
+            var allMembers = await _clientRepository.getAll();
             var allPossibleAdmin = allMembers.Where(member => member.IsSystemAdmin);
             return allPossibleAdmin.FirstOrDefault();
         }
 
-        public Client RegisterAsSystemAdmin(string username, string password, string email, int age)
+        public async Task<Client> RegisterAsSystemAdmin(string username, string password, string email, int age)
         {
-            var registerAdmin = GetSystemAdmin();
+            var registerAdmin = await GetSystemAdmin();
             if (registerAdmin != null) return registerAdmin;
 
             try
             {
-                registerAdmin = CreateMember(username, password, email, age);
+                registerAdmin = await CreateMember(username, password, email, age);
                 registerAdmin.IsSystemAdmin = true;
-                _clientRepository.Add(registerAdmin);
+                await _clientRepository.Add(registerAdmin);
                 return registerAdmin;
             }
             catch (ArgumentException)
@@ -193,10 +193,10 @@ namespace MarketBackend.Domain.Market_Client
             }
         }
 
-        public string LoginClient(string username, string password)
+        public async Task<string> LoginClient(string username, string password)
         {
             try{
-                var client = _clientRepository.GetByUserName(username);
+                var client = await _clientRepository.GetByUserName(username);
                 
                 if(_security.VerifyPassword(password, client.Password) && !client.IsLoggedIn){
                     var token = _security.GenerateToken(username);
@@ -209,15 +209,15 @@ namespace MarketBackend.Domain.Market_Client
                     
             }catch(Exception){
                 throw;
-            }
-        }
+            }
+        }
 
-        public void LogoutClient(string identifier)
+        public async Task LogoutClient(string identifier)
         {
             try{
                 if (_security.ValidateToken(identifier))
                 {
-                    var client = GetMemberByIdentifier(identifier);
+                    var client = await GetMemberByIdentifier(identifier);
 
                     if (client.IsLoggedIn)
                     {
@@ -240,41 +240,41 @@ namespace MarketBackend.Domain.Market_Client
             }
         }
 
-        public void BrowseAsGuest(string identifier)
+        public async Task BrowseAsGuest(string identifier)
         {
             var guest = new Guest(UserCounter);
             GuestBySession.TryAdd(identifier, guest);
             UserCounter++;
         }
 
-        public void DeactivateGuest(string identifier)
+        public async Task DeactivateGuest(string identifier)
         {
-            var client = GetGuestByIdentifier(identifier);
+            var client = await GetGuestByIdentifier(identifier);
             GuestBySession.TryRemove(identifier, out client);
         }
 
 
-        public int GetMemberIDrByUserName(string userName)
+        public async Task<int> GetMemberIDrByUserName(string userName)
         {
-            if(_clientRepository.ContainsUserName(userName))
+            if(await _clientRepository.ContainsUserName(userName))
             {
-                return _clientRepository.GetByUserName(userName).Id;
+                return (await _clientRepository.GetByUserName(userName)).Id;
             }
             return -1;       
         }
 
-        public Member GetMember(string userName)
+        public async Task<Member> GetMember(string userName)
         {
-            if(_clientRepository.ContainsUserName(userName))
+            if(await _clientRepository.ContainsUserName(userName))
             {
-                return _clientRepository.GetByUserName(userName);
+                return await _clientRepository.GetByUserName(userName);
             }
             return null;       
         }
 
-        public Member GetMemberByUserName(string userName)
+        public async Task<Member> GetMemberByUserName(string userName)
         {
-            return _clientRepository.GetByUserName(userName);    
+            return await _clientRepository.GetByUserName(userName);    
         }
 
         public bool CheckMemberIsLoggedIn(string identifier)
@@ -286,45 +286,45 @@ namespace MarketBackend.Domain.Market_Client
             throw new KeyNotFoundException($"identifier= {identifier} not found in members");
         }
 
-        public List<ShoppingCartHistory> GetPurchaseHistoryByClient(string userName)
+        public async Task<List<ShoppingCartHistory>> GetPurchaseHistoryByClient(string userName)
         {
-            return GetMemberByUserName(userName).GetHistory();
+            return (await GetMemberByUserName(userName)).GetHistory();
         }
 
-        public void PurchaseBasket(string identifier, Basket basket)
+        public async Task PurchaseBasket(string identifier, Basket basket)
         {
-            if(GetMemberByIdentifier(identifier) is not null)
-                GetMemberByIdentifier(identifier)?.PurchaseBasket(basket);
+            if(await GetMemberByIdentifier(identifier) is not null)
+                (await GetMemberByIdentifier(identifier))?.PurchaseBasket(basket);
             else
                 GetClientByIdentifier(identifier)?.PurchaseBasket(basket);
         }
 
-        public void NotificationOn(string identifier)
+        public async Task NotificationOn(string identifier)
         {
-            if(GetMemberByIdentifier(identifier) is not null)
-                GetMemberByIdentifier(identifier)?.NotificationOn();
+            if((await GetMemberByIdentifier(identifier)) is not null)
+                (await GetMemberByIdentifier(identifier))?.NotificationOn();
             else
                 {
                     throw new Exception($"{identifier} not logged in");
                 }
         }
 
-        public void NotificationOff(string identifier)
+        public async Task NotificationOff(string identifier)
         {
-            if(GetMemberByIdentifier(identifier) is not null)
-                GetMemberByIdentifier(identifier)?.NotificationOff();
+            if((await GetMemberByIdentifier(identifier)) is not null)
+                (await GetMemberByIdentifier(identifier))?.NotificationOff();
             else
                 {
                     throw new Exception($"{identifier} not logged in");
                 }
         }
 
-        public void SetMemberNotifications(string identifier, bool on)
+        public async Task SetMemberNotifications(string identifier, bool on)
         {
             if(on){
-                NotificationOn(identifier);
+                await NotificationOn(identifier);
             }else{
-                NotificationOff(identifier);
+                await NotificationOff(identifier);
             }
         }
         public string GetTokenByUserName(string userName)

@@ -7,12 +7,11 @@ namespace MarketBackend.Services.Interfaces
 {
     public interface IRepository<T>
 {
-        public T GetById(int id);
-        public void Add(T entity);
-        public IEnumerable<T> getAll();
-        public void Update(T entity);
-        public void Delete(T entity);
-        Task Add2(T entity);
+        public Task<T> GetById(int id);
+        Task Add(T entity);
+        public Task<IEnumerable<T>> getAll();
+        public Task Update(T entity);
+        public Task Delete(T entity);
         
 }
         

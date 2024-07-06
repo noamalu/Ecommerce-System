@@ -33,9 +33,13 @@ namespace MarketBackend.DAL.DTO
         }
         public ShoppingCartDTO(){ }
         public ShoppingCartDTO(ShoppingCart cart) {
+            asyncShoppingCartDTO(cart);
+        }
+
+        public async void asyncShoppingCartDTO(ShoppingCart cart){
             _shoppingCartId = cart. _shoppingCartId;
             Baskets = new List<BasketDTO>();
-            foreach (Basket basket in BasketRepositoryRAM.GetInstance().getBasketsByCartId(_shoppingCartId))
+            foreach (Basket basket in await BasketRepositoryRAM.GetInstance().getBasketsByCartId(_shoppingCartId))
                 Baskets.Add(new BasketDTO(basket));
         }
     }

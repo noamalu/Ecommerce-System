@@ -14,6 +14,7 @@ namespace MarketBackend.DAL
 
         private static Dictionary<string, Member> UsernamexMember;
         private object Lock;
+        private MemberDTO memberDTO;
 
         private static ClientRepositoryRAM _memberRepository = null;
 
@@ -33,104 +34,95 @@ namespace MarketBackend.DAL
             _memberRepository = new ClientRepositoryRAM();
         }
 
-        public IEnumerable<Member> getAll()
+        public async Task<IEnumerable<Member>> getAll()
         {
             return IdxMember.Values;
         }
 
-        public void Delete(Member entity)
+        public async Task Delete(Member entity)
         {
-            Delete(entity.Id);
+            await Delete(entity.Id);
         }
 
-        public void Add(Member item)
+        public async Task Add(Member item)
         {
             DBcontext dbContext = DBcontext.GetInstance();
-            IdxMember.Add(item.Id, item);
-            UsernamexMember.Add(item.UserName, item);
-            lock (Lock)
+            await dbContext.PerformTransactionalOperationAsync(async () =>
             {
                 dbContext.Members.Add(new MemberDTO(item));
-                
-                dbContext.SaveChanges();
-            }
-
+            });
+            IdxMember.Add(item.Id, item);
+            UsernamexMember.Add(item.UserName, item);
         }
 
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
-            lock (Lock)
+            var dbContext = DBcontext.GetInstance();
+            await dbContext.PerformTransactionalOperationAsync(async () =>
             {
-                var dbContext = DBcontext.GetInstance();
                 var dbMember = dbContext.Members.Find(id);
                 if(dbMember is not null) {
-                    if (IdxMember.ContainsKey(id))
-                    {
-                        Member member = IdxMember[id];
-                        UsernamexMember.Remove(member.UserName);
-                        IdxMember.Remove(id);
-                    }
-
-                    dbContext.Members.Remove(dbMember);
-                    dbContext.SaveChanges();
+                dbContext.Members.Remove(dbMember);
+                if (IdxMember.ContainsKey(id))
+                {
+                    Member member = IdxMember[id];
+                    UsernamexMember.Remove(member.UserName);
+                    IdxMember.Remove(id);
                 }
-            }
+                }
+            });
         }
-        public List<Member> GetAll()
+        
+
+        public async Task<List<Member>> GetAll()
         {
             Load();
             return IdxMember.Values.ToList();
         }
 
-        public Member GetById(int id)
+        public async Task<Member> GetById(int id)
         {
             if (IdxMember.ContainsKey(id))
                 return IdxMember[id];
             else
             {
                 var dbContext = DBcontext.GetInstance();
-                MemberDTO mDto = dbContext.Members.Find(id);
-                if (mDto != null)
+                await dbContext.PerformTransactionalOperationAsync(async () =>
                 {
-                    LoadMember(mDto);
+                    memberDTO = dbContext.Members.Find(id);
+                });
+                if (memberDTO != null)
+                {
+                    LoadMember(memberDTO);
                     return IdxMember[id];
                 }
                 throw new ArgumentException("Invalid user ID.");
             }
         }
 
-        public void Update(Member item)
+        public async Task Update(Member item)
         {
-            if (ContainsValue(item))
+            if (await ContainsValue(item))
             {
                 IdxMember[item.Id] = item;
                 UsernamexMember[item.UserName] = item;
             }
-            lock (Lock)
-            {
-
-            }
-        }
-        public void SetAsSystemAdmin(Member item)
-        {
-
-            lock (Lock)
-            {
-
-            }
         }
 
-        public Member GetByUserName(string userName)
+        public async Task<Member> GetByUserName(string userName)
         {
             if (UsernamexMember.ContainsKey(userName))
                 return UsernamexMember[userName];
             else
             {
                 var dbContext = DBcontext.GetInstance();
-                MemberDTO mDto = dbContext.Members.FirstOrDefault(m => m.UserName == userName);
-                if (mDto != null)
+                await dbContext.PerformTransactionalOperationAsync(async () =>
                 {
-                    LoadMember(mDto);
+                    memberDTO = dbContext.Members.FirstOrDefault(m => m.UserName == userName);
+                });
+                if (memberDTO != null)
+                {
+                    LoadMember(memberDTO);
                     return UsernamexMember[userName];
                 }
                 else
@@ -140,17 +132,17 @@ namespace MarketBackend.DAL
             }
         }
 
-        public bool ContainsUserName(string userName)
+        public async Task<bool> ContainsUserName(string userName)
         {
             return UsernamexMember.ContainsKey(userName);
         }
 
-        public bool ContainsID(int id)
+        public async Task<bool> ContainsID(int id)
         {
             return IdxMember.ContainsKey(id);
         }
 
-        public bool ContainsValue(Member item)
+        public async Task<bool> ContainsValue(Member item)
         {
             return IdxMember.ContainsKey(item.Id);
         }
@@ -167,26 +159,25 @@ namespace MarketBackend.DAL
             UsernamexMember = new Dictionary<string, Member>();
         }
 
-        private void Load()
+        private async Task Load()
         {
             var dbContext = DBcontext.GetInstance();
-            List<MemberDTO> members = dbContext.Members.ToList();
-            foreach (MemberDTO member in members)
+            await dbContext.PerformTransactionalOperationAsync(async () =>
             {
-                IdxMember.TryAdd(member.Id, new Member(member));
-            }
+                List<MemberDTO> members = dbContext.Members.ToList();
+                foreach (MemberDTO member in members)
+                {
+                    IdxMember.TryAdd(member.Id, new Member(member));
+                }
+            });
+            
         }
 
-        private void LoadMember(MemberDTO memberDto)
+        private async Task LoadMember(MemberDTO memberDto)
         {
             Member member = new Member(memberDto);
             IdxMember[member.Id] = member;
             UsernamexMember[member.UserName] = member;
-        }
-
-        public Task Add2(Member entity)
-        {
-            throw new NotImplementedException();
         }
     }
 }

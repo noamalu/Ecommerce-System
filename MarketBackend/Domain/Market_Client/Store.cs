@@ -45,13 +45,17 @@ namespace MarketBackend.Domain.Market_Client
 
         public Store(int Id, string name, string email, string phoneNum)
         {
+            asyncStore(Id, name, email, phoneNum);
+        }
+
+        public async void asyncStore(int Id, string name, string email, string phoneNum){
             _storeId = Id;
             _storeName = name;
             _storeEmailAdd=email;
             _storePhoneNum=phoneNum;
             _active = true;
-            _products = ProductRepositoryRAM.GetInstance().GetStoreProducts(_storeId);
-            roles = RoleRepositoryRAM.GetInstance().getShopRoles(_storeId);
+            _products = await ProductRepositoryRAM.GetInstance().GetStoreProducts(_storeId);
+            roles = await RoleRepositoryRAM.GetInstance().getShopRoles(_storeId);
             _history = new History(_storeId);
             _discountPolicyManager = new DiscountPolicyManager(_storeId);
             _purchasePolicyManager = new PurchasePolicyManager(_storeId);
@@ -61,7 +65,6 @@ namespace MarketBackend.Domain.Market_Client
             _eventManager = new EventManager(_storeId);
             _rules = new ConcurrentDictionary<int, IRule>();
             _storeRuleFactory = new StoreRuleFactory(_storeId);
-
         }
 
 
@@ -80,12 +83,12 @@ namespace MarketBackend.Domain.Market_Client
             _lock = new object();
             
         }
-        public void Initialize(StoreDTO storeDTO)
+        public async void Initialize(StoreDTO storeDTO)
         {
             //List<AppointmentDTO> appDtos = MarketContext.GetInstance().Appointments.Where((app) => app.ShopId == _id).ToList();
-            _products = ProductRepositoryRAM.GetInstance().GetStoreProducts(_storeId);
+            _products = await ProductRepositoryRAM.GetInstance().GetStoreProducts(_storeId);
             _history = new History(_storeId);
-            _rules = RuleRepositoryRAM.GetInstance().GetStoreRules(_storeId);
+            _rules = await RuleRepositoryRAM.GetInstance().GetStoreRules(_storeId);
             _eventManager = new EventManager(_storeId);
             _purchaseIdCounter = 1;
             _productIdCounter = 1;
@@ -110,26 +113,22 @@ namespace MarketBackend.Domain.Market_Client
         
     
 
-        public Product AddProduct(string userName, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
+        public async Task<Product> AddProduct(string userName, string name, string sellMethod, string description, double price, string category, int quantity, bool ageLimit)
         {
-                    if(getRole(userName)!=null && getRole(userName).canAddProduct()) {
+            if(getRole(userName)!=null && getRole(userName).canAddProduct()) {
 
-                        int productId = GenerateUniqueProductId();
-                        Product newProduct = new Product(productId, this._storeId, name, sellMethod, description, price, category, quantity, ageLimit);
-                        AddProduct(newProduct);
-                        return newProduct;
-                    }
-                    else throw new Exception($"Permission exception for userName: {userName}");
-            
+                int productId = GenerateUniqueProductId();
+                Product newProduct = new Product(productId, this._storeId, name, sellMethod, description, price, category, quantity, ageLimit);
+                await AddProduct(newProduct);
+                return newProduct;
+            }
+            else throw new Exception($"Permission exception for userName: {userName}");
         }
 
-        public void AddProduct(Product p)
+        public async Task AddProduct(Product p)
         {
-            lock (_lock)
-            {
+            await ProductRepositoryRAM.GetInstance().Add(p);
             _products.Add(p);
-            ProductRepositoryRAM.GetInstance().Add(p);
-            }
         }
 
         private int GenerateUniqueProductId()
@@ -141,23 +140,19 @@ namespace MarketBackend.Domain.Market_Client
             return int.Parse($"{_storeId}{_purchaseIdCounter++}");
         }
 
-        public void RemoveProduct(string userName, int productId)
+        public async Task RemoveProduct(string userName, int productId)
         {
                 if(getRole(userName)!=null && getRole(userName).canRemoveProduct()) {
                     Product productToRemove = GetProduct(productId);
-                    RemoveProduct(productToRemove);  
+                    await RemoveProduct(productToRemove);  
                 }
                 else throw new Exception($"Permission exception for userName: {userName}");
                
         }
-        private void RemoveProduct(Product p)
+        private async Task RemoveProduct(Product p)
         {
-            lock (_lock)
-            {
-
-            _products.Remove(p);
-            ProductRepositoryRAM.GetInstance().Delete(p);
-            }
+        _products.Remove(p);
+        await ProductRepositoryRAM.GetInstance().Delete(p);
         }
 
         public Product GetProduct(int productId)
@@ -282,7 +277,7 @@ namespace MarketBackend.Domain.Market_Client
 
         }
 
-        public void CloseStore(string userName)
+        public async Task CloseStore(string userName)
         {
             if(getRole(userName)!=null && getRole(userName).canCloseStore()) {
                 if (_active){
@@ -297,7 +292,7 @@ namespace MarketBackend.Domain.Market_Client
              else throw new Exception($"Permission exception for userName: {userName}");
         }
 
-        public void OpenStore(string userName)
+        public async Task OpenStore(string userName)
         {
             if(getRole(userName)!=null && getRole(userName).canOpenStore()) {
                 if (!_active){
@@ -312,7 +307,7 @@ namespace MarketBackend.Domain.Market_Client
              else throw new Exception($"Permission exception for userName: {userName}");
         }
 
-         public void UpdateProductPrice(string userName, int productID, double price)
+         public async Task UpdateProductPrice(string userName, int productID, double price)
         {
            if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
@@ -320,14 +315,14 @@ namespace MarketBackend.Domain.Market_Client
                 if (productToUpdate != null)
                 {
                     productToUpdate.updatePrice(price);
-                    ProductRepositoryRAM.GetInstance().Update(productToUpdate);
+                    await ProductRepositoryRAM.GetInstance().Update(productToUpdate);
                 }
                 else throw new Exception("Invalid product Id");
             }
             else throw new Exception($"Permission exception for userName: {userName}");
         }
 
-        public void UpdateProductQuantity(string userName, int productID, int qauntity)
+        public async Task UpdateProductQuantity(string userName, int productID, int qauntity)
         {
             if(getRole(userName)!=null && getRole(userName).canUpdateProductQuantity())
             {
@@ -335,7 +330,7 @@ namespace MarketBackend.Domain.Market_Client
                 if (productToUpdate != null)
                 {
                     productToUpdate.updateQuantity(qauntity);
-                    ProductRepositoryRAM.GetInstance().Update(productToUpdate);
+                    await ProductRepositoryRAM.GetInstance().Update(productToUpdate);
                 }
                 else throw new Exception("Invalid product Id");
             }
@@ -343,7 +338,7 @@ namespace MarketBackend.Domain.Market_Client
         }
 
 
-         public Purchase PurchaseBasket(string identifier, Basket basket)
+         public async Task<Purchase> PurchaseBasket(string identifier, Basket basket)
         {
             if (!_active)
                 throw new Exception($"Shop: {_storeName} is not active anymore");      
@@ -354,7 +349,7 @@ namespace MarketBackend.Domain.Market_Client
             RemoveBasketProductsFromSupply(basket);                
             double basketPrice = CalculateBasketPrice(basket);
             Purchase pendingPurchase = new Purchase(GenerateUniquePurchaseId(), _storeId, identifier, Basket.Clone(basket), basketPrice);
-            _history.AddPurchase(pendingPurchase);
+            await _history.AddPurchase(pendingPurchase);
             Event e = new ProductSellEvent(this, pendingPurchase);
             _eventManager.NotifySubscribers(e);
             return pendingPurchase;
@@ -397,7 +392,7 @@ namespace MarketBackend.Domain.Market_Client
             throw new Exception($"Product Name: \'{product.Name}\' Id: {product._productId} not exist in shop.");
         }
 
-        private void RemoveBasketProductsFromSupply(Basket basket)
+        private async Task RemoveBasketProductsFromSupply(Basket basket)
         {
             foreach (KeyValuePair<int, int> product in basket.products)
             {
@@ -406,7 +401,7 @@ namespace MarketBackend.Domain.Market_Client
                 if (ProductInSupply(productToBuy, quantity))
                 {
                     productToBuy.updateQuantity(productToBuy.Quantity - quantity);
-                    ProductRepositoryRAM.GetInstance().Update(productToBuy);
+                    await ProductRepositoryRAM.GetInstance().Update(productToBuy);
                 }
                 else throw new Exception("This should not happened");
             }
@@ -464,15 +459,15 @@ namespace MarketBackend.Domain.Market_Client
             }
         }
 
-        public void AddStaffMember(string roleuserName ,Role role, string userName){
+        public async Task AddStaffMember(string roleuserName ,Role role, string userName){
             if ((getRole(userName)!=null && getRole(userName).canAddStaffMember(role.getRoleName())) || (role.getRoleName() == RoleName.Founder && !checkForFounders() ))
             {
                 if (roles.TryAdd(roleuserName, role))
                 {
-                    RoleRepositoryRAM.GetInstance().Add(role);
+                    await RoleRepositoryRAM.GetInstance().Add(role);
                     Role appointer = getRole(userName);
-                    appointer.addAppointee(ClientRepositoryRAM.GetInstance().GetByUserName(roleuserName));
-                    RoleRepositoryRAM.GetInstance().Update(appointer);
+                    appointer.addAppointee(await ClientRepositoryRAM.GetInstance().GetByUserName(roleuserName));
+                    await RoleRepositoryRAM.GetInstance().Update(appointer);
                     Event e = new AddAppointmentEvent(this, userName, roleuserName, role);
                     _eventManager.NotifySubscribers(e);
                     //add to active user appointees list the newly appointed staff member
@@ -516,25 +511,25 @@ namespace MarketBackend.Domain.Market_Client
             GetProduct(productId).RemoveKeyword(keyWord);
         }
 
-        public void AddPermission(string userName, string toAddUserName, Permission permission)
+        public async Task AddPermission(string userName, string toAddUserName, Permission permission)
         {
             if (getRole(userName) != null && getRole(userName).canEditPermissions())
             {
                 Role r = getRole(toAddUserName);
                 r.addPermission(permission);
-                RoleRepositoryRAM.GetInstance().Update(r);
+                await RoleRepositoryRAM.GetInstance().Update(r);
             }
             else throw new Exception($"Permission exception for userName: {userName}");
 
         }
 
-        public void RemovePermission(string userName, string toRemoveUserName, Permission permission)
+        public async Task RemovePermission(string userName, string toRemoveUserName, Permission permission)
         {
             if (getRole(userName) != null && getRole(userName).canEditPermissions())
             {
                 Role r = getRole(toRemoveUserName);
                 r.removePermission(permission);
-                RoleRepositoryRAM.GetInstance().Update(r);
+                await RoleRepositoryRAM.GetInstance().Update(r);
             }
             else throw new Exception($"Permission exception for userName: {userName}");
         }
@@ -562,14 +557,14 @@ namespace MarketBackend.Domain.Market_Client
             return true;
         }
 
-        public int AddSimpleRule(string userName, string subject)
+        public async Task<int> AddSimpleRule(string userName, string subject)
         {
             if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
                 _storeRuleFactory.setFeatures(CastProductOrCategory(subject));
                 IRule newRule = _storeRuleFactory.makeRule(typeof(SimpleRule));
                 _rules.TryAdd(newRule.Id, newRule);
-                RuleRepositoryRAM.GetInstance().Add(newRule);
+                await RuleRepositoryRAM.GetInstance().Add(newRule);
                 return newRule.Id;
 
             }
@@ -577,7 +572,7 @@ namespace MarketBackend.Domain.Market_Client
                
         }
 
-        public int AddQuantityRule(string userName, string subject, int minQuantity, int maxQuantity)
+        public async Task<int> AddQuantityRule(string userName, string subject, int minQuantity, int maxQuantity)
         {
             if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
@@ -587,14 +582,14 @@ namespace MarketBackend.Domain.Market_Client
                 _storeRuleFactory.setFeatures(CastProductOrCategory(subject), minQuantity, maxQuantity);
                 IRule newRule = _storeRuleFactory.makeRule(typeof(QuantityRule));
                 _rules.TryAdd(newRule.Id, newRule);
-                RuleRepositoryRAM.GetInstance().Add(newRule);
+                await RuleRepositoryRAM.GetInstance().Add(newRule);
                 return newRule.Id;
 
             }
             else throw new Exception($"Permission exception for userName: {userName}");
            
         }
-         public int AddTotalPriceRule(string userName, string subject, int targetPrice)
+         public async Task<int> AddTotalPriceRule(string userName, string subject, int targetPrice)
         {
             if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
@@ -604,7 +599,7 @@ namespace MarketBackend.Domain.Market_Client
                 _storeRuleFactory.setFeatures(CastProductOrCategory(subject), targetPrice);
                 IRule newRule = _storeRuleFactory.makeRule(typeof(TotalPriceRule));
                 _rules.TryAdd(newRule.Id, newRule);
-                RuleRepositoryRAM.GetInstance().Add(newRule);
+                await RuleRepositoryRAM.GetInstance().Add(newRule);
                 return newRule.Id;
 
             }
@@ -612,7 +607,7 @@ namespace MarketBackend.Domain.Market_Client
             
         }
 
-        public int AddCompositeRule(string userName, LogicalOperator Operator, List<int> rules)
+        public async Task<int> AddCompositeRule(string userName, LogicalOperator Operator, List<int> rules)
         {
             if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
@@ -624,56 +619,56 @@ namespace MarketBackend.Domain.Market_Client
                 _storeRuleFactory.setFeatures(Operator, rulesToAdd);
                 IRule newRule = _storeRuleFactory.makeRule(typeof(CompositeRule));
                 _rules.TryAdd(newRule.Id, newRule);
-                RuleRepositoryRAM.GetInstance().Add(newRule);
+                await RuleRepositoryRAM.GetInstance().Add(newRule);
                 return newRule.Id;
             }
                 else throw new Exception($"Permission exception for userName: {userName}");
         }
-        public void UpdateRuleSubject(string userName, int ruleId, string subject)
+        public async Task UpdateRuleSubject(string userName, int ruleId, string subject)
         {
              if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
                 IRule rule = GetRule(ruleId);
                 rule.Subject = CastProductOrCategory(subject);
-                RuleRepositoryRAM.GetInstance().Update(rule);
+                await RuleRepositoryRAM.GetInstance().Update(rule);
             }
             else throw new Exception($"Permission exception for userName: {userName}");
         }
-        public void UpdateRuleTargetPrice(string userName, int ruleId, int targetPrice)
+        public async Task UpdateRuleTargetPrice(string userName, int ruleId, int targetPrice)
         {
             if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
                 IRule rule = GetRule(ruleId);
                 ((TotalPriceRule)rule).TotalPrice = targetPrice;
-                RuleRepositoryRAM.GetInstance().Update(rule);
+                await RuleRepositoryRAM.GetInstance().Update(rule);
             }
             else throw new Exception($"Permission exception for userName: {userName}");   
         }
-        public void UpdateCompositeOperator(string userName, int ruleId, LogicalOperator Operator)
+        public async Task UpdateCompositeOperator(string userName, int ruleId, LogicalOperator Operator)
         {
             if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
                 IRule rule = GetRule(ruleId);
                 ((CompositeRule)rule).Operator = Operator;
-                RuleRepositoryRAM.GetInstance().Update(rule);
+                await RuleRepositoryRAM.GetInstance().Update(rule);
             }
             else throw new Exception($"Permission exception for userName: {userName}");
            
         }
 
-        public void UpdateRuleQuantity(string userName, int ruleId, int minQuantity, int maxQuantity)
+        public async Task UpdateRuleQuantity(string userName, int ruleId, int minQuantity, int maxQuantity)
         {
             if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
                 IRule rule = GetRule(ruleId);
                 ((QuantityRule)rule).MinQuantity = minQuantity;
                 ((QuantityRule)rule).MaxQuantity = maxQuantity;
-                RuleRepositoryRAM.GetInstance().Update(rule);
+                await RuleRepositoryRAM.GetInstance().Update(rule);
             }
             else throw new Exception($"Permission exception for userName: {userName}");
         }
 
-         public void UpdateCompositeRules(string userName, int ruleId, List<int> rules)
+         public async Task UpdateCompositeRules(string userName, int ruleId, List<int> rules)
         {
             if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
@@ -683,7 +678,7 @@ namespace MarketBackend.Domain.Market_Client
                 {
                     ((CompositeRule)rule).AddRule(GetRule(ruleId));
                 }
-                RuleRepositoryRAM.GetInstance().Update(rule);
+                await RuleRepositoryRAM.GetInstance().Update(rule);
 
                 }
                 else throw new Exception($"Permission exception for userName: {userName}");
