@@ -12,7 +12,7 @@ const NotificationsNav: React.FC<NotificationsNavProps> = ({ view }) => {
     useEffect(() => {
         if (view === 'notificationsNav') {
             // Fetch purchase history data from the API
-            const fetchPurchaseHistory = async () => {
+            const fetchNotifications = async () => {
                 try {
                     const response = await fetch(`https://localhost:7163/api/Client/Client/Notifications?identifier=${getToken()}`, {
                         method: 'GET'
@@ -30,7 +30,7 @@ const NotificationsNav: React.FC<NotificationsNavProps> = ({ view }) => {
                 }
             };
             
-            fetchPurchaseHistory();
+            fetchNotifications();
         }
     }, [view]); // Adding view as a dependency
 
