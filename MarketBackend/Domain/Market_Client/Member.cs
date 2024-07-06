@@ -60,15 +60,15 @@ namespace MarketBackend.Domain.Market_Client
             alerts = new (other.Alerts);
         }
        
-        public override void PurchaseBasket(Basket basket)
+        public override async Task PurchaseBasket(Basket basket)
         {
             if(!OrderHistory.TryGetValue(basket._cartId, out var cartInHistory)){
                 cartInHistory ??= new(){_shoppingCartId = basket._cartId};
                 OrderHistory.TryAdd(basket._cartId, cartInHistory);
-                BasketRepositoryRAM.GetInstance().Add_cartHistory(cartInHistory, UserName);
+                await BasketRepositoryRAM.GetInstance().Add_cartHistory(cartInHistory, UserName);
             }            
-            cartInHistory.AddBasket(basket);            
-            base.PurchaseBasket(basket);
+            await cartInHistory.AddBasket(basket);            
+            await base.PurchaseBasket(basket);
         }
 
         public List<ShoppingCartHistory> GetHistory()

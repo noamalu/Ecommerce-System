@@ -112,6 +112,15 @@ namespace UnitTests
             Assert.AreEqual(0, productsInBasket.Count,
             $"Expected count of products to be 0 but got {productsInBasket.Count}");
         }
+
+        [TestMethod]
+        public async Task TestPurchaseCart()
+        {
+            var client = new Guest(1);
+            await client.AddToCart(1, 11, 10);
+            var basket = (await BasketRepositoryRAM.GetInstance().getBasketsByCartId(client.Cart._shoppingCartId)).Where(basket => basket._storeId == 1).FirstOrDefault();
+            await client.PurchaseBasket(basket);
+        }
     }
 
     [TestClass]

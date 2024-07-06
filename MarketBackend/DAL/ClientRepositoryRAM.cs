@@ -76,7 +76,7 @@ namespace MarketBackend.DAL
 
         public async Task<List<Member>> GetAll()
         {
-            Load();
+            await Load();
             return IdxMember.Values.ToList();
         }
 
@@ -93,7 +93,7 @@ namespace MarketBackend.DAL
                 });
                 if (memberDTO != null)
                 {
-                    LoadMember(memberDTO);
+                    await LoadMember(memberDTO);
                     return IdxMember[id];
                 }
                 throw new ArgumentException("Invalid user ID.");
@@ -122,7 +122,7 @@ namespace MarketBackend.DAL
                 });
                 if (memberDTO != null)
                 {
-                    LoadMember(memberDTO);
+                    await LoadMember(memberDTO);
                     return UsernamexMember[userName];
                 }
                 else

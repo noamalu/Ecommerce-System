@@ -39,9 +39,9 @@ namespace MarketBackend.Domain.Models
             return retBaskets;
         }
 
-        public async void PurchaseBasket(int basketId){
+        public async Task PurchaseBasket(int basketId){
             Basket basket = await _basketRepository.GetById(basketId);
-            _basketRepository.Delete(basket);
+            await _basketRepository.Delete(basket);
         }
     }
 
@@ -59,7 +59,7 @@ namespace MarketBackend.Domain.Models
             _products = new(other._products.Select(product => new Product(product)).ToDictionary(product => product.ProductId));
         }
 
-        public async void AddBasket(Basket basket)
+        public async Task AddBasket(Basket basket)
         {
             _baskets.TryAdd(basket._basketId, Basket.Clone(basket));
             foreach(var product in basket.products)

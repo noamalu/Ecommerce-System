@@ -46,7 +46,7 @@ namespace MarketBackend.DAL.DTO
 
 
 
-        public override void Dispose()
+        public override async void Dispose()
         {
             
             Events.ExecuteDelete();
@@ -315,7 +315,7 @@ namespace MarketBackend.DAL.DTO
                     await SaveChangesAsync();
                     await transaction.CommitAsync();
                 }   
-                catch (Exception)
+                catch (Exception e)
                 {
                     await transaction.RollbackAsync();
                     throw;

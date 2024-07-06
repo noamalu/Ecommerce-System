@@ -41,13 +41,19 @@ namespace MarketBackend.DAL
 
         public async Task Add(Product item)
         {
-            dbcontext = DBcontext.GetInstance();
-            await dbcontext.PerformTransactionalOperationAsync(async () =>
-            {
-                StoreDTO store = dbcontext.Stores.Include(s => s.Products).FirstOrDefault(s => s.Id == item.StoreId);
-                store.Products.Add(new ProductDTO(item));
-            });
-            _productById.TryAdd(item.ProductId, item);          
+            try{
+                dbcontext = DBcontext.GetInstance();
+                await dbcontext.PerformTransactionalOperationAsync(async () =>
+                {
+                    StoreDTO store = dbcontext.Stores.Include(s => s.Products).FirstOrDefault(s => s.Id == item.StoreId);
+                    store.Products.Add(new ProductDTO(item));
+                });
+                _productById.TryAdd(item.ProductId, item);
+            }
+            catch(Exception){
+                throw;
+            }
+                      
         }
 
         public async Task<bool> ContainsID(int id)
@@ -55,10 +61,8 @@ namespace MarketBackend.DAL
             if (!_productById.ContainsKey(id))
             {
                 dbcontext = DBcontext.GetInstance();
-                await dbcontext.PerformTransactionalOperationAsync(async () =>
-                {
-                    ans = dbcontext.Products.Find(id) != null;
-                });
+                ProductDTO product = dbcontext.Products.Find(id);
+                ans = product != null;
                 return ans;
             }
             return true;
@@ -94,7 +98,7 @@ namespace MarketBackend.DAL
         public async Task<IEnumerable<Product>> getAll()
         {
             List<Store> stores = (await StoreRepositoryRAM.GetInstance().getAll()).ToList();
-            foreach (Store s in stores) UploadStoreProductsFromContext(s.StoreId);
+            foreach (Store s in stores) await UploadStoreProductsFromContext(s.StoreId);
             return _productById.Values.ToList();
         }
 
@@ -104,17 +108,17 @@ namespace MarketBackend.DAL
             await dbcontext.PerformTransactionalOperationAsync(async () =>
             {
                 StoreDTO store = dbcontext.Stores.Find(storeId);
-            if (store != null)
-            {
-                List<ProductDTO> products = dbcontext.Stores.Find(storeId).Products;
-                if (products != null)
+                if (store != null)
                 {
-                    foreach (ProductDTO product in products)
+                    List<ProductDTO> products = dbcontext.Stores.Find(storeId).Products;
+                    if (products != null)
                     {
-                        _productById.TryAdd(product.ProductId, new Product(product));
+                        foreach (ProductDTO product in products)
+                        {
+                            _productById.TryAdd(product.ProductId, new Product(product));
+                        }
                     }
                 }
-            }
             });
         }
 
@@ -151,8 +155,7 @@ namespace MarketBackend.DAL
             await dbcontext.PerformTransactionalOperationAsync(async () =>
             {
                 productDTO = dbcontext.Products.Find(product.ProductId);
-            });
-            if (productDTO != null)
+                if (productDTO != null)
             {
                 if (product.Description != null) productDTO.Description = product.Description;
                 if (product.Category != null) productDTO.Category = product.Category.ToString();
@@ -160,6 +163,8 @@ namespace MarketBackend.DAL
                 productDTO.Quantity = product.Quantity;
                 productDTO.Price = product.Price;
             }
+            });
+            
             _productById[product.ProductId] = product;
         }
 
@@ -170,7 +175,7 @@ namespace MarketBackend.DAL
         /// <returns></returns>
         public async Task<SynchronizedCollection<Product>> GetStoreProducts(int storeId)
         {
-            await UploadStoreProductsFromContext(storeId);
+            
             SynchronizedCollection<Product> products = new SynchronizedCollection<Product>();
             foreach(Product p in _productById.Values)
             {

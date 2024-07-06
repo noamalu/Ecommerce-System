@@ -321,7 +321,7 @@ namespace UnitTests
             context.Baskets.Add(basketDTO);
             await basket.addToBasket(11, 10);
             _Store._active=false;
-            await Assert.ThrowsExceptionAsync<Exception>(() => _Store.PurchaseBasket(username2,basket));
+            await Assert.ThrowsExceptionAsync<Exception>(async () => await _Store.PurchaseBasket(username2,basket));
             Product product = _Store.GetProduct(11);
             Assert.AreEqual(21, product._quantity,
             $"Expected product quantity of 21 but got {product._quantity}");
@@ -335,8 +335,8 @@ namespace UnitTests
             basket._cartId = (await marketManagerFacade.GetMember(username1)).Cart._shoppingCartId;
             BasketDTO basketDTO = new BasketDTO(basket);
             context.Baskets.Add(basketDTO);
-            await basket.addToBasket(11, 40);
-            await Assert.ThrowsExceptionAsync<Exception>(() => _Store.PurchaseBasket(username2,basket));
+            await basket.addToBasket(11, 100);
+            await Assert.ThrowsExceptionAsync<Exception>(async () => await _Store.PurchaseBasket(username2,basket));
             Product product = _Store.GetProduct(11);
             Assert.AreEqual(21, product._quantity,
             $"Expected product quantity of 21 but got {product._quantity}");

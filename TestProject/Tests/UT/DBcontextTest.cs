@@ -72,7 +72,7 @@ namespace UnitTests
 
         }
         [TestCleanup]
-        public void CleanUp()
+        public async Task CleanUp()
         {
             _context.Dispose();
             _context = DBcontext.GetInstance();

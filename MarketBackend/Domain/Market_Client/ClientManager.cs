@@ -296,7 +296,7 @@ namespace MarketBackend.Domain.Market_Client
             if(await GetMemberByIdentifier(identifier) is not null)
                 (await GetMemberByIdentifier(identifier))?.PurchaseBasket(basket);
             else
-                GetClientByIdentifier(identifier)?.PurchaseBasket(basket);
+                await GetClientByIdentifier(identifier)?.PurchaseBasket(basket);
         }
 
         public async Task NotificationOn(string identifier)

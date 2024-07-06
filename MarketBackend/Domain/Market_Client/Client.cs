@@ -36,9 +36,9 @@ namespace MarketBackend.Domain.Market_Client
             return true;
         }
 
-        public virtual void PurchaseBasket(Basket basket)
+        public virtual async Task PurchaseBasket(Basket basket)
         {            
-            Cart.PurchaseBasket(basket._basketId);
+            await Cart.PurchaseBasket(basket._basketId);
         }
     }
 }

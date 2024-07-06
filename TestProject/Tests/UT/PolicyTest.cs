@@ -25,7 +25,12 @@ namespace UnitTests
         string username3 = "yonatan";
 
         [TestInitialize]
-        public async void Initialize(){
+        public void SetUp()
+        {
+            Task.Run(async () => await AsyncSetUp()).GetAwaiter().GetResult();
+        }
+
+        public async Task AsyncSetUp(){
             DBcontext.GetInstance().Dispose();
             RuleRepositoryRAM.Dispose();
             DBcontext context = DBcontext.GetInstance();
@@ -75,11 +80,11 @@ namespace UnitTests
         {
             int minQuantity = 5;
             int maxQuantity = 20;
-            _Store.AddQuantityRule(username1,"Brush", minQuantity, maxQuantity);
+            await _Store.AddQuantityRule(username1,"Brush", minQuantity, maxQuantity);
             QuantityRule r = (QuantityRule) await RuleRepositoryRAM.GetInstance().GetById(11);
             Assert.IsTrue(r.MinQuantity == 5 && r.MaxQuantity == 20);
             Assert.IsTrue(r.Id == 11);
-            _Store.AddPurchasePolicy(username1, new DateTime(2027, 1, 1), "Brush", 11);
+            await _Store.AddPurchasePolicy(username1, new DateTime(2027, 1, 1), "Brush", 11);
             int count = _Store._purchasePolicyManager.Policies.Count;
             Assert.IsTrue(count == 1);
             Assert.IsTrue(_Store._purchasePolicyManager.Policies[11].Id == 11);
@@ -98,7 +103,7 @@ namespace UnitTests
         {
             int minQuantity = 5;
             int maxQuantity = 20;
-            _Store.AddQuantityRule(username1,"Brush", minQuantity, maxQuantity);
+            await _Store.AddQuantityRule(username1,"Brush", minQuantity, maxQuantity);
             QuantityRule r = (QuantityRule) await RuleRepositoryRAM.GetInstance().GetById(11);
             Assert.IsTrue(r.MinQuantity == 5 && r.MaxQuantity == 20);
             Assert.IsTrue(r.Id == 11);
@@ -117,12 +122,12 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void AddDiscountCompositePolicySuccess()
+        public async void AddDiscountCompositePolicySuccess()
         {
             int minQuantity = 5;
             int maxQuantity = 20;
-            _Store.AddQuantityRule(username1,"Brush", minQuantity, maxQuantity);
-            _Store.AddTotalPriceRule(username1, "Brush", 3000);
+            await _Store.AddQuantityRule(username1,"Brush", minQuantity, maxQuantity);
+            await _Store.AddTotalPriceRule(username1, "Brush", 3000);
             _Store.AddDiscountPolicy(username1, new DateTime(2027, 1, 1), "Brush", 11, 50);
             _Store.AddDiscountPolicy(username1, new DateTime(2027, 1, 1), "Brush", 12, 20);
             NumericOperator n = NumericOperator.Add;
@@ -134,12 +139,12 @@ namespace UnitTests
 
 
         [TestMethod]
-        public void AddDiscountCompositePolicyRuleDoesntFound()
+        public async void AddDiscountCompositePolicyRuleDoesntFound()
         {
             int minQuantity = 5;
             int maxQuantity = 20;
-            _Store.AddQuantityRule(username1,"Brush", minQuantity, maxQuantity);
-            _Store.AddTotalPriceRule(username1, "Brush", 3000);
+            await _Store.AddQuantityRule(username1,"Brush", minQuantity, maxQuantity);
+            await _Store.AddTotalPriceRule(username1, "Brush", 3000);
             _Store.AddDiscountPolicy(username1, new DateTime(2027, 1, 1), "Brush", 11, 50);
             _Store.AddDiscountPolicy(username1, new DateTime(2027, 1, 1), "Brush", 12, 20);
             NumericOperator n = NumericOperator.Add;
@@ -149,12 +154,12 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void RemovePurchasePolicySuccess()
+        public async void RemovePurchasePolicySuccess()
         {
             int minQuantity = 5;
             int maxQuantity = 20;
-            _Store.AddQuantityRule(username1,"Brush", minQuantity, maxQuantity);
-            _Store.AddPurchasePolicy(username1, new DateTime(2027, 1, 1), "Brush", 11);
+            await _Store.AddQuantityRule(username1,"Brush", minQuantity, maxQuantity);
+            await _Store.AddPurchasePolicy(username1, new DateTime(2027, 1, 1), "Brush", 11);
             int count = _Store._purchasePolicyManager.Policies.Count;
             Assert.IsTrue(count == 1);
             _Store.RemovePurchasePolicy(username1, 11);

@@ -223,13 +223,13 @@ namespace MarketBackend.Domain.Market_Client
             
         }
 
-        public int AddPurchasePolicy(string userName, DateTime expirationDate, string subject, int ruledId)
+        public async Task<int> AddPurchasePolicy(string userName, DateTime expirationDate, string subject, int ruledId)
         {
              if(getRole(userName)!=null && getRole(userName).canUpdateProductPrice())
             {
                 IRule rule = GetRule(ruledId);
                 if (rule != null)            
-                    return  _purchasePolicyManager.AddPolicy(_policyIdFactory++, expirationDate, CastProductOrCategory(subject), rule);
+                    return  await _purchasePolicyManager.AddPolicy(_policyIdFactory++, expirationDate, CastProductOrCategory(subject), rule);
                 else throw new Exception("Rule not found");
             }
             else throw new Exception($"Permission exception for userName: {userName}");
@@ -346,7 +346,7 @@ namespace MarketBackend.Domain.Market_Client
             basket.resetDiscount();
             _purchasePolicyManager.Apply(basket);
             _discountPolicyManager.Apply(basket);  
-            RemoveBasketProductsFromSupply(basket);                
+            await RemoveBasketProductsFromSupply(basket);                
             double basketPrice = CalculateBasketPrice(basket);
             Purchase pendingPurchase = new Purchase(GenerateUniquePurchaseId(), _storeId, identifier, Basket.Clone(basket), basketPrice);
             await _history.AddPurchase(pendingPurchase);

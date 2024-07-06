@@ -8,12 +8,12 @@ namespace MarketBackend.Domain.Market_Client
         {
         }
 
-        public int AddPolicy(int id, DateTime expirationDate,RuleSubject subject, IRule rule)
+        public async Task<int> AddPolicy(int id, DateTime expirationDate,RuleSubject subject, IRule rule)
         {
             int unicId = int.Parse($"{_storeId}{id}");
             PurchasePolicy policy = new PurchasePolicy(unicId, StoreId, expirationDate, subject, rule);
             Policies.TryAdd(policy.Id, policy);
-            PolicyRepositoryRAM.GetInstance().Add(policy);
+            await PolicyRepositoryRAM.GetInstance().Add(policy);
             return policy.Id;
         }
         public override PurchasePolicy GetPolicy(int policyId)

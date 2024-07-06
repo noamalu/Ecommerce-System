@@ -350,8 +350,8 @@ namespace MarketBackend.Domain.Market_Client
                 var totalPrice = store.CalculateBasketPrice(baskets[store.StoreId]);
                 if(_paymentSystem.Pay(paymentDetails, totalPrice) > 0) {
                     if(_shippingSystemFacade.OrderShippment(shippingDetails) > 0){
-                        store.PurchaseBasket(identifier, baskets[store.StoreId]);
-                        _clientManager.PurchaseBasket(identifier, baskets[store.StoreId]);
+                        await store.PurchaseBasket(identifier, baskets[store.StoreId]);
+                        await _clientManager.PurchaseBasket(identifier, baskets[store.StoreId]);
                     }
                     else{
                         throw new Exception("shippment failed.");
@@ -390,7 +390,7 @@ namespace MarketBackend.Domain.Market_Client
                 throw new Exception("Store doesn't exists");
             }
             Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
-            store.RemoveProduct(activeMember.UserName, productId);
+            await store.RemoveProduct(activeMember.UserName, productId);
         }
 
         public async Task RemoveStaffMember(int storeId, string identifier, string toRemoveUserName)
@@ -657,7 +657,7 @@ namespace MarketBackend.Domain.Market_Client
             Store store = await _storeRepository.GetById(storeId);
             if (store != null){
                 Member activeMember = await _clientManager.GetMemberByIdentifier(identifier);                
-                return store.AddPurchasePolicy(activeMember.UserName, expirationDate, subject, ruleId);
+                return await store.AddPurchasePolicy(activeMember.UserName, expirationDate, subject, ruleId);
             }
             else
                 throw new Exception("Store doesn't exist!");

@@ -45,7 +45,11 @@ namespace MarketBackend.Tests.IT
         Mock<IPaymentSystemFacade> mockPaymentSystem;
 
         [TestInitialize]
-        public async void Setup()
+        public void Setup()
+        {
+            Task.Run(async () => await AsyncSetUp()).GetAwaiter().GetResult();
+        }
+        public async Task AsyncSetUp()
         {
             // Initialize the managers and mock systems
             DBcontext.GetInstance().Dispose();
@@ -61,7 +65,7 @@ namespace MarketBackend.Tests.IT
 
             marketManagerFacade = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             clientManager = ClientManager.GetInstance();
-            await marketManagerFacade.InitiateSystemAdmin();
+            // await marketManagerFacade.InitiateSystemAdmin();
             await marketManagerFacade.EnterAsGuest(session1);
             await marketManagerFacade.Register(userName, userPassword, email1, userAge);
             token1 = await marketManagerFacade.LoginClient(userName, userPassword);
@@ -78,14 +82,14 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void AddProductToShop()
+        public async Task AddProductToShop()
         {
             Store store = await marketManagerFacade.GetStore(1);
             Assert.IsTrue(store.Products.Count() > 0, "Expected the store to have products after adding one.");
         }
 
         [TestMethod]
-        public async void RemoveProductFromShop()
+        public async Task RemoveProductFromShop()
         {
             Store store = await marketManagerFacade.GetStore(1);
             Assert.IsTrue(store.Products.Count() > 0, "Expected the store to have products before removal.");
@@ -96,7 +100,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void AddProductToBasket()
+        public async Task AddProductToBasket()
         {
             await marketManagerFacade.AddToCart(token1, 1, productID1, 1);
             Client client = clientManager.GetClientByIdentifier(token1);
@@ -106,7 +110,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void RemoveProductFromBasket()
+        public async Task RemoveProductFromBasket()
         {
             await marketManagerFacade.AddToCart(token1, 1, productID1, 1);
             await marketManagerFacade.RemoveFromCart(token1, 11, 1, 1);
@@ -117,7 +121,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void AddProductToBasketAndLogout()
+        public async Task AddProductToBasketAndLogout()
         {
             await marketManagerFacade.AddToCart(token1, 1, 11, 1);
             Client client = clientManager.GetClientByIdentifier(token1);
@@ -133,11 +137,11 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCartFail_Payment_OrderCancel()
+        public async Task PurchaseCartFail_Payment_OrderCancel()
         {
             await marketManagerFacade.AddToCart(token1, 1, 11, 1);
             mockPaymentSystem.Setup(pay => pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(-1);
-            Assert.ThrowsException<Exception>(() => marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails), "Expected purchase to fail due to payment issue.");
+            await Assert.ThrowsExceptionAsync<Exception>(() => marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails), "Expected purchase to fail due to payment issue.");
             
             Member client = await clientManager.GetMemberByIdentifier(token1);
             Store store = await marketManagerFacade.GetStore(1);
@@ -147,11 +151,11 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCartFail_Shipping_OrderCancel()
+        public async Task PurchaseCartFail_Shipping_OrderCancel()
         {
             await marketManagerFacade.AddToCart(token1, 1, 11, 1);
             mockShippingSystem.Setup(ship => ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(-1);
-            Assert.ThrowsException<Exception>(() => marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails), "Expected purchase to fail due to shipping issue.");
+            await Assert.ThrowsExceptionAsync<Exception>(() => marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails), "Expected purchase to fail due to shipping issue.");
             
             Member client = await clientManager.GetMemberByIdentifier(token1);
             Store store = await marketManagerFacade.GetStore(1);
@@ -161,7 +165,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void Offline_Notifications_Success()
+        public async Task Offline_Notifications_Success()
         {
             await marketManagerFacade.NotificationOff(token1);
             await marketManagerFacade.AddToCart(token1, 1, productID1, 1);
@@ -171,7 +175,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void Offline_Notifications_Fail_NotOffline()
+        public async Task Offline_Notifications_Fail_NotOffline()
         {
             await marketManagerFacade.AddToCart(token1, 1, productID1, 1);
             await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);

@@ -55,7 +55,11 @@ namespace MarketBackend.Tests.IT
         int and_operator = 2;
 
         [TestInitialize]
-        public async void Setup()
+        public void Setup()
+        {
+            Task.Run(async () => await AsyncSetUp()).GetAwaiter().GetResult();
+        }
+        public async Task AsyncSetUp()
         {
             // Initialize the managers
             DBcontext.GetInstance().Dispose();
@@ -70,7 +74,7 @@ namespace MarketBackend.Tests.IT
             mockPaymentSystem.SetReturnsDefault(true);            
             marketManagerFacade = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             clientManager = ClientManager.GetInstance();
-            await marketManagerFacade.InitiateSystemAdmin();
+            // await marketManagerFacade.InitiateSystemAdmin();
             await marketManagerFacade.EnterAsGuest(session1);
             await marketManagerFacade.Register(userName, userPassword, email1, userAge);
             token1 = await marketManagerFacade.LoginClient(userName, userPassword);
@@ -79,14 +83,14 @@ namespace MarketBackend.Tests.IT
             await marketManagerFacade.AddProduct(1, token1, productName1, sellmethod, desc, price1, category1, quantity1, false);
         }
         [TestCleanup]
-        public void Cleanup()
+        public async Task Cleanup()
         {
-            DBcontext.GetInstance().Dispose();
+            // DBcontext.GetInstance().Dispose();
             MarketManagerFacade.Dispose();
         }
 
         [TestMethod]
-        public async void AddCompositeRulePurchaseCart_success()
+        public async Task AddCompositeRulePurchaseCart_success()
         {
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 10);
             int rule2 = await marketManagerFacade.AddSimpleRule(token1, 1, storeName);
@@ -96,14 +100,14 @@ namespace MarketBackend.Tests.IT
             Assert.IsTrue(store._rules.Count == 3);
             await marketManagerFacade.AddToCart(token1, 1, productID1, 1);
             DateTime expirationDate = DateTime.Now.AddDays(2);
-            await marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, storeName, rule1);
+            await marketManagerFacade.AddPurchasePolicy(token1, 1, expirationDate, category1, rule1);
             await marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Assert.AreEqual(1, store._history._purchases.Count,
             $"Expected puchase history count to be 1 but got {store._history._purchases.Count}");
         }
 
         [TestMethod]
-        public async void AddDiscountPurchaseCart_success()
+        public async Task AddDiscountPurchaseCart_success()
         {
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 10);
             int rule2 = await marketManagerFacade.AddSimpleRule(token1, 1, storeName);
@@ -120,7 +124,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_Quantity_Role_Product_Fail()
+        public async Task PurchaseCart_Quantity_Role_Product_Fail()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, "apple", 1, 5);
@@ -134,7 +138,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_Quantity_Role__product_Success()
+        public async Task PurchaseCart_Quantity_Role__product_Success()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, "apple", 1, 5);
@@ -148,7 +152,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_Quantity_Role__simple_Fail()
+        public async Task PurchaseCart_Quantity_Role__simple_Fail()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, storeName, 1, 5);
@@ -163,7 +167,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_Quantity_Role__category_Success()
+        public async Task PurchaseCart_Quantity_Role__category_Success()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
@@ -178,7 +182,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_Quantity_Role__category_Fail()
+        public async Task PurchaseCart_Quantity_Role__category_Fail()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
@@ -193,7 +197,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_composite_rule__and_Success()
+        public async Task PurchaseCart_composite_rule__and_Success()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
@@ -211,7 +215,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_composite_rule__and_Fail_OneNotTrue()
+        public async Task PurchaseCart_composite_rule__and_Fail_OneNotTrue()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
@@ -229,7 +233,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_composite_rule__or_Success()
+        public async Task PurchaseCart_composite_rule__or_Success()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
@@ -247,7 +251,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_composite_rule__and_or_AllFalse()
+        public async Task PurchaseCart_composite_rule__and_or_AllFalse()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
@@ -265,7 +269,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_composite_rule__xor_Success1()
+        public async Task PurchaseCart_composite_rule__xor_Success1()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
@@ -283,7 +287,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_composite_rule__xor_Success2()
+        public async Task PurchaseCart_composite_rule__xor_Success2()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
@@ -301,7 +305,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_composite_rule__and_xor_AllFalse()
+        public async Task PurchaseCart_composite_rule__and_xor_AllFalse()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
@@ -319,7 +323,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_Discount_Role__category_Success()
+        public async Task PurchaseCart_Discount_Role__category_Success()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
@@ -336,7 +340,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_Discount_Role__category_Fail()
+        public async Task PurchaseCart_Discount_Role__category_Fail()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
@@ -353,7 +357,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_Discount_rule__and_Success()
+        public async Task PurchaseCart_Discount_rule__and_Success()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
@@ -373,7 +377,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_Discount_rule__and_Fail_OneNotTrue()
+        public async Task PurchaseCart_Discount_rule__and_Fail_OneNotTrue()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
@@ -393,7 +397,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_Discount_rule__or_Success()
+        public async Task PurchaseCart_Discount_rule__or_Success()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
@@ -413,7 +417,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_Discount_rule__and_or_AllFalse()
+        public async Task PurchaseCart_Discount_rule__and_or_AllFalse()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
@@ -433,7 +437,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_Discount_rule__xor_Success1()
+        public async Task PurchaseCart_Discount_rule__xor_Success1()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
@@ -453,7 +457,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_Discount_rule__xor_Success2()
+        public async Task PurchaseCart_Discount_rule__xor_Success2()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
@@ -473,7 +477,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_Discount_rule__and_xor_AllFalse()
+        public async Task PurchaseCart_Discount_rule__and_xor_AllFalse()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
@@ -493,7 +497,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_Discount_Success_Purchase_fail()
+        public async Task PurchaseCart_Discount_Success_Purchase_fail()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
@@ -510,7 +514,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_Discount_Fail_Purchase_Success()
+        public async Task PurchaseCart_Discount_Fail_Purchase_Success()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddQuantityRule(token1, 1, category1, 1, 5);
@@ -529,7 +533,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_Discount_Success_Purchase_Success()
+        public async Task PurchaseCart_Discount_Success_Purchase_Success()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule2 = await marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 5);
@@ -546,7 +550,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_Composite_Policies_add()
+        public async Task PurchaseCart_Composite_Policies_add()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 10);
@@ -567,7 +571,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void PurchaseCart_Composite_Policies_max()
+        public async Task PurchaseCart_Composite_Policies_max()
         {
             await marketManagerFacade.AddProduct(1, token1, "apple", "RegularSell", "nice", 5, category1, 200, false);
             int rule1 = await marketManagerFacade.AddTotalPriceRule(token1, 1, category1, 10);

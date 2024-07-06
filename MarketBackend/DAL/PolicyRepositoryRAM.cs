@@ -28,7 +28,8 @@ namespace MarketBackend.DAL
             dbcontext = DBcontext.GetInstance();
             await dbcontext.PerformTransactionalOperationAsync(async () =>
             {
-                dbcontext.Stores.Find(policy.StoreId).Policies.Add(policy.CloneDTO());
+                PolicyDTO policyDTO = policy.CloneDTO();
+                dbcontext.Stores.Find(policy.StoreId).Policies.Add(policyDTO);
             });
             _policyById.TryAdd(policy.Id, policy);
         }

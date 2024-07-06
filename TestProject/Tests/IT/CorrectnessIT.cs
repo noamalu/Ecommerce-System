@@ -58,7 +58,11 @@ namespace MarketBackend.Tests.IT
         int userId2;
 
         [TestInitialize]
-        public async void Setup()
+        public void Setup()
+        {
+            Task.Run(async () => await AsyncSetUp()).GetAwaiter().GetResult();
+        }
+        public async Task AsyncSetUp()
         {
             // Initialize the managers and mock systems
             DBcontext.GetInstance().Dispose();
@@ -81,7 +85,7 @@ namespace MarketBackend.Tests.IT
             mockPaymentSystem.SetReturnsDefault(true);            
             marketManagerFacade = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             clientManager = ClientManager.GetInstance();
-            await marketManagerFacade.InitiateSystemAdmin();
+            // await marketManagerFacade.InitiateSystemAdmin();
             await marketManagerFacade.EnterAsGuest(session1);
             await marketManagerFacade.Register(userName, userPassword, email1, userAge);
             token1 = await marketManagerFacade.LoginClient(userName, userPassword);
@@ -110,7 +114,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void TestConcurrentShopManager()
+        public async Task TestConcurrentShopManager()
         {
             Client mem = clientManager.GetClientByIdentifier(token1);
             // Create multiple threads that add and remove products from the shop
@@ -138,7 +142,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void TwoClientsByLastProductTogether()
+        public async Task TwoClientsByLastProductTogether()
         {
             Client mem1 = clientManager.GetClientByIdentifier(token1);
             Product product = await marketManagerFacade.AddProduct(1, token1, productName1, sellmethod, desc, price1, category1, 1, false);
@@ -179,7 +183,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void RemoveProductAndPurchaseProductTogether()
+        public async Task RemoveProductAndPurchaseProductTogether()
         {
             Client mem1 = clientManager.GetClientByIdentifier(token1);
             Product product = await marketManagerFacade.AddProduct(1, token1, productName1, sellmethod, desc, price1, category1, 1, false);
@@ -221,7 +225,7 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
-        public async void TwoStoreOwnerAppointThirdToManagerTogether()
+        public async Task TwoStoreOwnerAppointThirdToManagerTogether()
         {
             Client mem1 = clientManager.GetClientByIdentifier(token1);
             Client mem2 = clientManager.GetClientByIdentifier(token2);
