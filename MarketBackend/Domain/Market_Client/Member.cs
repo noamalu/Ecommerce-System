@@ -35,7 +35,7 @@ namespace MarketBackend.Domain.Market_Client
             OrderHistory = new(); 
             IsSystemAdmin = false;
             IsLoggedIn = false;
-            IsNotification = true;
+            IsNotification = false; //TODO maybe change to true
             alerts = new SynchronizedCollection<Message>();
         }
 
