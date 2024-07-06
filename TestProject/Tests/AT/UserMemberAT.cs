@@ -52,16 +52,18 @@ namespace MarketBackend.Tests.AT
             DBcontext.GetInstance().Dispose();
             proxy = new Proxy();
             userId = proxy.GetUserId();
-            mockShippingSystem = new Mock<IShippingSystemFacade>();
-            mockPaymentSystem = new Mock<IPaymentSystemFacade>();
-            mockPaymentSystem.Setup(pay =>pay.Connect()).Returns(true);
-            mockShippingSystem.Setup(ship => ship.Connect()).Returns(true);
-            mockPaymentSystem.Setup(pay =>pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(1);
-            mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
-            mockPaymentSystem.Setup(pay =>pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(1);
-            mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
-            mockShippingSystem.SetReturnsDefault(true);
-            mockPaymentSystem.SetReturnsDefault(true);
+            // mockShippingSystem = new Mock<IShippingSystemFacade>();
+            // mockPaymentSystem = new Mock<IPaymentSystemFacade>();
+            // mockPaymentSystem.Setup(pay =>pay.Connect()).Returns(true);
+            // mockShippingSystem.Setup(ship => ship.Connect()).Returns(true);
+            // mockPaymentSystem.Setup(pay =>pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(1);
+            // mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
+            // mockPaymentSystem.Setup(pay =>pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(1);
+            // mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
+            // mockShippingSystem.SetReturnsDefault(true);
+            // mockPaymentSystem.SetReturnsDefault(true);
+            RealPaymentSystem paymentSystem = new RealPaymentSystem("https://damp-lynna-wsep-1984852e.koyeb.app/");
+            RealShippingSystem shippingSystem = new RealShippingSystem("https://damp-lynna-wsep-1984852e.koyeb.app/");
             proxy.InitiateSystemAdmin();
             proxy.EnterAsGuest(session1);
             proxy.Register(userName, userPassword, email1, userAge);
@@ -256,7 +258,7 @@ namespace MarketBackend.Tests.AT
             Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
                 "Expected product addition to the store to succeed.");
             userId2 = proxy.GetMembeIDrByUserName(userName2);
-            mockPaymentSystem.SetReturnsDefault(false);
+            // mockPaymentSystem.SetReturnsDefault(false);
             Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
                 "Expected cart purchase to fail due to payment failure.");
             Assert.AreEqual(0, proxy.GetPurchaseHistory(userName2).Count, 
@@ -271,7 +273,7 @@ namespace MarketBackend.Tests.AT
             Assert.IsTrue(proxy.AddProduct(shopID, token1, productName1, sellmethod, desc, price1, category1, quantity1, false), 
                 "Expected product addition to the store to succeed.");
             userId2 = proxy.GetMembeIDrByUserName(userName2);
-            mockShippingSystem.SetReturnsDefault(false);
+            // mockShippingSystem.SetReturnsDefault(false);
             Assert.IsFalse(proxy.PurchaseCart(token2, paymentDetails, shippingDetails), 
                 "Expected cart purchase to fail due to shipping failure.");
             Assert.AreEqual(0, proxy.GetPurchaseHistory(userName2).Count, 
