@@ -138,20 +138,26 @@ namespace MarketBackend.DAL
 
         public void Update(Product product)
         {
-            _productById[product.ProductId] = product;
-            lock (_lock)
-            {
-                ProductDTO p = DBcontext.GetInstance().Products.Find(product.ProductId);
-                if (p != null)
+            if (_productById.ContainsKey(product.ProductId)){
+                _productById[product.ProductId] = product;
+                lock (_lock)
                 {
-                    if (product.Description != null) p.Description = product.Description;
-                    if (product.Category != null) p.Category = product.Category.ToString();
-                    if (product.Keywords != null) p.Keywords = string.Join(", ", product.Keywords);
-                    p.Quantity = product.Quantity;
-                    p.Price = product.Price;
-                    DBcontext.GetInstance().SaveChanges();
+                    ProductDTO p = DBcontext.GetInstance().Products.Find(product.ProductId);
+                    if (p != null)
+                    {
+                        if (product.Description != null) p.Description = product.Description;
+                        if (product.Category != null) p.Category = product.Category.ToString();
+                        if (product.Keywords != null) p.Keywords = string.Join(", ", product.Keywords);
+                        p.Quantity = product.Quantity;
+                        p.Price = product.Price;
+                        DBcontext.GetInstance().SaveChanges();
+                    }
                 }
             }
+            else{
+                throw new KeyNotFoundException($"Product with ID {product.ProductId} not found.");
+            }
+            
         }
 
         /// <summary>

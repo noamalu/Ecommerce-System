@@ -96,6 +96,7 @@ namespace MarketBackend.Domain.Market_Client
             if (!IsNotification)
             {
                 IsNotification = true;
+                ClientRepositoryRAM.GetInstance().Update(this);
             }
             else throw new Exception("Notification On");
         }
@@ -105,6 +106,7 @@ namespace MarketBackend.Domain.Market_Client
             if (IsNotification)
             {
                 IsNotification = false;
+                ClientRepositoryRAM.GetInstance().Update(this);
             }
             else throw new Exception("Notification Off");
         }
