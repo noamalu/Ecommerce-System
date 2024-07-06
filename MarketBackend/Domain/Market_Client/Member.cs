@@ -20,6 +20,7 @@ namespace MarketBackend.Domain.Market_Client
         public bool IsSystemAdmin {get; set;}
         public bool IsLoggedIn {get; set;}
         public bool IsNotification {get; set;}
+
         object _lock = new Object();
 
         public SynchronizedCollection<Message> alerts;
@@ -34,7 +35,7 @@ namespace MarketBackend.Domain.Market_Client
             OrderHistory = new(); 
             IsSystemAdmin = false;
             IsLoggedIn = false;
-            IsNotification = true;
+            IsNotification = false;
             alerts = new SynchronizedCollection<Message>();
         }
 
