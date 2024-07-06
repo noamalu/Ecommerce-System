@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Text;
+using MarketBackend.DAL;
 using MarketBackend.DAL.DTO;
 using Microsoft.EntityFrameworkCore;
 
@@ -85,6 +86,7 @@ namespace MarketBackend.Domain.Market_Client
         public void AddKeyword(string keyWord)
         {
             _keywords.Add(keyWord);
+            ProductRepositoryRAM.GetInstance().Update(this);
         }
 
         public void RemoveKeyword(string keyWord)
@@ -93,6 +95,7 @@ namespace MarketBackend.Domain.Market_Client
             {
                 throw new ArgumentException("Keyword not found");
             }
+            ProductRepositoryRAM.GetInstance().Update(this);
         }
 
         public string GetInfo()
@@ -125,6 +128,7 @@ namespace MarketBackend.Domain.Market_Client
                 throw new ArgumentException("Price can't be negative");
             }
             _price = newPrice;
+            ProductRepositoryRAM.GetInstance().Update(this);
         }
 
         public void updateQuantity(int newQuantity)
@@ -134,6 +138,7 @@ namespace MarketBackend.Domain.Market_Client
                 throw new ArgumentException("Quantity can't be negative");
             }
             _quantity = newQuantity;
+            ProductRepositoryRAM.GetInstance().Update(this);
         }
 
         public Product Clone()

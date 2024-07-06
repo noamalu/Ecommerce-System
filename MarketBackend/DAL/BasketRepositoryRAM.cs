@@ -122,6 +122,22 @@ namespace MarketBackend.DAL
             if (baskets.ContainsKey(entity._basketId))
             {
                 baskets[entity._basketId] = entity;
+                lock(Lock){
+                    BasketDTO p = DBcontext.GetInstance().Baskets.Find(entity._basketId);
+                    if (p != null){
+                        if (entity.BasketItems!= null){
+                            List<BasketItemDTO> BasketItems = new List<BasketItemDTO>();
+                            List<ProductDTO> Products = new List<ProductDTO>();
+                            foreach (BasketItem item in entity.BasketItems){
+                            BasketItems.Add(new BasketItemDTO(item));
+                            Products.Add(new ProductDTO(item.Product));
+                            }
+                            p.BasketItems = BasketItems;
+                            p.Products = Products;
+                        }
+                        DBcontext.GetInstance().SaveChanges();
+                    }
+                }
             }
             else
             {

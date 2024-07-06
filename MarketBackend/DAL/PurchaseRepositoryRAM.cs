@@ -80,15 +80,23 @@ namespace MarketBackend.DAL
 
         public void Update(Purchase purchase)
         {
-            _purchaseById[purchase.PurchaseId] = purchase;
-             lock (_lock)
-            {
-                DBcontext context = DBcontext.GetInstance();
-                PurchaseDTO purchaseDTO = context.Purchases.Find(purchase.PurchaseId);
-                // purchaseDTO.PurchaseStatus = purchase.PurchaseStatus.ToString();
-                purchaseDTO.Price = purchase.Price;
-                context.SaveChanges();
+            if (_purchaseById.ContainsKey(purchase.PurchaseId)){
+                _purchaseById[purchase.PurchaseId] = purchase;
+                lock (_lock)
+                {
+                    DBcontext context = DBcontext.GetInstance();
+                    PurchaseDTO purchaseDTO = context.Purchases.Find(purchase.PurchaseId);
+                    if (purchaseDTO != null){
+                        purchaseDTO.Price = purchase.Price;
+                    }
+                    context.SaveChanges();
+                }
             }
+            else{
+                throw new KeyNotFoundException($"Purchase with ID {purchase.PurchaseId} not found.");
+            }
+            
+             
            
         }
     
