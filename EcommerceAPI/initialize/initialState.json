@@ -62,11 +62,30 @@
         "Description": "the best Israeli snack ever",
         "Price": 30.0,
         "Quantity": 20,
-        "KeyWords": [ "snack", "food", "israeli" ],
         "Scenario": "AddProduct",
         "Category": "Snack",
         "SellMethod": "RegularSell"
       },
+      {
+        "Username": "u2",
+        "Identifier": "2",
+        "StoreId": "1",
+        "ProductName": "Bamba",
+        "ProductId": "11",
+        "Description": "the best Israeli snack ever",
+        "Price": 10.0,
+        "Quantity": 10,
+        "Scenario": "UpdateProduct",
+        "Category": "Snack",
+        "SellMethod": "RegularSell"
+      },
+      {
+        "Username": "u2",
+        "Identifier": "2",
+        "StoreId": "1",
+        "Subject" : "s1",
+        "Scenario": "CreateStoreRule"       
+      },      
         {
             "Username": "u2",
             "Identifier": "2",

@@ -162,6 +162,12 @@ namespace TestProject.Tests
             
         }
         
+        [TestMethod]
+        public void WrongPathFail() {
+            UpdateInitFileName("Initialize", "true");
+            var exception = Assert.ThrowsException<AggregateException>(() => new SceanarioParser(s, CC).Parse("wrongRoute").Wait());
+            Assert.IsTrue(exception.InnerExceptions.Any(e => e is FileNotFoundException));
+        }
 
          public void UpdateInitFileName(string key, string newValue)
         {

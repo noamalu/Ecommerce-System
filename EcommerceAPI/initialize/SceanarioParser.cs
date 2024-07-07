@@ -169,6 +169,35 @@ public class SceanarioParser
                     throw new Exception(res.ErrorMessage);                
                 break;
             }
+            case Sceanarios.UpdateProduct:
+            {
+                var productDto = new ProductDto
+                {
+                    StoreId = int.Parse(usecaseJson["StoreId"].ToString()),
+                    Id = int.Parse(usecaseJson["ProductId"].ToString()),
+                    ProductDescription = usecaseJson["Description"].ToString(),
+                    Price = double.Parse(usecaseJson["Price"].ToString()),
+                    Quantity = int.Parse(usecaseJson["Quantity"].ToString()),
+                    Category = usecaseJson["Category"].ToString(),
+                    SellMethod = usecaseJson["SellMethod"].ToString()
+
+                };
+                var res = _marketService.UpdateProductQuantity(
+                    productDto.StoreId,
+                    _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
+                    (int)productDto.Id,                    
+                    productDto.Quantity);
+                if (res.ErrorOccured)
+                    throw new Exception(res.ErrorMessage);                
+                res = _marketService.UpdateProductPrice(
+                    productDto.StoreId,
+                    _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
+                    (int)productDto.Id,                    
+                    (double)productDto.Price);
+                if (res.ErrorOccured)
+                    throw new Exception(res.ErrorMessage);                
+                break;
+            }            
             case Sceanarios.RemoveProduct:
             {
                 var productDto = new ProductDto
