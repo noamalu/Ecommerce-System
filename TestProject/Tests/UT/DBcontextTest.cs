@@ -98,7 +98,7 @@ namespace UnitTests
         {
             ShoppingCartDTO shoppingCartDTO = new ShoppingCartDTO();
             List<MessageDTO> l = new List<MessageDTO>();
-            MemberDTO member1 = new MemberDTO(2, "tamuz", "123", l, false, shoppingCartDTO);
+            MemberDTO member1 = new MemberDTO(2, "Hadas", "123", l, false, shoppingCartDTO);
             var add1 = _context.Members.Add(member1);
             _context.SaveChanges();
             Assert.AreEqual(_context.Members.Find(member1.Id), member1);
@@ -378,7 +378,7 @@ namespace UnitTests
             MemberDTO member3 = new MemberDTO(4, "Ben", "111", l, true, shoppingCartDTO3);
 
             StoreDTO shop = new StoreDTO(1, storeName, phoneNum, email1, true, 5.0);
-            StoreDTO shop2 = new StoreDTO(2, "Tamuz's Shop", phoneNum, email1, true, 5.0);
+            StoreDTO shop2 = new StoreDTO(2, "Hadas's Shop", phoneNum, email1, true, 5.0);
 
             _context.Members.Add(member1);
             _context.Members.Add(member2);
