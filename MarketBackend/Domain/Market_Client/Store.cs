@@ -156,6 +156,12 @@ namespace MarketBackend.Domain.Market_Client
             {
 
             _products.Remove(p);
+            IEnumerable<Basket> baskets = BasketRepositoryRAM.GetInstance().getAll();
+            foreach (Basket basket in baskets){
+                if (basket.HasProduct(p)){
+                    basket.RemoveFromBasket(p._productId, basket.products[p.ProductId]);
+                }
+            }
             ProductRepositoryRAM.GetInstance().Delete(p);
             }
         }
