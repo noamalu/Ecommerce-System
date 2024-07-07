@@ -213,6 +213,7 @@ const MyTable: React.FC<MyTableProps> = ({ roles, storeId }) => {
                 handleCloseAppointeeModal();
             })
             .catch((error) => {
+                alert(error.message);
                 console.error('Error adding appointee:', error);
             });
     };

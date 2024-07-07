@@ -477,7 +477,7 @@ namespace MarketBackend.Domain.Market_Client
                     //subscribe the new staff member to the store events
                     if (role.getRoleName() == RoleName.Manager)
                     {
-                        SubscribeStaffMember(ClientRepositoryRAM.GetInstance().GetByUserName(roleuserName), ClientRepositoryRAM.GetInstance().GetByUserName(userName));
+                        SubscribeStaffMember(null, ClientRepositoryRAM.GetInstance().GetByUserName(userName));
                     }
                     _eventManager.NotifySubscribers(e);
                     
