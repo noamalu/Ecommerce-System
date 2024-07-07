@@ -90,22 +90,6 @@ namespace MarketBackend.DAL.DTO
             }
             return _instance;
         }
-
-        public static DBcontext GetInstance(bool test)
-        {
-            if (_instance == null)
-            {
-                lock (_lock)
-                {
-                    if (_instance == null)
-                    {
-                        _instance = new DBcontext(test);
-                    }
-                }
-            }
-            return _instance;
-        }
-
         public DBcontext()
         {
             DbPathLocal = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=MarketDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;Application Intent=ReadWrite;MultiSubnetFailover=False";
@@ -115,12 +99,6 @@ namespace MarketBackend.DAL.DTO
                 DbPath = DbPathLocal;
             else
                 DbPath = DbPathRemote;
-            DbPath = DbPathLocal;
-        }
-
-        public DBcontext(bool test)
-        {
-            DbPathLocal = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=MarketDBTest;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;Application Intent=ReadWrite;MultiSubnetFailover=False";
             DbPath = DbPathLocal;
         }
         public static void SetLocalDB()
