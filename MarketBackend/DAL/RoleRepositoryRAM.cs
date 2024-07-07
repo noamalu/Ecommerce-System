@@ -49,26 +49,32 @@ namespace MarketBackend.DAL
         public Role GetById(int storeId, string userName)
         {
             if (!roles.ContainsKey(storeId) && roles[storeId].ContainsKey(userName)){
-                lock (_lock)
-                {
-                    RoleDTO roleDTO = DBcontext.GetInstance().Roles.Find(storeId, userName);
-                    if (roleDTO != null)
+                try{
+                    lock (_lock)
                     {
-                        Role role = new Role(roleDTO);
-                        if (!roles.ContainsKey(storeId))
+                        RoleDTO roleDTO = DBcontext.GetInstance().Roles.Find(storeId, userName);
+                        if (roleDTO != null)
                         {
-                            roles[storeId] = new ConcurrentDictionary<string, Role>();
-                            roles[storeId][userName] = role;
+                            Role role = new Role(roleDTO);
+                            if (!roles.ContainsKey(storeId))
+                            {
+                                roles[storeId] = new ConcurrentDictionary<string, Role>();
+                                roles[storeId][userName] = role;
+                            }
+                            else{
+                                roles[storeId].TryAdd(userName, role);
+                            }
                         }
-                        else{
-                            roles[storeId].TryAdd(userName, role);
+                        else
+                        {
+                            throw new KeyNotFoundException($"member with ID {userName} at store with ID {storeId} not found.");
                         }
-                    }
-                    else
-                    {
-                        throw new KeyNotFoundException($"member with ID {userName} at store with ID {storeId} not found.");
                     }
                 }
+                catch(Exception){
+                throw new Exception("There was a problem in Database use- Get Role");
+                }
+                
             }
             return roles[storeId][userName];
         }
@@ -82,10 +88,15 @@ namespace MarketBackend.DAL
             else{
                 roles[entity.storeId].TryAdd(entity.userName, entity);
             }
-            lock (_lock)
-            {
-                DBcontext.GetInstance().Roles.Add(new RoleDTO(entity));
-                DBcontext.GetInstance().SaveChanges();
+            try{
+                lock (_lock)
+                {
+                    DBcontext.GetInstance().Roles.Add(new RoleDTO(entity));
+                    DBcontext.GetInstance().SaveChanges();
+                }
+            }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Add Role");
             }
 
         }
@@ -110,25 +121,30 @@ namespace MarketBackend.DAL
         public void Update(Role entity)
         {
             roles[entity.storeId][entity.userName] = entity;
-
-            lock (_lock)
-            {
-                RoleDTO roleDTO = DBcontext.GetInstance().Roles.Find(entity.storeId, entity.userName);
-                if (roleDTO != null)
+            try{
+                lock (_lock)
                 {
-                    List<string> newPermissions = new List<string>();
-                    foreach (Permission permission in entity.getPermissions())
-                        newPermissions.Add(permission.ToString());
+                    RoleDTO roleDTO = DBcontext.GetInstance().Roles.Find(entity.storeId, entity.userName);
+                    if (roleDTO != null)
+                    {
+                        List<string> newPermissions = new List<string>();
+                        foreach (Permission permission in entity.getPermissions())
+                            newPermissions.Add(permission.ToString());
 
-                    List<int> newAppointees = new List<int>();
-                    foreach (Member app in entity.getAppointees())
-                        newAppointees.Add(app.Id);
+                        List<int> newAppointees = new List<int>();
+                        foreach (Member app in entity.getAppointees())
+                            newAppointees.Add(app.Id);
 
-                    roleDTO.permissions = newPermissions;
-                    roleDTO.appointees = newAppointees;
-                    DBcontext.GetInstance().SaveChanges();
+                        roleDTO.permissions = newPermissions;
+                        roleDTO.appointees = newAppointees;
+                        DBcontext.GetInstance().SaveChanges();
+                    }
                 }
             }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Update Role");
+            }
+            
         }
         public void Delete(Role entity)
         {
@@ -136,12 +152,16 @@ namespace MarketBackend.DAL
             {
                 roles[entity.storeId].TryRemove(new KeyValuePair<string, Role>(entity.userName, entity));
             }
-
-            lock (_lock)
-            {
-                RoleDTO roleDto = DBcontext.GetInstance().Roles.Find(entity.storeId, entity.userName);
-                DBcontext.GetInstance().Roles.Remove(roleDto);
-                DBcontext.GetInstance().SaveChanges();
+            try{
+                lock (_lock)
+                {
+                    RoleDTO roleDto = DBcontext.GetInstance().Roles.Find(entity.storeId, entity.userName);
+                    DBcontext.GetInstance().Roles.Remove(roleDto);
+                    DBcontext.GetInstance().SaveChanges();
+                }
+            }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Delete Role");
             }
         }
 
@@ -151,8 +171,14 @@ namespace MarketBackend.DAL
             {
                 roles[storeId] = new ConcurrentDictionary<string, Role>();
             }
-            DBcontext.GetInstance().Roles.Where(role => role.storeId == storeId).ToList().ForEach(role => roles[storeId].TryAdd(role.userName, RoleDTO.ConvertToRole(role)));
-
+            try{
+                lock(_lock){
+                    DBcontext.GetInstance().Roles.Where(role => role.storeId == storeId).ToList().ForEach(role => roles[storeId].TryAdd(role.userName, RoleDTO.ConvertToRole(role)));
+                }
+            }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Get Role");
+            }
             return roles[storeId];
         }
     }

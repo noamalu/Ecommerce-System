@@ -31,16 +31,22 @@ namespace MarketBackend.DAL
         }
         public void Add(Purchase purchase)
         {
-            lock (_lock){
-            _purchaseById.Add(purchase.PurchaseId, purchase);
-            DBcontext context = DBcontext.GetInstance();
-            StoreDTO storeDTO = context.Stores.Include(s => s.Purchases).FirstOrDefault(s => s.Id == purchase.StoreId);
-            BasketDTO basketDTO = context.Baskets.Find(purchase.Basket._basketId);
-            PurchaseDTO purchaseDTO = new PurchaseDTO(purchase, basketDTO);
-            storeDTO.Purchases.Add(purchaseDTO);
-            context.Purchases.Add(purchaseDTO);
-            context.SaveChanges();
+            try{
+                lock (_lock){
+                _purchaseById.Add(purchase.PurchaseId, purchase);
+                DBcontext context = DBcontext.GetInstance();
+                StoreDTO storeDTO = context.Stores.Include(s => s.Purchases).FirstOrDefault(s => s.Id == purchase.StoreId);
+                BasketDTO basketDTO = context.Baskets.Find(purchase.Basket._basketId);
+                PurchaseDTO purchaseDTO = new PurchaseDTO(purchase, basketDTO);
+                storeDTO.Purchases.Add(purchaseDTO);
+                context.Purchases.Add(purchaseDTO);
+                context.SaveChanges();
             }
+            }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Add Purchase");
+            }
+            
             
         }
         public Purchase GetById(int id)
@@ -49,15 +55,21 @@ namespace MarketBackend.DAL
                 return _purchaseById[id];
             else
             {
-                lock (_lock)
-                {
-                    PurchaseDTO purchaseDTO = DBcontext.GetInstance().Purchases.Find(id);
-                    if (purchaseDTO != null)
+                try{
+                    lock (_lock)
                     {
-                        _purchaseById.Add(id, new Purchase(purchaseDTO));
+                        PurchaseDTO purchaseDTO = DBcontext.GetInstance().Purchases.Find(id);
+                        if (purchaseDTO != null)
+                        {
+                            _purchaseById.Add(id, new Purchase(purchaseDTO));
+                        }
+                        return _purchaseById[id];
                     }
-                    return _purchaseById[id];
                 }
+                catch(Exception){
+                throw new Exception("There was a problem in Database use- Get Purchase");
+                }
+                
             }
         }
     
@@ -68,29 +80,41 @@ namespace MarketBackend.DAL
 
         public IEnumerable<Purchase> getAll()
         {
-             lock (_lock)
-            {
-                foreach (PurchaseDTO purchaseDTO in DBcontext.GetInstance().Purchases)
+            try{
+                lock (_lock)
                 {
-                    _purchaseById.TryAdd(purchaseDTO.Id, new Purchase(purchaseDTO));
+                    foreach (PurchaseDTO purchaseDTO in DBcontext.GetInstance().Purchases)
+                    {
+                        _purchaseById.TryAdd(purchaseDTO.Id, new Purchase(purchaseDTO));
+                    }
                 }
+                return _purchaseById.Values.ToList();
             }
-            return _purchaseById.Values.ToList();
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Get all Purchases");
+            }
+            
         }
 
         public void Update(Purchase purchase)
         {
             if (_purchaseById.ContainsKey(purchase.PurchaseId)){
                 _purchaseById[purchase.PurchaseId] = purchase;
-                lock (_lock)
-                {
-                    DBcontext context = DBcontext.GetInstance();
-                    PurchaseDTO purchaseDTO = context.Purchases.Find(purchase.PurchaseId);
-                    if (purchaseDTO != null){
-                        purchaseDTO.Price = purchase.Price;
+                try{
+                    lock (_lock)
+                    {
+                        DBcontext context = DBcontext.GetInstance();
+                        PurchaseDTO purchaseDTO = context.Purchases.Find(purchase.PurchaseId);
+                        if (purchaseDTO != null){
+                            purchaseDTO.Price = purchase.Price;
+                        }
+                        context.SaveChanges();
                     }
-                    context.SaveChanges();
                 }
+                catch(Exception){
+                throw new Exception("There was a problem in Database use- Update Purchases");
+                }
+                
             }
             else{
                 throw new KeyNotFoundException($"Purchase with ID {purchase.PurchaseId} not found.");
@@ -104,13 +128,18 @@ namespace MarketBackend.DAL
         public SynchronizedCollection<Purchase> GetShopPurchaseHistory(int storeId)
         {
             SynchronizedCollection<Purchase> result = new SynchronizedCollection<Purchase>();
-            lock (_lock)
-            {
-                List<PurchaseDTO> lp = DBcontext.GetInstance().Purchases.Where((p) => p.StoreId == storeId).ToList();
-                foreach (PurchaseDTO purchaseDTO in lp)
+            try{
+                lock (_lock)
                 {
-                    _purchaseById.TryAdd(purchaseDTO.Id, new Purchase(purchaseDTO));
+                    List<PurchaseDTO> lp = DBcontext.GetInstance().Purchases.Where((p) => p.StoreId == storeId).ToList();
+                    foreach (PurchaseDTO purchaseDTO in lp)
+                    {
+                        _purchaseById.TryAdd(purchaseDTO.Id, new Purchase(purchaseDTO));
+                    }
                 }
+            }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Get Purchases History");
             }
             foreach (Purchase purchase in _purchaseById.Values)
             {

@@ -12,6 +12,7 @@ using System.Security.Policy;
 using System.Data;
 using MarketBackend.Domain.Shipping;
 using Microsoft.IdentityModel.Tokens;
+using MarketBackend.DAL.DTO;
 
 
 namespace MarketBackend.Domain.Market_Client
@@ -140,8 +141,18 @@ namespace MarketBackend.Domain.Market_Client
                         break;
                     }
                 }
-                if (found) 
-                    _clientManager.AddToCart(identifier, storeId, productId, quantity);
+                if (found){
+                    using var transaction = DBcontext.GetInstance().Database.BeginTransaction();
+                    try{
+                        _clientManager.AddToCart(identifier, storeId, productId, quantity);
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw new Exception(ex.Message);
+                    }
+                } 
                 else
                     throw new Exception($"No productid {productId}");
             }
@@ -333,32 +344,41 @@ namespace MarketBackend.Domain.Market_Client
 
         public void PurchaseCart(string identifier, PaymentDetails paymentDetails, ShippingDetails shippingDetails) //clientId
         {
-            ClientManager.CheckClientIdentifier(identifier);
-            var client = _clientManager.GetClientByIdentifier(identifier);
-            var baskets = client.Cart.GetBaskets();
-            if (baskets.IsNullOrEmpty()){
-                throw new Exception("Empty cart.");
-            }
-            var stores = new List<Store>();
-            foreach(var basket in baskets){
-                var store = _storeRepository.GetById(basket.Key);
-                stores.Add(store);
-                if(!store.checkBasketInSupply(basket.Value)) throw new Exception("unavailable."); 
-                if(!store.checklegalBasket(basket.Value, client.IsAbove18)) throw new Exception("unavailable.");               
-            }
-            foreach(var store in stores){
-                var totalPrice = store.CalculateBasketPrice(baskets[store.StoreId]);
-                if(_paymentSystem.Pay(paymentDetails, totalPrice) > 0) {
-                    if(_shippingSystemFacade.OrderShippment(shippingDetails) > 0){
-                        store.PurchaseBasket(identifier, baskets[store.StoreId]);
-                        _clientManager.PurchaseBasket(identifier, baskets[store.StoreId]);
-                    }
-                    else{
-                        throw new Exception("shippment failed.");
-                    }                  
+            using var transaction = DBcontext.GetInstance().Database.BeginTransaction();
+            try{
+                ClientManager.CheckClientIdentifier(identifier);
+                var client = _clientManager.GetClientByIdentifier(identifier);
+                var baskets = client.Cart.GetBaskets();
+                if (baskets.IsNullOrEmpty()){
+                    throw new Exception("Empty cart.");
                 }
-                else 
-                    throw new Exception("payment failed.");
+                var stores = new List<Store>();
+                foreach(var basket in baskets){
+                    var store = _storeRepository.GetById(basket.Key);
+                    stores.Add(store);
+                    if(!store.checkBasketInSupply(basket.Value)) throw new Exception("unavailable."); 
+                    if(!store.checklegalBasket(basket.Value, client.IsAbove18)) throw new Exception("unavailable.");               
+                }
+                foreach(var store in stores){
+                    var totalPrice = store.CalculateBasketPrice(baskets[store.StoreId]);
+                    if(_paymentSystem.Pay(paymentDetails, totalPrice) > 0) {
+                        if(_shippingSystemFacade.OrderShippment(shippingDetails) > 0){
+                            store.PurchaseBasket(identifier, baskets[store.StoreId]);
+                            _clientManager.PurchaseBasket(identifier, baskets[store.StoreId]);
+                        }
+                        else{
+                            throw new Exception("shippment failed.");
+                        }                  
+                    }
+                    else 
+                        throw new Exception("payment failed.");
+                }
+                transaction.Commit();
+            }
+            catch(Exception e) 
+            {
+                transaction.Rollback();
+                throw new Exception(e.Message); 
             }           
 
         }

@@ -39,12 +39,18 @@ namespace MarketBackend.DAL
                 _cartId = cartId
             };
             baskets.TryAdd(newBasket._basketId, newBasket);
-            DBcontext dbContext = DBcontext.GetInstance();
-            lock (Lock)
-            {
-                dbContext.Baskets.Add(new BasketDTO(newBasket));
-                dbContext.SaveChanges();
+            try{
+                DBcontext dbContext = DBcontext.GetInstance();
+                lock (Lock)
+                {
+                    dbContext.Baskets.Add(new BasketDTO(newBasket));
+                    dbContext.SaveChanges();
+                }
             }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Create Basket");
+            }
+            
             BasketCounter ++;
             return newBasket;
         }
@@ -55,33 +61,45 @@ namespace MarketBackend.DAL
                 throw new ArgumentException($"Basket with ID {entity._basketId} already exists.");
 
             }
-            DBcontext dbContext = DBcontext.GetInstance();
-            baskets.TryAdd(entity._basketId, entity);
-            lock (Lock)
-            {
-                dbContext.Baskets.Add(new BasketDTO(entity));
-                dbContext.SaveChanges();
+            try{
+                DBcontext dbContext = DBcontext.GetInstance();
+                baskets.TryAdd(entity._basketId, entity);
+                lock (Lock)
+                {
+                    dbContext.Baskets.Add(new BasketDTO(entity));
+                    dbContext.SaveChanges();
+                }
             }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Add Basket");
+            }
+            
 
         }
 
         public void Delete(Basket entity)
         {
-            lock (Lock)
-            {
-                var dbContext = DBcontext.GetInstance();
-                var dbBasket = dbContext.Baskets.Find(entity._basketId);
-                if (dbBasket is not null){
-                    if (baskets.ContainsKey(entity._basketId)){
-                        baskets.TryRemove(new KeyValuePair<int, Basket>(entity._basketId, entity));
+            try{
+                lock (Lock)
+                {
+                    var dbContext = DBcontext.GetInstance();
+                    var dbBasket = dbContext.Baskets.Find(entity._basketId);
+                    if (dbBasket is not null){
+                        if (baskets.ContainsKey(entity._basketId)){
+                            baskets.TryRemove(new KeyValuePair<int, Basket>(entity._basketId, entity));
+                        }
+                        else{
+                            throw new KeyNotFoundException($"Basket with ID {entity._basketId} does not exist.");
+                        }
+                        dbContext.Baskets.Remove(dbBasket);
+                        dbContext.SaveChanges();
                     }
-                    else{
-                        throw new KeyNotFoundException($"Basket with ID {entity._basketId} does not exist.");
-                    }
-                    dbContext.Baskets.Remove(dbBasket);
-                    dbContext.SaveChanges();
                 }
             }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Delete Basket");
+            }
+            
         }
 
         public IEnumerable<Basket> getAll()
@@ -100,14 +118,20 @@ namespace MarketBackend.DAL
             }
             else
             {
-                var dbContext = DBcontext.GetInstance();
-                BasketDTO bDto = dbContext.Baskets.Find(id);
-                if (bDto != null)
-                {
-                    LoadBasket(bDto);
-                    return baskets[id];
+                try{
+                    var dbContext = DBcontext.GetInstance();
+                    BasketDTO bDto = dbContext.Baskets.Find(id);
+                    if (bDto != null)
+                    {
+                        LoadBasket(bDto);
+                        return baskets[id];
+                    }
+                    throw new ArgumentException("Invalid user ID.");
                 }
-                throw new ArgumentException("Invalid user ID.");
+                catch(Exception){
+                throw new Exception("There was a problem in Database use- Get Basket");
+                }
+                
             }
         }
 
@@ -121,23 +145,29 @@ namespace MarketBackend.DAL
         {
             if (baskets.ContainsKey(entity._basketId))
             {
-                baskets[entity._basketId] = entity;
-                lock(Lock){
-                    BasketDTO p = DBcontext.GetInstance().Baskets.Find(entity._basketId);
-                    if (p != null){
-                        if (entity.BasketItems!= null){
-                            List<BasketItemDTO> BasketItems = new List<BasketItemDTO>();
-                            List<ProductDTO> Products = new List<ProductDTO>();
-                            foreach (BasketItem item in entity.BasketItems){
-                            BasketItems.Add(new BasketItemDTO(item));
-                            Products.Add(new ProductDTO(item.Product));
+                try{
+                    baskets[entity._basketId] = entity;
+                    lock(Lock){
+                        BasketDTO p = DBcontext.GetInstance().Baskets.Find(entity._basketId);
+                        if (p != null){
+                            if (entity.BasketItems!= null){
+                                List<BasketItemDTO> BasketItems = new List<BasketItemDTO>();
+                                List<ProductDTO> Products = new List<ProductDTO>();
+                                foreach (BasketItem item in entity.BasketItems){
+                                BasketItems.Add(new BasketItemDTO(item));
+                                Products.Add(new ProductDTO(item.Product));
+                                }
+                                p.BasketItems = BasketItems;
+                                p.Products = Products;
                             }
-                            p.BasketItems = BasketItems;
-                            p.Products = Products;
+                            DBcontext.GetInstance().SaveChanges();
                         }
-                        DBcontext.GetInstance().SaveChanges();
                     }
                 }
+                catch(Exception){
+                throw new Exception("There was a problem in Database use- Update Basket");
+                }
+                
             }
             else
             {
@@ -163,14 +193,18 @@ namespace MarketBackend.DAL
 
         public void Add_cartHistory(ShoppingCartHistory shoppingCartHistory, string memberUserName)
         {
-            lock (Lock){
+            try{
+                lock (Lock){
                 var dbContext = DBcontext.GetInstance();
                 ShoppingCartHistoryDTO shoppingCartHistoryDTO = new ShoppingCartHistoryDTO(shoppingCartHistory);
                 MemberDTO memberDTO = dbContext.Members.Where(member => member.UserName == memberUserName).ToList()[0];
                 memberDTO.OrderHistory.Add(shoppingCartHistoryDTO);
                 dbContext.SaveChanges();
+                }
             }
-            
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Add Cart History");
+            }
         }
     }
 }
