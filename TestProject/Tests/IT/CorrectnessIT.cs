@@ -60,6 +60,7 @@ namespace MarketBackend.Tests.IT
         [TestInitialize]
         public void Setup()
         {
+            DBcontext.SetTestDB();
             // Initialize the managers and mock systems
             DBcontext.GetInstance().Dispose();
             MarketManagerFacade.Dispose();

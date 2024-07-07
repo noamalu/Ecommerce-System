@@ -38,6 +38,7 @@ namespace UnitTests
             mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
+            DBcontext.SetTestDB();
             DBcontext.GetInstance().Dispose();
             MarketService s = MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             ClientService c = ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);

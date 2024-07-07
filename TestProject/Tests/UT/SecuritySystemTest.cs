@@ -22,6 +22,7 @@ namespace UnitTests
         [TestInitialize]
         public void SetUp()
         {
+            DBcontext.SetTestDB();
             DBcontext.GetInstance().Dispose();
             _securityManager = SecurityManager.GetInstance();
             _tokenManager = TokenManager.GetInstance();
