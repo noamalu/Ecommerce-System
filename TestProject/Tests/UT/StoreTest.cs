@@ -65,6 +65,7 @@ namespace UnitTests
         [TestInitialize]
         public void Initialize()
         {
+            DBcontext.SetTestDB();
             DBcontext.GetInstance().Dispose();
             context = DBcontext.GetInstance();
             var mockShippingSystem = new Mock<IShippingSystemFacade>();

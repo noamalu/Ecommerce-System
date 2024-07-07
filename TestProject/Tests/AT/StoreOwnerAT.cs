@@ -48,6 +48,7 @@ namespace MarketBackend.Tests.AT
 
         [TestInitialize()]
         public void Setup(){
+            DBcontext.SetTestDB();
             DBcontext.GetInstance().Dispose();
             proxy = new Proxy();
             userId = proxy.GetUserId();

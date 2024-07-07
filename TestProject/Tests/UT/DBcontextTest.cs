@@ -74,6 +74,7 @@ namespace UnitTests
         [TestCleanup]
         public void CleanUp()
         {
+            DBcontext.SetTestDB();
             _context.Dispose();
             _context = DBcontext.GetInstance();
             MarketManagerFacade.Dispose();
