@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MarketBackend.DAL.DTO;
 using MarketBackend.Domain.Market_Client;
+using MarketBackend.Domain.Models;
 using MarketBackend.Services.Interfaces;
 
 namespace MarketBackend.DAL
@@ -121,6 +122,22 @@ namespace MarketBackend.DAL
             if (baskets.ContainsKey(entity._basketId))
             {
                 baskets[entity._basketId] = entity;
+                lock(Lock){
+                    BasketDTO p = DBcontext.GetInstance().Baskets.Find(entity._basketId);
+                    if (p != null){
+                        if (entity.BasketItems!= null){
+                            List<BasketItemDTO> BasketItems = new List<BasketItemDTO>();
+                            List<ProductDTO> Products = new List<ProductDTO>();
+                            foreach (BasketItem item in entity.BasketItems){
+                            BasketItems.Add(new BasketItemDTO(item));
+                            Products.Add(new ProductDTO(item.Product));
+                            }
+                            p.BasketItems = BasketItems;
+                            p.Products = Products;
+                        }
+                        DBcontext.GetInstance().SaveChanges();
+                    }
+                }
             }
             else
             {
@@ -142,6 +159,18 @@ namespace MarketBackend.DAL
         {
             Basket basket = new Basket(basketDTO);
             baskets[basket._basketId] = basket;
+        }
+
+        public void Add_cartHistory(ShoppingCartHistory shoppingCartHistory, string memberUserName)
+        {
+            lock (Lock){
+                var dbContext = DBcontext.GetInstance();
+                ShoppingCartHistoryDTO shoppingCartHistoryDTO = new ShoppingCartHistoryDTO(shoppingCartHistory);
+                MemberDTO memberDTO = dbContext.Members.Where(member => member.UserName == memberUserName).ToList()[0];
+                memberDTO.OrderHistory.Add(shoppingCartHistoryDTO);
+                dbContext.SaveChanges();
+            }
+            
         }
     }
 }

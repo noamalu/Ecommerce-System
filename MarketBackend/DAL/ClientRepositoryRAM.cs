@@ -105,10 +105,33 @@ namespace MarketBackend.DAL
             {
                 IdxMember[item.Id] = item;
                 UsernamexMember[item.UserName] = item;
+                lock (Lock)
+                {
+                    MemberDTO p = DBcontext.GetInstance().Members.Find(item.Id);
+                    if (p != null){
+                        p.Password = item.Password;
+                        if (item.alerts != null) {
+                            List<MessageDTO> Alerts = new List<MessageDTO>();
+                            foreach (Message message in item.alerts)
+                            {
+                                Alerts.Add(new MessageDTO(message));
+                            }
+                            p.Alerts = Alerts;
+                        }
+                        p.IsNotification = item.IsNotification;
+                        if (item.OrderHistory != null){
+                            List<ShoppingCartHistoryDTO> OrderHistory = new ();
+                            foreach (var order in item.OrderHistory.Values.ToList())
+                            OrderHistory.Add(new ShoppingCartHistoryDTO(order));
+                            p.OrderHistory = OrderHistory;
+                        }
+                        p.IsSystemAdmin = item.IsSystemAdmin;
+                        DBcontext.GetInstance().SaveChanges();
+                    }
+                }
             }
-            lock (Lock)
-            {
-
+            else{
+                throw new KeyNotFoundException($"Client with ID {item.Id} not found.");
             }
         }
         public void SetAsSystemAdmin(Member item)

@@ -7,7 +7,6 @@ using MarketBackend.Domain.Payment;
 using MarketBackend.Services;
 using MarketBackend.DAL.DTO;
 
-
 namespace EcommerceAPI.initialize;
 
 public class Configurate
@@ -47,6 +46,11 @@ public class Configurate
             DBcontext.GetInstance().Dispose();
             new SceanarioParser( _service, _clientService).Parse(initPATH);
         }
+        if (scenarioDtoDict["Local"].Value<bool>())
+
+            DBcontext.SetLocalDB();
+        else
+            DBcontext.SetRemoteDB();        
         return scenarioDtoDict["Port"].ToString();
     }
 

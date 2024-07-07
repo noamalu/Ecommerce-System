@@ -329,9 +329,17 @@ namespace UnitTests
             basket.addToBasket(11, 40);
             Assert.ThrowsException<Exception>(() => _Store.PurchaseBasket(username2,basket));
             Product product = _Store.GetProduct(11);
-             Assert.AreEqual(21, product._quantity,
-             $"Expected product quantity of 21 but got {product._quantity}");
+            Assert.AreEqual(21, product._quantity,
+            $"Expected product quantity of 21 but got {product._quantity}");
             
+        }
+
+        [TestMethod()]
+        public void AddKeyWordSuccess()
+        {
+            _Store.AddKeyword(11, "cheap");
+            Product product = _Store.GetProduct(11);
+            Assert.AreEqual(product, _Store.SearchByKeywords("cheap").ToList()[0]);
         }
 
 

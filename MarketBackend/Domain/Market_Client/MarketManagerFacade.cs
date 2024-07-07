@@ -156,6 +156,7 @@ namespace MarketBackend.Domain.Market_Client
             if (store != null && _clientManager.CheckMemberIsLoggedIn(identifier)){
                 Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
                 store.CloseStore(activeMember.UserName);
+                StoreRepositoryRAM.GetInstance().Update(store);
             }
             else{
                 throw new Exception("Store doesn't exists");
@@ -323,6 +324,7 @@ namespace MarketBackend.Domain.Market_Client
             if (store != null && _clientManager.CheckMemberIsLoggedIn(identifier)){
                 Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
                 store.OpenStore(activeMember.UserName);
+                StoreRepositoryRAM.GetInstance().Update(store);
             }
             else{
                 throw new Exception("Store doesn't exists");
@@ -398,6 +400,7 @@ namespace MarketBackend.Domain.Market_Client
             {
                 Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
                 store.RemoveStaffMember(toRemoveUserName, activeMember.UserName);
+                //need to do also in the db
             }
             else
                 throw new Exception("Store doesn't exist!");

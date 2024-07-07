@@ -10,10 +10,12 @@ namespace MarketBackend.DAL
         private static ConcurrentDictionary<int, IRule> _ruleById;
 
         private static RuleRepositoryRAM _ruleRepo = null;
+        private object _lock;
 
         private RuleRepositoryRAM()
         {
             _ruleById = new ConcurrentDictionary<int, IRule>();
+            _lock = new object();
         }
         public static RuleRepositoryRAM GetInstance()
         {
@@ -23,27 +25,71 @@ namespace MarketBackend.DAL
         }
         public void Update(IRule rule)
         {
-            _ruleById[rule.Id] = rule;
-            rule.Update();
+            if (_ruleById.ContainsKey(rule.Id)){
+                _ruleById[rule.Id] = rule;
+                rule.Update();
+            }
+            else{
+                throw new KeyNotFoundException($"Rule with ID {rule.Id} not found.");
+            }
+            
         }
 
          public void Update(SimpleRule rule)
         {
-            DBcontext context = DBcontext.GetInstance();
-            StoreDTO shopDto = context.Stores.Where(s => s.Rules.Any(r => r.Id == rule.Id)).FirstOrDefault();
-            SimpleRuleDTO ruleDTO = (SimpleRuleDTO)shopDto.Rules.Find(r => r.Id == rule.Id);
+            lock(_lock){
+                DBcontext context = DBcontext.GetInstance();
+                StoreDTO shopDto = context.Stores.Where(s => s.Rules.Any(r => r.Id == rule.Id)).FirstOrDefault();
+                SimpleRuleDTO ruleDTO = (SimpleRuleDTO)shopDto.Rules.Find(r => r.Id == rule.Id);
+                if (ruleDTO != null){
+                    ruleDTO.Subject = new RuleSubjectDTO(rule.Subject);
+                }
+                context.SaveChanges();
+            }
         }
         public void Update(QuantityRule rule)
         {
-            
+            lock(_lock){
+                DBcontext context = DBcontext.GetInstance();
+                StoreDTO shopDto = context.Stores.Where(s => s.Rules.Any(r => r.Id == rule.Id)).FirstOrDefault();
+                QuantityRuleDTO ruleDTO = (QuantityRuleDTO)shopDto.Rules.Find(r => r.Id == rule.Id);
+                if (ruleDTO != null){
+                    ruleDTO.MinQuantity = rule.MinQuantity;
+                    ruleDTO.MaxQuantity = rule.MaxQuantity;
+                }
+                context.SaveChanges();
+            }
         }
         public void Update(CompositeRule rule)
         {
-            
+            lock(_lock){
+                DBcontext context = DBcontext.GetInstance();
+                StoreDTO shopDto = context.Stores.Where(s => s.Rules.Any(r => r.Id == rule.Id)).FirstOrDefault();
+                CompositeRuleDTO ruleDTO = (CompositeRuleDTO)shopDto.Rules.Find(r => r.Id == rule.Id);
+                if (ruleDTO != null){
+                    if (rule.Rules != null){
+                        List<RuleDTO> Rules = new List<RuleDTO>();
+                        foreach(IRule rulee in rule.Rules) {
+                        Rules.Add(DBcontext.GetInstance().Rules.Find(rulee.Id));
+                        }
+                        ruleDTO.Rules = Rules;
+                    }
+                    ruleDTO.Operator = rule.Operator.ToString();
+                    context.SaveChanges();
+                }
+            }
         }
         public void Update(TotalPriceRule rule)
         {
-
+            lock(_lock){
+                DBcontext context = DBcontext.GetInstance();
+                StoreDTO shopDto = context.Stores.Where(s => s.Rules.Any(r => r.Id == rule.Id)).FirstOrDefault();
+                TotalPriceRuleDTO ruleDTO = (TotalPriceRuleDTO)shopDto.Rules.Find(r => r.Id == rule.Id);
+                if (ruleDTO != null){
+                    ruleDTO.TotalPrice = rule.TotalPrice;
+                    context.SaveChanges();
+                }
+            }
         }
 
         public void Add(IRule rule)
@@ -178,7 +224,7 @@ namespace MarketBackend.DAL
             return shopRules;
         }
 
-        public void Dispose()
+        public static void Dispose()
         {
             _ruleById = new ConcurrentDictionary<int, IRule>();
         }
