@@ -21,7 +21,7 @@ namespace MarketBackend.Domain.Market_Client
             _listeners.TryAdd("Store Closed Event", new SynchronizedCollection<Member>());
             _listeners.TryAdd("Store Open Event", new SynchronizedCollection<Member>());
             _listeners.TryAdd("Message Event", new SynchronizedCollection<Member>());
-            // UploadEventsFromContext();
+            UploadEventsFromContext();
         }
 
         private void UploadEventsFromContext()
@@ -32,12 +32,6 @@ namespace MarketBackend.Domain.Market_Client
             foreach(EventDTO e in events)
             {
                 _listeners[e.Name].Add(ClientRepositoryRAM.GetInstance().GetById(e.Listener.Id));
-            }
-            foreach(MemberDTO m in members)
-            {
-                Member member = ClientRepositoryRAM.GetInstance().GetById(m.Id);
-                if (!_listeners["Report Event"].Contains(member))
-                    _listeners["Report Event"].Add(member);
             }
         }
 
@@ -86,6 +80,7 @@ namespace MarketBackend.Domain.Market_Client
                     EventDTO eventDTO = DBcontext.GetInstance().Events
                         .Where((e) => e.Listener.Id == member.Id && e.StoreId == _shopId).FirstOrDefault();
                     DBcontext.GetInstance().Events.Remove(eventDTO);
+                    DBcontext.GetInstance().SaveChanges();
                 }
             }
         }
