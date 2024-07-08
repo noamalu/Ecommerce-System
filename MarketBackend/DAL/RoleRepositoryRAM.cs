@@ -51,7 +51,8 @@ namespace MarketBackend.DAL
             if (!roles.ContainsKey(storeId) && roles[storeId].ContainsKey(userName)){
                 lock (_lock)
                 {
-                    RoleDTO roleDTO = DBcontext.GetInstance().Roles.Find(storeId, userName);
+                    // RoleDTO roleDTO = DBcontext.GetInstance().Roles.Find(storeId, userName);
+                    RoleDTO roleDTO = null;
                     if (roleDTO != null)
                     {
                         Role role = new Role(roleDTO);
@@ -84,7 +85,7 @@ namespace MarketBackend.DAL
             }
             lock (_lock)
             {
-                DBcontext.GetInstance().Roles.Add(new RoleDTO(entity));
+                // DBcontext.GetInstance().Roles.Add(new RoleDTO(entity));
                 DBcontext.GetInstance().SaveChanges();
             }
 
@@ -113,7 +114,8 @@ namespace MarketBackend.DAL
 
             lock (_lock)
             {
-                RoleDTO roleDTO = DBcontext.GetInstance().Roles.Find(entity.storeId, entity.userName);
+                // RoleDTO roleDTO = DBcontext.GetInstance().Roles.Find(entity.storeId, entity.userName);
+                RoleDTO roleDTO = null;
                 if (roleDTO != null)
                 {
                     List<string> newPermissions = new List<string>();
@@ -139,8 +141,8 @@ namespace MarketBackend.DAL
 
             lock (_lock)
             {
-                RoleDTO roleDto = DBcontext.GetInstance().Roles.Find(entity.storeId, entity.userName);
-                DBcontext.GetInstance().Roles.Remove(roleDto);
+                // RoleDTO roleDto = DBcontext.GetInstance().Roles.Find(entity.storeId, entity.userName);
+                // DBcontext.GetInstance().Roles.Remove(roleDto);
                 DBcontext.GetInstance().SaveChanges();
             }
         }
@@ -151,7 +153,7 @@ namespace MarketBackend.DAL
             {
                 roles[storeId] = new ConcurrentDictionary<string, Role>();
             }
-            DBcontext.GetInstance().Roles.Where(role => role.storeId == storeId).ToList().ForEach(role => roles[storeId].TryAdd(role.userName, RoleDTO.ConvertToRole(role)));
+            // DBcontext.GetInstance().Roles.Where(role => role.storeId == storeId).ToList().ForEach(role => roles[storeId].TryAdd(role.userName, RoleDTO.ConvertToRole(role)));
 
             return roles[storeId];
         }

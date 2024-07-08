@@ -58,7 +58,7 @@ namespace MarketBackend.Domain.Market_Client
         
         public void InitiateSystemAdmin()
         {
-            _clientManager.RegisterAsSystemAdmin("system_admin", "system_admin", "system.admin@mail.com", 30);            
+            // _clientManager.RegisterAsSystemAdmin("system_admin", "system_admin", "system.admin@mail.com", 30);            
         }
         
         public void AddManger(string identifier, int storeId, string toAddUserName)

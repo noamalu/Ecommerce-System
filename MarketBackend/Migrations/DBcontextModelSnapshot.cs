@@ -3,7 +3,6 @@ using System;
 using MarketBackend.DAL.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -18,9 +17,7 @@ namespace MarketBackend.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.6")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
-
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("MarketBackend.DAL.DTO.BasketDTO", b =>
                 {
@@ -37,7 +34,7 @@ namespace MarketBackend.Migrations
                         .HasColumnType("int");
 
                     b.Property<double>("TotalPrice")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.HasKey("BasketId");
 
@@ -56,16 +53,14 @@ namespace MarketBackend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<int?>("BasketDTOBasketId")
                         .HasColumnType("int");
 
                     b.Property<double>("PriceAfterDiscount")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.Property<double>("PriceBeforeDiscount")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
@@ -88,14 +83,12 @@ namespace MarketBackend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<int>("ListenerId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<int>("StoreId")
                         .HasColumnType("int");
@@ -115,21 +108,21 @@ namespace MarketBackend.Migrations
                         .HasColumnType("int");
 
                     b.Property<bool>("IsNotification")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("IsSystemAdmin")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<int>("ShoppingCart_shoppingCartId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -144,17 +137,15 @@ namespace MarketBackend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<int?>("MemberDTOId")
                         .HasColumnType("int");
 
                     b.Property<string>("MessageContent")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<bool>("Seen")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("Id");
 
@@ -174,10 +165,10 @@ namespace MarketBackend.Migrations
                     b.Property<string>("Discriminator")
                         .IsRequired()
                         .HasMaxLength(34)
-                        .HasColumnType("nvarchar(34)");
+                        .HasColumnType("varchar(34)");
 
                     b.Property<DateTime>("ExpirationDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("PolicySubjectId")
                         .HasColumnType("int");
@@ -209,11 +200,9 @@ namespace MarketBackend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<string>("Category")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
@@ -235,32 +224,32 @@ namespace MarketBackend.Migrations
 
                     b.Property<string>("Category")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Keywords")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<double>("Price")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.Property<double>("ProductRating")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.Property<string>("SellMethod")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<int?>("ShoppingCartHistoryDTOShoppingCartId")
                         .HasColumnType("int");
@@ -289,10 +278,10 @@ namespace MarketBackend.Migrations
 
                     b.Property<string>("Identifierr")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<double>("Price")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.Property<int?>("StoreDTOId")
                         .HasColumnType("int");
@@ -307,36 +296,6 @@ namespace MarketBackend.Migrations
                     b.ToTable("Purchases");
                 });
 
-            modelBuilder.Entity("MarketBackend.DAL.DTO.RoleDTO", b =>
-                {
-                    b.Property<int>("storeId")
-                        .HasColumnType("int")
-                        .HasColumnOrder(0);
-
-                    b.Property<string>("userName")
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnOrder(1);
-
-                    b.Property<string>("appointees")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("appointer")
-                        .HasColumnType("int");
-
-                    b.Property<string>("permissions")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("roleName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("storeId", "userName");
-
-                    b.ToTable("Roles");
-                });
-
             modelBuilder.Entity("MarketBackend.DAL.DTO.RuleDTO", b =>
                 {
                     b.Property<int>("Id")
@@ -348,7 +307,7 @@ namespace MarketBackend.Migrations
                     b.Property<string>("Discriminator")
                         .IsRequired()
                         .HasMaxLength(21)
-                        .HasColumnType("nvarchar(21)");
+                        .HasColumnType("varchar(21)");
 
                     b.Property<int?>("StoreDTOId")
                         .HasColumnType("int");
@@ -377,11 +336,9 @@ namespace MarketBackend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<string>("Category")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
@@ -424,22 +381,22 @@ namespace MarketBackend.Migrations
                         .HasColumnType("int");
 
                     b.Property<bool>("Active")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("PhoneNum")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<double>("Rating")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.HasKey("Id");
 
@@ -451,7 +408,7 @@ namespace MarketBackend.Migrations
                     b.HasBaseType("MarketBackend.DAL.DTO.PolicyDTO");
 
                     b.Property<double>("Precentage")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.ToTable("Policies");
 
@@ -473,7 +430,7 @@ namespace MarketBackend.Migrations
 
                     b.Property<string>("Operator")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.ToTable("Rules");
 
@@ -509,7 +466,7 @@ namespace MarketBackend.Migrations
                     b.HasBaseType("MarketBackend.DAL.DTO.RuleDTO");
 
                     b.Property<double>("TotalPrice")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
                     b.ToTable("Rules");
 
@@ -522,7 +479,7 @@ namespace MarketBackend.Migrations
 
                     b.Property<string>("NumericOperator")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.ToTable("Policies");
 
@@ -652,15 +609,6 @@ namespace MarketBackend.Migrations
                     b.HasOne("MarketBackend.DAL.DTO.StoreDTO", null)
                         .WithMany("Purchases")
                         .HasForeignKey("StoreDTOId");
-                });
-
-            modelBuilder.Entity("MarketBackend.DAL.DTO.RoleDTO", b =>
-                {
-                    b.HasOne("MarketBackend.DAL.DTO.StoreDTO", null)
-                        .WithMany()
-                        .HasForeignKey("storeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("MarketBackend.DAL.DTO.RuleDTO", b =>

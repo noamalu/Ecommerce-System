@@ -38,7 +38,7 @@ public class Configurate
         if (scenarioDtoDict["Initialize"].Value<bool>())
         {
             string initPATH = Path.Combine(Environment.CurrentDirectory, "initialize\\" + scenarioDtoDict["InitialState"]);
-            DBcontext.GetInstance().Dispose();
+            // DBcontext.GetInstance().Dispose();
             new SceanarioParser( _service, _clientService).Parse(initPATH);
         }
         if (scenarioDtoDict["Local"].Value<bool>())

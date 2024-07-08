@@ -19,11 +19,18 @@ namespace MarketBackend.DAL.DTO
         [Key, Column(Order = 1)]
         [ForeignKey("Members")]
         public string userName { get; }
+
+        public int userNameInt => Convert.ToInt32(userName); // Convert userName to int (example conversion)
+
         public int appointer { get; set; }
         public List <int> appointees { get; set; }
 
         public string roleName { get; set; }
         public List<string> permissions {get; set; }
+
+        
+
+        
 
         public RoleDTO(Role role)
         {

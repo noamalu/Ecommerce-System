@@ -606,3 +606,6 @@ EcommerceUI/package.json
 /MarketBackend/Migrations/
 UI/UI.sln
 UI/UI.sln
+EcommerceAPI/EcommerceAPI.csproj
+UI/UI.csproj
+MarketBackend/MarketBackend.csproj

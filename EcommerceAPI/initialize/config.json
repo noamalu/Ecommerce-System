@@ -2,8 +2,8 @@
   "AdminUsername": "u1",
   "AdminPassword": "password",
   "InitialState": "initialState.json",
-  "Port": 4560,
+  "Port": 3306,
   "ExternalServices": false,
-  "Local": true,
+  "Local": false,
   "Initialize": true
 }

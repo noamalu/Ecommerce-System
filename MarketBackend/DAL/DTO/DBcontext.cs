@@ -14,13 +14,13 @@ namespace MarketBackend.DAL.DTO
         public static string DbPathLocal;
         public static string DbPathTest;
         public static bool TestMode = false;
-        public static bool RemoteMode = false;
-        public static bool LocalMode = true;
+        public static bool RemoteMode = true;
+        public static bool LocalMode = false;
 
         public virtual DbSet<MemberDTO> Members { get; set; }
         public virtual DbSet<MessageDTO> Messages { get; set; }
         public virtual DbSet<StoreDTO> Stores { get; set; }
-        public virtual DbSet<RoleDTO> Roles { get; set; }
+        // public virtual DbSet<RoleDTO> Roles { get; set; }
 
         public virtual DbSet<ShoppingCartDTO> ShoppingCarts { get; set; }
         public virtual DbSet<ShoppingCartHistoryDTO> ShoppingCartHistories { get; set; }
@@ -50,28 +50,28 @@ namespace MarketBackend.DAL.DTO
         public override void Dispose()
         {
             
-            Events.ExecuteDelete();
-            Rules.ExecuteDelete();
-            RuleSubjects.ExecuteDelete();
-            CompositeRules.ExecuteDelete();
-            SimplelRules.ExecuteDelete();
-            TotalPriceRules.ExecuteDelete();
-            QuantityRules.ExecuteDelete();
-            Policies.ExecuteDelete();
-            PolicySubjects.ExecuteDelete();
-            PurchasePolicies.ExecuteDelete();
-            DiscountPolicies.ExecuteDelete();
-            DiscountCompositePolicies.ExecuteDelete();
-            Messages.ExecuteDelete();
-            BasketItems.ExecuteDelete();
-            Baskets.ExecuteDelete();
-            Purchases.ExecuteDelete();
-            ShoppingCartHistories.ExecuteDelete();
-            ShoppingCarts.ExecuteDelete();
-            Products.ExecuteDelete();
-            Roles.ExecuteDelete(); 
-            Stores.ExecuteDelete();
-            Members.ExecuteDelete();       
+            // Events.ExecuteDelete();
+            // Rules.ExecuteDelete();
+            // RuleSubjects.ExecuteDelete();
+            // CompositeRules.ExecuteDelete();
+            // SimplelRules.ExecuteDelete();
+            // TotalPriceRules.ExecuteDelete();
+            // QuantityRules.ExecuteDelete();
+            // Policies.ExecuteDelete();
+            // PolicySubjects.ExecuteDelete();
+            // PurchasePolicies.ExecuteDelete();
+            // DiscountPolicies.ExecuteDelete();
+            // DiscountCompositePolicies.ExecuteDelete();
+            // Messages.ExecuteDelete();
+            // BasketItems.ExecuteDelete();
+            // Baskets.ExecuteDelete();
+            // Purchases.ExecuteDelete();
+            // ShoppingCartHistories.ExecuteDelete();
+            // ShoppingCarts.ExecuteDelete();
+            // Products.ExecuteDelete();
+            // Roles.ExecuteDelete(); 
+            // Stores.ExecuteDelete();
+            // Members.ExecuteDelete();       
             
             SaveChanges();
             _instance = new DBcontext();
@@ -97,7 +97,7 @@ namespace MarketBackend.DAL.DTO
         {
             DbPathLocal = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=MarketDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;Application Intent=ReadWrite;MultiSubnetFailover=False";
     
-            DbPathRemote = "Server=tcp:market-db-server.database.windows.net,1433;Initial Catalog=MarketDB;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=\"Active Directory Default\";";
+            DbPathRemote = "Server=sql12.freemysqlhosting.net;Database=sql12718699;User Id=sql12718699;Password=3BnJmPv8V6;Port=3306;";
             
             DbPathTest = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=MarketDBTest;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;Application Intent=ReadWrite;MultiSubnetFailover=False";
             
@@ -135,7 +135,9 @@ namespace MarketBackend.DAL.DTO
         {
             if (!optionsBuilder.IsConfigured)
             {
-                  optionsBuilder.UseSqlServer($"{DbPath}"); // Use DbPath to configure the database connection
+                //   optionsBuilder.UseSqlServer($"{DbPath}"); // Use DbPath to configure the database connection
+                optionsBuilder.UseMySQL(DbPath);
+
             }
         }
 
@@ -213,16 +215,15 @@ namespace MarketBackend.DAL.DTO
                 .OnDelete(DeleteBehavior.Cascade);
 
 
-            // RoleDTO
+            // // RoleDTO
+            // modelBuilder.Entity<RoleDTO>()
+            //     .HasKey(r => new { r.storeId, r.userNameInt });
 
-            modelBuilder.Entity<RoleDTO>()
-                .HasKey(r => new { r.storeId, r.userName });
-
-            modelBuilder.Entity<RoleDTO>()
-                .HasOne<StoreDTO>()
-                .WithMany()
-                .HasForeignKey(b => b.storeId)
-                .OnDelete(DeleteBehavior.NoAction);
+            // modelBuilder.Entity<RoleDTO>()
+            //     .HasOne<StoreDTO>()
+            //     .WithMany()
+            //     .HasForeignKey(b => b.storeId)
+            //     .OnDelete(DeleteBehavior.NoAction);
 
             // modelBuilder.Entity<RoleDTO>()
             //     .HasOne<MemberDTO>()
