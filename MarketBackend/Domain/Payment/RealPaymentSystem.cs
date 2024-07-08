@@ -12,6 +12,14 @@ namespace MarketBackend.Domain.Payment
         private static readonly HttpClient _httpClient = new HttpClient();
         private readonly string _url;
 
+        static RealPaymentSystem()
+        {
+            _httpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(10)
+            };
+        }
+
         public RealPaymentSystem(string URL)
         {
             _url = URL;
@@ -21,32 +29,44 @@ namespace MarketBackend.Domain.Payment
         {
             if (!Connect() || totalAmount <= 0)
                 return -1;
-            
+
             var parameters = new Dictionary<string, string>
             {
                 { "action_type", "pay" },
-                {"amount", totalAmount.ToString()},
-                {"currency", cardDetails.Currency},
+                { "amount", totalAmount.ToString() },
+                { "currency", cardDetails.Currency },
                 { "card_number", cardDetails.CardNumber },
                 { "month", cardDetails.ExprMonth },
                 { "year", cardDetails.ExprYear },
                 { "holder", cardDetails.HolderName },
                 { "cvv", cardDetails.Cvv },
                 { "id", cardDetails.HolderID }
-        
             };
-            var payContect = new FormUrlEncodedContent(parameters); //wrap the request as post content
-            var response = _httpClient.PostAsync(_url, payContect).Result; //send the post request to the web service
-            if (response.IsSuccessStatusCode){ 
-                string responseContent = response.Content.ReadAsStringAsync().Result; //get the response from the web service
-                if (!responseContent.Equals("-1"))
-                    return int.Parse(responseContent);
+
+            var payContent = new FormUrlEncodedContent(parameters); //wrap the request as post content
+            try
+            {
+                var responseTask = _httpClient.PostAsync(_url, payContent);
+                var completedTask = Task.WhenAny(responseTask, Task.Delay(TimeSpan.FromSeconds(10))).Result;
+
+                if (completedTask == responseTask)
+                {
+                    var response = responseTask.Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseContent = response.Content.ReadAsStringAsync().Result;
+                        if (!responseContent.Equals("-1"))
+                            return int.Parse(responseContent);
+                    }
                 }
+            }
+            catch (Exception)
+            {
+                // Handle exceptions if needed
+            }
 
-            return -1; 
-        
+            return -1;
         }
-
 
         public int CancelPayment(int transactionId)
         {
@@ -61,18 +81,31 @@ namespace MarketBackend.Domain.Payment
                 { "transaction_id", transactionId.ToString() }
             };
 
-    
-            var cancelPayContect = new FormUrlEncodedContent(parameters); //wrap the request as post content
-            var response = _httpClient.PostAsync(_url, cancelPayContect).Result; //send the post request to the web service
-            if (response.IsSuccessStatusCode){
-                string responseContent = response.Content.ReadAsStringAsync().Result; //get the response from the web service
-                if (responseContent.Equals("1")) //success
+            var cancelPayContent = new FormUrlEncodedContent(parameters); //wrap the request as post content
+            try
+            {
+                var responseTask = _httpClient.PostAsync(_url, cancelPayContent);
+                var completedTask = Task.WhenAny(responseTask, Task.Delay(TimeSpan.FromSeconds(10))).Result;
+
+                if (completedTask == responseTask)
                 {
-                    return 1;
+                    var response = responseTask.Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseContent = response.Content.ReadAsStringAsync().Result;
+                        if (responseContent.Equals("1")) //success
+                        {
+                            return 1;
+                        }
+                    }
                 }
             }
+            catch (Exception)
+            {
+                // Handle exceptions if needed
+            }
+
             return -1;
-                
         }
 
         public bool Connect()
@@ -81,18 +114,32 @@ namespace MarketBackend.Domain.Payment
             {
                 { "action_type", "handshake" }
             };
-            var handshakeContect = new FormUrlEncodedContent(content); //wrap the request as post content
-            var response = _httpClient.PostAsync(_url, handshakeContect).Result; //send the post request to the web service
-            if(response.IsSuccessStatusCode){
-                string responseContent = response.Content.ReadAsStringAsync().Result; //get the response from the web service
-                if (responseContent.Equals("OK"))
+
+            var handshakeContent = new FormUrlEncodedContent(content); //wrap the request as post content
+            try
+            {
+                var responseTask = _httpClient.PostAsync(_url, handshakeContent);
+                var completedTask = Task.WhenAny(responseTask, Task.Delay(TimeSpan.FromSeconds(10))).Result;
+
+                if (completedTask == responseTask)
                 {
-                    return true;
+                    var response = responseTask.Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseContent = response.Content.ReadAsStringAsync().Result;
+                        if (responseContent.Equals("OK"))
+                        {
+                            return true;
+                        }
+                    }
                 }
             }
+            catch (Exception)
+            {
+                // Handle exceptions if needed
+            }
+
             return false;
-            
-        
         }
 
         public void Disconnect()

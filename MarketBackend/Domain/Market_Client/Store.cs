@@ -480,7 +480,13 @@ namespace MarketBackend.Domain.Market_Client
                     appointer.addAppointee(ClientRepositoryRAM.GetInstance().GetByUserName(roleuserName));
                     RoleRepositoryRAM.GetInstance().Update(appointer);
                     Event e = new AddAppointmentEvent(this, userName, roleuserName, role);
+                    //subscribe the new staff member to the store events
+                    // if (role.getRoleName() == RoleName.Manager) //TODO Shaked Notifications
+                    // {
+                    //     SubscribeStaffMember(null, ClientRepositoryRAM.GetInstance().GetByUserName(userName));
+                    // }
                     _eventManager.NotifySubscribers(e);
+                    
                     //add to active user appointees list the newly appointed staff member
                 }
             }

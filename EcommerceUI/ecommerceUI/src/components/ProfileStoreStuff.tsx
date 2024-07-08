@@ -82,6 +82,7 @@ const TableRow: React.FC<TableRowProps> = ({ role, index, storeId, onRemoveAppoi
             })
                 .then(response => {
                     if (!response.ok) {
+                        alert('Failed to remove permission');
                         throw new Error('Failed to remove permission');
                     }
                     else {
@@ -90,6 +91,7 @@ const TableRow: React.FC<TableRowProps> = ({ role, index, storeId, onRemoveAppoi
                     }
                 })
                 .catch(error => {
+                    alert('Failed to remove permission');
                     console.error('Error removing permission:', error);
                 });
         }
@@ -211,6 +213,7 @@ const MyTable: React.FC<MyTableProps> = ({ roles, storeId }) => {
                 handleCloseAppointeeModal();
             })
             .catch((error) => {
+                alert(error.message);
                 console.error('Error adding appointee:', error);
             });
     };
@@ -229,10 +232,12 @@ const MyTable: React.FC<MyTableProps> = ({ roles, storeId }) => {
                     window.location.reload(); // TODO need to think about another way to update the table
 
                 } else {
+                    alert('Failed to remove appointee');
                     throw new Error(`Failed to remove appointee ${memberUserName}`);
                 }
             })
             .catch((error) => {
+                alert('Error removing appointee');
                 console.error('Error removing appointee:', error);
             });
     };
