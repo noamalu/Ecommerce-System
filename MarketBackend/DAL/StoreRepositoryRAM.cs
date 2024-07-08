@@ -33,15 +33,21 @@ namespace MarketBackend.DAL
         public void Add(Store store)
         {
             _stores.TryAdd(store.StoreId, store);
-            DBcontext.GetInstance().Stores.Add(new StoreDTO(store));
-            DBcontext.GetInstance().SaveChanges();
-        
+            try{
+                lock(_lock){
+                    DBcontext.GetInstance().Stores.Add(new StoreDTO(store));
+                    DBcontext.GetInstance().SaveChanges();
+                }
+            }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Add Store");
+            }
         }
 
         public void Delete(Store store)
         {
-            
-        lock (_lock)
+        try{
+            lock (_lock)
             {
                 bool shopInDomain = _stores.TryRemove(store.StoreId, out _);
                 DBcontext context = DBcontext.GetInstance();
@@ -58,17 +64,29 @@ namespace MarketBackend.DAL
                 }
             }
         }
+        catch(Exception){
+                throw new Exception("There was a problem in Database use- Delete Store");
+        }
+
+        
+        }
 
         public IEnumerable<Store> getAll()
         {
-            lock (_lock)
-            {
-                List<StoreDTO> storesList = DBcontext.GetInstance().Stores.ToList();
-                foreach (StoreDTO storeDTO in storesList)
+            try{
+                lock (_lock)
                 {
-                    _stores.TryAdd(storeDTO.Id, new Store(storeDTO));
+                    List<StoreDTO> storesList = DBcontext.GetInstance().Stores.ToList();
+                    foreach (StoreDTO storeDTO in storesList)
+                    {
+                        _stores.TryAdd(storeDTO.Id, new Store(storeDTO));
+                    }
                 }
             }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Get all Stores");
+            }
+            
             
             return _stores.Values.ToList();
         }
@@ -80,40 +98,54 @@ namespace MarketBackend.DAL
                 return _stores[id];
             }
             else{
-                lock (_lock)
-                {
-                    StoreDTO storeDTO = DBcontext.GetInstance().Stores.Find(id);
-                    if (storeDTO != null)
+                try{
+                    lock (_lock)
                     {
-                        Store store = new Store(storeDTO);
-                        _stores.TryAdd(id, store);
-                        store.Initialize(storeDTO);
-                        return store;
-                    }
-                    else
-                    {
-                        return null;
+                        StoreDTO storeDTO = DBcontext.GetInstance().Stores.Find(id);
+                        if (storeDTO != null)
+                        {
+                            Store store = new Store(storeDTO);
+                            _stores.TryAdd(id, store);
+                            store.Initialize(storeDTO);
+                            return store;
+                        }
+                        else
+                        {
+                            return null;
+                        }
                     }
                 }
+                catch(Exception){
+                throw new Exception("There was a problem in Database use- Get Store");
+                }
+                
             }
         }
 
         public void Update(Store store)
         {
-             _stores[store._storeId] = store;
-            StoreDTO storeDTO = DBcontext.GetInstance().Stores.Find(store._storeId);
-            StoreDTO newStore = new StoreDTO(store);
-            if (storeDTO != null)
-            {
-                storeDTO.Active = newStore.Active;
-                storeDTO.Purchases = newStore.Purchases;
-                storeDTO.Products = newStore.Products;
-                storeDTO.Rules = newStore.Rules;
-                storeDTO.Name = newStore.Name;
-                storeDTO.Rating = newStore.Rating;
+            try{
+                _stores[store._storeId] = store;
+                lock(_lock){
+                    StoreDTO storeDTO = DBcontext.GetInstance().Stores.Find(store._storeId);
+                    StoreDTO newStore = new StoreDTO(store);
+                    if (storeDTO != null)
+                    {
+                        storeDTO.Active = newStore.Active;
+                        storeDTO.Purchases = newStore.Purchases;
+                        storeDTO.Products = newStore.Products;
+                        storeDTO.Rules = newStore.Rules;
+                        storeDTO.Name = newStore.Name;
+                        storeDTO.Rating = newStore.Rating;
+                    }
+                    else DBcontext.GetInstance().Stores.Add(newStore);
+                    DBcontext.GetInstance().SaveChanges();
+                }
             }
-            else DBcontext.GetInstance().Stores.Add(newStore);
-            DBcontext.GetInstance().SaveChanges();
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Update Store");
+            }
+            
         }
     }
 }

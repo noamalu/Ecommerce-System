@@ -90,9 +90,6 @@ namespace MarketBackend.Domain.Market_Client
             _purchaseIdCounter = 1;
             _productIdCounter = 1;
             _policyIdFactory = 1;
-            // foreach (AppointmentDTO appdto in appDtos)
-            //     _appointments.TryAdd(appdto.MemberId, AppointmentRepo.GetInstance()
-            //         .GetById(appdto.MemberId, appdto.ShopId));
             if (_products.Count > 0)
                 _productIdCounter = storeDTO.Products.Max((p) => p.ProductId) + 1;
             if (_history._purchases.Count > 0)
@@ -353,7 +350,6 @@ namespace MarketBackend.Domain.Market_Client
         {
             if (!_active)
                 throw new Exception($"Shop: {_storeName} is not active anymore");      
-
             basket.resetDiscount();
             _purchasePolicyManager.Apply(basket);
             _discountPolicyManager.Apply(basket);  
@@ -363,8 +359,7 @@ namespace MarketBackend.Domain.Market_Client
             _history.AddPurchase(pendingPurchase);
             Event e = new ProductSellEvent(this, pendingPurchase);
             _eventManager.NotifySubscribers(e);
-            return pendingPurchase;
-            
+            return pendingPurchase;         
         }
 
         public double CalculateBasketPrice(Basket basket){

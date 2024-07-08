@@ -39,11 +39,16 @@ namespace MarketBackend.DAL
         public void Add(Product item)
         {
             _productById.TryAdd(item.ProductId, item);
-            lock (_lock)
-            {
-                StoreDTO store = DBcontext.GetInstance().Stores.Include(s => s.Products).FirstOrDefault(s => s.Id == item.StoreId);
-                store.Products.Add(new ProductDTO(item));
-                DBcontext.GetInstance().SaveChanges();
+            try{
+                lock (_lock)
+                {
+                    StoreDTO store = DBcontext.GetInstance().Stores.Include(s => s.Products).FirstOrDefault(s => s.Id == item.StoreId);
+                    store.Products.Add(new ProductDTO(item));
+                    DBcontext.GetInstance().SaveChanges();
+                }
+            }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Add Product");
             }
             
         }
@@ -52,22 +57,16 @@ namespace MarketBackend.DAL
         {
             if (!_productById.ContainsKey(id))
             {
-                lock (_lock)
-                {
-                    return DBcontext.GetInstance().Products.Find(id) != null;
+                try{
+                    lock (_lock)
+                    {
+                        return DBcontext.GetInstance().Products.Find(id) != null;
+                    }
                 }
-            }
-            return true;
-        }
-
-        public bool ContainsValue(Product item)
-        {
-           if (!_productById.ContainsKey(item.ProductId))
-            {
-                lock (_lock)
-                {
-                    return DBcontext.GetInstance().Products.Find(item.ProductId) != null;
+                catch(Exception){
+                throw new Exception("There was a problem in Database use- Contains Product");
                 }
+                
             }
             return true;
         }
@@ -76,38 +75,56 @@ namespace MarketBackend.DAL
         {
             if (_productById.TryRemove(product.ProductId, out Product _))
             {
-                lock (_lock)
-                {
-                    ProductDTO productdto = DBcontext.GetInstance().Products.Find(product.ProductId);
-                    DBcontext.GetInstance().Products.Remove(productdto);
-                    DBcontext.GetInstance().SaveChanges();
+                try{
+                    lock (_lock)
+                    {
+                        ProductDTO productdto = DBcontext.GetInstance().Products.Find(product.ProductId);
+                        DBcontext.GetInstance().Products.Remove(productdto);
+                        DBcontext.GetInstance().SaveChanges();
+                    }
                 }
+                catch(Exception){
+                throw new Exception("There was a problem in Database use- Delete Product");
+                }
+                
             }
         }
 
         public IEnumerable<Product> getAll()
         {
-            List<Store> stores = StoreRepositoryRAM.GetInstance().getAll().ToList();
-            foreach (Store s in stores) UploadStoreProductsFromContext(s.StoreId);
-            return _productById.Values.ToList();
+            try{
+                lock(_lock){
+                List<Store> stores = StoreRepositoryRAM.GetInstance().getAll().ToList();
+                foreach (Store s in stores) UploadStoreProductsFromContext(s.StoreId);
+                }
+                return _productById.Values.ToList();
+            }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Get all Product");
+            }
         }
 
         private void UploadStoreProductsFromContext(int storeId)
         {
-            lock (_lock)
-            {
-                StoreDTO store = DBcontext.GetInstance().Stores.Find(storeId);
-                if (store != null)
+            try{
+                lock (_lock)
                 {
-                    List<ProductDTO> products = DBcontext.GetInstance().Stores.Find(storeId).Products;
-                    if (products != null)
+                    StoreDTO store = DBcontext.GetInstance().Stores.Find(storeId);
+                    if (store != null)
                     {
-                        foreach (ProductDTO product in products)
+                        List<ProductDTO> products = DBcontext.GetInstance().Stores.Find(storeId).Products;
+                        if (products != null)
                         {
-                            _productById.TryAdd(product.ProductId, new Product(product));
+                            foreach (ProductDTO product in products)
+                            {
+                                _productById.TryAdd(product.ProductId, new Product(product));
+                            }
                         }
                     }
                 }
+            }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Upload all Product");
             }
         }
 
@@ -119,20 +136,26 @@ namespace MarketBackend.DAL
             }
             else
             {
-                lock (_lock)
-                {
-                    ProductDTO productDTO = DBcontext.GetInstance().Products.Find(id);
-                    if (productDTO != null)
+                try{
+                    lock (_lock)
                     {
-                        Product product = new Product(productDTO);
-                        _productById.TryAdd(id, product);
-                        return product;
-                    }
-                    else
-                    {
-                        throw new Exception("Invalid product Id.");
+                        ProductDTO productDTO = DBcontext.GetInstance().Products.Find(id);
+                        if (productDTO != null)
+                        {
+                            Product product = new Product(productDTO);
+                            _productById.TryAdd(id, product);
+                            return product;
+                        }
+                        else
+                        {
+                            throw new Exception("Invalid product Id.");
+                        }
                     }
                 }
+                catch(Exception){
+                throw new Exception("There was a problem in Database use- Get Product");
+                }
+                
             }
         }
 
@@ -140,19 +163,25 @@ namespace MarketBackend.DAL
         {
             if (_productById.ContainsKey(product.ProductId)){
                 _productById[product.ProductId] = product;
-                lock (_lock)
-                {
-                    ProductDTO p = DBcontext.GetInstance().Products.Find(product.ProductId);
-                    if (p != null)
+                try{
+                    lock (_lock)
                     {
-                        if (product.Description != null) p.Description = product.Description;
-                        if (product.Category != null) p.Category = product.Category.ToString();
-                        if (product.Keywords != null) p.Keywords = string.Join(", ", product.Keywords);
-                        p.Quantity = product.Quantity;
-                        p.Price = product.Price;
-                        DBcontext.GetInstance().SaveChanges();
+                        ProductDTO p = DBcontext.GetInstance().Products.Find(product.ProductId);
+                        if (p != null)
+                        {
+                            if (product.Description != null) p.Description = product.Description;
+                            if (product.Category != null) p.Category = product.Category.ToString();
+                            if (product.Keywords != null) p.Keywords = string.Join(", ", product.Keywords);
+                            p.Quantity = product.Quantity;
+                            p.Price = product.Price;
+                            DBcontext.GetInstance().SaveChanges();
+                        }
                     }
                 }
+                catch(Exception){
+                throw new Exception("There was a problem in Database use- Update Product");
+                }
+                
             }
             else{
                 throw new KeyNotFoundException($"Product with ID {product.ProductId} not found.");

@@ -26,35 +26,29 @@ namespace MarketBackend.DAL
 
         public void Add(IPolicy policy)
         {
-            _policyById.TryAdd(policy.Id, policy);
-            lock(Lock){
-                DBcontext.GetInstance().Stores.Find(policy.StoreId).Policies.Add(policy.CloneDTO());
-                DBcontext.GetInstance().SaveChanges();
+            try{
+                _policyById.TryAdd(policy.Id, policy);
+                lock(Lock){
+                    DBcontext.GetInstance().Stores.Find(policy.StoreId).Policies.Add(policy.CloneDTO());
+                    DBcontext.GetInstance().SaveChanges();
+                }
             }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Add Policy");
+            }
+            
         }
 
         public bool ContainsID(int id)
         {
-            if (_policyById.ContainsKey(id))
+            try{
+                if (_policyById.ContainsKey(id))
                 return true;
-            else return DBcontext.GetInstance().Stores.Any(s => s.Rules.Any(r => r.Id.Equals(id)));
-        }
-
-        public bool ContainsValue(IPolicy policy)
-        {
-            if (_policyById.Contains(new KeyValuePair<int, IPolicy>(policy.Id, policy)))
-                return true;
-            else return DBcontext.GetInstance().Stores.Any(s => s.Policies.Any(r => r.Id.Equals(policy.Id)));
-        }
-
-        public ConcurrentDictionary<int, IPolicy> GetShopRules(int storeId)
-        {
-            ConcurrentDictionary<int, IPolicy> storePolicies = new ConcurrentDictionary<int, IPolicy>();
-            foreach (IPolicy policy in _policyById.Values)
-            {
-                if (policy.StoreId == storeId) storePolicies.TryAdd(policy.Id, policy);
+                else return DBcontext.GetInstance().Stores.Any(s => s.Rules.Any(r => r.Id.Equals(id)));
             }
-            return storePolicies;
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Contains Policy");
+            }
         }
 
          public IPolicy GetById(int id)
@@ -63,12 +57,17 @@ namespace MarketBackend.DAL
                 return _policyById[id];
             else if (ContainsID(id))
             {
-                lock(Lock){
+                try{
+                    lock(Lock){
                     DBcontext context = DBcontext.GetInstance();
                     StoreDTO shopDto = context.Stores.Where(s => s.Policies.Any(p => p.Id == id)).FirstOrDefault();
                     PolicyDTO policyDTO = shopDto.Policies.Find(p => p.Id == id);
                     _policyById.TryAdd(id, makePolicy(policyDTO));
                     return _policyById[id];
+                    }
+                }
+                catch(Exception){
+                throw new Exception("There was a problem in Database use- Get Policy");
                 }
             }
             else
@@ -86,13 +85,18 @@ namespace MarketBackend.DAL
         {
             if (_policyById.ContainsKey(id))
             {
-                lock(Lock){
+                try{
+                    lock(Lock){
                     StoreDTO store = DBcontext.GetInstance().Stores.Find(_policyById[id].StoreId);
                     _policyById.TryRemove(id, out IPolicy removed);
                     PolicyDTO p = store.Policies.Find(p => p.Id == id);
                     store.Policies.Remove(p);
                     DBcontext.GetInstance().Policies.Remove(p);
                     DBcontext.GetInstance().SaveChanges();
+                    }
+                }
+                catch(Exception){
+                throw new Exception("There was a problem in Database use- Delete Policy");
                 }
             }
             else throw new Exception("Product Id does not exist."); ;
@@ -102,7 +106,8 @@ namespace MarketBackend.DAL
         {
             if (_policyById.ContainsKey(policy.Id)){
                 _policyById[policy.Id] = policy;
-                lock(Lock){
+                try{
+                    lock(Lock){
                     PolicyDTO p = DBcontext.GetInstance().Policies.Find(policy.Id);
                     if (p != null){
                         p.ExpirationDate = policy.ExpirationDate;
@@ -110,6 +115,10 @@ namespace MarketBackend.DAL
                         p.PolicySubject = new PolicySubjectDTO(policy.Subject);
                     }
                     DBcontext.GetInstance().SaveChanges();
+                    }
+                }
+                catch(Exception){
+                throw new Exception("There was a problem in Database use- Update Policy");
                 }
             }
             else{
@@ -129,18 +138,26 @@ namespace MarketBackend.DAL
 
         private void UploadShopPoliciesFromContext(int storeId)
         {
-            StoreDTO storeDto = DBcontext.GetInstance().Stores.Find(storeId);
-            if (storeDto != null)
-            {
-                if (storeDto.Rules != null)
-                {
-                    List<PolicyDTO> policies = storeDto.Policies.ToList();
-                    foreach (PolicyDTO policyDTO in policies)
+            try{
+                lock(Lock){
+                    StoreDTO storeDto = DBcontext.GetInstance().Stores.Find(storeId);
+                    if (storeDto != null)
                     {
-                        _policyById.TryAdd(policyDTO.Id, makePolicy(policyDTO));
+                        if (storeDto.Rules != null)
+                        {
+                            List<PolicyDTO> policies = storeDto.Policies.ToList();
+                            foreach (PolicyDTO policyDTO in policies)
+                            {
+                                _policyById.TryAdd(policyDTO.Id, makePolicy(policyDTO));
+                            }
+                        }
                     }
                 }
             }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Upload Policy");
+            }
+            
         }
 
         public IPolicy makePolicy(PolicyDTO policyDTO)
