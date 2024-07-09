@@ -20,7 +20,7 @@ namespace MarketBackend.DAL.DTO
         public virtual DbSet<MemberDTO> Members { get; set; }
         public virtual DbSet<MessageDTO> Messages { get; set; }
         public virtual DbSet<StoreDTO> Stores { get; set; }
-        // public virtual DbSet<RoleDTO> Roles { get; set; }
+        public virtual DbSet<RoleDTO> Roles { get; set; }
 
         public virtual DbSet<ShoppingCartDTO> ShoppingCarts { get; set; }
         public virtual DbSet<ShoppingCartHistoryDTO> ShoppingCartHistories { get; set; }
@@ -50,28 +50,28 @@ namespace MarketBackend.DAL.DTO
         public override void Dispose()
         {
             
-            // Events.ExecuteDelete();
-            // Rules.ExecuteDelete();
-            // RuleSubjects.ExecuteDelete();
-            // CompositeRules.ExecuteDelete();
-            // SimplelRules.ExecuteDelete();
-            // TotalPriceRules.ExecuteDelete();
-            // QuantityRules.ExecuteDelete();
-            // Policies.ExecuteDelete();
-            // PolicySubjects.ExecuteDelete();
-            // PurchasePolicies.ExecuteDelete();
-            // DiscountPolicies.ExecuteDelete();
-            // DiscountCompositePolicies.ExecuteDelete();
-            // Messages.ExecuteDelete();
-            // BasketItems.ExecuteDelete();
-            // Baskets.ExecuteDelete();
-            // Purchases.ExecuteDelete();
-            // ShoppingCartHistories.ExecuteDelete();
-            // ShoppingCarts.ExecuteDelete();
-            // Products.ExecuteDelete();
-            // Roles.ExecuteDelete(); 
-            // Stores.ExecuteDelete();
-            // Members.ExecuteDelete();       
+            Events.ExecuteDelete();
+            Rules.ExecuteDelete();
+            RuleSubjects.ExecuteDelete();
+            CompositeRules.ExecuteDelete();
+            SimplelRules.ExecuteDelete();
+            TotalPriceRules.ExecuteDelete();
+            QuantityRules.ExecuteDelete();
+            Policies.ExecuteDelete();
+            PolicySubjects.ExecuteDelete();
+            PurchasePolicies.ExecuteDelete();
+            DiscountPolicies.ExecuteDelete();
+            DiscountCompositePolicies.ExecuteDelete();
+            Messages.ExecuteDelete();
+            BasketItems.ExecuteDelete();
+            Baskets.ExecuteDelete();
+            Purchases.ExecuteDelete();
+            ShoppingCartHistories.ExecuteDelete();
+            ShoppingCarts.ExecuteDelete();
+            Products.ExecuteDelete();
+            Roles.ExecuteDelete(); 
+            Stores.ExecuteDelete();
+            Members.ExecuteDelete();       
             
             SaveChanges();
             _instance = new DBcontext();
@@ -215,15 +215,15 @@ namespace MarketBackend.DAL.DTO
                 .OnDelete(DeleteBehavior.Cascade);
 
 
-            // // RoleDTO
-            // modelBuilder.Entity<RoleDTO>()
-            //     .HasKey(r => new { r.storeId, r.userNameInt });
+            // RoleDTO
+            modelBuilder.Entity<RoleDTO>()
+                .HasKey(r => new { r.storeId, r.userName });
 
-            // modelBuilder.Entity<RoleDTO>()
-            //     .HasOne<StoreDTO>()
-            //     .WithMany()
-            //     .HasForeignKey(b => b.storeId)
-            //     .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<RoleDTO>()
+                .HasOne<StoreDTO>()
+                .WithMany()
+                .HasForeignKey(b => b.storeId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             // modelBuilder.Entity<RoleDTO>()
             //     .HasOne<MemberDTO>()

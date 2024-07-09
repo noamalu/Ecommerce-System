@@ -40,7 +40,9 @@ namespace MarketBackend.Domain.Market_Client
         {
             RoleName roleName = CastNameOperator(roleDTO.roleName);
             HashSet<Permission> permissions = new HashSet<Permission>();
-            foreach (string permission in roleDTO.permissions)
+            List <string> perms = roleDTO.permissions.Split(", ").ToList();
+
+            foreach (string permission in perms)
             {
                 permissions.Add(CastPermissionOperator(permission));
             }

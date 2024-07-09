@@ -126,7 +126,8 @@ namespace MarketBackend.DAL
                     foreach (Member app in entity.getAppointees())
                         newAppointees.Add(app.Id);
 
-                    roleDTO.permissions = newPermissions;
+                    string p = string.Join(", ", newPermissions);
+                    roleDTO.permissions = p;
                     roleDTO.appointees = newAppointees;
                     DBcontext.GetInstance().SaveChanges();
                 }

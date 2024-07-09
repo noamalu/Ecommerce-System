@@ -296,6 +296,36 @@ namespace MarketBackend.Migrations
                     b.ToTable("Purchases");
                 });
 
+            modelBuilder.Entity("MarketBackend.DAL.DTO.RoleDTO", b =>
+                {
+                    b.Property<int>("storeId")
+                        .HasColumnType("int")
+                        .HasColumnOrder(0);
+
+                    b.Property<string>("userName")
+                        .HasColumnType("varchar(255)")
+                        .HasColumnOrder(1);
+
+                    b.Property<string>("appointees")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("appointer")
+                        .HasColumnType("int");
+
+                    b.Property<string>("permissions")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("roleName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("storeId", "userName");
+
+                    b.ToTable("Roles");
+                });
+
             modelBuilder.Entity("MarketBackend.DAL.DTO.RuleDTO", b =>
                 {
                     b.Property<int>("Id")
@@ -609,6 +639,15 @@ namespace MarketBackend.Migrations
                     b.HasOne("MarketBackend.DAL.DTO.StoreDTO", null)
                         .WithMany("Purchases")
                         .HasForeignKey("StoreDTOId");
+                });
+
+            modelBuilder.Entity("MarketBackend.DAL.DTO.RoleDTO", b =>
+                {
+                    b.HasOne("MarketBackend.DAL.DTO.StoreDTO", null)
+                        .WithMany()
+                        .HasForeignKey("storeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MarketBackend.DAL.DTO.RuleDTO", b =>

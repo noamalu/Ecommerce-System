@@ -26,7 +26,7 @@ namespace MarketBackend.DAL.DTO
         public List <int> appointees { get; set; }
 
         public string roleName { get; set; }
-        public List<string> permissions {get; set; }
+        public string permissions {get; set; }
 
         
 
@@ -41,9 +41,17 @@ namespace MarketBackend.DAL.DTO
             foreach (Member member in role.appointees)
                 appointees.Add(new MemberDTO(member).Id);
             roleName = role.getRoleName().ToString();
-            permissions = new List<string>();
-            foreach (Permission permission in role.getPermissions())
-                permissions.Add(permission.ToString());
+            List<Permission> perms = role.getPermissions().ToList();
+            List<string> permsStr = new List<string>();
+            foreach (Permission perm in perms)
+            {
+                permsStr.Add(perm.ToString());
+            }
+            string p = string.Join(", ", permsStr);
+            permissions = p;
+            // permissions = new List<string>();
+            // foreach (Permission permission in role.getPermissions())
+            //     permissions.Add(permission.ToString());
         }
 
         public RoleDTO(){}
@@ -81,8 +89,10 @@ namespace MarketBackend.DAL.DTO
                 roleType.removePermission(perm);
             }
 
+            List <string> perms = roleDto.permissions.Split(", ").ToList();
+
             // Add permissions from DTO
-            foreach (string permString in roleDto.permissions)
+            foreach (string permString in perms)
             {
                 if (Enum.TryParse<Permission>(permString, out Permission perm))
                 {
