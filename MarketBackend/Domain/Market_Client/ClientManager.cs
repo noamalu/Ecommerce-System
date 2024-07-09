@@ -45,7 +45,7 @@ namespace MarketBackend.Domain.Market_Client
 
         public static void Dispose()
         {
-            Manager = GetInstance();
+            Manager = null;
 
         }
 

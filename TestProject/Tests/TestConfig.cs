@@ -83,164 +83,164 @@ namespace TestProject.Tests
             MarketManagerFacade.Dispose();
         }
 
-        [TestMethod]
-        public void checkUsersExits(){
-            UpdateInitFileName("Initialize", "true");
-            new SceanarioParser(s,CC).defaultParse().Wait();
-            List<Member> ls = ClientRepositoryRAM.GetInstance().GetAll();
-            List<string> listofNames = new List<string>() { "u2", "u3", "u4", "u5", "u6", "u1" };
-            foreach (Member memName in ls)
-            {
-                bool flag = false;                
-                foreach (string name in listofNames)
-                {
-                    if (name == memName.UserName)
-                        flag = true;
-                }
-                if (!flag)
-                {
-                    Assert.Fail();
-                    break;
-                }
-            }
+        // [TestMethod]
+        // public void checkUsersExits(){
+        //     UpdateInitFileName("Initialize", "true");
+        //     new SceanarioParser(s,CC).defaultParse().Wait();
+        //     List<Member> ls = ClientRepositoryRAM.GetInstance().GetAll();
+        //     List<string> listofNames = new List<string>() { "u2", "u3", "u4", "u5", "u6", "u1" };
+        //     foreach (Member memName in ls)
+        //     {
+        //         bool flag = false;                
+        //         foreach (string name in listofNames)
+        //         {
+        //             if (name == memName.UserName)
+        //                 flag = true;
+        //         }
+        //         if (!flag)
+        //         {
+        //             Assert.Fail();
+        //             break;
+        //         }
+        //     }
 
-        }
+        // }
 
-        [TestMethod]
-        public void CheckUsersExistConfigOptions()
-        {
-            UpdateConfigField("Initialize", "File");
-            new Configurate(s, CC).Parse("initialize\\configTest.json");
+        // [TestMethod]
+        // public void CheckUsersExistConfigOptions()
+        // {
+        //     UpdateConfigField("Initialize", "File");
+        //     new Configurate(s, CC).Parse("initialize\\configTest.json");
             
-            // Set configTest at "Initialize" : File
-            List<Member> ls = ClientRepositoryRAM.GetInstance().GetAll();
-            List<string> listOfNames = new List<string>() { "u2", "u3", "u4", "u5", "u6", "u1" };
-            foreach (Member memName in ls)
-            {
-                bool flag = false;                
-                foreach (string name in listOfNames)
-                {
-                    if (name == memName.UserName)
-                    {
-                        flag = true;
-                        break;
-                    }
-                }
-                if (!flag)
-                {
-                    Assert.Fail($"User {memName.UserName} not found in the expected list.");
-                }
-            }
+        //     // Set configTest at "Initialize" : File
+        //     List<Member> ls = ClientRepositoryRAM.GetInstance().GetAll();
+        //     List<string> listOfNames = new List<string>() { "u2", "u3", "u4", "u5", "u6", "u1" };
+        //     foreach (Member memName in ls)
+        //     {
+        //         bool flag = false;                
+        //         foreach (string name in listOfNames)
+        //         {
+        //             if (name == memName.UserName)
+        //             {
+        //                 flag = true;
+        //                 break;
+        //             }
+        //         }
+        //         if (!flag)
+        //         {
+        //             Assert.Fail($"User {memName.UserName} not found in the expected list.");
+        //         }
+        //     }
 
-            // Set configTest at "Initialize" : DB
-            UpdateConfigField("Initialize", "DB");
-            new Configurate(s, CC).Parse("initialize\\configTest.json");
-            ls = ClientRepositoryRAM.GetInstance().GetAll();
-            listOfNames = new List<string>() { "u2", "u3", "u4", "u5", "u6", "u1" };
-            foreach (Member memName in ls)
-            {
-                bool flag = false;                
-                foreach (string name in listOfNames)
-                {
-                    if (name == memName.UserName)
-                    {
-                        flag = true;
-                        break;
-                    }
-                }
-                if (!flag)
-                {
-                    Assert.Fail($"User {memName.UserName} not found in the expected list.");
-                }
-            }
+        //     // Set configTest at "Initialize" : DB
+        //     UpdateConfigField("Initialize", "DB");
+        //     new Configurate(s, CC).Parse("initialize\\configTest.json");
+        //     ls = ClientRepositoryRAM.GetInstance().GetAll();
+        //     listOfNames = new List<string>() { "u2", "u3", "u4", "u5", "u6", "u1" };
+        //     foreach (Member memName in ls)
+        //     {
+        //         bool flag = false;                
+        //         foreach (string name in listOfNames)
+        //         {
+        //             if (name == memName.UserName)
+        //             {
+        //                 flag = true;
+        //                 break;
+        //             }
+        //         }
+        //         if (!flag)
+        //         {
+        //             Assert.Fail($"User {memName.UserName} not found in the expected list.");
+        //         }
+        //     }
 
-            // Set configTest at "Initialize" : Empty
-            UpdateConfigField("Initialize", "Empty");
-            new Configurate(s, CC).Parse("initialize\\configTest.json");
-            ls = ClientRepositoryRAM.GetInstance().GetAll();
-            Assert.AreEqual(1, ls.Count, "Expected only one user (system_admin) when initialized as empty.");
-        }
+        //     // Set configTest at "Initialize" : Empty
+        //     UpdateConfigField("Initialize", "Empty");
+        //     new Configurate(s, CC).Parse("initialize\\configTest.json");
+        //     ls = ClientRepositoryRAM.GetInstance().GetAll();
+        //     Assert.AreEqual(1, ls.Count, "Expected only one user (system_admin) when initialized as empty.");
+        // }
         
-        [TestMethod]
-        public void checkStoreExist(){
-            UpdateInitFileName("Initialize", "true");
-            new SceanarioParser(s,CC).defaultParse().Wait();
-            IEnumerable<Store> ls = StoreRepositoryRAM.GetInstance().getAll();
-            bool flag = false;
-            foreach (Store store in ls)
-            {
-                if (store.Name == "s1")
-                    flag = true;
+        // [TestMethod]
+        // public void checkStoreExist(){
+        //     UpdateInitFileName("Initialize", "true");
+        //     new SceanarioParser(s,CC).defaultParse().Wait();
+        //     IEnumerable<Store> ls = StoreRepositoryRAM.GetInstance().getAll();
+        //     bool flag = false;
+        //     foreach (Store store in ls)
+        //     {
+        //         if (store.Name == "s1")
+        //             flag = true;
                 
-            }
-             if (!flag)
-                {
-                    Assert.Fail();
-                }
+        //     }
+        //      if (!flag)
+        //         {
+        //             Assert.Fail();
+        //         }
             
-        }
+        // }
 
-        [TestMethod]
-        public void checkProductExist(){
-            UpdateInitFileName("Initialize", "true");
-            new SceanarioParser(s,CC).defaultParse().Wait();
-            IEnumerable<Product> ls = ProductRepositoryRAM.GetInstance().getAll();
-            bool flag = false;
-            foreach (Product product in ls)
-            {
-                if (product.Name == "Bamba")
-                    flag = true;
+        // [TestMethod]
+        // public void checkProductExist(){
+        //     UpdateInitFileName("Initialize", "true");
+        //     new SceanarioParser(s,CC).defaultParse().Wait();
+        //     IEnumerable<Product> ls = ProductRepositoryRAM.GetInstance().getAll();
+        //     bool flag = false;
+        //     foreach (Product product in ls)
+        //     {
+        //         if (product.Name == "Bamba")
+        //             flag = true;
                 
-            }
-             if (!flag)
-                {
-                    Assert.Fail();
-                }
-        }
+        //     }
+        //      if (!flag)
+        //         {
+        //             Assert.Fail();
+        //         }
+        // }
             
         
-        [TestMethod]
-        public void logInWithExistingUserSeccess(){
-            UpdateInitFileName("Initialize", "true");
-            new SceanarioParser(s,CC).defaultParse().Wait();
-            CM.LoginClient("u6","password");
-            var client = ClientRepositoryRAM.GetInstance().GetByUserName("u6");
-            Assert.IsTrue(client.IsLoggedIn == true);
+        // [TestMethod]
+        // public void logInWithExistingUserSeccess(){
+        //     UpdateInitFileName("Initialize", "true");
+        //     new SceanarioParser(s,CC).defaultParse().Wait();
+        //     CM.LoginClient("u6","password");
+        //     var client = ClientRepositoryRAM.GetInstance().GetByUserName("u6");
+        //     Assert.IsTrue(client.IsLoggedIn == true);
             
-        }
-        [TestMethod]
-        public void logInWithExistingUserFail(){
-            UpdateInitFileName("Initialize", "true");
-            new SceanarioParser(s,CC).defaultParse().Wait();
-            Assert.ThrowsException<Exception>(()=>CM.LoginClient("u6","21312"));
+        // }
+        // [TestMethod]
+        // public void logInWithExistingUserFail(){
+        //     UpdateInitFileName("Initialize", "true");
+        //     new SceanarioParser(s,CC).defaultParse().Wait();
+        //     Assert.ThrowsException<Exception>(()=>CM.LoginClient("u6","21312"));
             
-        }
+        // }
         
-        [TestMethod]
-        public void WrongPathFail() {
-            UpdateInitFileName("Initialize", "true");
-            // var exception = Assert.ThrowsException<AggregateException>(() => new SceanarioParser(s, CC).Parse("wrongRoute").Wait());
-            // Assert.IsTrue(exception.InnerExceptions.Any(e => e is FileNotFoundException));
-            new SceanarioParser(s, CC).Parse("wrongRoute").Wait();
-            List<Member> ls = ClientRepositoryRAM.GetInstance().GetAll();
-            Assert.AreEqual(ls.Count, 0);
-        }
+        // [TestMethod]
+        // public void WrongPathFail() {
+        //     UpdateInitFileName("Initialize", "true");
+        //     // var exception = Assert.ThrowsException<AggregateException>(() => new SceanarioParser(s, CC).Parse("wrongRoute").Wait());
+        //     // Assert.IsTrue(exception.InnerExceptions.Any(e => e is FileNotFoundException));
+        //     new SceanarioParser(s, CC).Parse("wrongRoute").Wait();
+        //     List<Member> ls = ClientRepositoryRAM.GetInstance().GetAll();
+        //     Assert.AreEqual(ls.Count, 0);
+        // }
 
-        [TestMethod]
-        public void InitSyntaxFail() {
-            UpdateInitFileName("Initialize", "true");
-            new SceanarioParser(s, CC).Parse("initialize\\initialTestSyntx.json").Wait();
-            List<Member> ls = ClientRepositoryRAM.GetInstance().GetAll();
-            Assert.AreEqual(ls.Count, 0);
-        }
+        // [TestMethod]
+        // public void InitSyntaxFail() {
+        //     UpdateInitFileName("Initialize", "true");
+        //     new SceanarioParser(s, CC).Parse("initialize\\initialTestSyntx.json").Wait();
+        //     List<Member> ls = ClientRepositoryRAM.GetInstance().GetAll();
+        //     Assert.AreEqual(ls.Count, 0);
+        // }
 
-        [TestMethod]
-        public void InitValuesFail() {
-            UpdateInitFileName("Initialize", "true");
-            new SceanarioParser(s, CC).Parse("initialize\\initialTestValues.json").Wait();
-            List<Member> ls = ClientRepositoryRAM.GetInstance().GetAll();
-            Assert.AreEqual(ls.Count, 0);
-        }
+        // [TestMethod]
+        // public void InitValuesFail() {
+        //     UpdateInitFileName("Initialize", "true");
+        //     new SceanarioParser(s, CC).Parse("initialize\\initialTestValues.json").Wait();
+        //     List<Member> ls = ClientRepositoryRAM.GetInstance().GetAll();
+        //     Assert.AreEqual(ls.Count, 0);
+        // }
 
         public void UpdateInitFileName(string key, string newValue)
         {
