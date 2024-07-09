@@ -26,6 +26,7 @@ namespace UnitTests
 
         [TestInitialize]
         public void Initialize(){
+            MarketManagerFacade.Dispose();
             DBcontext.SetTestDB();
             DBcontext.GetInstance().Dispose();
             RuleRepositoryRAM.Dispose();
@@ -65,6 +66,7 @@ namespace UnitTests
             mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
+            MarketManagerFacade.Dispose();
             MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object).Dispose();
             ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object).Dispose();
             PolicyRepositoryRAM.Dispose();

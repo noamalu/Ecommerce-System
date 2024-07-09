@@ -25,7 +25,7 @@ namespace MarketBackend.Domain.Market_Client
             this.UserCounter = userCounter;
    
         }
-                private int UserCounter {get; set;}
+        private int UserCounter {get; set;}
         private object _lock = new object();
     
         private ClientManager()
@@ -45,7 +45,7 @@ namespace MarketBackend.Domain.Market_Client
 
         public static void Dispose()
         {
-            Manager = new ClientManager();
+            Manager = null;
 
         }
 
