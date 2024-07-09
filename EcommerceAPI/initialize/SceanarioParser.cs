@@ -36,8 +36,8 @@ public class SceanarioParser
 
     public async Task Parse(string path)
     {
-        using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-        {            
+        // using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        // {            
             try
             {
                 string textJson = await File.ReadAllTextAsync(path);
@@ -49,7 +49,7 @@ public class SceanarioParser
                     string task = parsedSeacnarios["Scenario"]!.ToString();
                     await ParseUseCase((Sceanarios)Enum.Parse(typeof(Sceanarios), task), parsedSeacnarios);
                 }
-                scope.Complete();
+                // scope.Complete();
             }
             catch (Exception ex)
             {
@@ -60,10 +60,11 @@ public class SceanarioParser
                 RoleRepositoryRAM.Dispose();
                 StoreRepositoryRAM.Dispose();
                 PurchaseRepositoryRAM.Dispose();
-           
-                MyLogger.GetLogger().Info(ex.Message);
+                DBcontext.GetInstance().Dispose();
+
+                MyLogger.GetLogger().Error(ex.Message);
             }
-        }
+        // }
     }
 
     private async Task ParseUseCase(Sceanarios task, JObject usecaseJson)

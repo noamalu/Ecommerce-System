@@ -13,9 +13,9 @@ namespace MarketBackend.DAL.DTO
         public static string DbPathRemote;
         public static string DbPathLocal;
         public static string DbPathTest;
-        public static bool TestMode = true;
+        public static bool TestMode = false;
         public static bool RemoteMode = false;
-        public static bool LocalMode = false;
+        public static bool LocalMode = true;
 
         public virtual DbSet<MemberDTO> Members { get; set; }
         public virtual DbSet<MessageDTO> Messages { get; set; }
