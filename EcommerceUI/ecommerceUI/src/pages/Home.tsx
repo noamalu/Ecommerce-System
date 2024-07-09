@@ -4,7 +4,7 @@ import { initSession } from "../services/SessionService";
 
 
 export const Home = () => {
-    // initSession();
+    initSession();
     return (
         <SearchResults query="All" filter="category"/>
       );
