@@ -11,6 +11,8 @@ namespace MarketBackend.Services.Interfaces
     {
         public IEnumerable<Basket> getBasketsByCartId(int cartId);
         public Basket CreateBasket(int storeId, int cartId);
+
+        public Basket CreateBasketGuest(int storeId, int cartId);
         public Basket? TryGetById(int id);
     }
 }

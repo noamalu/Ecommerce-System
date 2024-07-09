@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using MarketBackend.Domain.Models;
 using MarketBackend.DAL.DTO;
+using Microsoft.IdentityModel.Tokens;
 
 
 
@@ -90,9 +91,6 @@ namespace MarketBackend.Domain.Market_Client
             _purchaseIdCounter = 1;
             _productIdCounter = 1;
             _policyIdFactory = 1;
-            // foreach (AppointmentDTO appdto in appDtos)
-            //     _appointments.TryAdd(appdto.MemberId, AppointmentRepo.GetInstance()
-            //         .GetById(appdto.MemberId, appdto.ShopId));
             if (_products.Count > 0)
                 _productIdCounter = storeDTO.Products.Max((p) => p.ProductId) + 1;
             if (_history._purchases.Count > 0)
@@ -157,10 +155,17 @@ namespace MarketBackend.Domain.Market_Client
 
             _products.Remove(p);
             IEnumerable<Basket> baskets = BasketRepositoryRAM.GetInstance().getAll();
+            List<Basket> emptyBaskets = new List<Basket>();
             foreach (Basket basket in baskets){
                 if (basket.HasProduct(p)){
                     basket.RemoveFromBasket(p._productId, basket.products[p.ProductId]);
+                    if (basket.BasketItems.IsNullOrEmpty()){
+                        emptyBaskets.Add(basket);
+                    }
                 }
+            }
+            foreach (Basket basket1 in emptyBaskets){
+                BasketRepositoryRAM.GetInstance().Delete(basket1);
             }
             ProductRepositoryRAM.GetInstance().Delete(p);
             }
@@ -353,7 +358,6 @@ namespace MarketBackend.Domain.Market_Client
         {
             if (!_active)
                 throw new Exception($"Shop: {_storeName} is not active anymore");      
-
             basket.resetDiscount();
             _purchasePolicyManager.Apply(basket);
             _discountPolicyManager.Apply(basket);  
@@ -363,8 +367,7 @@ namespace MarketBackend.Domain.Market_Client
             _history.AddPurchase(pendingPurchase);
             Event e = new ProductSellEvent(this, pendingPurchase);
             _eventManager.NotifySubscribers(e);
-            return pendingPurchase;
-            
+            return pendingPurchase;         
         }
 
         public double CalculateBasketPrice(Basket basket){

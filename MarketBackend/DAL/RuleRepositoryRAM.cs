@@ -37,68 +37,96 @@ namespace MarketBackend.DAL
 
          public void Update(SimpleRule rule)
         {
-            lock(_lock){
-                DBcontext context = DBcontext.GetInstance();
-                StoreDTO shopDto = context.Stores.Where(s => s.Rules.Any(r => r.Id == rule.Id)).FirstOrDefault();
-                SimpleRuleDTO ruleDTO = (SimpleRuleDTO)shopDto.Rules.Find(r => r.Id == rule.Id);
-                if (ruleDTO != null){
-                    ruleDTO.Subject = new RuleSubjectDTO(rule.Subject);
+            try{
+                lock(_lock){
+                    DBcontext context = DBcontext.GetInstance();
+                    StoreDTO shopDto = context.Stores.Where(s => s.Rules.Any(r => r.Id == rule.Id)).FirstOrDefault();
+                    SimpleRuleDTO ruleDTO = (SimpleRuleDTO)shopDto.Rules.Find(r => r.Id == rule.Id);
+                    if (ruleDTO != null){
+                        ruleDTO.Subject = new RuleSubjectDTO(rule.Subject);
+                    }
+                    context.SaveChanges();
                 }
-                context.SaveChanges();
+            }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Update SimpleRule");
             }
         }
         public void Update(QuantityRule rule)
         {
-            lock(_lock){
-                DBcontext context = DBcontext.GetInstance();
-                StoreDTO shopDto = context.Stores.Where(s => s.Rules.Any(r => r.Id == rule.Id)).FirstOrDefault();
-                QuantityRuleDTO ruleDTO = (QuantityRuleDTO)shopDto.Rules.Find(r => r.Id == rule.Id);
-                if (ruleDTO != null){
-                    ruleDTO.MinQuantity = rule.MinQuantity;
-                    ruleDTO.MaxQuantity = rule.MaxQuantity;
+            try{
+                lock(_lock){
+                    DBcontext context = DBcontext.GetInstance();
+                    StoreDTO shopDto = context.Stores.Where(s => s.Rules.Any(r => r.Id == rule.Id)).FirstOrDefault();
+                    QuantityRuleDTO ruleDTO = (QuantityRuleDTO)shopDto.Rules.Find(r => r.Id == rule.Id);
+                    if (ruleDTO != null){
+                        ruleDTO.MinQuantity = rule.MinQuantity;
+                        ruleDTO.MaxQuantity = rule.MaxQuantity;
+                    }
+                    context.SaveChanges();
                 }
-                context.SaveChanges();
             }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Update QuantityRule");
+            }
+            
         }
         public void Update(CompositeRule rule)
         {
-            lock(_lock){
-                DBcontext context = DBcontext.GetInstance();
-                StoreDTO shopDto = context.Stores.Where(s => s.Rules.Any(r => r.Id == rule.Id)).FirstOrDefault();
-                CompositeRuleDTO ruleDTO = (CompositeRuleDTO)shopDto.Rules.Find(r => r.Id == rule.Id);
-                if (ruleDTO != null){
-                    if (rule.Rules != null){
-                        List<RuleDTO> Rules = new List<RuleDTO>();
-                        foreach(IRule rulee in rule.Rules) {
-                        Rules.Add(DBcontext.GetInstance().Rules.Find(rulee.Id));
+            try{
+                lock(_lock){
+                    DBcontext context = DBcontext.GetInstance();
+                    StoreDTO shopDto = context.Stores.Where(s => s.Rules.Any(r => r.Id == rule.Id)).FirstOrDefault();
+                    CompositeRuleDTO ruleDTO = (CompositeRuleDTO)shopDto.Rules.Find(r => r.Id == rule.Id);
+                    if (ruleDTO != null){
+                        if (rule.Rules != null){
+                            List<RuleDTO> Rules = new List<RuleDTO>();
+                            foreach(IRule rulee in rule.Rules) {
+                            Rules.Add(DBcontext.GetInstance().Rules.Find(rulee.Id));
+                            }
+                            ruleDTO.Rules = Rules;
                         }
-                        ruleDTO.Rules = Rules;
+                        ruleDTO.Operator = rule.Operator.ToString();
+                        context.SaveChanges();
                     }
-                    ruleDTO.Operator = rule.Operator.ToString();
-                    context.SaveChanges();
                 }
+            }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Update CompositeRule");
             }
         }
         public void Update(TotalPriceRule rule)
         {
-            lock(_lock){
-                DBcontext context = DBcontext.GetInstance();
-                StoreDTO shopDto = context.Stores.Where(s => s.Rules.Any(r => r.Id == rule.Id)).FirstOrDefault();
-                TotalPriceRuleDTO ruleDTO = (TotalPriceRuleDTO)shopDto.Rules.Find(r => r.Id == rule.Id);
-                if (ruleDTO != null){
-                    ruleDTO.TotalPrice = rule.TotalPrice;
-                    context.SaveChanges();
+            try{
+                lock(_lock){
+                    DBcontext context = DBcontext.GetInstance();
+                    StoreDTO shopDto = context.Stores.Where(s => s.Rules.Any(r => r.Id == rule.Id)).FirstOrDefault();
+                    TotalPriceRuleDTO ruleDTO = (TotalPriceRuleDTO)shopDto.Rules.Find(r => r.Id == rule.Id);
+                    if (ruleDTO != null){
+                        ruleDTO.TotalPrice = rule.TotalPrice;
+                        context.SaveChanges();
+                    }
                 }
             }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Update TotalPriceRule");
+            }
+            
         }
 
         public void Add(IRule rule)
         {
-            _ruleById.TryAdd(rule.Id, rule);
-            RuleDTO ruleDTO = rule.CloneDTO();
-            DBcontext.GetInstance().Stores.Find(rule.storeId).Rules.Add(ruleDTO);
-            DBcontext.GetInstance().SaveChanges();
-            
+            try{
+                _ruleById.TryAdd(rule.Id, rule);
+                lock(_lock){
+                    RuleDTO ruleDTO = rule.CloneDTO();
+                    DBcontext.GetInstance().Stores.Find(rule.storeId).Rules.Add(ruleDTO);
+                    DBcontext.GetInstance().SaveChanges();
+                }
+            }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Add Rule");
+            }
         }
 
         public bool ContainsID(int id)
@@ -120,10 +148,16 @@ namespace MarketBackend.DAL
             if (_ruleById.ContainsKey(id))
             {
                 _ruleById.TryRemove(id, out IRule removed);
-                StoreDTO store =  DBcontext.GetInstance().Stores.Find(_ruleById[id].storeId);
-                store.Rules.Remove(store.Rules.Find(r=>r.Id==id));
-                DBcontext.GetInstance().SaveChanges();
-                
+                try{
+                    lock(_lock){
+                        StoreDTO store =  DBcontext.GetInstance().Stores.Find(_ruleById[id].storeId);
+                        store.Rules.Remove(store.Rules.Find(r=>r.Id==id));
+                        DBcontext.GetInstance().SaveChanges();
+                    }
+                }
+                catch(Exception){
+                throw new Exception("There was a problem in Database use- Delete Rule");
+                }
             }
             else throw new Exception("Product Id does not exist."); ;
         }
@@ -146,27 +180,43 @@ namespace MarketBackend.DAL
 
         private void UploadRulesFromContext()
         {
-            List<StoreDTO> shops = DBcontext.GetInstance().Stores.ToList();
-            foreach(StoreDTO storeDTO in shops)
-            {
-                UploadShopRulesFromContext(storeDTO.Id);
+            try{
+                lock(_lock){
+                    List<StoreDTO> shops = DBcontext.GetInstance().Stores.ToList();
+                    foreach(StoreDTO storeDTO in shops)
+                    {
+                        UploadShopRulesFromContext(storeDTO.Id);
+                    }
+                }
             }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Upload Rule");
+            }
+            
         }
 
         private void UploadShopRulesFromContext(int shopId)
         {
-            StoreDTO shopDto = DBcontext.GetInstance().Stores.Find(shopId);
-            if (shopDto != null)
-            {
-                if (shopDto.Rules != null)
-                {
-                    List<RuleDTO> rules = shopDto.Rules.ToList();
-                    foreach (RuleDTO ruleDTO in rules)
+            try{
+                lock(_lock){
+                    StoreDTO shopDto = DBcontext.GetInstance().Stores.Find(shopId);
+                    if (shopDto != null)
                     {
-                        _ruleById.TryAdd(ruleDTO.Id, makeRule(ruleDTO));
+                        if (shopDto.Rules != null)
+                        {
+                            List<RuleDTO> rules = shopDto.Rules.ToList();
+                            foreach (RuleDTO ruleDTO in rules)
+                            {
+                                _ruleById.TryAdd(ruleDTO.Id, makeRule(ruleDTO));
+                            }
+                        }
                     }
                 }
             }
+            catch(Exception){
+                throw new Exception("There was a problem in Database use- Upload Rule");
+            }
+            
         }
 
         public IRule makeRule(RuleDTO ruleDTO)
@@ -203,11 +253,19 @@ namespace MarketBackend.DAL
                 return _ruleById[id];
             else if (ContainsID(id))
             {
-                DBcontext context = DBcontext.GetInstance();
-                StoreDTO storeDto = context.Stores.Where(s => s.Rules.Any(r => r.Id == id)).FirstOrDefault();
-                RuleDTO ruleDTO = storeDto.Rules.Find(r=>r.Id==id);
-                _ruleById.TryAdd(id, makeRule(ruleDTO));
-                return _ruleById[id];
+                try{
+                    lock(_lock){
+                        DBcontext context = DBcontext.GetInstance();
+                        StoreDTO storeDto = context.Stores.Where(s => s.Rules.Any(r => r.Id == id)).FirstOrDefault();
+                        RuleDTO ruleDTO = storeDto.Rules.Find(r=>r.Id==id);
+                        _ruleById.TryAdd(id, makeRule(ruleDTO));
+                    }
+                    return _ruleById[id];
+                }
+                catch(Exception){
+                throw new Exception("There was a problem in Database use- Get Rule");
+                }
+                
             }
             else
                 throw new ArgumentException("Invalid Rule Id.");
