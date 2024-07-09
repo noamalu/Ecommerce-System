@@ -88,7 +88,7 @@ namespace TestProject.Tests
             UpdateInitFileName("Initialize", "true");
             new SceanarioParser(s,CC).defaultParse().Wait();
             List<Member> ls = ClientRepositoryRAM.GetInstance().GetAll();
-            List<string> listofNames = new List<string>() { "u2", "u3", "u4", "u5", "u6", "system_admin" };
+            List<string> listofNames = new List<string>() { "u2", "u3", "u4", "u5", "u6", "u1" };
             foreach (Member memName in ls)
             {
                 bool flag = false;                
@@ -106,6 +106,60 @@ namespace TestProject.Tests
 
         }
 
+        [TestMethod]
+        public void CheckUsersExistConfigOptions()
+        {
+            UpdateConfigField("Initialize", "File");
+            new Configurate(s, CC).Parse("initialize\\configTest.json");
+            
+            // Set configTest at "Initialize" : File
+            List<Member> ls = ClientRepositoryRAM.GetInstance().GetAll();
+            List<string> listOfNames = new List<string>() { "u2", "u3", "u4", "u5", "u6", "u1" };
+            foreach (Member memName in ls)
+            {
+                bool flag = false;                
+                foreach (string name in listOfNames)
+                {
+                    if (name == memName.UserName)
+                    {
+                        flag = true;
+                        break;
+                    }
+                }
+                if (!flag)
+                {
+                    Assert.Fail($"User {memName.UserName} not found in the expected list.");
+                }
+            }
+
+            // Set configTest at "Initialize" : DB
+            UpdateConfigField("Initialize", "DB");
+            new Configurate(s, CC).Parse("initialize\\configTest.json");
+            ls = ClientRepositoryRAM.GetInstance().GetAll();
+            listOfNames = new List<string>() { "u2", "u3", "u4", "u5", "u6", "u1" };
+            foreach (Member memName in ls)
+            {
+                bool flag = false;                
+                foreach (string name in listOfNames)
+                {
+                    if (name == memName.UserName)
+                    {
+                        flag = true;
+                        break;
+                    }
+                }
+                if (!flag)
+                {
+                    Assert.Fail($"User {memName.UserName} not found in the expected list.");
+                }
+            }
+
+            // Set configTest at "Initialize" : Empty
+            UpdateConfigField("Initialize", "Empty");
+            new Configurate(s, CC).Parse("initialize\\configTest.json");
+            ls = ClientRepositoryRAM.GetInstance().GetAll();
+            Assert.AreEqual(1, ls.Count, "Expected only one user (system_admin) when initialized as empty.");
+        }
         
         [TestMethod]
         public void checkStoreExist(){
@@ -165,11 +219,30 @@ namespace TestProject.Tests
         [TestMethod]
         public void WrongPathFail() {
             UpdateInitFileName("Initialize", "true");
-            var exception = Assert.ThrowsException<AggregateException>(() => new SceanarioParser(s, CC).Parse("wrongRoute").Wait());
-            Assert.IsTrue(exception.InnerExceptions.Any(e => e is FileNotFoundException));
+            // var exception = Assert.ThrowsException<AggregateException>(() => new SceanarioParser(s, CC).Parse("wrongRoute").Wait());
+            // Assert.IsTrue(exception.InnerExceptions.Any(e => e is FileNotFoundException));
+            new SceanarioParser(s, CC).Parse("wrongRoute").Wait();
+            List<Member> ls = ClientRepositoryRAM.GetInstance().GetAll();
+            Assert.AreEqual(ls.Count, 0);
         }
 
-         public void UpdateInitFileName(string key, string newValue)
+        [TestMethod]
+        public void InitSyntaxFail() {
+            UpdateInitFileName("Initialize", "true");
+            new SceanarioParser(s, CC).Parse("initialize\\initialTestSyntx.json").Wait();
+            List<Member> ls = ClientRepositoryRAM.GetInstance().GetAll();
+            Assert.AreEqual(ls.Count, 0);
+        }
+
+        [TestMethod]
+        public void InitValuesFail() {
+            UpdateInitFileName("Initialize", "true");
+            new SceanarioParser(s, CC).Parse("initialize\\initialTestValues.json").Wait();
+            List<Member> ls = ClientRepositoryRAM.GetInstance().GetAll();
+            Assert.AreEqual(ls.Count, 0);
+        }
+
+        public void UpdateInitFileName(string key, string newValue)
         {
             string filePath = Path.Combine(Environment.CurrentDirectory, "Initialize\\InitialState.json");
             try
@@ -205,6 +278,16 @@ namespace TestProject.Tests
             {
                 Console.WriteLine("An error occurred: " + ex.Message);
             }
+        }
+
+        private void UpdateConfigField(string key, string value)
+        {
+            string path = "initialize\\configTest.json";
+            string json = File.ReadAllText(path);
+            JObject jsonObj = JObject.Parse(json);
+            jsonObj[key] = value;
+            string output = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
+            File.WriteAllText(path, output);
         }
 
         

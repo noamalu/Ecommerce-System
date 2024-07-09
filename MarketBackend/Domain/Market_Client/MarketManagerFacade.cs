@@ -33,7 +33,7 @@ namespace MarketBackend.Domain.Market_Client
             _shippingSystemFacade = shippingSystemFacade;
             _shippingSystemFacade.Connect();
             _paymentSystem.Connect();
-            InitiateSystemAdmin();
+            // InitiateSystemAdmin();
             
         }
 
@@ -60,7 +60,10 @@ namespace MarketBackend.Domain.Market_Client
         {
             _clientManager.RegisterAsSystemAdmin("system_admin", "system_admin", "system.admin@mail.com", 30);            
         }
-        
+        public void RegisterAsSystemAdmin(string username, string password, string email, int age)
+        {
+            _clientManager.RegisterAsSystemAdmin(username, password, email, age);
+        }
         public void AddManger(string identifier, int storeId, string toAddUserName)
         {
             Store store = _storeRepository.GetById(storeId);

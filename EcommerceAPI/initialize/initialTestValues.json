@@ -1,14 +1,6 @@
 ﻿{
     "Scenarios": [
         {
-            "Identifier": "1",
-            "Username": "u1",
-            "Password": "password",
-            "Email": "testUser@example.com",
-            "Age": 25,
-            "Scenario": "RegisterAsSystemAdmin"
-        },
-        {
             "Identifier": "2",
             "Username": "u2",
             "Password": "password",
@@ -19,7 +11,7 @@
         {
             "Identifier": "3",
             "Username": "u3",
-            "Password": "password",
+            "Password": "password", 
             "Email": "testUser@example.com",
             "Age": 25,
             "Scenario": "Register"
@@ -51,7 +43,7 @@
         {
             "Identifier": "2",
             "Username": "u2",
-            "Password": "password",
+            "Password": "passsssssword",
             "Scenario": "Login"
         },
         {

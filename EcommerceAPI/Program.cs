@@ -27,6 +27,7 @@ builder.Services.AddSingleton<IShippingSystemFacade>(new RealShippingSystem("htt
 builder.Services.AddSingleton<IPaymentSystemFacade>(new RealPaymentSystem("https://damp-lynna-wsep-1984852e.koyeb.app/"));
 builder.Services.AddSingleton<IClientService, ClientService>();
 builder.Services.AddSingleton<IMarketService, MarketService>();
+builder.Services.AddSingleton<Configurate>();
 
 builder.Services.AddCors(options =>
 {
@@ -77,6 +78,14 @@ app.UseHttpsRedirection();
 app.UseSession();
 app.UseAuthorization();
 app.MapControllers();
+
+var configurate = app.Services.GetRequiredService<Configurate>();
+string port = configurate.Parse();
+WebSocketServer alertServer = new WebSocketServer($"ws://{GetLocalIPAddress()}:{port}");
+WebSocketServer logServer = new WebSocketServer($"ws://{GetLocalIPAddress()}:{port + 1}");
+
+alertServer.Start();
+logServer.Start();
 
 app.Run();
 
