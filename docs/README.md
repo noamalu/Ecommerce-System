@@ -1,53 +1,94 @@
-# Market - Team 15A
-Workshop on Software Engineering Project
+# Ecommerce-System
 
-# Running the server
+## Project Description
 
+Ecommerce-System is an ecommerce application developed as part of the Workshop on Software Engineering Project course at Ben-Gurion University (BGU). The system is built using ASP.NET for the backend and React for the frontend, providing a robust and user-friendly platform for online shopping.
 
+## Team Members
 
+- Yonatan Baruch
+- Shaked Matityahu
+- Kfir Nissim
+- Olga Oznovich
+- Noa Malul
+- Nofar Cohen
 
-# System Components and Classes Description
+## Prerequisites
 
-## Components and Classes Overview
+Before you begin, ensure you have met the following requirements:
 
-### Component: Product
-- Represents items for sale in the marketplace, handling their attributes like name, price, and discounts.
+- **Node.js** (v14.0.0 or later)
+- **npm** (v6.0.0 or later)
+- **.NET Core SDK** (v3.1 or later)
+- **SQL Server** (for the database)
 
-### Component: Store
-- Manages details about retail outlets, including their operational status, contact information, and identification.
+## Installation
 
-### Component: Client
-- Tracks client-related data such as login status and identification, essential for user management and authentication.
+To install the Ecommerce-System, follow these steps:
 
-### Component: Basket
-- Stores and manages a collection of selected items, detailing quantities and product IDs for checkout processes.
+### Backend (EcommerceAPI)
 
-### Class: MarketFacade
-- Serves as a simplified interface for interacting with more complex market system operations, embodying the facade design pattern.
+1. Clone the repository:
 
-### Class: Alert
-- An abstract class designed to manage notifications and alerts within the system, focusing on their delivery and read status.
+```bash {"id":"01J2BCT2A420D9PNKZJ642N8ST"}
+git clone https://github.com/noamalu/Ecommerce-System.git
+```
 
-### Interface: PermissionsService
-- Defines a set of methods for managing and checking permissions within the system, crucial for access control and service management.
+2. Navigate to the backend directory:
 
-### Class: SupplyManager
-- Oversees inventory and stock levels, ensuring products are available for sale and managing relationships with suppliers.
+```bash {"id":"01J2BCT2A420D9PNKZJ7A3DGJJ"}
+cd ecommerce-system/EcommerceAPI
+```
 
-### Component: Delivery
-- Handles the logistics of delivering orders to customers, including tracking, and delivery status updates.
+3. Restore the dependencies:
 
-### Class: PaymentManager
-- Manages financial transactions, overseeing payment processing, validation, and security of payment data.
+```bash {"id":"01J2BCT2A420D9PNKZJATZ2CPN"}
+dotnet restore
+```
 
-### Class: Transaction
-- Facilitates and records the exchange of goods and services for payment, ensuring accuracy and integrity in financial operations.
+4. Update the `appsettings.json` file with your SQL Server connection string.
 
-### Class: PermissionManager
-- Controls access rights within the system, determining who can perform specific actions based on roles and permissions.
+5. Run the backend server:
 
-### Strategy: PurchaseStrategy
-- Defines various purchasing tactics and strategies, allowing dynamic changes to how purchases are handled.
+```bash {"id":"01J2BCT2A420D9PNKZJCYZC62N"}
+dotnet run
+```
 
-### Component: Order
-- Manages order life cycles from creation through completion, including details such as order contents, status, and customer information.
+### Frontend (EcommerceUI/ecommerceUI)
+
+1. Navigate to the frontend directory:
+
+```bash {"id":"01J2BCT2A420D9PNKZJF3KVN4H"}
+cd ecommerce-system/EcommerceUI/ecommerceUI
+```
+
+2. Install the dependencies:
+
+```bash {"id":"01J2BCT2A420D9PNKZJJ69SS0B"}
+npm install
+```
+
+3. Start the development server:
+
+```bash {"id":"01J2BCT2A420D9PNKZJMB2ZW88"}
+npm start
+```
+
+## Usage
+
+Once the installation steps are completed, you can access the application in your web browser at `http://localhost:3000`. The backend API will be available at `http://localhost:4560,
+`.
+
+## Contributing
+
+To contribute to Ecommerce-System, follow these steps:
+
+1. Fork the repository.
+2. Create a new branch: `git checkout -b feature/your-feature`
+3. Make your changes and commit them: `git commit -m 'Add some feature'`
+4. Push to the branch: `git push origin feature/your-feature`
+5. Create a pull request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

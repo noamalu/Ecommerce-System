@@ -182,9 +182,9 @@ namespace MarketBackend.Tests.IT
         [TestMethod]
         public void RemoveProductAndPurchaseProductTogether()
         {
-            Client mem1 = clientManager.GetClientByIdentifier(token1);
+            Member mem1 = clientManager.GetMemberByIdentifier(token1);
             Product product = marketManagerFacade.AddProduct(1, token1, productName1, sellmethod, desc, price1, category1, 1, false);
-            Client mem2 = clientManager.GetClientByIdentifier(token2);
+            Member mem2 = clientManager.GetMemberByIdentifier(token2);
             marketManagerFacade.AddToCart(token2, storeId, productID1, 1);
             bool thorwnExeptionStore  = false;
             bool thorwnExeptionClient = false;
@@ -218,7 +218,7 @@ namespace MarketBackend.Tests.IT
             Assert.IsTrue(thorwnExeptionStore || thorwnExeptionClient, "Expected at least one exception to be thrown, either in removing product or purchasing product.");
             Assert.IsFalse(thorwnExeptionStore && thorwnExeptionClient, "Expected only one of the operations to throw an exception, not both.");
             Dictionary<int, Basket> basket = mem2.Cart.GetBaskets();
-            Assert.IsTrue((basket.Count == 1 && thorwnExeptionClient) || (basket.Count == 0 && thorwnExeptionStore), "Expected the cart to be consistent with the operations.");
+            Assert.IsTrue((mem2.OrderHistory.Count == 0 && thorwnExeptionClient) || (mem2.OrderHistory.Count == 1 && thorwnExeptionStore), "Expected the cart to be consistent with the operations.");
         }
 
         [TestMethod]

@@ -73,6 +73,18 @@ namespace MarketBackend.Domain.Market_Client
             }
         }
 
+        public void addToBasketGuest(int productId, int quantity){
+            if (products.ContainsKey(productId)){
+                products[productId] += quantity;
+                FindBasketItem(productId).Quantity += quantity;
+            }
+            else{
+                products[productId] = quantity;
+                BasketItem basketItem = new BasketItem(ProductRepositoryRAM.GetInstance().GetById(productId), quantity);
+                _basketItems.Add(basketItem);
+            }
+        }
+
         public void RemoveFromBasket(int productId, int quantity){
             if (products.ContainsKey(productId)){
                 products[productId] = Math.Max(products[productId]-quantity,0);
@@ -106,6 +118,22 @@ namespace MarketBackend.Domain.Market_Client
                             dBcontext.SaveChanges();
                         }
                     }
+                }
+            }
+            else{
+                throw new ArgumentException($"Product id={productId} not in the {_basketId}!");
+            }
+        }
+
+        public void RemoveFromBasketGuest(int productId, int quantity){
+            if (products.ContainsKey(productId)){
+                products[productId] = Math.Max(products[productId]-quantity,0);
+                if (products[productId] == 0) {
+                    products.Remove(productId);
+                    _basketItems.Remove(FindBasketItem(productId));
+                }
+                else{
+                    FindBasketItem(productId).Quantity -= quantity;
                 }
             }
             else{

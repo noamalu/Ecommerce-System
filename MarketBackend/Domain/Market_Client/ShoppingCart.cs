@@ -24,9 +24,19 @@ namespace MarketBackend.Domain.Models
             basket.addToBasket(productId, quantity);
         }
 
+        public void addToCartGuest(int storeId, int productId, int quantity){
+            Basket? basket = GetBaskets().Values.Where(basket => basket._storeId == storeId).FirstOrDefault() ?? _basketRepository.CreateBasketGuest(storeId, _shoppingCartId);
+            basket.addToBasketGuest(productId, quantity);
+        }
+
         public void removeFromCart(int storeId, int productId, int quantity){
             var basket = GetBaskets().Values.Where(basket => basket._storeId == storeId).FirstOrDefault();
             basket.RemoveFromBasket(productId, quantity);
+        }
+
+        public void removeFromCartGuest(int storeId, int productId, int quantity){
+            var basket = GetBaskets().Values.Where(basket => basket._storeId == storeId).FirstOrDefault();
+            basket.RemoveFromBasketGuest(productId, quantity);
         }
 
         public Dictionary<int, Basket> GetBaskets() //returns a dictionary of store id to productIdxQuantity
