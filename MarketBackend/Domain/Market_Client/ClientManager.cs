@@ -30,12 +30,14 @@ namespace MarketBackend.Domain.Market_Client
     
         private ClientManager()
         {
-            UserCounter = 1;
+            UserCounter = ClientRepositoryRAM.GetInstance().getAll()?.Select(client => client.Id).DefaultIfEmpty(0).Max() + 1 ?? 1;
+                        // UserCounter = 1;
+
             GuestBySession = new ConcurrentDictionary<string, Guest>();
             MemberByToken = new ConcurrentDictionary<string, Member>();
             _clientRepository = ClientRepositoryRAM.GetInstance();
             _security = SecurityManager.GetInstance();
-        }
+        }        
 
         public static ClientManager GetInstance()
         {
@@ -46,6 +48,12 @@ namespace MarketBackend.Domain.Market_Client
         public static void Dispose()
         {
             Manager = null;
+
+        }
+
+        public void Reset()
+        {
+            UserCounter = 1;
 
         }
 

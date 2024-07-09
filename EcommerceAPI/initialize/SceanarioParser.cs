@@ -35,9 +35,7 @@ public class SceanarioParser
     }
 
     public async Task Parse(string path)
-    {
-        // using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-        // {            
+    {       
             try
             {
                 string textJson = await File.ReadAllTextAsync(path);
@@ -47,9 +45,8 @@ public class SceanarioParser
                 {
                     JObject parsedSeacnarios = JObject.Parse(sceanario.ToString());
                     string task = parsedSeacnarios["Scenario"]!.ToString();
-                    await ParseUseCase((Sceanarios)Enum.Parse(typeof(Sceanarios), task), parsedSeacnarios);
+                    ParseUseCase((Sceanarios)Enum.Parse(typeof(Sceanarios), task), parsedSeacnarios).Wait();
                 }
-                // scope.Complete();
             }
             catch (Exception ex)
             {
@@ -64,7 +61,6 @@ public class SceanarioParser
 
                 MyLogger.GetLogger().Error(ex.Message);
             }
-        // }
     }
 
     private async Task ParseUseCase(Sceanarios task, JObject usecaseJson)

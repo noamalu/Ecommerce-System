@@ -48,18 +48,18 @@ builder.Services.AddSingleton<Configurate>(sp =>
 // Register WebSocket servers using factory methods
 builder.Services.AddSingleton<WebSocketServer>(sp =>
 {
-    var configurate = sp.GetRequiredService<Configurate>();
-    string port = configurate.Parse();
-    var alertServer = new WebSocketServer($"ws://{GetLocalIPAddress()}:{port}");
+    // var configurate = sp.GetRequiredService<Configurate>();
+    // string port = configurate.Parse();
+    var alertServer = new WebSocketServer($"ws://{GetLocalIPAddress()}:{4560}");
     alertServer.Start();
     return alertServer;
 });
 
 builder.Services.AddSingleton<WebSocketServer>(sp =>
 {
-    var configurate = sp.GetRequiredService<Configurate>();
-    string port = configurate.Parse();
-    var logServer = new WebSocketServer($"ws://{GetLocalIPAddress()}:{int.Parse(port) + 1}");
+    // var configurate = sp.GetRequiredService<Configurate>();
+    // string port = configurate.Parse();
+    var logServer = new WebSocketServer($"ws://{GetLocalIPAddress()}:{4560}");
     logServer.Start();
     return logServer;
 });
@@ -80,12 +80,13 @@ app.UseAuthorization();
 app.MapControllers();
 
 var configurate = app.Services.GetRequiredService<Configurate>();
-string port = configurate.Parse();
-WebSocketServer alertServer = new WebSocketServer($"ws://{GetLocalIPAddress()}:{port}");
-WebSocketServer logServer = new WebSocketServer($"ws://{GetLocalIPAddress()}:{port + 1}");
+configurate.Parse();
+// string port = configurate.Parse();
+// WebSocketServer alertServer = new WebSocketServer($"ws://{GetLocalIPAddress()}:{port}");
+// WebSocketServer logServer = new WebSocketServer($"ws://{GetLocalIPAddress()}:{port + 1}");
 
-alertServer.Start();
-logServer.Start();
+// alertServer.Start();
+// logServer.Start();
 
 app.Run();
 
