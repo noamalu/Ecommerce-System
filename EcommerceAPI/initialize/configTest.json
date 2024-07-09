@@ -7,6 +7,6 @@
   "Port": 4560,
   "ExternalServices": false,
   "Local": true,
-  "Initialize": "File",
-  "Test": false
+  "Initialize": "Empty",
+  "Test": true
 }
