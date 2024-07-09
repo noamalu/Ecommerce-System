@@ -30,7 +30,9 @@ namespace MarketBackend.Domain.Market_Client
     
         private ClientManager()
         {
-            UserCounter = ClientRepositoryRAM.GetInstance().getAll()?.Select(client => client.Id).DefaultIfEmpty(0).Max() + 1 ?? 1;
+            lock(_lock){
+                UserCounter = ClientRepositoryRAM.GetInstance().getAll()?.Select(client => client.Id).DefaultIfEmpty(0).Max() + 1 ?? 1;
+            }
                         // UserCounter = 1;
 
             GuestBySession = new ConcurrentDictionary<string, Guest>();
@@ -53,8 +55,9 @@ namespace MarketBackend.Domain.Market_Client
 
         public void Reset()
         {
-            UserCounter = 1;
-
+            lock(_lock){
+                UserCounter = 1;
+            }
         }
 
         public static bool CheckClientIdentifier(string identifier)
