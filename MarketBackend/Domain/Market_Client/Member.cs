@@ -10,7 +10,7 @@ using MarketBackend.Domain.Models;
 
 namespace MarketBackend.Domain.Market_Client
 {
-    public class Member : Guest
+    public class Member : Client
     {
         public string UserName {get; set;}
         public string Password {get; set;}
@@ -20,6 +20,7 @@ namespace MarketBackend.Domain.Market_Client
         public bool IsSystemAdmin {get; set;}
         public bool IsLoggedIn {get; set;}
         public bool IsNotification {get; set;}
+
         object _lock = new Object();
 
         public SynchronizedCollection<Message> alerts;
@@ -34,7 +35,7 @@ namespace MarketBackend.Domain.Market_Client
             OrderHistory = new(); 
             IsSystemAdmin = false;
             IsLoggedIn = false;
-            IsNotification = true;
+            IsNotification = true; //TODO maybe change to true
             alerts = new SynchronizedCollection<Message>();
         }
 
@@ -69,6 +70,15 @@ namespace MarketBackend.Domain.Market_Client
             }            
             cartInHistory.AddBasket(basket);            
             base.PurchaseBasket(basket);
+        }
+
+        public override void AddToCart(int storeId, int productId, int quantity){
+            Cart.addToCart(storeId, productId, quantity);
+        }
+        
+        
+        public override void RemoveFromCart(int storeId, int productId, int quantity){
+            Cart.removeFromCart(storeId, productId, quantity);
         }
 
         public List<ShoppingCartHistory> GetHistory()

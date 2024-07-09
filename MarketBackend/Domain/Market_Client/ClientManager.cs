@@ -87,7 +87,7 @@ namespace MarketBackend.Domain.Market_Client
             {
                 return member;
             }            
-            throw new KeyNotFoundException($"identifier={identifier} not found in members");
+            return null;
         }
 
         public bool AddToCart(string identifier, int storeId, int productId, int quantity)

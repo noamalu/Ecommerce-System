@@ -47,6 +47,7 @@ namespace MarketBackend.Tests.IT
         [TestInitialize]
         public void Setup()
         {
+            DBcontext.SetTestDB();
             // Initialize the managers and mock systems
             DBcontext.GetInstance().Dispose();
             MarketManagerFacade.Dispose();
@@ -75,6 +76,15 @@ namespace MarketBackend.Tests.IT
         {
             DBcontext.GetInstance().Dispose();
             MarketManagerFacade.Dispose();
+        }
+
+        [TestMethod]
+        public void PurchaseCartGuest()
+        {
+            marketManagerFacade.EnterAsGuest(session2);
+            Client guest = clientManager.GetClientByIdentifier(session2);
+            marketManagerFacade.AddToCart(session2, 1, 11, 1);
+            marketManagerFacade.PurchaseCart(session2, paymentDetails, shippingDetails);
         }
 
         [TestMethod]
@@ -177,6 +187,18 @@ namespace MarketBackend.Tests.IT
             marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails);
             Member client = clientManager.GetMemberByIdentifier(token1);
             Assert.IsTrue(client.alerts.Count == 0, "Expected no notifications after purchase when offline notifications are disabled.");
+        }
+
+        [TestMethod]
+        public void TestPurchaseTransaction(){
+            marketManagerFacade.AddToCart(token1, 1, productID1, 1);
+            marketManagerFacade.CreateStore(token1, "test", "hadaspr100@gmail.com", "0504457768");
+            marketManagerFacade.AddProduct(2, token1, "test", "RegularSell", "nice", 1.0, "fruit", 10, false);
+            int rule = marketManagerFacade.AddQuantityRule(token1, 2, "test", 10, 100);
+            DateTime expirationDate = DateTime.Now.AddDays(2);
+            marketManagerFacade.AddPurchasePolicy(token1, 2, expirationDate, "test", rule);
+            marketManagerFacade.AddToCart(token1, 2, 21, 1);
+            Assert.ThrowsException<Exception>(() =>marketManagerFacade.PurchaseCart(token1, paymentDetails, shippingDetails));
         }
 
         // [TestMethod]

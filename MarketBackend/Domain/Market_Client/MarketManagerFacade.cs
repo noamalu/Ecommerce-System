@@ -12,6 +12,7 @@ using System.Security.Policy;
 using System.Data;
 using MarketBackend.Domain.Shipping;
 using Microsoft.IdentityModel.Tokens;
+using MarketBackend.DAL.DTO;
 
 
 namespace MarketBackend.Domain.Market_Client
@@ -143,8 +144,18 @@ namespace MarketBackend.Domain.Market_Client
                         break;
                     }
                 }
-                if (found) 
-                    _clientManager.AddToCart(identifier, storeId, productId, quantity);
+                if (found){
+                    using var transaction = DBcontext.GetInstance().Database.BeginTransaction();
+                    try{
+                        _clientManager.AddToCart(identifier, storeId, productId, quantity);
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw new Exception(ex.Message);
+                    }
+                } 
                 else
                     throw new Exception($"No productid {productId}");
             }
@@ -173,21 +184,29 @@ namespace MarketBackend.Domain.Market_Client
             Client store_founder = _clientManager.GetClientByIdentifier(identifier);
             if(store_founder != null && _clientManager.CheckMemberIsLoggedIn(identifier))
             {
-                storeId = _storeCounter++;
-                if (_storeRepository.GetById(storeId) != null){
-                    throw new Exception("Store exists");
-                }
-                Store store = new Store(storeId, storeName, email, phoneNum)
-                {
-                    _active = true
-                };
-                _storeRepository.Add(store);
-                Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
-                Role role = new Role(new Founder(RoleName.Founder), activeMember, storeId, activeMember.UserName);
+                using var transaction = DBcontext.GetInstance().Database.BeginTransaction();
+                try{
+                    storeId = _storeCounter++;
+                    if (_storeRepository.GetById(storeId) != null){
+                        throw new Exception("Store exists");
+                    }
+                    Store store = new Store(storeId, storeName, email, phoneNum)
+                    {
+                        _active = true
+                    };
+                    _storeRepository.Add(store);
+                    Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
+                    Role role = new Role(new Founder(RoleName.Founder), activeMember, storeId, activeMember.UserName);
 
-                store.SubscribeStoreOwner(activeMember);
-                store.AddStaffMember(activeMember.UserName, role, activeMember.UserName); //adds himself
-                
+                    store.SubscribeStoreOwner(activeMember);
+                    store.AddStaffMember(activeMember.UserName, role, activeMember.UserName); //adds himself
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw new Exception(ex.Message);
+                }
             }
             else
             {
@@ -336,32 +355,41 @@ namespace MarketBackend.Domain.Market_Client
 
         public void PurchaseCart(string identifier, PaymentDetails paymentDetails, ShippingDetails shippingDetails) //clientId
         {
-            ClientManager.CheckClientIdentifier(identifier);
-            var client = _clientManager.GetClientByIdentifier(identifier);
-            var baskets = client.Cart.GetBaskets();
-            if (baskets.IsNullOrEmpty()){
-                throw new Exception("Empty cart.");
-            }
-            var stores = new List<Store>();
-            foreach(var basket in baskets){
-                var store = _storeRepository.GetById(basket.Key);
-                stores.Add(store);
-                if(!store.checkBasketInSupply(basket.Value)) throw new Exception("unavailable."); 
-                if(!store.checklegalBasket(basket.Value, client.IsAbove18)) throw new Exception("unavailable.");               
-            }
-            foreach(var store in stores){
-                var totalPrice = store.CalculateBasketPrice(baskets[store.StoreId]);
-                if(_paymentSystem.Pay(paymentDetails, totalPrice) > 0) {
-                    if(_shippingSystemFacade.OrderShippment(shippingDetails) > 0){
-                        store.PurchaseBasket(identifier, baskets[store.StoreId]);
-                        _clientManager.PurchaseBasket(identifier, baskets[store.StoreId]);
-                    }
-                    else{
-                        throw new Exception("shippment failed.");
-                    }                  
+            using var transaction = DBcontext.GetInstance().Database.BeginTransaction();
+            try{
+                ClientManager.CheckClientIdentifier(identifier);
+                var client = _clientManager.GetClientByIdentifier(identifier);
+                var baskets = client.Cart.GetBaskets();
+                if (baskets.IsNullOrEmpty()){
+                    throw new Exception("Empty cart.");
                 }
-                else 
-                    throw new Exception("payment failed.");
+                var stores = new List<Store>();
+                foreach(var basket in baskets){
+                    var store = _storeRepository.GetById(basket.Key);
+                    stores.Add(store);
+                    if(!store.checkBasketInSupply(basket.Value)) throw new Exception("unavailable."); 
+                    if(!store.checklegalBasket(basket.Value, client.IsAbove18)) throw new Exception("unavailable.");               
+                }
+                foreach(var store in stores){
+                    var totalPrice = store.CalculateBasketPrice(baskets[store.StoreId]);
+                    if(_paymentSystem.Pay(paymentDetails, totalPrice) > 0) {
+                        if(_shippingSystemFacade.OrderShippment(shippingDetails) > 0){
+                            store.PurchaseBasket(identifier, baskets[store.StoreId]);
+                            _clientManager.PurchaseBasket(identifier, baskets[store.StoreId]);
+                        }
+                        else{
+                            throw new Exception("shippment failed.");
+                        }                  
+                    }
+                    else 
+                        throw new Exception("payment failed.");
+                }
+                transaction.Commit();
+            }
+            catch(Exception e) 
+            {
+                transaction.Rollback();
+                throw new Exception(e.Message); 
             }           
 
         }
@@ -454,21 +482,6 @@ namespace MarketBackend.Domain.Market_Client
             filter.Filter(products);
         }
 
-        // public void UpdateProductDiscount(int storeId, int userId, int productId, double discount)
-        // {
-        
-
-        //     if (_storeRepository.GetById(storeId) != null)
-        //     {
-        //         _storeRepository.GetById(storeId).UpdateProductDiscount(userId, productId, discount);
-        //     }
-        //     else
-        //     {
-        //         throw new Exception("Store not found");
-        //     }
-
-        // }
-
         public void UpdateProductPrice(int storeId, string identifier,  int productId, double price)
         {
             if (_storeRepository.GetById(storeId) != null && _clientManager.CheckMemberIsLoggedIn(identifier))
@@ -506,12 +519,21 @@ namespace MarketBackend.Domain.Market_Client
             Store store = _storeRepository.GetById(storeId);
             if (store != null && _clientManager.CheckMemberIsLoggedIn(identifier))
             {
-                Member appoint = _clientManager.GetMemberByIdentifier(identifier);
-                Member appointe = _clientManager.GetMemberByUserName(toAddUserName);
-                RoleType roleType = RoleType.GetRoleTypeFromDescription(roleName);
-                Role role = new(roleType, appoint, storeId, toAddUserName);
-                store.AddStaffMember(toAddUserName, role, appoint.UserName);
-                store.SubscribeStaffMember(appoint, appointe);
+                using var transaction = DBcontext.GetInstance().Database.BeginTransaction();
+                try{
+                    Member appoint = _clientManager.GetMemberByIdentifier(identifier);
+                    Member appointe = _clientManager.GetMemberByUserName(toAddUserName);
+                    RoleType roleType = RoleType.GetRoleTypeFromDescription(roleName);
+                    Role role = new(roleType, appoint, storeId, toAddUserName);
+                    store.AddStaffMember(toAddUserName, role, appoint.UserName);
+                    store.SubscribeStaffMember(appoint, appointe);
+                    transaction.Commit();
+                }
+                catch(Exception e) 
+                {
+                    transaction.Rollback();
+                    throw new Exception(e.Message); 
+                }
             }
             else
                 throw new Exception("Store doesn't exist!");

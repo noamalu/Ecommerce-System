@@ -20,11 +20,14 @@ namespace UnitTests
 
         private PaymentDetails paymentDetails;
 
+        private PaymentDetails bad_paymentDetails;
+
         [TestInitialize]
         public void SetUp()
         {
             paymentSystem = new RealPaymentSystem("https://damp-lynna-wsep-1984852e.koyeb.app/");
             paymentDetails = new PaymentDetails(currency, cardNumber, exprYear, exprMonth, cvv, cardID, name);
+            bad_paymentDetails = new PaymentDetails(currency, cardNumber, exprYear, exprMonth, "986", cardID, name);
             
         }
 
@@ -51,6 +54,15 @@ namespace UnitTests
             int transactionId = paymentSystem.Pay(paymentDetails, totalAmount);
             Assert.AreEqual(1, paymentSystem.CancelPayment(transactionId),
             $"Expected 1 but got {paymentSystem.CancelPayment(transactionId)}");
+        }
+
+         [TestMethod]
+        // Success - Test that the payment system returns -1 when the payment fails due to a missing connection
+        public void TestPaymentWithBadCvv()
+        {
+            int transactionId = paymentSystem.Pay(bad_paymentDetails, totalAmount);
+            Assert.AreEqual(-1, transactionId,
+            $"Expected -1 but got {transactionId}");
         }
 
         [TestMethod]

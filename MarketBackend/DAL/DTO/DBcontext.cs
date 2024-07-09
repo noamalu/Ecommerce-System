@@ -12,6 +12,9 @@ namespace MarketBackend.DAL.DTO
         public static string DbPath;
         public static string DbPathRemote;
         public static string DbPathLocal;
+        public static string DbPathTest;
+        public static bool TestMode = false;
+        public static bool RemoteMode = false;
         public static bool LocalMode = true;
 
         public virtual DbSet<MemberDTO> Members { get; set; }
@@ -95,21 +98,37 @@ namespace MarketBackend.DAL.DTO
             DbPathLocal = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=MarketDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;Application Intent=ReadWrite;MultiSubnetFailover=False";
     
             DbPathRemote = "Server=tcp:market-db-server.database.windows.net,1433;Initial Catalog=MarketDB;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=\"Active Directory Default\";";
-            if (LocalMode)
-                DbPath = DbPathLocal;
-            else
+            
+            DbPathTest = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=MarketDBTest;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;Application Intent=ReadWrite;MultiSubnetFailover=False";
+            
+            if (RemoteMode)
                 DbPath = DbPathRemote;
-            DbPath = DbPathLocal;
+            else if (TestMode)
+                DbPath = DbPathTest;
+            else if (LocalMode)
+                DbPath = DbPathLocal;
         }
         public static void SetLocalDB()
         {
             LocalMode = true;
+            RemoteMode = false;
+            TestMode = false;
             DbPath = DbPathLocal;
         }
         public static void SetRemoteDB()
         {
             LocalMode = false;
+            RemoteMode = true;
+            TestMode = false;
             DbPath = DbPathRemote;
+        }
+
+        public static void SetTestDB()
+        {
+            LocalMode = false;
+            RemoteMode = false;
+            TestMode = true;
+            DbPath = DbPathTest;
         }
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

@@ -3,6 +3,7 @@ import { Container, Image, Col, Row, Button, Stack } from "react-bootstrap";
 import avatar from '../assets/avatar.jpg';
 import PurchaseHistory from "../components/PurchaseHistory";
 import ProfileStoreNav from "../components/ProfileStoreNav";
+import NotificationsNav from "../components/NotificationsNav";
 import LogoutButton from "../components/LogoutButton";
 import { getLoggedIn, getUserName } from '../services/SessionService';
 import { useNavigate } from "react-router-dom";
@@ -12,9 +13,9 @@ interface ProfileProps {}
 export const Profile: React.FC<ProfileProps> = () => {
     const navigate = useNavigate();
     const userDataString = getUserName();
-    const [view, setView] = useState<'profileStoreNav' | 'purchaseHistory'>('purchaseHistory');
+    const [view, setView] = useState<'profileStoreNav' | 'purchaseHistory' | 'notificationsNav' >('purchaseHistory');
 
-    const handleViewChange = (newView: 'profileStoreNav' | 'purchaseHistory') => {
+    const handleViewChange = (newView: 'profileStoreNav' | 'purchaseHistory' | 'notificationsNav') => {
         setView(newView);
     };
 
@@ -35,6 +36,7 @@ export const Profile: React.FC<ProfileProps> = () => {
                         <p>{userDataString}</p>
                         <Button variant="outline-secondary" onClick={() => handleViewChange('purchaseHistory')}> Purchase History </Button>
                         <Button variant="outline-secondary" onClick={() => handleViewChange('profileStoreNav')}> Store details</Button>
+                        <Button variant="outline-secondary" onClick={() => handleViewChange('notificationsNav')}> Notifications </Button>
                         <LogoutButton />
                     </Stack>
                 </Col>
@@ -42,6 +44,7 @@ export const Profile: React.FC<ProfileProps> = () => {
                 <Col className="profile-right">
                     {view === 'profileStoreNav' && <ProfileStoreNav />}
                     {view === 'purchaseHistory' && <PurchaseHistory view={view} />}
+                    {view === 'notificationsNav' && <NotificationsNav view={view} /> }
                 </Col>
             </Row>
         </>

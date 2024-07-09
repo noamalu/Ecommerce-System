@@ -47,19 +47,22 @@ namespace MarketBackend.Tests.AT
 
         [TestInitialize()]
         public void Setup(){
+            DBcontext.SetTestDB();
             DBcontext.GetInstance().Dispose();
             proxy = new Proxy();
             userId = proxy.GetUserId();
-            mockShippingSystem = new Mock<IShippingSystemFacade>();
-            mockPaymentSystem = new Mock<IPaymentSystemFacade>();
-            mockPaymentSystem.Setup(pay =>pay.Connect()).Returns(true);
-            mockShippingSystem.Setup(ship => ship.Connect()).Returns(true);
-            mockPaymentSystem.Setup(pay =>pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(1);
-            mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
-            mockPaymentSystem.Setup(pay =>pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(1);
-            mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
-            mockShippingSystem.SetReturnsDefault(true);
-            mockPaymentSystem.SetReturnsDefault(true);
+            // mockShippingSystem = new Mock<IShippingSystemFacade>();
+            // mockPaymentSystem = new Mock<IPaymentSystemFacade>();
+            // mockPaymentSystem.Setup(pay =>pay.Connect()).Returns(true);
+            // mockShippingSystem.Setup(ship => ship.Connect()).Returns(true);
+            // mockPaymentSystem.Setup(pay =>pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(1);
+            // mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
+            // mockPaymentSystem.Setup(pay =>pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(1);
+            // mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
+            // mockShippingSystem.SetReturnsDefault(true);
+            // mockPaymentSystem.SetReturnsDefault(true);
+            RealPaymentSystem paymentSystem = new RealPaymentSystem("https://damp-lynna-wsep-1984852e.koyeb.app/");
+            RealShippingSystem shippingSystem = new RealShippingSystem("https://damp-lynna-wsep-1984852e.koyeb.app/");
             proxy.InitiateSystemAdmin();
             proxy.EnterAsGuest(session1);
             proxy.Register(userName, userPassword, email1, userAge);
