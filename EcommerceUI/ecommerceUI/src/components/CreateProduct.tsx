@@ -5,10 +5,10 @@ import { getToken } from '../services/SessionService';
 
 export const CreateProduct = ({ onClose, onSuccess, storeId }: { onClose: any, onSuccess: any, storeId: any }) => {
     const [productName, setProductName] = useState('');
-    const [sellMethod, setSellMethod] = useState('');
+    const [sellMethod, setSellMethod] = useState('RegularSell');
     const [productDescription, setProductDescription] = useState('');
     const [price, setPrice] = useState('');
-    const [category, setCategory] = useState('');
+    const [category, setCategory] = useState('All');
     const [quantity, setQuantity] = useState('');
     const [ageLimit, setAgeLimit] = useState(true);
 
@@ -115,14 +115,14 @@ export const CreateProduct = ({ onClose, onSuccess, storeId }: { onClose: any, o
             </Form.Group>
             </Col>
             <Col>
-            <Form.Group className="mb-3">
-                <Form.Label>Sell Method</Form.Label>
-                <Form.Control 
-                    type="text"
-                    value={sellMethod}
-                    onChange={(ev) => setSellMethod(ev.target.value)} 
-                    placeholder="Sell Method" 
-                />
+            <Form.Group as={Col} controlId="">
+                        <Form.Label>Sell Method</Form.Label>
+                        <Form.Select name="sellMethod" value={sellMethod} onChange={(e) => setSellMethod(e.target.value)}>
+                        <option value="RegularSell">Regular</option>
+                        <option value="BidSell">Bid</option>
+                        <option value="AuctionSell">Auction</option>
+                        <option value="LotterySell">Lottery</option>
+                        </Form.Select>
             </Form.Group>
             </Col>
             </Row>

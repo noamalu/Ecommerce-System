@@ -17,10 +17,11 @@ const token = "token"
 
 export async function initSession() {
   if (storage.getItem(isInitOccured) === null) {
-    storage.setItem(isInitOccured, "true");
+    
     fetchResponse(serverEnterAsGuest())  // Modified to call the function
       .then((value: unknown) => {  // Added type assertion
         const sessionId = value as string;
+        storage.setItem(isInitOccured, "true");
         initFields(sessionId);
       })
       .catch(() => {
