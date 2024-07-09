@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using MarketBackend.Domain.Models;
 using MarketBackend.DAL.DTO;
+using Microsoft.IdentityModel.Tokens;
 
 
 
@@ -154,10 +155,17 @@ namespace MarketBackend.Domain.Market_Client
 
             _products.Remove(p);
             IEnumerable<Basket> baskets = BasketRepositoryRAM.GetInstance().getAll();
+            List<Basket> emptyBaskets = new List<Basket>();
             foreach (Basket basket in baskets){
                 if (basket.HasProduct(p)){
                     basket.RemoveFromBasket(p._productId, basket.products[p.ProductId]);
+                    if (basket.BasketItems.IsNullOrEmpty()){
+                        emptyBaskets.Add(basket);
+                    }
                 }
+            }
+            foreach (Basket basket1 in emptyBaskets){
+                BasketRepositoryRAM.GetInstance().Delete(basket1);
             }
             ProductRepositoryRAM.GetInstance().Delete(p);
             }

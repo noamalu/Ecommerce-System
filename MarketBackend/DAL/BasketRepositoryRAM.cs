@@ -55,6 +55,17 @@ namespace MarketBackend.DAL
             return newBasket;
         }
 
+        public Basket CreateBasketGuest(int storeId, int cartId)
+        {
+            var newBasket = new Basket(BasketCounter, storeId)
+            {
+                _cartId = cartId
+            };
+            baskets.TryAdd(newBasket._basketId, newBasket);            
+            BasketCounter ++;
+            return newBasket;
+        }
+
         public void Add(Basket entity)
         {
             if(baskets.ContainsKey(entity._basketId)){
@@ -79,18 +90,18 @@ namespace MarketBackend.DAL
 
         public void Delete(Basket entity)
         {
+            if (baskets.ContainsKey(entity._basketId)){
+                baskets.TryRemove(new KeyValuePair<int, Basket>(entity._basketId, entity));
+            }
+            else{
+                throw new KeyNotFoundException($"Basket with ID {entity._basketId} does not exist.");
+            }
             try{
                 lock (Lock)
                 {
                     var dbContext = DBcontext.GetInstance();
                     var dbBasket = dbContext.Baskets.Find(entity._basketId);
                     if (dbBasket is not null){
-                        if (baskets.ContainsKey(entity._basketId)){
-                            baskets.TryRemove(new KeyValuePair<int, Basket>(entity._basketId, entity));
-                        }
-                        else{
-                            throw new KeyNotFoundException($"Basket with ID {entity._basketId} does not exist.");
-                        }
                         dbContext.Baskets.Remove(dbBasket);
                         dbContext.SaveChanges();
                     }

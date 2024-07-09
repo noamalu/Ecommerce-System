@@ -79,6 +79,15 @@ namespace MarketBackend.Tests.IT
         }
 
         [TestMethod]
+        public void PurchaseCartGuest()
+        {
+            marketManagerFacade.EnterAsGuest(session2);
+            Client guest = clientManager.GetClientByIdentifier(session2);
+            marketManagerFacade.AddToCart(session2, 1, 11, 1);
+            marketManagerFacade.PurchaseCart(session2, paymentDetails, shippingDetails);
+        }
+
+        [TestMethod]
         public void AddProductToShop()
         {
             Store store = marketManagerFacade.GetStore(1);
