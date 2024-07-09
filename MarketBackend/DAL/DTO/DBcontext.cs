@@ -319,10 +319,5 @@ namespace MarketBackend.DAL.DTO
                 .OnDelete(DeleteBehavior.NoAction);
 
         }
-
-        public static void SetTestDB()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
