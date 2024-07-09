@@ -35,8 +35,10 @@ namespace MarketBackend.DAL
                 lock (_lock){
                 _purchaseById.Add(purchase.PurchaseId, purchase);
                 DBcontext context = DBcontext.GetInstance();
-                StoreDTO storeDTO = context.Stores.Include(s => s.Purchases).FirstOrDefault(s => s.Id == purchase.StoreId);
-                BasketDTO basketDTO = context.Baskets.Find(purchase.Basket._basketId);
+                StoreDTO storeDTO = new StoreDTO(StoreRepositoryRAM.GetInstance().GetById(purchase.StoreId));
+                // StoreDTO storeDTO = context.Stores.Include(s => s.Purchases).FirstOrDefault(s => s.Id == purchase.StoreId);
+                // BasketDTO basketDTO = context.Baskets.Find(purchase.Basket._basketId);
+                BasketDTO basketDTO = new BasketDTO(BasketRepositoryRAM.GetInstance().GetById(purchase.Basket._basketId));
                 PurchaseDTO purchaseDTO = new PurchaseDTO(purchase, basketDTO);
                 storeDTO.Purchases.Add(purchaseDTO);
                 context.Purchases.Add(purchaseDTO);
