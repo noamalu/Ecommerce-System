@@ -8,5 +8,5 @@
   "ExternalServices": false,
   "Local": true,
   "Initialize": "Empty",
-  "Test": false
+  "Test": true
 }

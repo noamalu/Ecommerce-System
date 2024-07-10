@@ -23,5 +23,8 @@
   <ItemGroup>
     <ProjectReference Include="..\MarketBackend\MarketBackend.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EcommerceAPI\EcommerceAPI.csproj" />
+  </ItemGroup>
 
 </Project>

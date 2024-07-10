@@ -7,6 +7,7 @@ using MarketBackend.Services;
 using Moq;
 using MarketBackend.Domain.Shipping;
 using MarketBackend.Domain.Payment;
+using EcommerceAPI.initialize;
 
 namespace UnitTests
 {
@@ -57,8 +58,6 @@ namespace UnitTests
         [TestInitialize]
         public void SetUp()
         {
-            DBcontext.SetTestDB();
-            DBcontext.GetInstance().Dispose();
             MarketManagerFacade.Dispose();
             var mockShippingSystem = new Mock<IShippingSystemFacade>();
             var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
@@ -68,6 +67,8 @@ namespace UnitTests
             mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
+            new Configurate(MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object), ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object)).Parse("initialize\\configTest.json");
+            DBcontext.GetInstance().Dispose();
             marketManagerFacade = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             marketManagerFacade.InitiateSystemAdmin();
             marketManagerFacade.EnterAsGuest(session1);
@@ -169,6 +170,8 @@ namespace UnitTests
             mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
+            new Configurate(MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object), ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object)).Parse("initialize\\configTest.json");
+            DBcontext.GetInstance().Dispose();
             marketManagerFacade = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             marketManagerFacade.InitiateSystemAdmin();
             marketManagerFacade.EnterAsGuest(session1);
@@ -241,9 +244,7 @@ namespace UnitTests
 
         [TestInitialize]
         public void SetUp()
-        {
-            DBcontext.SetTestDB();
-            DBcontext.GetInstance().Dispose();
+        {                
             MarketManagerFacade.Dispose();
             var mockShippingSystem = new Mock<IShippingSystemFacade>();
             var mockPaymentSystem = new Mock<IPaymentSystemFacade>();
@@ -253,6 +254,8 @@ namespace UnitTests
             mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
+            new Configurate(MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object), ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object)).Parse("initialize\\configTest.json");
+            DBcontext.GetInstance().Dispose();
             marketManagerFacade = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             marketManagerFacade.InitiateSystemAdmin();
             marketManagerFacade.EnterAsGuest(session1);

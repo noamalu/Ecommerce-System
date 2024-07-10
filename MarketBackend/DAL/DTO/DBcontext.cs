@@ -321,6 +321,6 @@ namespace MarketBackend.DAL.DTO
                 .HasForeignKey(b => b.StoreId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-        } 
+        }
     }
 }

@@ -44,13 +44,12 @@ namespace MarketBackend.Domain.Market_Client
             UserName = other.UserName;
             Password = other.Password;
             OrderHistory = new ConcurrentDictionary<int, ShoppingCartHistory>();
-            if (other.OrderHistory != null)
+            foreach (ShoppingCartHistoryDTO historyDTO in other?.OrderHistory??new())
             {
-                foreach (ShoppingCartHistoryDTO historyDTO in other.OrderHistory)
-                {
+                
                     ShoppingCartHistory history = new(historyDTO);
                     OrderHistory.TryAdd(history._shoppingCartId, history);
-                }
+                
             }
 
             // Roles = new ConcurrentDictionary<int, Role>();
