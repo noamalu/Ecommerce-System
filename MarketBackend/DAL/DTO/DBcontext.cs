@@ -45,8 +45,6 @@ namespace MarketBackend.DAL.DTO
         public virtual DbSet<TotalPriceRuleDTO> TotalPriceRules { get; set; }
         public virtual DbSet<QuantityRuleDTO> QuantityRules { get; set; }
 
-
-
         public override void Dispose()
         {
             
@@ -76,7 +74,6 @@ namespace MarketBackend.DAL.DTO
             SaveChanges();
             _instance = new DBcontext();
         }
-
         private static object _lock = new object();
 
         public static DBcontext GetInstance()
@@ -215,10 +212,15 @@ namespace MarketBackend.DAL.DTO
                 .OnDelete(DeleteBehavior.Cascade);
 
 
-            // RoleDTO
+             // RoleDTO
             modelBuilder.Entity<RoleDTO>()
                 .HasKey(r => new { r.storeId, r.userName });
 
+            // modelBuilder.Entity<RoleDTO>()
+            //     .HasOne<StoreDTO>()
+            //     .WithMany()
+            //     .HasForeignKey(b => b.storeId)
+            //     .OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<RoleDTO>()
                 .HasOne<StoreDTO>()
                 .WithMany()

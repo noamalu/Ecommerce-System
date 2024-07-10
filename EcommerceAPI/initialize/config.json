@@ -3,7 +3,7 @@
   "AdminPassword": "password",
   "InitialState": "initialState.json",
   "Port": 3306,
-  "ExternalServices": false,
+  "ExternalServices": true,
   "Local": false,
   "Initialize": true
 }
