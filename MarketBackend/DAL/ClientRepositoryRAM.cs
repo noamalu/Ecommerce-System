@@ -35,7 +35,6 @@ namespace MarketBackend.DAL
 
         public IEnumerable<Member> getAll()
         {
-            Load();
             return IdxMember.Values;
         }
 
@@ -229,7 +228,6 @@ namespace MarketBackend.DAL
             foreach (MemberDTO member in members)
             {
                 IdxMember.TryAdd(member.Id, new Member(member));
-                UsernamexMember.TryAdd(member.UserName, new Member(member));
             }
         }
 

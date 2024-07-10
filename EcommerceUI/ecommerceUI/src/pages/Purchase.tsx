@@ -4,7 +4,7 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import { useNavigate } from "react-router-dom";
-import { getToken, getLoggedIn, getSessionId } from "../services/SessionService";
+import { getToken } from "../services/SessionService";
 
 
 interface FormData {
@@ -99,9 +99,8 @@ export const Purchase = () => {
         if (Object.keys(formErrors).length === 0) {
             console.log("trying to fetch purchase");
           try {
-            var identifier = getLoggedIn() ? getToken() : getSessionId();
             const response = await fetch(
-              `https://localhost:7163/api/Market/Purchase?identifier=${identifier}`,
+              `https://localhost:7163/api/Market/Purchase?identifier=${getToken()}`,
               {
                 method: 'POST',
                 headers: {

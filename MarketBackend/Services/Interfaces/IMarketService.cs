@@ -19,7 +19,6 @@ namespace MarketBackend.Services.Interfaces
         public Response AddManger(string identifier, int storeId, string toAddUserName);
         public Response RemoveManger(string identifier, int storeId, string toRemoveUserName);
         public Response AddOwner(string identifier, int storeId, string toAddUserName);
-        public Response RegisterAsSystemAdmin(string username, string password, string email, int age);
         public Response RemoveOwner(string identifier, int storeId, string toRemoveUserName);
         public Response<List<Member>> GetOwners(int storeId);
         public Response<List<Member>> GetMangers(int storeId);

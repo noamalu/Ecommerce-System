@@ -20,7 +20,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NLog;
 using NuGet.Frameworks;
-using EcommerceAPI.initialize;
 
 namespace UnitTests
 {
@@ -75,6 +74,8 @@ namespace UnitTests
         [TestCleanup]
         public void CleanUp()
         {
+            DBcontext.SetTestDB();
+            _context.Dispose();
             _context = DBcontext.GetInstance();
             MarketManagerFacade.Dispose();
             mockShippingSystem = new Mock<IShippingSystemFacade>();
@@ -85,8 +86,6 @@ namespace UnitTests
             mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);            
-            new Configurate(MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object), ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object)).Parse("initialize\\configTest.json");
-            DBcontext.GetInstance().Dispose();            
             marketManagerFacade = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
         }
         [TestMethod]

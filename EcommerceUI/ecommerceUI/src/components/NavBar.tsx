@@ -70,7 +70,7 @@ export const NavBar: React.FC<NavBarProps> = (props:{loggedIn : boolean, setLogg
                       title="search">
                       <Dropdown.Item eventKey="1" active={selectedFilter == "name"} onClick={() => handleFilterClick("name")}> name</Dropdown.Item>
                       <Dropdown.Item eventKey="2" active={selectedFilter == "category"} onClick={() => handleFilterClick("category")}> category </Dropdown.Item>
-                      <Dropdown.Item eventKey="3" active={selectedFilter == "keywords"} onClick={() => handleFilterClick("keywords")}> keyword </Dropdown.Item>
+                      <Dropdown.Item eventKey="3" active={selectedFilter == "keyword"} onClick={() => handleFilterClick("keyword")}> keyword </Dropdown.Item>
                     </SplitButton>
 
               </Form>

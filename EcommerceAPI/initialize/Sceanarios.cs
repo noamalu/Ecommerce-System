@@ -17,9 +17,6 @@ namespace EcommerceAPI.initialize
 
         [Description("Register")]
         Register,
-        
-        [Description("RegisterAsSystemAdmin")]
-        RegisterAsSystemAdmin,
 
         [Description("UpdateCart")]
         UpdateCart,

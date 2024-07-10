@@ -17,8 +17,7 @@ export const SearchResults = ({query, filter} : {query :string,  filter: string}
     useEffect(() => {
         const fetchData = async () => {
             try {
-                var serachVariable = (filter == "keywords") ? "keyword" : filter;
-                const response = await fetch(`https://localhost:7163/api/Market/Search/${filter}?identifier=${getToken()}&${serachVariable}=${query}`, {
+                const response = await fetch(`https://localhost:7163/api/Market/Search/${filter}?identifier=${getToken()}&${filter}=${query}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

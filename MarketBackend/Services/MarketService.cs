@@ -52,21 +52,6 @@ namespace MarketBackend.Services
             }
         }
 
-        public Response RegisterAsSystemAdmin(string username, string password, string email, int age)
-        {
-            try
-            {
-                _marketManagerFacade.RegisterAsSystemAdmin(username, password, email, age);
-                _logger.Info($"regstered {username} as admin.");
-                return new Response();
-            }
-            catch (Exception e)
-            {
-                _logger.Error($"Error in registering {username} as admin. Error message: {e.Message}");
-                return new Response(e.Message);
-            }
-        }
-
         public Response AddOwner(string identifier, int storeId, string toAddUserName)
         {
             try

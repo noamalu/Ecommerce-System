@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Table, Dropdown, Form, Stack, Button, Card, Row, Col, Container, Modal } from 'react-bootstrap';
 import { Product } from './ProfileStoreNav'
-import { RiSave2Fill,  RiDeleteBin2Fill, RiAddBoxFill, RiPriceTag3Fill } from 'react-icons/ri'; // Importing the shopping cart icon
+import { RiSave2Fill,  RiDeleteBin2Fill, RiAddBoxFill} from 'react-icons/ri'; // Importing the shopping cart icon
 import { getToken } from '../services/SessionService';
 import { CreateProduct } from './CreateProduct';
 
@@ -61,8 +61,6 @@ interface ProductDetailsProps {
 const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
     const [productPrice, setProductPrice] = useState(product.productPrice);
     const [productQuantity, setProductQuantity] = useState(product.productQuantity);
-    const [keyword, setKeyword] = useState('');
-    const [showAddKeywordModal, setShowAddKeywordModal] = useState(false);
 
     const handlePriceChange = (e : any) => {
         setProductPrice(e.target.value);
@@ -123,23 +121,6 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
    }
 };
 
-const addKeyword = async () => {
-    const response= await fetch(`https://localhost:7163/api/Market/Store/${product.storeId}/Product/${product.productId}/KeyWord?identifier=${getToken()}&keyWord=${keyword}`, {
-       method: 'POST',
-       headers: {
-           'Content-Type': 'application/json',
-       },
-   })
-   if (response.ok) {
-       alert('Keyword successfully');
-   } else {
-       const responseData = await response.json();
-       console.error('Failed to add keyword:', responseData);
-       alert('Failed to add keyword. Please try again later.');
-   }
-};
-
-
 
     return (
         <>
@@ -155,60 +136,32 @@ const addKeyword = async () => {
                 <Container>
                     <Row>
                         <Col> Price </Col>
-                        <Col> 
-                            <Form.Control
-                                type="number"
-                                className="mx-2"
-                                value={productPrice}
-                                onChange={handlePriceChange}
-                                min="0"
-                                style={{ width: '7vw', textAlign: 'center' }}/> 
-                        </Col>
-                        <Col> 
-                            <Button variant="outline-secondary" onClick={updateProduct}> <RiSave2Fill size={20} /></Button>
-                        </Col>
+                        <Col> <Form.Control
+                                        type="number"
+                                        className="mx-2"
+                                        value={productPrice}
+                                        onChange={handlePriceChange}
+                                        min="0"
+                                        style={{ width: '7vw', textAlign: 'center' }}
+                            /> </Col>
                     </Row>
-                    <Row className="small-padding">
+                    <Row>
                         <Col> Quantity </Col>
-                        <Col>                     
-                        <Form.Control
-                            type="number"
-                            className="mx-2"
-                            value={productQuantity}
-                            onChange={handleQuantityChange}
-                            min="0"
-                            style={{ width: '7vw', textAlign: 'center' }} /> 
-                        </Col>
-                        <Col> 
-                            <Button variant="outline-secondary" onClick={() => setShowAddKeywordModal(true)}> <RiPriceTag3Fill size={20} /></Button>
-                        </Col>
+                        <Col>                     <Form.Control
+                                        type="number"
+                                        className="mx-2"
+                                        value={productQuantity}
+                                        onChange={handleQuantityChange}
+                                        min="0"
+                                        style={{ width: '7vw', textAlign: 'center' }}
+                            /> </Col>
                     </Row>
                 </Container>
-
+                <Button variant="outline-info" onClick={updateProduct}> <RiSave2Fill size={20} /></Button>
             </Stack>
             <br></br>
             </Card.Body>
             </Card>
-            <Modal show={showAddKeywordModal} onHide={() => setShowAddKeywordModal(false)}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Add Keyword</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form.Control
-                                type="text"
-                                className="mx-2"
-                                value={keyword}
-                                placeholder="Enter Keyword"
-                                onChange={(e) => setKeyword(e.target.value)}
-                                min="0"
-                                 /> 
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={addKeyword}>
-                        Save
-                    </Button>
-                </Modal.Footer>
-            </Modal>
         </>
     );
 };

@@ -5,9 +5,6 @@ using MarketBackend.Services.Interfaces;
 using MarketBackend.Domain.Shipping;
 using MarketBackend.Domain.Payment;
 using MarketBackend.Services;
-using System.Transactions;
-using MarketBackend.DAL;
-using MarketBackend.DAL.DTO;
 
 namespace EcommerceAPI.initialize;
 
@@ -18,7 +15,6 @@ public class SceanarioParser
     private int Identifiers = 0;
     private IMarketService _marketService;
     private IClientService _clientService;
-    string defaultPath = "initialize\\initialState.json";
 
     private string PATH;
 
@@ -29,38 +25,24 @@ public class SceanarioParser
 
     }
 
-    public async Task defaultParse (){
-        DBcontext.GetInstance().Dispose();
-        await Parse(defaultPath);
-    }
-
-    public async Task Parse(string path)
-    {       
-            try
+    public async void Parse(string path)
+    {
+        try
+        {
+            string textJson = await File.ReadAllTextAsync(path);
+            dynamic scenarios = JObject.Parse(textJson);
+            JArray sceanarios = scenarios["Scenarios"];
+            foreach (var sceanario in sceanarios.ToList())
             {
-                string textJson = await File.ReadAllTextAsync(path);
-                JObject scenarios = JObject.Parse(textJson);
-                JArray sceanarios = (JArray)scenarios["Scenarios"];
-                foreach (var sceanario in sceanarios.ToList())
-                {
-                    JObject parsedSeacnarios = JObject.Parse(sceanario.ToString());
-                    string task = parsedSeacnarios["Scenario"]!.ToString();
-                    ParseUseCase((Sceanarios)Enum.Parse(typeof(Sceanarios), task), parsedSeacnarios).Wait();
-                }
+                dynamic parsedSeacnarios = JObject.Parse(sceanario.ToString());
+                string task = parsedSeacnarios["Scenario"]!.ToString();
+                ParseUseCase((Sceanarios)Enum.Parse(typeof(Sceanarios), task), parsedSeacnarios);
             }
-            catch (Exception ex)
-            {
-                StoreRepositoryRAM.Dispose();
-                BasketRepositoryRAM.Dispose();
-                ClientRepositoryRAM.Dispose();
-                ProductRepositoryRAM.Dispose();
-                RoleRepositoryRAM.Dispose();
-                StoreRepositoryRAM.Dispose();
-                PurchaseRepositoryRAM.Dispose();
-                DBcontext.GetInstance().Dispose();
-
-                MyLogger.GetLogger().Error(ex.Message);
-            }
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
     }
 
     private async Task ParseUseCase(Sceanarios task, JObject usecaseJson)
@@ -104,20 +86,6 @@ public class SceanarioParser
                     Age = int.Parse(usecaseJson["Age"].ToString())
                 };
                 var res = _clientService.Register(extendedClientDto.Username, extendedClientDto.Password, extendedClientDto.Email, extendedClientDto.Age);
-                if (res.ErrorOccured)
-                    throw new Exception(res.ErrorMessage);                
-                break;
-            }
-            case Sceanarios.RegisterAsSystemAdmin:
-            {
-                var extendedClientDto = new ExtendedClientDto
-                {
-                    Username = usecaseJson["Username"].ToString(),
-                    Password = usecaseJson["Password"].ToString(),
-                    Email = usecaseJson["Email"].ToString(),
-                    Age = int.Parse(usecaseJson["Age"].ToString())
-                };
-                var res = _marketService.RegisterAsSystemAdmin(extendedClientDto.Username, extendedClientDto.Password, extendedClientDto.Email, extendedClientDto.Age);
                 if (res.ErrorOccured)
                     throw new Exception(res.ErrorMessage);                
                 break;
@@ -193,47 +161,9 @@ public class SceanarioParser
                     productDto.Quantity,
                     productDto.AgeLimit);
                 if (res.ErrorOccured)
-                {                
-                    MyLogger.GetLogger().Info(res.ErrorMessage);
-                    throw new Exception(res.ErrorMessage);   
-                }             
+                    throw new Exception(res.ErrorMessage);                
                 break;
             }
-            case Sceanarios.UpdateProduct:
-            {
-                var productDto = new ProductDto
-                {
-                    StoreId = int.Parse(usecaseJson["StoreId"].ToString()),
-                    Id = int.Parse(usecaseJson["ProductId"].ToString()),
-                    ProductDescription = usecaseJson["Description"].ToString(),
-                    Price = double.Parse(usecaseJson["Price"].ToString()),
-                    Quantity = int.Parse(usecaseJson["Quantity"].ToString()),
-                    Category = usecaseJson["Category"].ToString(),
-                    SellMethod = usecaseJson["SellMethod"].ToString()
-
-                };
-                var res = _marketService.UpdateProductQuantity(
-                    productDto.StoreId,
-                    _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
-                    (int)productDto.Id,                    
-                    productDto.Quantity);
-                if (res.ErrorOccured)
-                {                
-                    MyLogger.GetLogger().Info(res.ErrorMessage);
-                    throw new Exception(res.ErrorMessage);   
-                }                   
-                res = _marketService.UpdateProductPrice(
-                    productDto.StoreId,
-                    _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
-                    (int)productDto.Id,                    
-                    (double)productDto.Price);
-                if (res.ErrorOccured)
-                {                
-                    MyLogger.GetLogger().Info(res.ErrorMessage);
-                    throw new Exception(res.ErrorMessage);   
-                }                   
-                break;
-            }            
             case Sceanarios.RemoveProduct:
             {
                 var productDto = new ProductDto
@@ -247,10 +177,7 @@ public class SceanarioParser
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                     (int)productDto.Id);
                 if (res.ErrorOccured)
-                {                
-                    MyLogger.GetLogger().Info(res.ErrorMessage);
-                    throw new Exception(res.ErrorMessage);   
-                }                   
+                    throw new Exception(res.ErrorMessage);                
                 break;
             }           
             case Sceanarios.AddStaff:
@@ -266,10 +193,7 @@ public class SceanarioParser
                     staffMemberDto.RoleName,
                     staffMemberDto.MemberUserName);
                 if (res.ErrorOccured)
-                {                
-                    MyLogger.GetLogger().Info(res.ErrorMessage);
-                    throw new Exception(res.ErrorMessage);   
-                }                   
+                    throw new Exception(res.ErrorMessage);                
                 break;
             }
             case Sceanarios.RemoveStaff:
@@ -283,10 +207,7 @@ public class SceanarioParser
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                     staffMemberDto.MemberUserName);        
                 if (res.ErrorOccured)
-                {                
-                    MyLogger.GetLogger().Info(res.ErrorMessage);
-                    throw new Exception(res.ErrorMessage);   
-                }                   
+                    throw new Exception(res.ErrorMessage);                
                 break;
             }
             case Sceanarios.AddPermission:
@@ -339,10 +260,7 @@ public class SceanarioParser
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                     int.Parse(usecaseJson["StoreId"].ToString()));
                 if (res.ErrorOccured)
-                {                
-                    MyLogger.GetLogger().Info(res.ErrorMessage);
-                    throw new Exception(res.ErrorMessage);   
-                }                   
+                    throw new Exception(res.ErrorMessage);                
                 break;
             }
             case Sceanarios.OpenStore:
@@ -351,10 +269,7 @@ public class SceanarioParser
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value,
                     int.Parse(usecaseJson["StoreId"].ToString()));
                 if (res.ErrorOccured)
-                {                
-                    MyLogger.GetLogger().Info(res.ErrorMessage);
-                    throw new Exception(res.ErrorMessage);   
-                }                   
+                    throw new Exception(res.ErrorMessage);                
                 break;
             }
             case Sceanarios.PurchaseCart:
@@ -378,10 +293,7 @@ public class SceanarioParser
                     purchaseDto.PaymentInfo(),
                     purchaseDto.ShippingInfo());
                 if (res.ErrorOccured)
-                {                
-                    MyLogger.GetLogger().Info(res.ErrorMessage);
-                    throw new Exception(res.ErrorMessage);   
-                }                   
+                    throw new Exception(res.ErrorMessage);                
                 break;
             }
             case Sceanarios.SearchByKeywords:
@@ -432,10 +344,7 @@ public class SceanarioParser
                 var res = _marketService.GetStoreById(
                     int.Parse(usecaseJson["StoreId"].ToString()));
                 if (res.ErrorOccured)
-                {                
-                    MyLogger.GetLogger().Info(res.ErrorMessage);
-                    throw new Exception(res.ErrorMessage);   
-                }                   
+                    throw new Exception(res.ErrorMessage);                
                 break;
             }
             case Sceanarios.ShowShopPurchaseHistory:
@@ -445,10 +354,7 @@ public class SceanarioParser
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value
                     );
                 if (res.ErrorOccured)
-                {                
-                    MyLogger.GetLogger().Info(res.ErrorMessage);
-                    throw new Exception(res.ErrorMessage);   
-                }                   
+                    throw new Exception(res.ErrorMessage);                
                 break;
             }
             case Sceanarios.GetStoreDiscountPolicies:
@@ -458,10 +364,7 @@ public class SceanarioParser
                     _clientService.GetTokenByUserName(usecaseJson["Username"].ToString()).Value
                     );
                 if (res.ErrorOccured)
-                {                
-                    MyLogger.GetLogger().Info(res.ErrorMessage);
-                    throw new Exception(res.ErrorMessage);   
-                }                   
+                    throw new Exception(res.ErrorMessage);                
                 break;
             }
             case Sceanarios.CreateStoreDiscountPolicy:
@@ -481,10 +384,7 @@ public class SceanarioParser
                     policyDto.RuleId,
                     policyDto.Precantage);
                 if (res.ErrorOccured)
-                {                
-                    MyLogger.GetLogger().Info(res.ErrorMessage);
-                    throw new Exception(res.ErrorMessage);   
-                }                   
+                    throw new Exception(res.ErrorMessage);                
                 break;
             }
             case Sceanarios.CreateStorePolicy:
@@ -502,10 +402,7 @@ public class SceanarioParser
                     policyDto.Subject,
                     policyDto.RuleId);
                 if (res.ErrorOccured)
-                {                
-                    MyLogger.GetLogger().Info(res.ErrorMessage);
-                    throw new Exception(res.ErrorMessage);   
-                }                   
+                    throw new Exception(res.ErrorMessage);                
                 break;
             }
             case Sceanarios.CreateStoreCompositePolicy:
@@ -525,10 +422,7 @@ public class SceanarioParser
                     compositePolicyDto.Operator,
                     compositePolicyDto.Policies);
                 if (res.ErrorOccured)
-                {                
-                    MyLogger.GetLogger().Info(res.ErrorMessage);
-                    throw new Exception(res.ErrorMessage);   
-                }                   
+                    throw new Exception(res.ErrorMessage);                
                 break;
             }            
             case Sceanarios.CreateStoreRule:
@@ -542,10 +436,7 @@ public class SceanarioParser
                     int.Parse(usecaseJson["StoreId"].ToString()),
                     ruleDto.Subject);
                 if (res.ErrorOccured)
-                {                
-                    MyLogger.GetLogger().Info(res.ErrorMessage);
-                    throw new Exception(res.ErrorMessage);   
-                }                   
+                    throw new Exception(res.ErrorMessage);                
                 break;
             }
             case Sceanarios.CreateStoreQuantityRule:
@@ -563,10 +454,7 @@ public class SceanarioParser
                     quantityRuleDto.MinQuantity,
                     quantityRuleDto.MaxQuantity);
                 if (res.ErrorOccured)
-                {                
-                    MyLogger.GetLogger().Info(res.ErrorMessage);
-                    throw new Exception(res.ErrorMessage);   
-                }                   
+                    throw new Exception(res.ErrorMessage);                
                 break;
             }
             case Sceanarios.CreateStoreTotalPriceRule:
@@ -582,10 +470,7 @@ public class SceanarioParser
                     totalPriceRuleDto.Subject,
                     totalPriceRuleDto.TargetPrice);
                 if (res.ErrorOccured)
-                {                
-                    MyLogger.GetLogger().Info(res.ErrorMessage);
-                    throw new Exception(res.ErrorMessage);   
-                }                   
+                    throw new Exception(res.ErrorMessage);                
                 break;
             }
             case Sceanarios.CreateStoreCompositeRule:
@@ -601,10 +486,7 @@ public class SceanarioParser
                     compositeRuleDto.Operator,
                     compositeRuleDto.Rules);
                 if (res.ErrorOccured)
-                {                
-                    MyLogger.GetLogger().Info(res.ErrorMessage);
-                    throw new Exception(res.ErrorMessage);   
-                }                   
+                    throw new Exception(res.ErrorMessage);                
                 break;
             }
             case Sceanarios.GetInfo:
@@ -612,10 +494,7 @@ public class SceanarioParser
                 var res = _marketService.GetInfo(
                     int.Parse(usecaseJson["StoreId"].ToString()));
                 if (res.ErrorOccured)
-                {                
-                    MyLogger.GetLogger().Info(res.ErrorMessage);
-                    throw new Exception(res.ErrorMessage);   
-                }                   
+                    throw new Exception(res.ErrorMessage);                
                 break;
             }
             case Sceanarios.GetProductInfo:
@@ -624,10 +503,7 @@ public class SceanarioParser
                     int.Parse(usecaseJson["StoreId"].ToString()),
                     int.Parse(usecaseJson["ProductId"].ToString()));
                 if (res.ErrorOccured)
-                {                
-                    MyLogger.GetLogger().Info(res.ErrorMessage);
-                    throw new Exception(res.ErrorMessage);   
-                }                   
+                    throw new Exception(res.ErrorMessage);                
                 break;
             }
             case Sceanarios.AddKeyWord:
@@ -638,10 +514,7 @@ public class SceanarioParser
                     int.Parse(usecaseJson["StoreId"].ToString()),
                     int.Parse(usecaseJson["ProductId"].ToString()));
                 if (res.ErrorOccured)
-                {                
-                    MyLogger.GetLogger().Info(res.ErrorMessage);
-                    throw new Exception(res.ErrorMessage);   
-                }                   
+                    throw new Exception(res.ErrorMessage);                
                 break;
             }
             default:

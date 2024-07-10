@@ -6,9 +6,6 @@ using MarketBackend.Domain.Shipping;
 using MarketBackend.Domain.Payment;
 using MarketBackend.Services;
 using MarketBackend.DAL.DTO;
-using System.Transactions;
-using MarketBackend.DAL;
-using MarketBackend.Domain.Market_Client;
 
 namespace EcommerceAPI.initialize;
 
@@ -24,9 +21,9 @@ public class Configurate
         _clientService = clientService;
     }
 
-    public string Parse(string PATH = null)
+    public string Parse()
     {
-        PATH ??= Path.Combine(Environment.CurrentDirectory, "initialize\\config.json");        
+        string PATH = Path.Combine(Environment.CurrentDirectory, "initialize\\config.json");        
 
         string textJson = "";
         try
@@ -35,72 +32,21 @@ public class Configurate
         }
         catch (Exception e)
         {            
-            MyLogger.GetLogger().Info("open initializing file fail");
-            throw new Exception("open initializing file fail");
+            throw new Exception("open config file fail");
         }
         JObject scenarioDtoDict = JObject.Parse(textJson);
-        try
+        if (scenarioDtoDict["Initialize"].Value<bool>())
         {
-            if (scenarioDtoDict["Test"].Value<bool>())
-            {
-                MyLogger.GetLogger().Info("configured test DB");
-                DBcontext.SetTestDB();
-            }
-            else if (scenarioDtoDict["Local"].Value<bool>())
-            {
-                MyLogger.GetLogger().Info("configured local DB");
-                DBcontext.SetLocalDB();
-            }
-            else
-            {
-                MyLogger.GetLogger().Info("configured remote DB");
-                DBcontext.SetRemoteDB();
-            }
-
-            if (scenarioDtoDict["Initialize"].Value<string>() == InitializeOptions.File.GetDescription())
-            {                
-                string initPATH = Path.Combine(Environment.CurrentDirectory, "initialize\\" + scenarioDtoDict["InitialState"]);
-                DBcontext.GetInstance().Dispose();
-                StoreRepositoryRAM.Dispose();
-                BasketRepositoryRAM.Dispose();
-                ClientRepositoryRAM.Dispose();
-                ProductRepositoryRAM.Dispose();
-                RoleRepositoryRAM.Dispose();
-                StoreRepositoryRAM.Dispose();
-                PurchaseRepositoryRAM.Dispose();
-                ClientManager.GetInstance().Reset();               
-                try{
-                    new SceanarioParser(_service, _clientService).Parse(initPATH).Wait();
-                    MyLogger.GetLogger().Info("Initialize from file");
-
-                }catch(Exception){
-                    MyLogger.GetLogger().Info("Initialize from file failed");
-                }
-            }else if(scenarioDtoDict["Initialize"].Value<string>() == InitializeOptions.Empty.GetDescription()){
-                DBcontext.GetInstance().Dispose();
-                StoreRepositoryRAM.Dispose();
-                BasketRepositoryRAM.Dispose();
-                ClientRepositoryRAM.Dispose();
-                ProductRepositoryRAM.Dispose();
-                RoleRepositoryRAM.Dispose();
-                StoreRepositoryRAM.Dispose();
-                PurchaseRepositoryRAM.Dispose(); 
-                ClientManager.GetInstance().Reset();               
-                _service.RegisterAsSystemAdmin(scenarioDtoDict["AdminUsername"].Value<string>(), scenarioDtoDict["AdminPassword"].Value<string>(), scenarioDtoDict["AdminEmail"].Value<string>(), scenarioDtoDict["AdminAge"].Value<int>());
-                    MyLogger.GetLogger().Info("Initialize empty");
-            }else{
-                    MyLogger.GetLogger().Info("Initialize from DB");
-            }
-            
-            var port = scenarioDtoDict["Port"].ToString();
-            return port;
+            string initPATH = Path.Combine(Environment.CurrentDirectory, "initialize\\" + scenarioDtoDict["InitialState"]);
+            // DBcontext.GetInstance().Dispose();
+            new SceanarioParser( _service, _clientService).Parse(initPATH);
         }
-        catch (Exception ex)
-        {
-            // Log the exception or handle it as necessary
-            MyLogger.GetLogger().Info("Failed during configuration");
-            throw new Exception("Failed during configuration", ex);
-        }
+        if (scenarioDtoDict["Local"].Value<bool>())
+
+            DBcontext.SetLocalDB();
+        else
+            DBcontext.SetRemoteDB();        
+        return scenarioDtoDict["Port"].ToString();
     }
 
     public static bool VerifyJsonStructure(string filePath)

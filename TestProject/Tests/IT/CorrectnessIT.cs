@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using System.IO.Compression;
-using EcommerceAPI.initialize;
 using MarketBackend.DAL;
 using MarketBackend.DAL.DTO;
 using MarketBackend.Domain.Market_Client;
@@ -61,6 +60,9 @@ namespace MarketBackend.Tests.IT
         [TestInitialize]
         public void Setup()
         {
+            DBcontext.SetTestDB();
+            // Initialize the managers and mock systems
+            DBcontext.GetInstance().Dispose();
             MarketManagerFacade.Dispose();
             BasketRepositoryRAM.Dispose();
             ClientRepositoryRAM.Dispose();
@@ -77,12 +79,9 @@ namespace MarketBackend.Tests.IT
             mockPaymentSystem.Setup(pay =>pay.Pay(It.IsAny<PaymentDetails>(), It.IsAny<double>())).Returns(1);
             mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
             mockShippingSystem.SetReturnsDefault(true);
-            mockPaymentSystem.SetReturnsDefault(true);     
-            new Configurate(MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object), ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object)).Parse("initialize\\configTest.json");
-            DBcontext.GetInstance().Dispose();       
+            mockPaymentSystem.SetReturnsDefault(true);            
             marketManagerFacade = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             clientManager = ClientManager.GetInstance();
-            clientManager.Reset();
             marketManagerFacade.InitiateSystemAdmin();
             marketManagerFacade.EnterAsGuest(session1);
             marketManagerFacade.Register(userName, userPassword, email1, userAge);
@@ -122,7 +121,7 @@ namespace MarketBackend.Tests.IT
                 string pName = $"{productname1}-{i}-";
                 threads.Add(new Thread(() =>
                 {
-                    for (int j = 0; j < 50; j++)
+                    for (int j = 0; j < NumIterations; j++)
                     {
                         Product product = marketManagerFacade.AddProduct(1, token1, productName1, sellmethod, desc, price1, category1, quantity1, false);
                         marketManagerFacade.RemoveProduct(1, token1, product._productId);
@@ -142,10 +141,10 @@ namespace MarketBackend.Tests.IT
         [TestMethod]
         public void TwoClientsByLastProductTogether()
         {
-            Member mem1 = clientManager.GetMemberByIdentifier(token1);
+            Client mem1 = clientManager.GetClientByIdentifier(token1);
             Product product = marketManagerFacade.AddProduct(1, token1, productName1, sellmethod, desc, price1, category1, 1, false);
             int storeId = 1;
-            Member mem2 = clientManager.GetMemberByIdentifier(token2);
+            Client mem2 = clientManager.GetClientByIdentifier(token2);
             marketManagerFacade.AddToCart(token1, storeId, product._productId, 1);
             marketManagerFacade.AddToCart(token2, storeId, product._productId, 1);
 
@@ -156,7 +155,7 @@ namespace MarketBackend.Tests.IT
                 string pName = $"{productname1}-{userId}-";
                 threads.Add(new Thread(() =>
                 {
-                    for (int j = 0; j < 50; j++)
+                    for (int j = 0; j < NumIterations; j++)
                     {
                         try
                         {
@@ -177,10 +176,10 @@ namespace MarketBackend.Tests.IT
             Dictionary<int, Basket> basket1 = mem1.Cart.GetBaskets();
             Dictionary<int, Basket> basket2 = mem2.Cart.GetBaskets();
 
-            Assert.IsTrue(mem1.OrderHistory.Count == 0 || mem2.OrderHistory.Count == 0, "Expected that one of the clients has an empty cart, indicating only one successful purchase.");
+            Assert.IsTrue(basket1.Count == 0 || basket2.Count == 0, "Expected that one of the clients has an empty cart, indicating only one successful purchase.");
         }
 
-        // [TestMethod]
+        [TestMethod]
         public void RemoveProductAndPurchaseProductTogether()
         {
             Member mem1 = clientManager.GetMemberByIdentifier(token1);
