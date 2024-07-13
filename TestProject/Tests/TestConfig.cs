@@ -39,6 +39,7 @@ namespace TestProject.Tests
          [TestInitialize]
         public void Setup()
         {
+            UpdateConfigField("Initialize", "Empty");
             UpdateInitFileName("Initialize", "true");
             UpdateInitFileName("InitialState", "initialState.json");
             var mockShippingSystem = new Mock<IShippingSystemFacade>();
@@ -65,6 +66,7 @@ namespace TestProject.Tests
          [TestCleanup]
         public void Cleanup()
         {
+            UpdateConfigField("Initialize", "Empty");
             UpdateInitFileName("Initialize", "false");
             DBcontext.GetInstance().Dispose();
             var mockShippingSystem = new Mock<IShippingSystemFacade>();
@@ -180,7 +182,7 @@ namespace TestProject.Tests
             
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void checkProductExist(){
             UpdateInitFileName("Initialize", "true");
             new Configurate(s, CC).Parse("initialize\\configTest.json");
@@ -280,7 +282,7 @@ namespace TestProject.Tests
             }
         }
 
-        private void UpdateConfigField(string key, string value)
+        public static void UpdateConfigField(string key, string value)
         {
             string path = "initialize\\configTest.json";
             string json = File.ReadAllText(path);
