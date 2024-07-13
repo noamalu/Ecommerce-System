@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using EcommerceAPI.initialize;
 using MarketBackend.DAL.DTO;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Payment;
@@ -44,8 +45,7 @@ namespace MarketBackend.Tests.AT
 
         [TestInitialize()]
         public void Setup(){
-            DBcontext.SetTestDB();
-            DBcontext.GetInstance().Dispose();
+            // DBcontext.SetTestDB();
             proxy = new Proxy();
             userId = proxy.GetUserId();
             // var mockShippingSystem = new Mock<IShippingSystemFacade>();
@@ -58,6 +58,8 @@ namespace MarketBackend.Tests.AT
             // mockPaymentSystem.SetReturnsDefault(true);
             RealPaymentSystem paymentSystem = new RealPaymentSystem("https://damp-lynna-wsep-1984852e.koyeb.app/");
             RealShippingSystem shippingSystem = new RealShippingSystem("https://damp-lynna-wsep-1984852e.koyeb.app/");
+            new Configurate(MarketService.GetInstance(shippingSystem, paymentSystem), ClientService.GetInstance(shippingSystem, paymentSystem)).Parse("initialize\\configTest.json");
+            DBcontext.GetInstance().Dispose();
             proxy.InitiateSystemAdmin();
             proxy.EnterAsGuest(session1);
             proxy.Register(userName, userPassword, email1, userAge);

@@ -8,6 +8,7 @@ using MarketBackend.Services;
 using MarketBackend.DAL.DTO;
 using System.Transactions;
 using MarketBackend.DAL;
+using MarketBackend.Domain.Market_Client;
 
 namespace EcommerceAPI.initialize;
 
@@ -60,6 +61,14 @@ public class Configurate
             {                
                 string initPATH = Path.Combine(Environment.CurrentDirectory, "initialize\\" + scenarioDtoDict["InitialState"]);
                 DBcontext.GetInstance().Dispose();
+                StoreRepositoryRAM.Dispose();
+                BasketRepositoryRAM.Dispose();
+                ClientRepositoryRAM.Dispose();
+                ProductRepositoryRAM.Dispose();
+                RoleRepositoryRAM.Dispose();
+                StoreRepositoryRAM.Dispose();
+                PurchaseRepositoryRAM.Dispose();
+                ClientManager.GetInstance().Reset();               
                 try{
                     new SceanarioParser(_service, _clientService).Parse(initPATH).Wait();
                     MyLogger.GetLogger().Info("Initialize from file");
@@ -75,7 +84,8 @@ public class Configurate
                 ProductRepositoryRAM.Dispose();
                 RoleRepositoryRAM.Dispose();
                 StoreRepositoryRAM.Dispose();
-                PurchaseRepositoryRAM.Dispose();
+                PurchaseRepositoryRAM.Dispose(); 
+                ClientManager.GetInstance().Reset();               
                 _service.RegisterAsSystemAdmin(scenarioDtoDict["AdminUsername"].Value<string>(), scenarioDtoDict["AdminPassword"].Value<string>(), scenarioDtoDict["AdminEmail"].Value<string>(), scenarioDtoDict["AdminAge"].Value<int>());
                     MyLogger.GetLogger().Info("Initialize empty");
             }else{

@@ -12,6 +12,7 @@ using MarketBackend.Services;
 using MarketBackend.Domain.Shipping;
 using MarketBackend.Domain.Payment;
 using Moq;
+using EcommerceAPI.initialize;
 
 namespace UnitTests
 {
@@ -69,6 +70,8 @@ namespace UnitTests
             mockShippingSystem.Setup(ship =>ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
+            new Configurate(MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object), ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object)).Parse("initialize\\configTest.json");
+            DBcontext.GetInstance().Dispose();            
             MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object).Dispose();
             ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object).Dispose();
             ClientManager.Dispose();

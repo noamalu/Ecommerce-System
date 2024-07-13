@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using EcommerceAPI.initialize;
 using MarketBackend.DAL.DTO;
 using MarketBackend.Domain.Market_Client;
 using MarketBackend.Domain.Models;
@@ -46,10 +47,7 @@ namespace MarketBackend.Tests.IT
 
         [TestInitialize]
         public void Setup()
-        {
-            DBcontext.SetTestDB();
-            // Initialize the managers and mock systems
-            DBcontext.GetInstance().Dispose();
+        {            
             MarketManagerFacade.Dispose();
             mockShippingSystem = new Mock<IShippingSystemFacade>();
             mockPaymentSystem = new Mock<IPaymentSystemFacade>();
@@ -59,7 +57,8 @@ namespace MarketBackend.Tests.IT
             mockShippingSystem.Setup(ship => ship.OrderShippment(It.IsAny<ShippingDetails>())).Returns(1);
             mockShippingSystem.SetReturnsDefault(true);
             mockPaymentSystem.SetReturnsDefault(true);
-
+            new Configurate(MarketService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object), ClientService.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object)).Parse("initialize\\configTest.json");
+            DBcontext.GetInstance().Dispose();     
             marketManagerFacade = MarketManagerFacade.GetInstance(mockShippingSystem.Object, mockPaymentSystem.Object);
             clientManager = ClientManager.GetInstance();
             marketManagerFacade.InitiateSystemAdmin();
