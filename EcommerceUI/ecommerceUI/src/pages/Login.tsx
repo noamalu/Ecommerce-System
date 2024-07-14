@@ -54,7 +54,6 @@ export const Login = () => {
     }).then((r) => {
       if (r.ok) {
         const address = `ws://127.0.0.1:4570/${username}-alerts`;
-        alert(address);
         initWebSocket(address);
         setLoggedIn(true)
         return r.json(); 
