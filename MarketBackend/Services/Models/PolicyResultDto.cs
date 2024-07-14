@@ -21,7 +21,10 @@ namespace MarketBackend.Services.Models
             ExpirationDate = policy.ExpirationDate;
             StoreId = policy.StoreId;
             Rule = new(policy.Rule);
-            Product = new(policy.Subject.Product);
+            if (policy.Subject.Product != null)
+                Product = new(policy.Subject.Product);
+            else
+                Product = null;
             Category = policy.Subject.Category;
         }
     }

@@ -26,8 +26,22 @@ namespace MarketBackend.DAL.DTO
         public List<RuleDTO> Rules { get; set; }
         public List<PolicyDTO> Policies { get; set; }
 
+        public StoreDTO(int id, string name, string phoneNum, string email, bool active, double rating, List<ProductDTO> products, List<PurchaseDTO> purchases, List<RuleDTO> rules, List<PolicyDTO> policies)
+        {
+            Id = id;
+            Name = name;
+            Active = active;
+            Email = email;
+            PhoneNum = phoneNum;
+            Rating = rating;
+            Purchases = purchases;
+            Products = products;
+            Rules = rules;
+            Policies = policies;
 
-    public StoreDTO(int id, string name, string phoneNum, string email,  bool active, double rating)
+        }
+
+        public StoreDTO(int id, string name, string phoneNum, string email,  bool active, double rating)
         {
             Id = id;
             Name = name;

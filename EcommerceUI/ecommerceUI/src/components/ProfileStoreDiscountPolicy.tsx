@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Dropdown, Form, Stack, Button, Card, Row, Col, Container, Modal } from 'react-bootstrap';
 import { getToken } from '../services/SessionService';
 import { RiSave2Fill,  RiDeleteBin2Fill, RiAddBoxFill} from 'react-icons/ri'; // Importing the shopping cart icon
-import { CreateDiscountPolicy } from './CreateDiscountPolicy';
+import { CreatePolicy } from './CreactePolicy';
 
 //sorry for the duplicated code between the policy types.
 export const ProfileStoreDiscountPolicy = ({storeId} : {storeId : any}) => {
@@ -87,10 +87,10 @@ export const ProfileStoreDiscountPolicy = ({storeId} : {storeId : any}) => {
 
             <Modal show={showAddPolicyModal} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Add Discount Policy</Modal.Title>
+                    <Modal.Title>Add Policy</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <CreateDiscountPolicy onClose={handleClose} onSuccess={handleSuccess} storeId={storeId}/>
+                    <CreatePolicy onClose={handleClose} onSuccess={handleSuccess} storeId={storeId} defPolicyType="Discount"/>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>

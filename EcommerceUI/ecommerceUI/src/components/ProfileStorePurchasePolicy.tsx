@@ -3,7 +3,7 @@ import { Table, Dropdown, Form, Stack, Button, Card, Row, Col, Container, Modal 
 import { getToken } from '../services/SessionService';
 import { RiSave2Fill,  RiDeleteBin2Fill, RiAddBoxFill} from 'react-icons/ri'; // Importing the shopping cart icon
 import { CreateRule } from './CreateRule';
-import { CreatePurchasePolicy } from './CreatePurchasePolicy';
+import { CreatePolicy } from './CreactePolicy';
 
 
 export const ProfileStorePurchasePolicy = ({storeId} : {storeId : any}) => {
@@ -86,10 +86,10 @@ export const ProfileStorePurchasePolicy = ({storeId} : {storeId : any}) => {
 
             <Modal show={showAddPolicyModal} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Add Purchase Policy</Modal.Title>
+                    <Modal.Title>Add Policy</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <CreatePurchasePolicy onClose={handleClose} onSuccess={handleSuccess} storeId={storeId}/>
+                    <CreatePolicy onClose={handleClose} onSuccess={handleSuccess} storeId={storeId} defPolicyType="Purchace"/>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>

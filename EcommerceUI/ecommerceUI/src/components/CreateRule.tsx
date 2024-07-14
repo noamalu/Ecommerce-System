@@ -28,9 +28,6 @@ export const CreateRule = ({ onClose, onSuccess, storeId, rules }: { onClose: an
     const onCheckClick = (checked : boolean, ruleId : number) => {
         console.log(`im in on check click with id = ${ruleId} and e.target.value = ${checked}`);
         console.log(rulesChecked)
-        // var map = rulesChecked;
-        // map[ruleId] = checked;
-        // setRulesChecked(map);
         setRulesChecked(prevRulesChecked => {
             // Create a copy of previous state
             const updatedRulesChecked = {
