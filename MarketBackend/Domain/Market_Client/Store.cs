@@ -73,13 +73,21 @@ namespace MarketBackend.Domain.Market_Client
             _active = storeDTO.Active;
             _storeEmailAdd = storeDTO.Email;
             _storePhoneNum = storeDTO.PhoneNum;
-            _products = new SynchronizedCollection<Product>();
+            List<ProductDTO> productsDTO = storeDTO.Products;
+            SynchronizedCollection<Product> products = new SynchronizedCollection<Product>();
+            if (productsDTO is not null){
+                foreach (ProductDTO productDTO in productsDTO){
+                    products.Add(new Product(productDTO));
+                }
+            }
+            _products = products;
             roles = new ConcurrentDictionary<string, Role>();
             _rules = new ConcurrentDictionary<int, IRule>();
             _discountPolicyManager = new DiscountPolicyManager(storeDTO.Id);
             _purchasePolicyManager = new PurchasePolicyManager(storeDTO.Id);
             _rules = new ConcurrentDictionary<int, IRule>();
             _raiting = storeDTO.Rating;
+            _history = new History(_storeId);
             _lock = new object();
             
         }

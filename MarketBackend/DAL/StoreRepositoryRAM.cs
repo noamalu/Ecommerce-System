@@ -79,8 +79,23 @@ namespace MarketBackend.DAL
                     List<StoreDTO> storesList = DBcontext.GetInstance().Stores.ToList();
                     foreach (StoreDTO storeDTO in storesList)
                     {
+                        List<ProductDTO> products = DBcontext.GetInstance().Products.ToList();
+                        foreach (ProductDTO productDTO in products)
+                        {
+                            if (productDTO.ProductId / 10 == storeDTO.Id){
+                                storeDTO.Products.Add(productDTO);
+                            }
+                        }
+                        List<PurchaseDTO> purchases = DBcontext.GetInstance().Purchases.ToList();
+                        foreach (PurchaseDTO purchaseDTO in purchases)
+                        {
+                            if (purchaseDTO.StoreId == storeDTO.Id){
+                                storeDTO.Purchases.Add(purchaseDTO);
+                            }
+                        }
                         _stores.TryAdd(storeDTO.Id, new Store(storeDTO));
                     }
+                    
                 }
             }
             catch(Exception){
