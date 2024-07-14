@@ -71,6 +71,8 @@ namespace MarketBackend.Domain.Market_Client
             _storeId = storeDTO.Id;
             _storeName = storeDTO.Name;
             _active = storeDTO.Active;
+            _storeEmailAdd = storeDTO.Email;
+            _storePhoneNum = storeDTO.PhoneNum;
             _products = new SynchronizedCollection<Product>();
             roles = new ConcurrentDictionary<string, Role>();
             _rules = new ConcurrentDictionary<int, IRule>();

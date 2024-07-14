@@ -96,7 +96,7 @@ export const CreatePolicy = ({ onClose, onSuccess, storeId, defPolicyType }: { o
                                                 }); 
                             break; }
             case 'Discount': {
-                                body = JSON.stringify({expirationDate: selectedDate, subject: rule.subjectInfo, ruleId: rule.id, percentage: percentage
+                                body = JSON.stringify({expirationDate: selectedDate, subject: rule.subjectInfo, ruleId: rule.id, Precantage: percentage
                                                     }); 
                                 break; }
             case 'Composite': {
@@ -189,9 +189,8 @@ export const CreatePolicy = ({ onClose, onSuccess, storeId, defPolicyType }: { o
                 <Form.Group as={Col} controlId="">
                     <Form.Label>Operator</Form.Label>
                     <Form.Select value={operator} onChange={(e) => setOperator(parseInt(e.target.value))}>
-                    <option value="0">Or</option>
-                    <option value="1">Xor</option>
-                    <option value="2">And</option>
+                    <option value="0">Add</option>
+                    <option value="1">Max</option>
                     </Form.Select>
                 </Form.Group>
             }

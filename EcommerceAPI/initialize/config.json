@@ -7,6 +7,6 @@
   "Port": 4560,
   "ExternalServices": false,
   "Local": true,
-  "Initialize": "Empty",
+  "Initialize": "DB",
   "Test": false
 }
