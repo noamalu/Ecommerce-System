@@ -29,7 +29,12 @@ namespace MarketBackend.Domain.Market_Client
             _purchaseId = purchaseDTO.Id;
             _storeId = purchaseDTO.StoreId;
             _identifier = purchaseDTO.Identifierr;
-            _basket = BasketRepositoryRAM.GetInstance().GetById(purchaseDTO.BasketId);
+            try{
+                _basket = BasketRepositoryRAM.GetInstance().GetById(purchaseDTO.BasketId);
+            }
+            catch(Exception e){
+                _basket = new(purchaseDTO.BasketId, purchaseDTO.StoreId);
+            }
             _price = purchaseDTO.Price;
         }
 
