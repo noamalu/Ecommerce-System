@@ -30,6 +30,7 @@ namespace MarketBackend.Domain.Market_Client
         private MarketManagerFacade(IShippingSystemFacade shippingSystemFacade, IPaymentSystemFacade paymentSystem){
             _storeRepository = StoreRepositoryRAM.GetInstance();
             _clientManager = ClientManager.GetInstance();
+            _storeCounter = UpdateStoreCounter();
             _paymentSystem = paymentSystem;
             _shippingSystemFacade = shippingSystemFacade;
             _shippingSystemFacade.Connect();
@@ -756,6 +757,15 @@ namespace MarketBackend.Domain.Market_Client
         public string GetTokenByUserName(string userName)
         {
             return _clientManager.GetTokenByUserName(userName);
+        }
+
+
+        private int UpdateStoreCounter()
+        {
+            List<Store> stores = StoreRepositoryRAM.GetInstance().getAll().ToList();
+            if (stores.Count == 0)
+                return 1;
+            return stores.Max(store => store.StoreId) + 1;
         }
         // ---------------------------------------------------------
 
