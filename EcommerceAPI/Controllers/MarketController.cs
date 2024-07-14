@@ -48,11 +48,12 @@ namespace EcommerceAPI.Controllers
 
         private static IDictionary<string, IList<string>> buyerUnsentMessages = new Dictionary<string, IList<string>>();
         private static IDictionary<string, string> buyerIdToRelativeNotificationPath = new Dictionary<string, string>();
-        public MarketController(IMarketService marketService, WebSocketServer alerts, WebSocketServer logs)
+        public MarketController(IMarketService marketService, WebSocketServer alerts)
         {
             _marketService = marketService;
             AlertServer = alerts;
-            LogServer = logs;
+            // LogServer = logs;
+            NotificationManager.GetInstance(AlertServer);
         }
         private class NotificationsService : WebSocketBehavior
         {

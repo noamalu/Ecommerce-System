@@ -48,9 +48,9 @@ builder.Services.AddSingleton<Configurate>(sp =>
 // Register WebSocket servers using factory methods
 builder.Services.AddSingleton<WebSocketServer>(sp =>
 {
-    // var configurate = sp.GetRequiredService<Configurate>();
-    // string port = configurate.Parse();
-    var alertServer = new WebSocketServer($"ws://{GetLocalIPAddress()}:{4560}");
+    var configurate = sp.GetRequiredService<Configurate>();
+    string port = configurate.Parse();
+    var alertServer = new WebSocketServer("ws://127.0.0.1:" + port);
     alertServer.Start();
     return alertServer;
 });
@@ -59,7 +59,7 @@ builder.Services.AddSingleton<WebSocketServer>(sp =>
 {
     // var configurate = sp.GetRequiredService<Configurate>();
     // string port = configurate.Parse();
-    var logServer = new WebSocketServer($"ws://{GetLocalIPAddress()}:{4560}");
+    var logServer = new WebSocketServer($"ws://127.0.0.1:{4570}");
     logServer.Start();
     return logServer;
 });

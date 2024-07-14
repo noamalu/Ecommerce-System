@@ -4,6 +4,7 @@ const f = () => {
   const x = storage.getItem("address");
 
   if (x != null) {
+    alert(x + "in alert");
     const newWs = new WebSocket(x);
     addEventListener(newWs, "message", function (event: any) {
       var data = JSON.parse(event.data);
