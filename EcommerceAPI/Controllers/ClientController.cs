@@ -12,6 +12,9 @@ using MarketBackend.Domain.Market_Client;
 using MarketBackend.Services.Models;
 using MarketBackend.Domain.Shipping;
 using MarketBackend.Domain.Payment;
+using System.Net.Sockets;
+using System.Net;
+
 
 namespace EcommerceAPI.Controllers
 {
@@ -26,11 +29,12 @@ namespace EcommerceAPI.Controllers
 
         private static Dictionary<string, IList<string>> _clientPendingAlerts = new();
         private static Dictionary<string, string> _alertPathByclientIdentifier = new();
-        public ClientController(IClientService clientService, WebSocketServer alerts, WebSocketServer logs)
+        public ClientController(IClientService clientService, WebSocketServer logs, WebSocketServer alerts)
         {
             _clientService = clientService;
-            AlertServer = alerts;
+            AlertServer =alerts;
             this.LogServer = logs;
+            NotificationManager.GetInstance(AlertServer);
         }
         private class NotificationsService : WebSocketBehavior
         {
@@ -39,8 +43,7 @@ namespace EcommerceAPI.Controllers
         public class logsService : WebSocketBehavior
         {
 
-        }        
-        
+        }
         [HttpPost]
         [Route("Guest/Login")]
         public async Task<ActionResult<ServerResponse<string>>> Login([FromBody] ClientDto client)
@@ -51,7 +54,6 @@ namespace EcommerceAPI.Controllers
                 if (AlertServer.WebSocketServices[relativePath] == null)
                 {
                     AlertServer.AddWebSocketService<NotificationsService>(relativePath);
-
                 }
             }
             catch (Exception ex)
@@ -62,8 +64,8 @@ namespace EcommerceAPI.Controllers
                 };
                 return BadRequest(loginResponse);
             }
-            
-            Response<string> response = await Task.Run(() => _clientService.LoginClient(client.Username, client.Password));
+
+            var response = await Task.Run(() => _clientService.LoginClient(client.Username, client.Password));
             if (response.ErrorOccured)
             {
                 AlertServer.RemoveWebSocketService(relativePath);
@@ -83,6 +85,8 @@ namespace EcommerceAPI.Controllers
                 return Ok(createShopResponse);
             }
         }
+
+
         private void AddPendingAlert(string username, IList<string> messages)
         {
             _clientPendingAlerts[username] = messages;
@@ -347,6 +351,18 @@ namespace EcommerceAPI.Controllers
             {
                 return Ok(ServerResponse<bool>.OkResponse(response.Value));
             }
-        }   
+        }
+        static string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
+        }
     }
 }

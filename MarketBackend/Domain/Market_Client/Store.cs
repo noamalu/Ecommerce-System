@@ -483,11 +483,15 @@ namespace MarketBackend.Domain.Market_Client
                     appointer.addAppointee(ClientRepositoryRAM.GetInstance().GetByUserName(roleuserName));
                     RoleRepositoryRAM.GetInstance().Update(appointer);
                     Event e = new AddAppointmentEvent(this, userName, roleuserName, role);
-                    //subscribe the new staff member to the store events
-                    // if (role.getRoleName() == RoleName.Manager) //TODO Shaked Notifications
-                    // {
-                    //     SubscribeStaffMember(null, ClientRepositoryRAM.GetInstance().GetByUserName(userName));
-                    // }
+                    // subscribe the new staff member to the store events
+                    if (role.getRoleName() == RoleName.Founder) //TODO Shaked Notifications
+                    {
+                        SubscribeStoreOwner(ClientRepositoryRAM.GetInstance().GetByUserName(roleuserName));
+                    }
+                    else{
+                       SubscribeStaffMember(null, ClientRepositoryRAM.GetInstance().GetByUserName(roleuserName));
+
+                    }
                     _eventManager.NotifySubscribers(e);
                     
                     //add to active user appointees list the newly appointed staff member
@@ -498,11 +502,17 @@ namespace MarketBackend.Domain.Market_Client
         }
 
         public void SubscribeStaffMember(Member appoint, Member appointe)
-        {
-            _eventManager.Listeners["Add Appointment Event"].Add(appoint);
-            _eventManager.Listeners["Add Appointment Event"].Add(appointe);
-            _eventManager.Listeners["Remove Appointment Event"].Add(appoint);
-            _eventManager.Listeners["Remove Appointment Event"].Add(appointe);
+        {   
+            if(appoint is not null){
+                _eventManager.Listeners["Add Appointment Event"].Add(appoint);
+                _eventManager.Listeners["Remove Appointment Event"].Add(appoint);
+
+
+            }
+            if(appointe is not null){
+                _eventManager.Listeners["Add Appointment Event"].Add(appointe);
+                _eventManager.Listeners["Remove Appointment Event"].Add(appointe);
+            }
         }
 
         public void RemoveStaffMember(string roleuserName, string userName){
