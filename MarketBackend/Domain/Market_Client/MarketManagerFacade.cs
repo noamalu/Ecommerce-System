@@ -199,7 +199,7 @@ namespace MarketBackend.Domain.Market_Client
                     Member activeMember = (Member)_clientManager.GetClientByIdentifier(identifier);
                     Role role = new Role(new Founder(RoleName.Founder), activeMember, storeId, activeMember.UserName);
 
-                    store.SubscribeStoreOwner(activeMember);
+                    // store.SubscribeStoreOwner(activeMember);
                     store.AddStaffMember(activeMember.UserName, role, activeMember.UserName); //adds himself
                     transaction.Commit();
                 }
@@ -527,7 +527,7 @@ namespace MarketBackend.Domain.Market_Client
                     RoleType roleType = RoleType.GetRoleTypeFromDescription(roleName);
                     Role role = new(roleType, appoint, storeId, toAddUserName);
                     store.AddStaffMember(toAddUserName, role, appoint.UserName);
-                    store.SubscribeStaffMember(appoint, appointe);
+                    // store.SubscribeStaffMember(appoint, appointe);
                     transaction.Commit();
                 }
                 catch(Exception e) 
