@@ -4,8 +4,11 @@
 
 Ecommerce-System is an ecommerce application developed as part of the Workshop on Software Engineering Project course at Ben-Gurion University (BGU). The system is built using ASP.NET for the backend and React for the frontend, providing a robust and user-friendly platform for online shopping.
 
+Beyond a regular ecommerce system, our application includes advanced features such as permissions and privileges for each store manager/owner. Additionally, we provide functionalities to set rules and discounts on purchases, making the platform flexible and adaptable to various business needs.
+
 ## Team Members
 
+- Hadas Printz
 - Yonatan Baruch
 - Shaked Matityahu
 - Kfir Nissim
@@ -47,7 +50,6 @@ dotnet restore
 ```
 
 4. Update the `appsettings.json` file with your SQL Server connection string.
-
 5. Run the backend server:
 
 ```bash {"id":"01J2BCT2A420D9PNKZJCYZC62N"}
@@ -71,24 +73,9 @@ npm install
 3. Start the development server:
 
 ```bash {"id":"01J2BCT2A420D9PNKZJMB2ZW88"}
-npm start
+npm run dev 
 ```
 
 ## Usage
 
-Once the installation steps are completed, you can access the application in your web browser at `http://localhost:3000`. The backend API will be available at `http://localhost:4560,
-`.
-
-## Contributing
-
-To contribute to Ecommerce-System, follow these steps:
-
-1. Fork the repository.
-2. Create a new branch: `git checkout -b feature/your-feature`
-3. Make your changes and commit them: `git commit -m 'Add some feature'`
-4. Push to the branch: `git push origin feature/your-feature`
-5. Create a pull request.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Once the installation steps are completed, you can access the application in your web browser at `http://localhost:5173`. The backend API will be available at `http://localhost:4560`.
