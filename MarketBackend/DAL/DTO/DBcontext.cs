@@ -94,7 +94,7 @@ namespace MarketBackend.DAL.DTO
         {
             DbPathLocal = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=MarketDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;Application Intent=ReadWrite;MultiSubnetFailover=False";
     
-            DbPathRemote = "Server=sql12.freemysqlhosting.net;Database=sql12718699;User Id=sql12718699;Password=3BnJmPv8V6;Port=3306;";
+            DbPathRemote = "Server=sql12.freemysqlhosting.net;Database=sql12719888;User Id=sql12719888;Password=EeKM5BeBNV;Port=3306;";
             
             DbPathTest = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=MarketDBTest;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;Application Intent=ReadWrite;MultiSubnetFailover=False";
             
