@@ -117,18 +117,21 @@ namespace UnitTests
             
             _Store.AddProduct(username1, "Shampo", "RegularSell" , "Shampo", 4784, "hair", 21, false);
             Assert.IsTrue(_Store.Products.ToList().Find((p) => p.Name == "Shampo") != null);
+            Assert.AreEqual(2, _Store.Products.Count);
         }
 
         [TestMethod()]
         public void AddProductFailHasNoPermissions()
         {
             Assert.ThrowsException<Exception>(() => _Store.AddProduct(username2,"Shampo", "RegularSell" , "Shampo", 4784, "hair", 21, false));
+            Assert.AreEqual(1, _Store.Products.Count);
         }
 
         [TestMethod()]
         public void AddProductFailUserNotExist()
         {
             Assert.ThrowsException<Exception>(() => _Store.AddProduct(username3,"Shampo", "RegularSell" , "Shampo", 4784, "hair", 21, false));
+            Assert.AreEqual(1, _Store.Products.Count);
         }
 
         [TestMethod()]
@@ -138,6 +141,7 @@ namespace UnitTests
             Product p1 = _Store.Products.ToList().Find((p) => p.Name == "Shampo");
             _Store.RemoveProduct(username1, p1.ProductId);
             Assert.IsTrue(!_Store.Products.Contains(p1));
+            Assert.AreEqual(1, _Store.Products.Count);
         }
 
         [TestMethod()]
@@ -146,6 +150,7 @@ namespace UnitTests
            _Store.AddProduct(username1, "Shampo", "RegularSell" , "Shampo", 4784, "hair", 21, false);
             Product p1 = _Store.Products.ToList().Find((p) => p.Name == "Shampo");
             Assert.ThrowsException<Exception>(() => _Store.RemoveProduct(username3, p1.ProductId));
+            Assert.AreEqual(2, _Store.Products.Count);
         }
 
         [TestMethod()]
@@ -154,6 +159,7 @@ namespace UnitTests
            _Store.AddProduct(username1, "Shampo", "RegularSell" , "Shampo", 4784, "hair", 21, false);
             Product p1 = _Store.Products.ToList().Find((p) => p.Name == "Shampo");
             Assert.ThrowsException<Exception>(() => _Store.RemoveProduct(username3, p1.ProductId));
+            Assert.AreEqual(2, _Store.Products.Count);
         }
 
         [TestMethod()]
